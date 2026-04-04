@@ -255,6 +255,7 @@ insert into groups (id, name) values ('forty-plus-seniors', '40+ / Seniors') on 
 insert into groups (id, name) values ('seekers', 'Seekers') on conflict (id) do nothing;
 insert into groups (id, name) values ('men', 'Men') on conflict (id) do nothing;
 insert into groups (id, name) values ('youth', 'Youth') on conflict (id) do nothing;
+insert into groups (id, name) values ('young-family-group', 'Young Family Group') on conflict (id) do nothing;
 
 -- ── Group members ───────────────────────────────────
 insert into group_members (group_id, person_id) values ('students', 'xiang-you') on conflict do nothing;
@@ -343,6 +344,14 @@ insert into group_members (group_id, person_id) values ('youth', 'debbie-liu') o
 insert into group_members (group_id, person_id) values ('youth', 'bekkah-shi') on conflict do nothing;
 insert into group_members (group_id, person_id) values ('youth', 'gabriel-daily') on conflict do nothing;
 insert into group_members (group_id, person_id) values ('youth', 'becky-liu') on conflict do nothing;
+insert into group_members (group_id, person_id) values ('young-family-group', 'long-cheng') on conflict do nothing;
+insert into group_members (group_id, person_id) values ('young-family-group', 'fangyu-ai') on conflict do nothing;
+insert into group_members (group_id, person_id) values ('young-family-group', 'daini-eades') on conflict do nothing;
+insert into group_members (group_id, person_id) values ('young-family-group', 'jacob-eades') on conflict do nothing;
+insert into group_members (group_id, person_id) values ('young-family-group', 'anne-park-braswell') on conflict do nothing;
+insert into group_members (group_id, person_id) values ('young-family-group', 'daniel-braswell') on conflict do nothing;
+insert into group_members (group_id, person_id) values ('young-family-group', 'miranda-sparklin') on conflict do nothing;
+insert into group_members (group_id, person_id) values ('young-family-group', 'ryan-sparklin') on conflict do nothing;
 
 -- ── Personas ────────────────────────────────────────
 insert into personas (id, name, role, person_id) values ('admin', 'Pastor Qing (Paul) Liu', 'admin', 'qing-liu') on conflict (id) do nothing;
