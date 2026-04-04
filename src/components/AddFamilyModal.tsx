@@ -1,0 +1,261 @@
+'use client';
+
+import { useState, useRef, useEffect } from 'react';
+import { MagnifyingGlass, CheckCircle } from '@phosphor-icons/react';
+import { useApp } from '@/lib/context';
+
+interface AddFamilyModalProps {
+  onClose: () => void;
+}
+
+const memberAvatarPalette = [
+  { bg: '#E8F0FE', color: '#4A6FA5' },
+  { bg: '#FDE8F0', color: '#A54A6F' },
+  { bg: '#E8FEF0', color: '#4AA56F' },
+  { bg: '#FEF3E8', color: '#A5794A' },
+  { bg: '#F0E8FE', color: '#7A4AA5' },
+  { bg: '#E8FEFE', color: '#4A9FA5' },
+];
+
+function suggestFamilyName(memberIds: string[], people: { id: string; englishName: string }[]): string {
+  const selected = people.filter((p) => memberIds.includes(p.id));
+  if (selected.length === 0) return '';
+  // Collect last names
+  const lastNames = selected.map((p) => {
+    const parts = p.englishName.trim().split(/\s+/);
+    return parts[parts.length - 1];
+  });
+  // Find most common last name
+  const freq: Record<string, number> = {};
+  for (const n of lastNames) freq[n] = (freq[n] ?? 0) + 1;
+  const top = Object.entries(freq).sort((a, b) => b[1] - a[1])[0]?.[0] ?? lastNames[0];
+  // If all same last name → "Smith Family", else "Smith / Jones Family"
+  const unique = [...new Set(lastNames)];
+  return unique.length === 1 ? `${top} Family` : `${unique.slice(0, 2).join(' / ')} Family`;
+}
+
+export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
+  const { data, addFamily } = useApp();
+  const [step, setStep] = useState<'members' | 'name'>('members');
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [search, setSearch] = useState('');
+  const [familyName, setFamilyName] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+  const searchRef = useRef<HTMLInputElement>(null);
+  const nameRef = useRef<HTMLInputElement>(null);
+
+  // People who don't have a family yet
+  const pool = data.people.filter((p) => !p.familyId && !p.isChild);
+
+  const q = search.toLowerCase();
+  const filtered = pool.filter(
+    (p) =>
+      q === '' ||
+      p.englishName.toLowerCase().includes(q) ||
+      (p.chineseName && p.chineseName.toLowerCase().includes(q))
+  );
+
+  // Sort: selected first, then alphabetical
+  const sorted = [
+    ...filtered.filter((p) => selectedIds.includes(p.id)),
+    ...filtered.filter((p) => !selectedIds.includes(p.id)),
+  ];
+
+  const toggle = (id: string) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  };
+
+  useEffect(() => {
+    if (step === 'members') {
+      setTimeout(() => searchRef.current?.focus(), 80);
+    } else if (step === 'name') {
+      const suggested = suggestFamilyName(selectedIds, data.people);
+      setFamilyName(suggested);
+      setTimeout(() => {
+        nameRef.current?.focus();
+        nameRef.current?.select();
+      }, 80);
+    }
+  }, [step]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleCreate = () => {
+    if (!familyName.trim() || selectedIds.length === 0) return;
+    addFamily(familyName.trim(), selectedIds);
+    setSubmitted(true);
+    setTimeout(() => onClose(), 1600);
+  };
+
+  const selectedPeople = data.people.filter((p) => selectedIds.includes(p.id));
+
+  return (
+    <div
+      style={{ position: 'fixed', inset: 0, background: 'rgba(30,26,24,0.45)', zIndex: 60, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div
+        className="animate-slide-up"
+        style={{
+          background: 'var(--surface)', borderRadius: '20px 20px 0 0',
+          width: '100%', maxWidth: 430,
+          height: 'calc(100dvh - 48px)',
+          display: 'flex', flexDirection: 'column', overflow: 'hidden',
+        }}
+      >
+        {/* Drag handle */}
+        <div style={{ width: 36, height: 4, background: 'var(--border)', borderRadius: 2, margin: '14px auto 0', flexShrink: 0 }} />
+
+        {/* ── Step: members ── */}
+        {step === 'members' && (
+          <>
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 12px', flexShrink: 0, borderBottom: '1px solid var(--border-light)' }}>
+              <button onClick={onClose} style={{ fontSize: 14, color: 'var(--text-secondary)', background: 'none', border: 'none', cursor: 'pointer' }}>Cancel</button>
+              <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>Select members</span>
+              <button
+                onClick={() => selectedIds.length > 0 && setStep('name')}
+                style={{ fontSize: 14, fontWeight: 600, color: selectedIds.length === 0 ? 'var(--text-muted)' : 'var(--sage)', background: 'none', border: 'none', cursor: selectedIds.length === 0 ? 'default' : 'pointer' }}
+              >
+                {selectedIds.length > 0 ? `Next (${selectedIds.length})` : 'Next'}
+              </button>
+            </div>
+
+            {/* Search */}
+            <div style={{ padding: '12px 16px 8px', flexShrink: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--bg)', borderRadius: 10, padding: '8px 12px' }}>
+                <MagnifyingGlass size={16} color="var(--text-muted)" />
+                <input
+                  ref={searchRef}
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search people…"
+                  style={{ flex: 1, background: 'none', border: 'none', outline: 'none', fontSize: 14, color: 'var(--text-primary)' }}
+                />
+              </div>
+            </div>
+
+            {/* List */}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '0 16px 32px' }}>
+              {sorted.length === 0 && (
+                <p style={{ fontSize: 13, color: 'var(--text-muted)', textAlign: 'center', paddingTop: 32, fontStyle: 'italic' }}>
+                  {q ? 'No people match your search.' : 'All individuals are already in families.'}
+                </p>
+              )}
+              {sorted.map((p) => {
+                const isSelected = selectedIds.includes(p.id);
+                const initials = p.englishName.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase();
+                const palette = memberAvatarPalette[p.englishName.charCodeAt(0) % memberAvatarPalette.length];
+                return (
+                  <button
+                    key={p.id}
+                    onClick={() => toggle(p.id)}
+                    style={{
+                      width: '100%', display: 'flex', alignItems: 'center', gap: 12,
+                      padding: '10px 0',
+                      background: isSelected ? 'var(--sage-light)' : 'none',
+                      border: 'none', borderBottom: '1px solid var(--border-light)',
+                      cursor: 'pointer', textAlign: 'left',
+                      borderRadius: 0, margin: 0,
+                    }}
+                  >
+                    <div style={{
+                      width: 36, height: 36, borderRadius: '50%', flexShrink: 0,
+                      background: isSelected ? 'var(--sage)' : palette.bg,
+                      color: isSelected ? '#fff' : palette.color,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 12, fontWeight: 700,
+                    }}>
+                      {initials}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontSize: 14, fontWeight: isSelected ? 600 : 500, color: isSelected ? 'var(--sage)' : 'var(--text-primary)', margin: 0 }}>{p.englishName}</p>
+                      {p.chineseName && <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0 }}>{p.chineseName}</p>}
+                    </div>
+                    {isSelected
+                      ? <CheckCircle size={22} weight="fill" color="var(--sage)" style={{ flexShrink: 0 }} />
+                      : <div style={{ width: 22, height: 22, borderRadius: '50%', border: '1.5px solid var(--border)', flexShrink: 0 }} />
+                    }
+                  </button>
+                );
+              })}
+            </div>
+          </>
+        )}
+
+        {/* ── Step: name ── */}
+        {step === 'name' && !submitted && (
+          <>
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 12px', flexShrink: 0, borderBottom: '1px solid var(--border-light)' }}>
+              <button onClick={() => setStep('members')} style={{ fontSize: 14, color: 'var(--text-secondary)', background: 'none', border: 'none', cursor: 'pointer' }}>Back</button>
+              <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>Name family</span>
+              <button
+                onClick={handleCreate}
+                disabled={!familyName.trim()}
+                style={{ height: 32, padding: '0 14px', borderRadius: 8, background: familyName.trim() ? 'var(--sage)' : 'var(--border)', color: familyName.trim() ? '#fff' : 'var(--text-muted)', fontSize: 14, fontWeight: 600, border: 'none', cursor: familyName.trim() ? 'pointer' : 'default', transition: 'background 0.15s' }}
+              >
+                Create
+              </button>
+            </div>
+
+            <div style={{ flex: 1, overflowY: 'auto', padding: '24px 20px 48px', background: 'var(--bg)' }}>
+              {/* Members preview */}
+              <div style={{ marginBottom: 24 }}>
+                <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
+                  Members ({selectedPeople.length})
+                </p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                  {selectedPeople.map((p) => {
+                    const initials = p.englishName.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase();
+                    const palette = memberAvatarPalette[p.englishName.charCodeAt(0) % memberAvatarPalette.length];
+                    return (
+                      <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--surface)', borderRadius: 20, padding: '4px 10px 4px 4px', border: '1px solid var(--border-light)' }}>
+                        <div style={{ width: 24, height: 24, borderRadius: '50%', background: palette.bg, color: palette.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>
+                          {initials}
+                        </div>
+                        <span style={{ fontSize: 13, color: 'var(--text-primary)', fontWeight: 500 }}>
+                          {p.englishName.split(' ')[0]}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Family name input */}
+              <div style={{ marginBottom: 24 }}>
+                <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
+                  Family name
+                </p>
+                <div style={{ background: 'var(--surface)', borderRadius: 'var(--radius)', border: '1px solid var(--border-light)', padding: '0 16px' }}>
+                  <input
+                    ref={nameRef}
+                    value={familyName}
+                    onChange={(e) => setFamilyName(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
+                    placeholder="e.g. Smith Family"
+                    style={{ width: '100%', padding: '14px 0', background: 'none', border: 'none', outline: 'none', fontSize: 16, color: 'var(--text-primary)' }}
+                  />
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* ── Success state ── */}
+        {submitted && (
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+            <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--sage-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="var(--sage)" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+            </div>
+            <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)' }}>Family created</p>
+            <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>{familyName} has been added.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

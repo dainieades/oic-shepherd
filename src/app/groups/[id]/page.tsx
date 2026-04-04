@@ -1,0 +1,423 @@
+'use client';
+
+import { use, useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useApp } from '@/lib/context';
+import { getTimeAgo, getDueLabel, getMembershipLabel } from '@/lib/utils';
+import { PencilSimple, TextT, AlignLeft, UsersThree, UserList, CaretRight } from '@phosphor-icons/react';
+
+const avatarPalette = [
+  { bg: '#EAF2EE', color: '#5B8A72' },
+  { bg: '#EBF1F7', color: '#6B8EAE' },
+  { bg: '#F5F0EB', color: '#8C7055' },
+  { bg: '#F0EBF5', color: '#7A6A8C' },
+];
+
+export default function GroupDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
+  const router = useRouter();
+  const { data, updateGroup, updateGroupMembers } = useApp();
+
+  const [scrolled, setScrolled] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const group = data.groups.find((g) => g.id === id);
+  if (!group) {
+    return <div style={{ paddingTop: 64, textAlign: 'center', color: 'var(--text-muted)' }}>Group not found</div>;
+  }
+
+  const leaders  = data.people.filter((p) => group.leaderIds.includes(p.id));
+  const members  = data.people.filter((p) => group.memberIds.includes(p.id) && !group.leaderIds.includes(p.id));
+
+  return (
+    <div style={{ paddingBottom: 32 }}>
+
+      {/* ── Sticky nav bar ── */}
+      <div style={{
+        position: 'sticky', top: 36, zIndex: 40,
+        background: 'var(--bg)',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        height: 54,
+      }}>
+        <button
+          onClick={() => router.back()}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 13, color: 'var(--sage)', background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0 }}
+        >
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+          </svg>
+          Back
+        </button>
+
+        <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)', flex: 1, textAlign: 'center', padding: '0 8px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {scrolled ? group.name : ''}
+        </span>
+
+        <button
+          onClick={() => setShowEdit(true)}
+          style={{ height: scrolled ? 30 : 36, padding: scrolled ? '0 10px' : '0 12px', borderRadius: 8, background: 'var(--sage)', color: '#fff', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5, fontSize: scrolled ? 13 : 14, fontWeight: 600, whiteSpace: 'nowrap', flexShrink: 0 }}
+        >
+          <PencilSimple size={scrolled ? 13 : 15} weight="bold" />
+          Edit
+        </button>
+      </div>
+
+      {/* ── Group header card ── */}
+      <div style={{ background: 'var(--surface)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-light)', padding: '20px', marginBottom: 14 }}>
+        <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8, letterSpacing: '-0.02em' }}>
+          {group.name}
+        </h1>
+
+        <div style={{ display: 'flex', gap: 12, marginBottom: group.description ? 14 : 0 }}>
+          <span style={{ fontSize: 11, fontWeight: 500, padding: '3px 10px', borderRadius: '999px', background: 'var(--sage-light)', color: 'var(--sage)' }}>
+            {members.length} {members.length === 1 ? 'member' : 'members'}
+          </span>
+          {leaders.length > 0 && (
+            <span style={{ fontSize: 11, fontWeight: 500, padding: '3px 10px', borderRadius: '999px', background: 'var(--blue-light)', color: 'var(--blue)' }}>
+              {leaders.length === 1 ? '1 leader' : `${leaders.length} leaders`}
+            </span>
+          )}
+        </div>
+
+        {group.description && (
+          <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, paddingLeft: 12, borderLeft: '2px solid var(--sage-mid)', marginTop: 14 }}>
+            {group.description}
+          </p>
+        )}
+      </div>
+
+      {/* ── Leaders ── */}
+      {leaders.length > 0 && (
+        <div style={{ marginBottom: 14 }}>
+          <SectionLabel>Leaders</SectionLabel>
+          <div className="no-last-border" style={{ background: 'var(--surface)', borderRadius: 'var(--radius)', border: '1px solid var(--border-light)', overflow: 'hidden' }}>
+            {leaders.map((leader, i) => {
+              const palette  = avatarPalette[i % avatarPalette.length];
+              const initials = leader.englishName.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
+              return (
+                <Link
+                  key={leader.id}
+                  href={`/person/${leader.id}`}
+                  className="row-card-hover"
+                  style={{ display: 'flex', alignItems: 'center', gap: 12, paddingTop: 12, paddingBottom: 12, borderBottom: '1px solid var(--border-light)', textDecoration: 'none' }}
+                >
+                  <div style={{ width: 40, height: 40, borderRadius: '50%', background: palette.bg, color: palette.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 600, flexShrink: 0 }}>
+                    {initials}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+                      <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>{leader.englishName}</span>
+                      {leader.chineseName && <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{leader.chineseName}</span>}
+                    </div>
+                    <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{getMembershipLabel(leader.membershipStatus)}</span>
+                  </div>
+                  <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                  </svg>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ── Members ── */}
+      <div>
+        <SectionLabel>Members · {members.length}</SectionLabel>
+        {members.length === 0 ? (
+          <p style={{ fontSize: 13, color: 'var(--text-muted)', fontStyle: 'italic' }}>No members yet. Tap Edit to add members.</p>
+        ) : (
+          <div className="no-last-border" style={{ background: 'var(--surface)', borderRadius: 'var(--radius)', border: '1px solid var(--border-light)', overflow: 'hidden' }}>
+            {members.map((m, i) => {
+              const palette  = avatarPalette[i % avatarPalette.length];
+              const initials = m.englishName.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
+              const due      = getDueLabel(m.nextFollowUpDate);
+
+              return (
+                <Link
+                  key={m.id}
+                  href={`/person/${m.id}`}
+                  className="row-card-hover"
+                  style={{ display: 'flex', alignItems: 'center', gap: 12, paddingTop: 12, paddingBottom: 12, borderBottom: '1px solid var(--border-light)', textDecoration: 'none' }}
+                >
+                  <div style={{ width: 40, height: 40, borderRadius: '50%', background: palette.bg, color: palette.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 600, flexShrink: 0 }}>
+                    {initials}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+                      <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>{m.englishName}</span>
+                      {m.chineseName && <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{m.chineseName}</span>}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
+                      <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{getMembershipLabel(m.membershipStatus)}</span>
+                      {m.lastContactDate && <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>&nbsp;· {getTimeAgo(m.lastContactDate)}</span>}
+                      {due.status !== 'ok' && due.status !== 'none' && (
+                        <span style={{ fontSize: 12, color: due.status === 'overdue' ? 'var(--red)' : 'var(--amber)', fontWeight: 500 }}>&nbsp;· {due.label}</span>
+                      )}
+                    </div>
+                  </div>
+                  <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                  </svg>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* ── Edit Drawer ── */}
+      {showEdit && (
+        <EditGroupDrawer
+          group={group}
+          onClose={() => setShowEdit(false)}
+          onSave={(updates, newMemberIds) => {
+            updateGroup(group.id, updates);
+            updateGroupMembers(group.id, newMemberIds);
+            setShowEdit(false);
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+// ── Edit Drawer ───────────────────────────────────────────────────────────────
+
+function EditGroupDrawer({
+  group,
+  onClose,
+  onSave,
+}: {
+  group: import('@/lib/types').Group;
+  onClose: () => void;
+  onSave: (updates: Partial<Pick<import('@/lib/types').Group, 'name' | 'description' | 'leaderIds'>>, memberIds: string[]) => void;
+}) {
+  const { data } = useApp();
+
+  const [name, setName]           = useState(group.name);
+  const [description, setDesc]    = useState(group.description ?? '');
+  const [leaderIds, setLeaderIds] = useState<string[]>(group.leaderIds);
+  const [memberIds, setMemberIds] = useState<string[]>(group.memberIds);
+
+  const [showLeaderPicker, setShowLeaderPicker] = useState(false);
+  const [showMemberPicker, setShowMemberPicker] = useState(false);
+
+  const nameRef = useRef<HTMLInputElement>(null);
+  const descRef = useRef<HTMLTextAreaElement>(null);
+
+  const selectedLeaders = data.people.filter((p) => leaderIds.includes(p.id));
+  const selectedMembers = data.people.filter((p) => memberIds.includes(p.id));
+
+  const handleSave = () => {
+    if (!name.trim()) return;
+    onSave({ name: name.trim(), description: description.trim() || undefined, leaderIds }, memberIds);
+  };
+
+  return (
+    <>
+      <div
+        style={{ position: 'fixed', inset: 0, background: 'rgba(30,26,24,0.45)', zIndex: 60, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}
+        onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      >
+        <div
+          className="animate-slide-up"
+          style={{ background: 'var(--surface)', borderRadius: '20px 20px 0 0', width: '100%', maxWidth: 430, height: 'calc(100dvh - 48px)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
+        >
+          {/* Drag handle */}
+          <div style={{ width: 36, height: 4, background: 'var(--border)', borderRadius: 2, margin: '14px auto 0', flexShrink: 0 }} />
+
+          {/* Fixed header */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 12px', flexShrink: 0, borderBottom: '1px solid var(--border-light)' }}>
+            <button onClick={onClose} style={{ fontSize: 14, color: 'var(--text-secondary)', background: 'none', border: 'none', cursor: 'pointer' }}>Cancel</button>
+            <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>Edit group</span>
+            <button onClick={handleSave} style={{ fontSize: 14, fontWeight: 600, color: 'var(--sage)', background: 'none', border: 'none', cursor: 'pointer' }}>Save</button>
+          </div>
+
+          {/* Scrollable body */}
+          <div style={{ flex: 1, overflowY: 'auto', padding: '20px 20px 48px', background: 'var(--bg)' }}>
+
+            {/* ── DETAILS ── */}
+            <DrawerSection label="Details">
+              <div className="field-row-hover" style={textRowStyle} onClick={() => nameRef.current?.focus()}>
+                <span style={asteriskStyle}>*</span>
+                <TextT size={16} color="var(--text-muted)" />
+                <span style={labelStyle}>Name</span>
+                <input ref={nameRef} value={name} onChange={(e) => setName(e.target.value)} placeholder="Group name" style={inputStyle} />
+              </div>
+              <div className="field-row-hover" style={{ ...textRowStyle, alignItems: 'flex-start' }} onClick={() => descRef.current?.focus()}>
+                <span style={spacerStyle} />
+                <span style={{ paddingTop: 2 }}><AlignLeft size={16} color="var(--text-muted)" /></span>
+                <span style={{ ...labelStyle, paddingTop: 2 }}>About</span>
+                <textarea ref={descRef} value={description} onChange={(e) => setDesc(e.target.value)} placeholder="Description…" rows={3} style={{ ...inputStyle, resize: 'none', lineHeight: 1.5 }} />
+              </div>
+            </DrawerSection>
+
+            {/* ── LEADERS ── */}
+            <DrawerSection label="Leaders">
+              <button
+                className="field-row-hover"
+                onClick={() => setShowLeaderPicker(true)}
+                style={pickerRowStyle}
+              >
+                <span style={spacerStyle} />
+                <UsersThree size={16} color="var(--text-muted)" />
+                <span style={labelStyle}>Leaders</span>
+                <span style={{ flex: 1, fontSize: 14, color: selectedLeaders.length ? 'var(--text-primary)' : 'var(--text-muted)', textAlign: 'left' }}>
+                  {selectedLeaders.length === 0 ? 'None' : selectedLeaders.map((p) => p.englishName.split(' ')[0]).join(', ')}
+                </span>
+                <CaretRight size={14} color="var(--text-muted)" />
+              </button>
+            </DrawerSection>
+
+            {/* ── MEMBERS ── */}
+            <DrawerSection label="Members">
+              <button
+                className="field-row-hover"
+                onClick={() => setShowMemberPicker(true)}
+                style={pickerRowStyle}
+              >
+                <span style={spacerStyle} />
+                <UserList size={16} color="var(--text-muted)" />
+                <span style={labelStyle}>Members</span>
+                <span style={{ flex: 1, fontSize: 14, color: 'var(--text-primary)', textAlign: 'left' }}>
+                  {memberIds.length} {memberIds.length === 1 ? 'person' : 'people'}
+                </span>
+                <CaretRight size={14} color="var(--text-muted)" />
+              </button>
+            </DrawerSection>
+
+          </div>
+        </div>
+      </div>
+
+      {/* Leader picker sheet */}
+      {showLeaderPicker && (
+        <PeoplePickerSheet
+          title="Leaders"
+          people={data.people}
+          selected={leaderIds}
+          onToggle={(pid) => setLeaderIds((prev) => prev.includes(pid) ? prev.filter((x) => x !== pid) : [...prev, pid])}
+          onDone={() => setShowLeaderPicker(false)}
+        />
+      )}
+
+      {/* Member picker sheet */}
+      {showMemberPicker && (
+        <PeoplePickerSheet
+          people={data.people}
+          selected={memberIds}
+          onToggle={(pid) => setMemberIds((prev) => prev.includes(pid) ? prev.filter((x) => x !== pid) : [...prev, pid])}
+          onDone={() => setShowMemberPicker(false)}
+        />
+      )}
+    </>
+  );
+}
+
+// ── Picker sheets ─────────────────────────────────────────────────────────────
+
+function PeoplePickerSheet({ title, people, selected, onToggle, onDone }: {
+  title?: string;
+  people: import('@/lib/types').Person[];
+  selected: string[];
+  onToggle: (id: string) => void;
+  onDone: () => void;
+}) {
+  const [search, setSearch] = useState('');
+  const filtered = people.filter((p) =>
+    search === '' ||
+    p.englishName.toLowerCase().includes(search.toLowerCase()) ||
+    (p.chineseName ?? '').includes(search)
+  );
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 70, background: 'rgba(30,26,24,0.35)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}
+      onClick={(e) => { if (e.target === e.currentTarget) onDone(); }}>
+      <div style={{ background: 'var(--surface)', borderRadius: '16px 16px 0 0', width: '100%', maxWidth: 430, maxHeight: '80dvh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div style={{ width: 36, height: 4, background: 'var(--border)', borderRadius: 2, margin: '12px auto 0', flexShrink: 0 }} />
+        <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '12px 20px 10px', borderBottom: '1px solid var(--border-light)', flexShrink: 0 }}>
+          {title ?? 'Members'} · {selected.length} selected
+        </p>
+        <div style={{ padding: '10px 16px', borderBottom: '1px solid var(--border-light)', flexShrink: 0 }}>
+          <input
+            autoFocus
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search…"
+            style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid var(--border)', fontSize: 14, background: 'var(--bg)', color: 'var(--text-primary)', outline: 'none', boxSizing: 'border-box' }}
+          />
+        </div>
+        <div style={{ flex: 1, overflowY: 'auto' }}>
+          {filtered.map((p) => {
+            const isSel = selected.includes(p.id);
+            const initials = p.englishName.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
+            return (
+              <button key={p.id} onClick={() => onToggle(p.id)}
+                style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, padding: '10px 20px', background: isSel ? 'var(--sage-light)' : 'none', border: 'none', borderBottom: '1px solid var(--border-light)', cursor: 'pointer', textAlign: 'left' }}>
+                <div style={{ width: 36, height: 36, borderRadius: '50%', background: isSel ? 'var(--sage)' : 'var(--sage-light)', color: isSel ? '#fff' : 'var(--sage)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, flexShrink: 0 }}>
+                  {initials}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <span style={{ fontSize: 14, fontWeight: isSel ? 600 : 400, color: isSel ? 'var(--sage)' : 'var(--text-primary)' }}>{p.englishName}</span>
+                  {p.chineseName && <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 6 }}>{p.chineseName}</span>}
+                </div>
+                {isSel && <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--sage)" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>}
+              </button>
+            );
+          })}
+        </div>
+        <div style={{ padding: '16px 20px', flexShrink: 0 }}>
+          <button onClick={onDone} style={{ width: '100%', height: 44, borderRadius: 12, background: 'var(--sage)', color: '#fff', fontSize: 15, fontWeight: 600, border: 'none', cursor: 'pointer' }}>Done</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Shared drawer styles ──────────────────────────────────────────────────────
+
+const textRowStyle: React.CSSProperties = {
+  display: 'flex', alignItems: 'center', gap: 10,
+  paddingTop: 12, paddingBottom: 12,
+  borderBottom: '1px solid var(--border-light)', cursor: 'text',
+};
+
+const pickerRowStyle: React.CSSProperties = {
+  display: 'flex', alignItems: 'center', gap: 10,
+  paddingTop: 12, paddingBottom: 12,
+  border: 'none', borderBottom: '1px solid var(--border-light)',
+  background: 'none', cursor: 'pointer', textAlign: 'left' as const,
+  width: '100%',
+};
+
+const asteriskStyle: React.CSSProperties = { width: 10, fontSize: 14, color: 'var(--red)', flexShrink: 0, lineHeight: 1 };
+const spacerStyle: React.CSSProperties   = { width: 10, flexShrink: 0 };
+const labelStyle: React.CSSProperties   = { fontSize: 12, color: 'var(--text-muted)', width: 60, flexShrink: 0 };
+const inputStyle: React.CSSProperties   = { flex: 1, background: 'none', border: 'none', outline: 'none', fontSize: 14, color: 'var(--text-primary)' };
+
+function DrawerSection({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div style={{ marginBottom: 24 }}>
+      <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>{label}</p>
+      <div className="no-last-border" style={{ background: 'var(--surface)', borderRadius: 'var(--radius)', border: '1px solid var(--border-light)', overflow: 'hidden', padding: '0 16px' }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>
+      {children}
+    </p>
+  );
+}
