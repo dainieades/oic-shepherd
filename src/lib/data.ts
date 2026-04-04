@@ -476,7 +476,7 @@ export const initialData: AppData = {
     },
     {
       id: 'rachel-liu',
-      englishName: 'Rachel Li',
+      englishName: 'Rachel Liu',
       chineseName: '李金鹤',
       isShepherd: true,
       membershipStatus: 'member',
@@ -1964,8 +1964,8 @@ export const initialData: AppData = {
     },
     {
       id: 'daniel-braswell',
-      englishName: 'Daniel Braswell',
-      chineseName: 'Dan',
+      englishName: 'Dan Braswell',
+      chineseName: 'Daniel',
       membershipStatus: 'member',
       language: 'english',
       assignedShepherdIds: ['admin', 'shepherd-1'],
