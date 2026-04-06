@@ -362,7 +362,7 @@ export default function PeoplePage() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search name or 中文…"
+            placeholder="Search by name…"
             style={{
               width: '100%', paddingLeft: 32, paddingRight: 12, paddingTop: 8, paddingBottom: 8,
               background: 'var(--surface)', border: '1px solid var(--border)',

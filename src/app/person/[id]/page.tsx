@@ -505,7 +505,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
 
           {/* PERSONAL */}
           <InfoSection title="Personal">
-            <InfoRow icon={<Globe size={15} />} label="Language" value={person.language.charAt(0).toUpperCase() + person.language.slice(1)} />
+
             {person.gender && <InfoRow icon={<GenderIntersex size={15} />} label="Gender" value={person.gender.charAt(0).toUpperCase() + person.gender.slice(1)} />}
             {person.birthday && <InfoRow icon={<Cake size={15} />} label="Birthday" value={fmtShortDate(person.birthday)} />}
             {person.maritalStatus && <InfoRow icon={<Heart size={15} />} label="Marital Status" value={person.maritalStatus.charAt(0).toUpperCase() + person.maritalStatus.slice(1)} />}

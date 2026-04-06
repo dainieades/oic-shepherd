@@ -260,7 +260,6 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
 
             {/* ── PERSONAL ── */}
             <DrawerSection label="Personal">
-              <PickerRow icon={<Globe size={16} color="var(--text-muted)" />} label="Language" value={languageLabel} onClick={() => setOpenPicker('language')} />
               <PickerRow icon={<GenderIntersex size={16} color="var(--text-muted)" />} label="Gender" value={genderLabel} onClick={() => setOpenPicker('gender')} />
               <DateRow icon={<Cake size={16} color="var(--text-muted)" />} label="Birthday" value={birthday} inputRef={birthdayRef} onChange={setBirthday} />
               <PickerRow icon={<Heart size={16} color="var(--text-muted)" />} label="Marital" value={maritalLabel} onClick={() => setOpenPicker('marital')} />
@@ -387,9 +386,7 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
       {openPicker === 'status' && (
         <PickerMenu title="Membership status" options={MEMBERSHIP_OPTIONS} value={status} onSelect={(v) => setStatus(v as MembershipStatus)} onClose={() => setOpenPicker(null)} />
       )}
-      {openPicker === 'language' && (
-        <PickerMenu title="Language" options={LANGUAGE_OPTIONS} value={language} onSelect={(v) => setLanguage(v as Language)} onClose={() => setOpenPicker(null)} />
-      )}
+
       {openPicker === 'gender' && (
         <PickerMenu title="Gender" options={GENDER_OPTIONS} value={gender} onSelect={(v) => setGender(v as Gender | '')} onClose={() => setOpenPicker(null)} />
       )}
