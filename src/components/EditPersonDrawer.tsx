@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '@/lib/context';
 import { formatPhone } from '@/lib/utils';
 import { Person, MembershipStatus, ChurchAttendance, Language, Gender, MaritalStatus, CHURCH_POSITIONS, AppRole } from '@/lib/types';
 import {
-  User, TextT, Globe, GenderIntersex, Cake, Heart, Sparkle, Church,
+  User, TextT, Globe, Pulse, GenderIntersex, Cake, Heart, Sparkle, Church,
   IdentificationCard, CalendarCheck, Drop, Compass, Buildings, BookOpenText,
   Phone, PhoneCall, Envelope, House, FirstAid, CaretRight, HandHeart, UsersFour,
   PaperPlaneTilt,
@@ -115,9 +115,14 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
 
   // Picker state
   const [openPicker, setOpenPicker] = useState<'status' | 'attendance' | 'language' | 'gender' | 'marital' | 'appRole' | null>(null);
+  const statusBtnRef     = useRef<HTMLButtonElement>(null);
+  const attendanceBtnRef = useRef<HTMLButtonElement>(null);
+  const genderBtnRef     = useRef<HTMLButtonElement>(null);
+  const maritalBtnRef    = useRef<HTMLButtonElement>(null);
   const [showInvite, setShowInvite] = useState(false);
   const [showPositionPicker, setShowPositionPicker] = useState(false);
   const [showGroupPicker, setShowGroupPicker] = useState(false);
+  const groupBtnRef = useRef<HTMLButtonElement>(null);
   const [showShepherdPicker, setShowShepherdPicker] = useState(false);
 
   const fullName = [firstName.trim(), lastName.trim()].filter(Boolean).join(' ');
@@ -268,9 +273,9 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
 
             {/* ── PERSONAL ── */}
             <DrawerSection label="Personal">
-              <PickerRow icon={<GenderIntersex size={16} color="var(--text-muted)" />} label="Gender" value={genderLabel} onClick={() => setOpenPicker('gender')} />
+              <PickerRow ref={genderBtnRef} icon={<GenderIntersex size={16} color="var(--text-muted)" />} label="Gender" value={genderLabel} onClick={() => setOpenPicker('gender')} />
               <DateRow icon={<Cake size={16} color="var(--text-muted)" />} label="Birthday" value={birthday} inputRef={birthdayRef} onChange={setBirthday} />
-              <PickerRow icon={<Heart size={16} color="var(--text-muted)" />} label="Marital" value={maritalLabel} onClick={() => setOpenPicker('marital')} />
+              <PickerRow ref={maritalBtnRef} icon={<Heart size={16} color="var(--text-muted)" />} label="Marital" value={maritalLabel} onClick={() => setOpenPicker('marital')} />
               {maritalStatus === 'married' && (
                 <DateRow icon={<Sparkle size={16} color="var(--text-muted)" />} label="Anniversary" value={anniversary} inputRef={anniversaryRef} onChange={setAnniversary} />
               )}
@@ -278,12 +283,12 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
 
             {/* ── CHURCH ── */}
             <DrawerSection label="Church">
-              <PickerRow icon={<IdentificationCard size={16} color="var(--text-muted)" />} label="Status" value={statusLabel} onClick={() => setOpenPicker('status')} />
-              <PickerRow icon={<Globe size={16} color="var(--text-muted)" />} label="Attendance" value={attendanceLabel} onClick={() => setOpenPicker('attendance')} />
+              <PickerRow ref={statusBtnRef} icon={<IdentificationCard size={16} color="var(--text-muted)" />} label="Status" value={statusLabel} onClick={() => setOpenPicker('status')} />
+              <PickerRow ref={attendanceBtnRef} icon={<Pulse size={16} color="var(--text-muted)" />} label="Attendance" value={attendanceLabel} onClick={() => setOpenPicker('attendance')} />
               {status === 'member' && (
                 <DateRow icon={<CalendarCheck size={16} color="var(--text-muted)" />} label="Member Since" value={membershipDate} inputRef={membershipDateRef} onChange={setMembershipDate} />
               )}
-              <button className="field-row-hover" onClick={() => setShowGroupPicker(true)} style={rowBtnStyle}>
+              <button ref={groupBtnRef} className="field-row-hover" onClick={() => setShowGroupPicker(v => !v)} style={rowBtnStyle}>
                 <span style={spacerStyle} />
                 <UsersFour size={16} color="var(--text-muted)" />
                 <span style={labelStyle}>Groups</span>
@@ -393,17 +398,17 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
       </div>
 
       {openPicker === 'status' && (
-        <PickerMenu title="Membership status" options={MEMBERSHIP_OPTIONS} value={status} onSelect={(v) => setStatus(v as MembershipStatus)} onClose={() => setOpenPicker(null)} />
+        <PickerMenu anchorRef={statusBtnRef} title="Membership status" options={MEMBERSHIP_OPTIONS} value={status} onSelect={(v) => setStatus(v as MembershipStatus)} onClose={() => setOpenPicker(null)} />
       )}
       {openPicker === 'attendance' && (
-        <PickerMenu title="Church Attendance" options={CHURCH_ATTENDANCE_OPTIONS} value={attendance} onSelect={(v) => setAttendance(v as ChurchAttendance)} onClose={() => setOpenPicker(null)} />
+        <PickerMenu anchorRef={attendanceBtnRef} title="Church Attendance" options={CHURCH_ATTENDANCE_OPTIONS} value={attendance} onSelect={(v) => setAttendance(v as ChurchAttendance)} onClose={() => setOpenPicker(null)} />
       )}
 
       {openPicker === 'gender' && (
-        <PickerMenu title="Gender" options={GENDER_OPTIONS} value={gender} onSelect={(v) => setGender(v as Gender | '')} onClose={() => setOpenPicker(null)} />
+        <PickerMenu anchorRef={genderBtnRef} title="Gender" options={GENDER_OPTIONS} value={gender} onSelect={(v) => setGender(v as Gender | '')} onClose={() => setOpenPicker(null)} />
       )}
       {openPicker === 'marital' && (
-        <PickerMenu title="Marital Status" options={MARITAL_OPTIONS} value={maritalStatus} onSelect={(v) => setMaritalStatus(v as MaritalStatus | '')} onClose={() => setOpenPicker(null)} />
+        <PickerMenu anchorRef={maritalBtnRef} title="Marital Status" options={MARITAL_OPTIONS} value={maritalStatus} onSelect={(v) => setMaritalStatus(v as MaritalStatus | '')} onClose={() => setOpenPicker(null)} />
       )}
       {openPicker === 'appRole' && (
         <AppRolePickerSheet
@@ -425,14 +430,18 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
         />
       )}
       {showPositionPicker && (
-        <PositionPickerSheet selected={churchPositions} onToggle={togglePosition} onDone={() => setShowPositionPicker(false)} />
+        <PositionPickerSheet
+          currentPositions={churchPositions}
+          onConfirm={(positions) => { setChurchPositions(positions); setShowPositionPicker(false); }}
+          onBack={() => setShowPositionPicker(false)}
+        />
       )}
       {showGroupPicker && (
         <GroupPickerSheet
           groups={data.groups}
-          selected={groupIds}
-          onToggle={toggleGroup}
-          onDone={() => setShowGroupPicker(false)}
+          currentIds={groupIds}
+          onConfirm={(ids) => { setGroupIds(ids); setShowGroupPicker(false); }}
+          onBack={() => setShowGroupPicker(false)}
         />
       )}
       {showShepherdPicker && (
@@ -499,11 +508,11 @@ function DrawerSection({ label, children }: { label: string; children: React.Rea
   );
 }
 
-function PickerRow({ icon, label, value, onClick }: {
+const PickerRow = React.forwardRef<HTMLButtonElement, {
   icon: React.ReactNode; label: string; value: string; onClick: () => void;
-}) {
+}>(({ icon, label, value, onClick }, ref) => {
   return (
-    <button className="field-row-hover" onClick={onClick} style={rowBtnStyle}>
+    <button ref={ref} className="field-row-hover" onClick={onClick} style={rowBtnStyle}>
       <span style={spacerStyle} />
       {icon}
       <span style={labelStyle}>{label}</span>
@@ -511,7 +520,7 @@ function PickerRow({ icon, label, value, onClick }: {
       <CaretRight size={14} color="var(--text-muted)" />
     </button>
   );
-}
+});
 
 function DateRow({ icon, label, value, inputRef, onChange }: {
   icon: React.ReactNode; label: string; value: string;
@@ -549,56 +558,96 @@ const shepherdAvatarPalette = [
   { bg: '#F0EBF5', color: '#7A6A8C' },
 ];
 
-function GroupPickerSheet({ groups, selected, onToggle, onDone }: {
+function GroupPickerSheet({ groups, currentIds, onConfirm, onBack }: {
   groups: import('@/lib/types').Group[];
-  selected: string[];
-  onToggle: (id: string) => void;
-  onDone: () => void;
+  currentIds: string[];
+  onConfirm: (ids: string[]) => void;
+  onBack: () => void;
 }) {
+  const [search, setSearch] = useState('');
+  const [selectedIds, setSelectedIds] = useState<string[]>(currentIds);
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => { searchRef.current?.focus(); }, []);
+
+  const q = search.toLowerCase();
+  const filtered = groups.filter(g => !q || g.name.toLowerCase().includes(q));
+  const toggle = (id: string) =>
+    setSelectedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+
   return (
-    <div
-      style={{ position: 'fixed', inset: 0, zIndex: 70, background: 'rgba(30,26,24,0.35)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}
-      onClick={(e) => { if (e.target === e.currentTarget) onDone(); }}
-    >
+    <div style={{ position: 'fixed', inset: 0, zIndex: 70, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
       <div
+        className="animate-slide-up"
         style={{
-          background: 'var(--surface)', borderRadius: '16px 16px 0 0',
+          background: 'var(--surface)', borderRadius: '20px 20px 0 0',
           width: '100%', maxWidth: 430,
-          maxHeight: '60dvh', display: 'flex', flexDirection: 'column',
-          paddingBottom: 'env(safe-area-inset-bottom, 24px)', overflow: 'hidden',
+          height: 'calc(100dvh - 48px)',
+          display: 'flex', flexDirection: 'column', overflow: 'hidden',
         }}
       >
-        <div style={{ width: 36, height: 4, background: 'var(--border)', borderRadius: 2, margin: '12px auto 0', flexShrink: 0 }} />
-        <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '12px 20px 10px', borderBottom: '1px solid var(--border-light)', flexShrink: 0 }}>
-          Fellowship Groups
-        </p>
+        <div style={{ width: 36, height: 4, background: 'var(--border)', borderRadius: 2, margin: '14px auto 0', flexShrink: 0 }} />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 12px', flexShrink: 0, borderBottom: '1px solid var(--border-light)' }}>
+          <button onClick={onBack} style={{ fontSize: 14, color: 'var(--text-secondary)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Back</button>
+          <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>Fellowship Groups</span>
+          <button onClick={() => onConfirm(selectedIds)} style={{ fontSize: 14, fontWeight: 600, color: 'var(--sage)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+            {selectedIds.length > 0 ? `Done (${selectedIds.length})` : 'Done'}
+          </button>
+        </div>
+        <div style={{ padding: '12px 20px', flexShrink: 0, borderBottom: '1px solid var(--border-light)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 10, padding: '9px 12px' }}>
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
+            <input
+              ref={searchRef}
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search groups…"
+              style={{ flex: 1, fontSize: 14, color: 'var(--text-primary)', background: 'none', border: 'none', outline: 'none' }}
+            />
+            {search && (
+              <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', fontSize: 18, lineHeight: 1, padding: 0 }}>×</button>
+            )}
+          </div>
+        </div>
         <div style={{ flex: 1, overflowY: 'auto' }}>
-          {groups.map((g) => {
-            const isSel = selected.includes(g.id);
+          {filtered.map((g) => {
+            const isSel = selectedIds.includes(g.id);
             return (
               <button
                 key={g.id}
-                onClick={() => onToggle(g.id)}
+                onClick={() => toggle(g.id)}
                 style={{
-                  width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  width: '100%', display: 'flex', alignItems: 'center', gap: 12,
                   padding: '12px 20px',
                   background: isSel ? 'var(--blue-light)' : 'none',
                   border: 'none', borderBottom: '1px solid var(--border-light)',
                   cursor: 'pointer', textAlign: 'left' as const,
                 }}
               >
-                <span style={{ fontSize: 15, fontWeight: isSel ? 600 : 400, color: isSel ? 'var(--blue)' : 'var(--text-primary)' }}>{g.name}</span>
-                {isSel && (
-                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--blue)" strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                  </svg>
-                )}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontSize: 14, fontWeight: isSel ? 600 : 400, color: isSel ? 'var(--blue)' : 'var(--text-primary)', margin: 0 }}>{g.name}</p>
+                </div>
+                <div style={{
+                  width: 20, height: 20, borderRadius: 5, flexShrink: 0,
+                  border: isSel ? 'none' : '1.5px solid var(--border)',
+                  background: isSel ? 'var(--blue)' : 'transparent',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  transition: 'background 0.15s',
+                }}>
+                  {isSel && (
+                    <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth={3}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                  )}
+                </div>
               </button>
             );
           })}
-        </div>
-        <div style={{ padding: '16px 20px 0', flexShrink: 0 }}>
-          <button onClick={onDone} style={{ width: '100%', height: 44, borderRadius: 12, background: 'var(--sage)', color: '#fff', fontSize: 15, fontWeight: 600, border: 'none', cursor: 'pointer' }}>Done</button>
+          {filtered.length === 0 && (
+            <p style={{ padding: '24px 20px', fontSize: 13, color: 'var(--text-muted)', textAlign: 'center', fontStyle: 'italic' }}>No groups found.</p>
+          )}
         </div>
       </div>
     </div>
@@ -703,70 +752,112 @@ function ShepherdPickerSheet({ entries, currentIds, onConfirm, onBack }: {
 }
 
 function ShepherdCheckCircle({ selected }: { selected: boolean }) {
-  return selected ? (
-    <div style={{ width: 22, height: 22, borderRadius: '50%', flexShrink: 0, background: 'var(--sage)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth={3}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-      </svg>
+  return (
+    <div style={{
+      width: 20, height: 20, borderRadius: 5, flexShrink: 0,
+      border: selected ? 'none' : '1.5px solid var(--border)',
+      background: selected ? 'var(--sage)' : 'transparent',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      transition: 'background 0.15s',
+    }}>
+      {selected && (
+        <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth={3}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+        </svg>
+      )}
     </div>
-  ) : (
-    <div style={{ width: 22, height: 22, borderRadius: '50%', flexShrink: 0, border: '2px solid var(--border)', background: 'transparent' }} />
   );
 }
 
-function PositionPickerSheet({ selected, onToggle, onDone }: {
-  selected: string[];
-  onToggle: (pos: string) => void;
-  onDone: () => void;
+function PositionPickerSheet({ currentPositions, onConfirm, onBack }: {
+  currentPositions: string[];
+  onConfirm: (positions: string[]) => void;
+  onBack: () => void;
 }) {
-  const rows = CHURCH_POSITIONS.map((pos) => {
-    const isSel = selected.includes(pos);
-    return (
-      <button
-        key={pos}
-        onClick={() => onToggle(pos)}
-        style={{
-          width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '15px 20px',
-          background: isSel ? 'var(--sage-light)' : 'none',
-          border: 'none', borderBottom: '1px solid var(--border-light)',
-          fontSize: 15,
-          color: isSel ? 'var(--sage)' : 'var(--text-primary)',
-          fontWeight: isSel ? 600 : 400,
-          cursor: 'pointer', textAlign: 'left' as const,
-        }}
-      >
-        <span>{pos}</span>
-        {isSel && (
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--sage)" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-          </svg>
-        )}
-      </button>
-    );
-  });
+  const [search, setSearch] = useState('');
+  const [selectedPositions, setSelectedPositions] = useState<string[]>(currentPositions);
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => { searchRef.current?.focus(); }, []);
+
+  const q = search.toLowerCase();
+  const filtered = CHURCH_POSITIONS.filter(pos => !q || pos.toLowerCase().includes(q));
+  const toggle = (pos: string) =>
+    setSelectedPositions(prev => prev.includes(pos) ? prev.filter(x => x !== pos) : [...prev, pos]);
 
   return (
-    <div
-      style={{ position: 'fixed', inset: 0, zIndex: 70, background: 'rgba(30,26,24,0.35)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}
-      onClick={(e) => { if (e.target === e.currentTarget) onDone(); }}
-    >
+    <div style={{ position: 'fixed', inset: 0, zIndex: 70, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
       <div
+        className="animate-slide-up"
         style={{
-          background: 'var(--surface)', borderRadius: '16px 16px 0 0',
+          background: 'var(--surface)', borderRadius: '20px 20px 0 0',
           width: '100%', maxWidth: 430,
-          paddingBottom: 'env(safe-area-inset-bottom, 24px)', overflow: 'hidden',
+          height: 'calc(100dvh - 48px)',
+          display: 'flex', flexDirection: 'column', overflow: 'hidden',
         }}
       >
-        <div style={{ width: 36, height: 4, background: 'var(--border)', borderRadius: 2, margin: '12px auto 0' }} />
-        <p style={{
-          fontSize: 12, fontWeight: 600, color: 'var(--text-muted)',
-          textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.06em',
-          padding: '12px 20px 10px', borderBottom: '1px solid var(--border-light)',
-        }}>Church Position</p>
-        {rows}
-        <div style={{ padding: '16px 20px 0' }}>
-          <button onClick={onDone} style={{ width: '100%', height: 44, borderRadius: 12, background: 'var(--sage)', color: '#fff', fontSize: 15, fontWeight: 600, border: 'none', cursor: 'pointer' }}>Done</button>
+        <div style={{ width: 36, height: 4, background: 'var(--border)', borderRadius: 2, margin: '14px auto 0', flexShrink: 0 }} />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 12px', flexShrink: 0, borderBottom: '1px solid var(--border-light)' }}>
+          <button onClick={onBack} style={{ fontSize: 14, color: 'var(--text-secondary)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Back</button>
+          <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>Church Position</span>
+          <button onClick={() => onConfirm(selectedPositions)} style={{ fontSize: 14, fontWeight: 600, color: 'var(--sage)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+            {selectedPositions.length > 0 ? `Done (${selectedPositions.length})` : 'Done'}
+          </button>
+        </div>
+        <div style={{ padding: '12px 20px', flexShrink: 0, borderBottom: '1px solid var(--border-light)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 10, padding: '9px 12px' }}>
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
+            <input
+              ref={searchRef}
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search positions…"
+              style={{ flex: 1, fontSize: 14, color: 'var(--text-primary)', background: 'none', border: 'none', outline: 'none' }}
+            />
+            {search && (
+              <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', fontSize: 18, lineHeight: 1, padding: 0 }}>×</button>
+            )}
+          </div>
+        </div>
+        <div style={{ flex: 1, overflowY: 'auto' }}>
+          {filtered.map((pos) => {
+            const isSel = selectedPositions.includes(pos);
+            return (
+              <button
+                key={pos}
+                onClick={() => toggle(pos)}
+                style={{
+                  width: '100%', display: 'flex', alignItems: 'center', gap: 12,
+                  padding: '12px 20px',
+                  background: isSel ? 'var(--sage-light)' : 'none',
+                  border: 'none', borderBottom: '1px solid var(--border-light)',
+                  cursor: 'pointer', textAlign: 'left' as const,
+                }}
+              >
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontSize: 14, fontWeight: isSel ? 600 : 400, color: isSel ? 'var(--sage)' : 'var(--text-primary)', margin: 0 }}>{pos}</p>
+                </div>
+                <div style={{
+                  width: 20, height: 20, borderRadius: 5, flexShrink: 0,
+                  border: isSel ? 'none' : '1.5px solid var(--border)',
+                  background: isSel ? 'var(--sage)' : 'transparent',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  transition: 'background 0.15s',
+                }}>
+                  {isSel && (
+                    <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth={3}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                  )}
+                </div>
+              </button>
+            );
+          })}
+          {filtered.length === 0 && (
+            <p style={{ padding: '24px 20px', fontSize: 13, color: 'var(--text-muted)', textAlign: 'center', fontStyle: 'italic' }}>No positions found.</p>
+          )}
         </div>
       </div>
     </div>

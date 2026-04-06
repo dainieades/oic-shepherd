@@ -11,7 +11,7 @@ import AddTodoModal from '@/components/AddTodoModal';
 import TodoLogPrompt from '@/components/TodoLogPrompt';
 import EditPersonDrawer from '@/components/EditPersonDrawer';
 import GroupPreviewModal from '@/components/GroupPreviewModal';
-import { Notepad, CheckCircle, Info, Globe, GenderIntersex, Cake, Heart, Sparkle, Church, IdentificationCard, CalendarCheck, Drop, Compass, Buildings, Phone, PhoneCall, Envelope, House, FirstAid, HandHeart, UsersFour, PencilSimple } from '@phosphor-icons/react';
+import { Notepad, CheckCircle, Info, Globe, Pulse, GenderIntersex, Cake, Heart, Sparkle, Church, IdentificationCard, CalendarCheck, Drop, Compass, Buildings, Phone, PhoneCall, Envelope, House, FirstAid, HandHeart, UsersFour, PencilSimple } from '@phosphor-icons/react';
 
 type Tab = 'logs' | 'todos' | 'info' | 'sheep';
 
@@ -520,7 +520,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                 {getMembershipLabel(person.membershipStatus)}
               </span>
             } />
-            <InfoRow icon={<Globe size={15} />} label="Attendance" value={
+            <InfoRow icon={<Pulse size={15} />} label="Attendance" value={
               <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: '999px', background: 'var(--blue-light)', color: 'var(--blue)' }}>
                 {getChurchAttendanceLabel(person.churchAttendance)}
               </span>

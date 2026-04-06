@@ -19,7 +19,7 @@ interface AppContextType {
   updateTodo: (todoId: string, updates: Partial<Pick<Todo, 'title' | 'dueDate' | 'repeat' | 'alert' | 'familyId' | 'personId'>>) => void;
   deleteTodo: (todoId: string) => void;
   toggleTodo: (todoId: string) => void;
-  addPerson: (person: Omit<Person, 'id' | 'createdAt' | 'assignedShepherdIds' | 'groupIds' | 'followUpFrequencyDays'>) => void;
+  addPerson: (person: Omit<Person, 'id' | 'createdAt' | 'assignedShepherdIds' | 'groupIds' | 'followUpFrequencyDays'>) => Promise<string>;
   deletePerson: (personId: string) => void;
   addFamily: (label: string, memberIds: string[]) => void;
   updatePerson: (personId: string, updates: Partial<Pick<Person, 'englishName' | 'chineseName' | 'photo' | 'phone' | 'homePhone' | 'email' | 'homeAddress' | 'membershipStatus' | 'churchAttendance' | 'membershipDate' | 'language' | 'gender' | 'maritalStatus' | 'birthday' | 'baptismDate' | 'anniversary' | 'followUpFrequencyDays' | 'spiritualNeeds' | 'physicalNeeds' | 'isShepherd' | 'isBeingDiscipled' | 'churchPositions' | 'appRole'>>) => void;
@@ -506,7 +506,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // ── People ────────────────────────────────────────────────────────────
-  const addPerson = useCallback(async (personData: Omit<Person, 'id' | 'createdAt' | 'assignedShepherdIds' | 'groupIds' | 'followUpFrequencyDays'>) => {
+  const addPerson = useCallback(async (personData: Omit<Person, 'id' | 'createdAt' | 'assignedShepherdIds' | 'groupIds' | 'followUpFrequencyDays'>): Promise<string> => {
     const person: Person = {
       ...personData, id: generateId(), assignedShepherdIds: [],
       groupIds: [], followUpFrequencyDays: 14, createdAt: new Date().toISOString(),
@@ -529,6 +529,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       created_at: person.createdAt,
       created_by: person.createdBy ?? null,
     });
+    return person.id;
   }, [currentPersona.id]);
 
   const updatePerson = useCallback(async (personId: string, updates: Partial<Pick<Person, 'englishName' | 'chineseName' | 'photo' | 'phone' | 'homePhone' | 'email' | 'homeAddress' | 'membershipStatus' | 'churchAttendance' | 'membershipDate' | 'language' | 'gender' | 'maritalStatus' | 'birthday' | 'baptismDate' | 'anniversary' | 'followUpFrequencyDays' | 'spiritualNeeds' | 'physicalNeeds' | 'isShepherd' | 'isBeingDiscipled' | 'churchPositions' | 'appRole'>>) => {

@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  User, TextT, Globe, GenderIntersex, Cake, Heart, Sparkle, Church,
+  User, TextT, Globe, Pulse, GenderIntersex, Cake, Heart, Sparkle, Church,
   IdentificationCard, CalendarCheck, Drop, Compass, Buildings, BookOpenText,
   Phone, PhoneCall, Envelope, House, FirstAid, CaretRight, HandHeart, Camera, UsersFour,
 } from '@phosphor-icons/react';
@@ -279,7 +279,7 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
 
         <FormSection label="Church">
           <PickerRow icon={<IdentificationCard size={16} color="var(--text-muted)" />} label="Status" value={statusLabel} onClick={() => setOpenPicker('status')} />
-          <PickerRow icon={<Globe size={16} color="var(--text-muted)" />} label="Attendance" value={attendanceLabel} onClick={() => setOpenPicker('attendance')} />
+          <PickerRow icon={<Pulse size={16} color="var(--text-muted)" />} label="Attendance" value={attendanceLabel} onClick={() => setOpenPicker('attendance')} />
           {status === 'member' && (
             <DateRow icon={<CalendarCheck size={16} color="var(--text-muted)" />} label="Member Since" value={membershipDate} inputRef={membershipDateRef} onChange={setMembershipDate} />
           )}

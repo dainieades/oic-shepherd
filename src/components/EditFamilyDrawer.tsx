@@ -43,6 +43,7 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
   const [showMemberPicker, setShowMemberPicker] = useState(false);
   const [showPrimaryContactPicker, setShowPrimaryContactPicker] = useState(false);
   const [showGroupPicker, setShowGroupPicker] = useState(false);
+  const groupBtnRef = useRef<HTMLButtonElement>(null);
   const [showShepherdPicker, setShowShepherdPicker] = useState(false);
 
   const labelRef = useRef<HTMLInputElement>(null);
@@ -187,8 +188,9 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
 
               {/* Fellowship Groups */}
               <button
+                ref={groupBtnRef}
                 className="field-row-hover"
-                onClick={() => setShowGroupPicker(true)}
+                onClick={() => setShowGroupPicker(v => !v)}
                 style={{ display: 'flex', alignItems: 'center', gap: 10, paddingTop: 12, paddingBottom: 12, border: 'none', borderBottom: '1px solid var(--border-light)', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' as const }}
               >
                 <span style={spacerStyle} />
@@ -256,13 +258,13 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
         />
       )}
 
-      {/* Group Picker Sheet */}
+      {/* Group Picker */}
       {showGroupPicker && (
         <GroupPickerSheet
           groups={data.groups}
-          selected={groupIds}
-          onToggle={toggleGroup}
-          onDone={() => setShowGroupPicker(false)}
+          currentIds={groupIds}
+          onConfirm={(ids) => { setGroupIds(ids); setShowGroupPicker(false); }}
+          onBack={() => setShowGroupPicker(false)}
         />
       )}
 
@@ -447,56 +449,96 @@ function MemberCheckCircle({ selected }: { selected: boolean }) {
   );
 }
 
-function GroupPickerSheet({ groups, selected, onToggle, onDone }: {
+function GroupPickerSheet({ groups, currentIds, onConfirm, onBack }: {
   groups: Group[];
-  selected: string[];
-  onToggle: (id: string) => void;
-  onDone: () => void;
+  currentIds: string[];
+  onConfirm: (ids: string[]) => void;
+  onBack: () => void;
 }) {
+  const [search, setSearch] = useState('');
+  const [selectedIds, setSelectedIds] = useState<string[]>(currentIds);
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => { searchRef.current?.focus(); }, []);
+
+  const q = search.toLowerCase();
+  const filtered = groups.filter(g => !q || g.name.toLowerCase().includes(q));
+  const toggle = (id: string) =>
+    setSelectedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+
   return (
-    <div
-      style={{ position: 'fixed', inset: 0, zIndex: 70, background: 'rgba(30,26,24,0.35)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}
-      onClick={(e) => { if (e.target === e.currentTarget) onDone(); }}
-    >
+    <div style={{ position: 'fixed', inset: 0, zIndex: 70, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
       <div
+        className="animate-slide-up"
         style={{
-          background: 'var(--surface)', borderRadius: '16px 16px 0 0',
+          background: 'var(--surface)', borderRadius: '20px 20px 0 0',
           width: '100%', maxWidth: 430,
-          maxHeight: '60dvh', display: 'flex', flexDirection: 'column',
-          paddingBottom: 'env(safe-area-inset-bottom, 24px)', overflow: 'hidden',
+          height: 'calc(100dvh - 48px)',
+          display: 'flex', flexDirection: 'column', overflow: 'hidden',
         }}
       >
-        <div style={{ width: 36, height: 4, background: 'var(--border)', borderRadius: 2, margin: '12px auto 0', flexShrink: 0 }} />
-        <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '12px 20px 10px', borderBottom: '1px solid var(--border-light)', flexShrink: 0 }}>
-          Fellowship Groups
-        </p>
+        <div style={{ width: 36, height: 4, background: 'var(--border)', borderRadius: 2, margin: '14px auto 0', flexShrink: 0 }} />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 12px', flexShrink: 0, borderBottom: '1px solid var(--border-light)' }}>
+          <button onClick={onBack} style={{ fontSize: 14, color: 'var(--text-secondary)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Back</button>
+          <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>Fellowship Groups</span>
+          <button onClick={() => onConfirm(selectedIds)} style={{ fontSize: 14, fontWeight: 600, color: 'var(--sage)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+            {selectedIds.length > 0 ? `Done (${selectedIds.length})` : 'Done'}
+          </button>
+        </div>
+        <div style={{ padding: '12px 20px', flexShrink: 0, borderBottom: '1px solid var(--border-light)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 10, padding: '9px 12px' }}>
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
+            <input
+              ref={searchRef}
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search groups…"
+              style={{ flex: 1, fontSize: 14, color: 'var(--text-primary)', background: 'none', border: 'none', outline: 'none' }}
+            />
+            {search && (
+              <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', fontSize: 18, lineHeight: 1, padding: 0 }}>×</button>
+            )}
+          </div>
+        </div>
         <div style={{ flex: 1, overflowY: 'auto' }}>
-          {groups.map((g) => {
-            const isSel = selected.includes(g.id);
+          {filtered.map((g) => {
+            const isSel = selectedIds.includes(g.id);
             return (
               <button
                 key={g.id}
-                onClick={() => onToggle(g.id)}
+                onClick={() => toggle(g.id)}
                 style={{
-                  width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  width: '100%', display: 'flex', alignItems: 'center', gap: 12,
                   padding: '12px 20px',
                   background: isSel ? 'var(--blue-light)' : 'none',
                   border: 'none', borderBottom: '1px solid var(--border-light)',
                   cursor: 'pointer', textAlign: 'left' as const,
                 }}
               >
-                <span style={{ fontSize: 14, fontWeight: isSel ? 600 : 400, color: isSel ? 'var(--blue)' : 'var(--text-primary)' }}>{g.name}</span>
-                {isSel && (
-                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--blue)" strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                  </svg>
-                )}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontSize: 14, fontWeight: isSel ? 600 : 400, color: isSel ? 'var(--blue)' : 'var(--text-primary)', margin: 0 }}>{g.name}</p>
+                </div>
+                <div style={{
+                  width: 20, height: 20, borderRadius: 5, flexShrink: 0,
+                  border: isSel ? 'none' : '1.5px solid var(--border)',
+                  background: isSel ? 'var(--blue)' : 'transparent',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  transition: 'background 0.15s',
+                }}>
+                  {isSel && (
+                    <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth={3}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                  )}
+                </div>
               </button>
             );
           })}
-        </div>
-        <div style={{ padding: '16px 20px 0', flexShrink: 0 }}>
-          <button onClick={onDone} style={{ width: '100%', height: 44, borderRadius: 12, background: 'var(--sage)', color: '#fff', fontSize: 15, fontWeight: 600, border: 'none', cursor: 'pointer' }}>Done</button>
+          {filtered.length === 0 && (
+            <p style={{ padding: '24px 20px', fontSize: 13, color: 'var(--text-muted)', textAlign: 'center', fontStyle: 'italic' }}>No groups found.</p>
+          )}
         </div>
       </div>
     </div>

@@ -1,14 +1,14 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
-  User, TextT, Globe, GenderIntersex, Cake, Heart, Sparkle, Church,
-  IdentificationCard, CalendarCheck, Drop, Compass, Buildings,
-  Phone, PhoneCall, Envelope, House, FirstAid, CaretRight,
+  User, TextT, Pulse, GenderIntersex, Cake, Heart, Sparkle, Church,
+  IdentificationCard, CalendarCheck, Drop, Compass, Buildings, BookOpenText,
+  Phone, PhoneCall, Envelope, House, FirstAid, CaretRight, HandHeart, UsersFour,
 } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { formatPhone } from '@/lib/utils';
-import { MembershipStatus, ChurchAttendance, Language, Gender, MaritalStatus, CHURCH_POSITIONS } from '@/lib/types';
+import { MembershipStatus, ChurchAttendance, Gender, MaritalStatus, CHURCH_POSITIONS } from '@/lib/types';
 import PickerMenu from './PickerMenu';
 
 interface AddPersonModalProps {
@@ -26,12 +26,6 @@ const CHURCH_ATTENDANCE_OPTIONS: { value: ChurchAttendance; label: string }[] = 
   { value: 'regular',            label: 'Regular Attendee' },
   { value: 'on-leave',           label: 'On Leave' },
   { value: 'fellowship-group-only',   label: 'Fellowship Group Only' },
-];
-
-const LANGUAGE_OPTIONS: { value: Language; label: string }[] = [
-  { value: 'english',   label: 'English' },
-  { value: 'chinese',   label: 'Chinese (Mandarin)' },
-  { value: 'bilingual', label: 'Bilingual' },
 ];
 
 const GENDER_OPTIONS: { value: Gender | ''; label: string }[] = [
@@ -55,7 +49,7 @@ function fmtDate(iso: string) {
 }
 
 export default function AddPersonModal({ onClose }: AddPersonModalProps) {
-  const { addPerson } = useApp();
+  const { data, addPerson, assignGroupsToPerson, assignShepherds } = useApp();
 
   // Basic
   const [firstName, setFirstName] = useState('');
@@ -63,18 +57,20 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
   const [chineseName, setChineseName] = useState('');
 
   // Personal
-  const [language, setLanguage]           = useState<Language>('english');
   const [gender, setGender]               = useState<Gender | ''>('');
   const [birthday, setBirthday]           = useState('');
   const [maritalStatus, setMaritalStatus] = useState<MaritalStatus | ''>('');
   const [anniversary, setAnniversary]     = useState('');
 
   // Church
+  const [groupIds, setGroupIds]           = useState<string[]>([]);
+  const [shepherdIds, setShepherdIds]     = useState<string[]>([]);
   const [status, setStatus]               = useState<MembershipStatus>('non-member');
-  const [attendance, setAttendance]       = useState<ChurchAttendance>('regular');
+  const [attendance, setAttendance]       = useState<ChurchAttendance>('first-time-visitor');
   const [membershipDate, setMembershipDate] = useState('');
   const [baptismDate, setBaptismDate]     = useState('');
-  const [isShepherd, setIsShepherd]       = useState(false);
+  const [isShepherd, setIsShepherd]           = useState(false);
+  const [isBeingDiscipled, setIsBeingDiscipled] = useState(false);
   const [churchPositions, setChurchPositions] = useState<string[]>([]);
 
   // Contact
@@ -104,19 +100,40 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
   const membershipDateRef = useRef<HTMLInputElement>(null);
   const baptismDateRef    = useRef<HTMLInputElement>(null);
 
+  const statusBtnRef     = useRef<HTMLButtonElement>(null);
+  const attendanceBtnRef = useRef<HTMLButtonElement>(null);
+  const genderBtnRef     = useRef<HTMLButtonElement>(null);
+  const maritalBtnRef    = useRef<HTMLButtonElement>(null);
+
   // Picker state
-  const [openPicker, setOpenPicker] = useState<'status' | 'attendance' | 'language' | 'gender' | 'marital' | null>(null);
+  const [openPicker, setOpenPicker] = useState<'status' | 'attendance' | 'gender' | 'marital' | null>(null);
   const [showPositionPicker, setShowPositionPicker] = useState(false);
+  const [showGroupPicker, setShowGroupPicker] = useState(false);
+  const [showShepherdPicker, setShowShepherdPicker] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
   const fullName = [firstName.trim(), lastName.trim()].filter(Boolean).join(' ');
 
-  const handleSave = () => {
+  // Build shepherd entries (same as EditPersonDrawer)
+  const personaPersonIds = new Set(data.personas.map((p) => p.personId).filter(Boolean));
+  type ShepherdEntry = { id: string; name: string; subtitle: string };
+  const shepherdEntries: ShepherdEntry[] = [
+    ...data.personas
+      .filter((p) => p.role === 'shepherd' || p.role === 'admin')
+      .map((p) => ({ id: p.id, name: p.name, subtitle: p.role === 'admin' ? 'Pastor' : 'Shepherd' })),
+    ...data.people
+      .filter((p) => p.isShepherd && !personaPersonIds.has(p.id))
+      .map((p) => ({ id: p.id, name: p.englishName, subtitle: 'Shepherd' })),
+  ];
+
+  const selectedGroups = data.groups.filter((g) => groupIds.includes(g.id));
+
+  const handleSave = async () => {
     if (!firstName.trim()) return;
-    addPerson({
+    const newId = await addPerson({
       englishName: fullName,
       chineseName: chineseName.trim() || undefined,
-      language,
+      language: 'english',
       gender: gender || undefined,
       birthday: birthday || undefined,
       maritalStatus: maritalStatus || undefined,
@@ -126,6 +143,7 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
       membershipDate: (status === 'member' && membershipDate) ? membershipDate : undefined,
       baptismDate: baptismDate || undefined,
       isShepherd: isShepherd || undefined,
+      isBeingDiscipled: isBeingDiscipled || undefined,
       churchPositions: churchPositions.length > 0 ? churchPositions : undefined,
       phone: phone.trim() || undefined,
       homePhone: homePhone.trim() || undefined,
@@ -134,19 +152,14 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
       spiritualNeeds: spiritualNeeds.trim() || undefined,
       physicalNeeds: physicalNeeds.trim() || undefined,
     });
+    if (groupIds.length > 0) assignGroupsToPerson(newId, groupIds);
+    if (shepherdIds.length > 0) assignShepherds(newId, shepherdIds);
     setSubmitted(true);
     setTimeout(() => onClose(), 1600);
   };
 
-  const togglePosition = (pos: string) => {
-    setChurchPositions((prev) =>
-      prev.includes(pos) ? prev.filter((p) => p !== pos) : [...prev, pos]
-    );
-  };
-
   const statusLabel     = MEMBERSHIP_OPTIONS.find((o) => o.value === status)?.label ?? '';
   const attendanceLabel = CHURCH_ATTENDANCE_OPTIONS.find((o) => o.value === attendance)?.label ?? attendance;
-  const languageLabel = LANGUAGE_OPTIONS.find((o) => o.value === language)?.label ?? '';
   const genderLabel   = GENDER_OPTIONS.find((o) => o.value === gender)?.label ?? 'Not set';
   const maritalLabel  = MARITAL_OPTIONS.find((o) => o.value === maritalStatus)?.label ?? 'Not set';
 
@@ -217,10 +230,9 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
 
                 {/* ── PERSONAL ── */}
                 <DrawerSection label="Personal">
-                  <PickerRow icon={<Globe size={16} color="var(--text-muted)" />} label="Language" value={languageLabel} onClick={() => setOpenPicker('language')} />
-                  <PickerRow icon={<GenderIntersex size={16} color="var(--text-muted)" />} label="Gender" value={genderLabel} onClick={() => setOpenPicker('gender')} />
+                  <PickerRow ref={genderBtnRef} icon={<GenderIntersex size={16} color="var(--text-muted)" />} label="Gender" value={genderLabel} onClick={() => setOpenPicker('gender')} />
                   <DateRow icon={<Cake size={16} color="var(--text-muted)" />} label="Birthday" value={birthday} inputRef={birthdayRef} onChange={setBirthday} />
-                  <PickerRow icon={<Heart size={16} color="var(--text-muted)" />} label="Marital" value={maritalLabel} onClick={() => setOpenPicker('marital')} />
+                  <PickerRow ref={maritalBtnRef} icon={<Heart size={16} color="var(--text-muted)" />} label="Marital" value={maritalLabel} onClick={() => setOpenPicker('marital')} />
                   {maritalStatus === 'married' && (
                     <DateRow icon={<Sparkle size={16} color="var(--text-muted)" />} label="Anniversary" value={anniversary} inputRef={anniversaryRef} onChange={setAnniversary} />
                   )}
@@ -228,12 +240,39 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
 
                 {/* ── CHURCH ── */}
                 <DrawerSection label="Church">
-                  <PickerRow icon={<IdentificationCard size={16} color="var(--text-muted)" />} label="Status" value={statusLabel} onClick={() => setOpenPicker('status')} />
-                  <PickerRow icon={<Globe size={16} color="var(--text-muted)" />} label="Attendance" value={attendanceLabel} onClick={() => setOpenPicker('attendance')} />
+                  <PickerRow ref={statusBtnRef} icon={<IdentificationCard size={16} color="var(--text-muted)" />} label="Status" value={statusLabel} onClick={() => setOpenPicker('status')} />
+                  <PickerRow ref={attendanceBtnRef} icon={<Pulse size={16} color="var(--text-muted)" />} label="Attendance" value={attendanceLabel} onClick={() => setOpenPicker('attendance')} />
                   {status === 'member' && (
                     <DateRow icon={<CalendarCheck size={16} color="var(--text-muted)" />} label="Member Since" value={membershipDate} inputRef={membershipDateRef} onChange={setMembershipDate} />
                   )}
-                  <DateRow icon={<Drop size={16} color="var(--text-muted)" />} label="Baptism" value={baptismDate} inputRef={baptismDateRef} onChange={setBaptismDate} />
+                  <button className="field-row-hover" onClick={() => setShowGroupPicker(true)} style={{ display: 'flex', alignItems: 'center', gap: 10, paddingTop: 12, paddingBottom: 12, border: 'none', borderBottom: '1px solid var(--border-light)', background: 'none', cursor: 'pointer', textAlign: 'left' as const }}>
+                    <span style={spacerStyle} />
+                    <UsersFour size={16} color="var(--text-muted)" />
+                    <span style={labelStyle}>Groups</span>
+                    <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                      {selectedGroups.length > 0
+                        ? selectedGroups.map((g) => (
+                            <span key={g.id} style={{ fontSize: 11, fontWeight: 500, padding: '2px 8px', borderRadius: 999, background: 'var(--blue-light)', color: 'var(--blue)', flexShrink: 0 }}>{g.name}</span>
+                          ))
+                        : <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>None</span>
+                      }
+                    </div>
+                    <CaretRight size={14} color="var(--text-muted)" />
+                  </button>
+                  <button className="field-row-hover" onClick={() => setShowShepherdPicker(true)} style={{ display: 'flex', alignItems: 'center', gap: 10, paddingTop: 12, paddingBottom: 12, border: 'none', borderBottom: '1px solid var(--border-light)', background: 'none', cursor: 'pointer', textAlign: 'left' as const }}>
+                    <span style={spacerStyle} />
+                    <HandHeart size={16} color="var(--text-muted)" />
+                    <span style={labelStyle}>Shepherd by</span>
+                    <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                      {shepherdIds.length > 0
+                        ? data.personas.filter((p) => shepherdIds.includes(p.id)).map((p) => (
+                            <span key={p.id} style={{ fontSize: 11, fontWeight: 500, padding: '2px 8px', borderRadius: 999, background: 'var(--sage-light)', color: 'var(--sage)', flexShrink: 0 }}>{p.name}</span>
+                          ))
+                        : <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>None</span>
+                      }
+                    </div>
+                    <CaretRight size={14} color="var(--text-muted)" />
+                  </button>
                   <button
                     className="field-row-hover"
                     onClick={() => setIsShepherd((v) => !v)}
@@ -241,9 +280,21 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
                   >
                     <span style={spacerStyle} />
                     <Compass size={16} color="var(--text-muted)" />
-                    <span style={{ ...labelStyle, flex: 1 }}>Is Shepherd</span>
+                    <span style={{ ...labelStyle, flex: 1 }}>Is Shepherd?</span>
                     <div style={{ width: 42, height: 24, borderRadius: 12, flexShrink: 0, background: isShepherd ? 'var(--sage)' : 'var(--border)', position: 'relative', transition: 'background 0.2s' }}>
                       <div style={{ position: 'absolute', top: 3, left: isShepherd ? 21 : 3, width: 18, height: 18, borderRadius: '50%', background: '#fff', transition: 'left 0.2s' }} />
+                    </div>
+                  </button>
+                  <button
+                    className="field-row-hover"
+                    onClick={() => setIsBeingDiscipled((v) => !v)}
+                    style={{ display: 'flex', alignItems: 'center', gap: 10, paddingTop: 12, paddingBottom: 12, border: 'none', borderBottom: '1px solid var(--border-light)', background: 'none', cursor: 'pointer', textAlign: 'left' as const }}
+                  >
+                    <span style={spacerStyle} />
+                    <BookOpenText size={16} color="var(--text-muted)" />
+                    <span style={{ ...labelStyle, flex: 1 }}>Being discipled?</span>
+                    <div style={{ width: 42, height: 24, borderRadius: 12, flexShrink: 0, background: isBeingDiscipled ? 'var(--sage)' : 'var(--border)', position: 'relative', transition: 'background 0.2s' }}>
+                      <div style={{ position: 'absolute', top: 3, left: isBeingDiscipled ? 21 : 3, width: 18, height: 18, borderRadius: '50%', background: '#fff', transition: 'left 0.2s' }} />
                     </div>
                   </button>
                   <button
@@ -264,6 +315,7 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
                     </div>
                     <CaretRight size={14} color="var(--text-muted)" />
                   </button>
+                  <DateRow icon={<Drop size={16} color="var(--text-muted)" />} label="Baptism Date" value={baptismDate} inputRef={baptismDateRef} onChange={setBaptismDate} />
                 </DrawerSection>
 
                 {/* ── CONTACT ── */}
@@ -316,22 +368,39 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
       </div>
 
       {openPicker === 'status' && (
-        <PickerMenu title="Membership status" options={MEMBERSHIP_OPTIONS} value={status} onSelect={(v) => setStatus(v as MembershipStatus)} onClose={() => setOpenPicker(null)} />
+        <PickerMenu anchorRef={statusBtnRef} title="Membership status" options={MEMBERSHIP_OPTIONS} value={status} onSelect={(v) => setStatus(v as MembershipStatus)} onClose={() => setOpenPicker(null)} />
       )}
       {openPicker === 'attendance' && (
-        <PickerMenu title="Church Attendance" options={CHURCH_ATTENDANCE_OPTIONS} value={attendance} onSelect={(v) => setAttendance(v as ChurchAttendance)} onClose={() => setOpenPicker(null)} />
-      )}
-      {openPicker === 'language' && (
-        <PickerMenu title="Language" options={LANGUAGE_OPTIONS} value={language} onSelect={(v) => setLanguage(v as Language)} onClose={() => setOpenPicker(null)} />
+        <PickerMenu anchorRef={attendanceBtnRef} title="Church Attendance" options={CHURCH_ATTENDANCE_OPTIONS} value={attendance} onSelect={(v) => setAttendance(v as ChurchAttendance)} onClose={() => setOpenPicker(null)} />
       )}
       {openPicker === 'gender' && (
-        <PickerMenu title="Gender" options={GENDER_OPTIONS} value={gender} onSelect={(v) => setGender(v as Gender | '')} onClose={() => setOpenPicker(null)} />
+        <PickerMenu anchorRef={genderBtnRef} title="Gender" options={GENDER_OPTIONS} value={gender} onSelect={(v) => setGender(v as Gender | '')} onClose={() => setOpenPicker(null)} />
       )}
       {openPicker === 'marital' && (
-        <PickerMenu title="Marital Status" options={MARITAL_OPTIONS} value={maritalStatus} onSelect={(v) => setMaritalStatus(v as MaritalStatus | '')} onClose={() => setOpenPicker(null)} />
+        <PickerMenu anchorRef={maritalBtnRef} title="Marital Status" options={MARITAL_OPTIONS} value={maritalStatus} onSelect={(v) => setMaritalStatus(v as MaritalStatus | '')} onClose={() => setOpenPicker(null)} />
       )}
       {showPositionPicker && (
-        <PositionPickerSheet selected={churchPositions} onToggle={togglePosition} onDone={() => setShowPositionPicker(false)} />
+        <PositionPickerSheet
+          currentPositions={churchPositions}
+          onConfirm={(positions) => { setChurchPositions(positions); setShowPositionPicker(false); }}
+          onBack={() => setShowPositionPicker(false)}
+        />
+      )}
+      {showGroupPicker && (
+        <GroupPickerSheet
+          groups={data.groups}
+          currentIds={groupIds}
+          onConfirm={(ids) => { setGroupIds(ids); setShowGroupPicker(false); }}
+          onBack={() => setShowGroupPicker(false)}
+        />
+      )}
+      {showShepherdPicker && (
+        <ShepherdPickerSheet
+          entries={shepherdEntries}
+          currentIds={shepherdIds}
+          onConfirm={(ids) => { setShepherdIds(ids); setShowShepherdPicker(false); }}
+          onBack={() => setShowShepherdPicker(false)}
+        />
       )}
     </>
   );
@@ -380,11 +449,12 @@ function DrawerSection({ label, children }: { label: string; children: React.Rea
   );
 }
 
-function PickerRow({ icon, label, value, onClick }: {
+const PickerRow = React.forwardRef<HTMLButtonElement, {
   icon: React.ReactNode; label: string; value: string; onClick: () => void;
-}) {
+}>(({ icon, label, value, onClick }, ref) => {
   return (
     <button
+      ref={ref}
       className="field-row-hover"
       onClick={onClick}
       style={{
@@ -401,7 +471,7 @@ function PickerRow({ icon, label, value, onClick }: {
       <CaretRight size={14} color="var(--text-muted)" />
     </button>
   );
-}
+});
 
 function DateRow({ icon, label, value, inputRef, onChange }: {
   icon: React.ReactNode; label: string; value: string;
@@ -438,55 +508,226 @@ function DateRow({ icon, label, value, inputRef, onChange }: {
   );
 }
 
-function PositionPickerSheet({ selected, onToggle, onDone }: {
-  selected: string[];
-  onToggle: (pos: string) => void;
-  onDone: () => void;
+const shepherdAvatarPalette = [
+  { bg: '#EAF2EE', color: '#5B8A72' },
+  { bg: '#EBF1F7', color: '#6B8EAE' },
+  { bg: '#F5F0EB', color: '#8C7055' },
+  { bg: '#F0EBF5', color: '#7A6A8C' },
+];
+
+function GroupPickerSheet({ groups, currentIds, onConfirm, onBack }: {
+  groups: import('@/lib/types').Group[];
+  currentIds: string[];
+  onConfirm: (ids: string[]) => void;
+  onBack: () => void;
 }) {
+  const [search, setSearch] = useState('');
+  const [selectedIds, setSelectedIds] = useState<string[]>(currentIds);
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => { searchRef.current?.focus(); }, []);
+
+  const q = search.toLowerCase();
+  const filtered = groups.filter(g => !q || g.name.toLowerCase().includes(q));
+  const toggle = (id: string) =>
+    setSelectedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+
   return (
-    <div
-      style={{ position: 'fixed', inset: 0, zIndex: 70, background: 'rgba(30,26,24,0.35)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}
-      onClick={(e) => { if (e.target === e.currentTarget) onDone(); }}
-    >
+    <div style={{ position: 'fixed', inset: 0, zIndex: 70, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+      <div className="animate-slide-up" style={{ background: 'var(--surface)', borderRadius: '20px 20px 0 0', width: '100%', maxWidth: 430, height: 'calc(100dvh - 48px)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div style={{ width: 36, height: 4, background: 'var(--border)', borderRadius: 2, margin: '14px auto 0', flexShrink: 0 }} />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 12px', flexShrink: 0, borderBottom: '1px solid var(--border-light)' }}>
+          <button onClick={onBack} style={{ fontSize: 14, color: 'var(--text-secondary)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Back</button>
+          <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>Fellowship Groups</span>
+          <button onClick={() => onConfirm(selectedIds)} style={{ fontSize: 14, fontWeight: 600, color: 'var(--sage)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+            {selectedIds.length > 0 ? `Done (${selectedIds.length})` : 'Done'}
+          </button>
+        </div>
+        <div style={{ padding: '12px 20px', flexShrink: 0, borderBottom: '1px solid var(--border-light)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 10, padding: '9px 12px' }}>
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+            <input ref={searchRef} value={search} onChange={e => setSearch(e.target.value)} placeholder="Search groups…" style={{ flex: 1, fontSize: 14, color: 'var(--text-primary)', background: 'none', border: 'none', outline: 'none' }} />
+            {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', fontSize: 18, lineHeight: 1, padding: 0 }}>×</button>}
+          </div>
+        </div>
+        <div style={{ flex: 1, overflowY: 'auto' }}>
+          {filtered.map((g) => {
+            const isSel = selectedIds.includes(g.id);
+            return (
+              <button key={g.id} onClick={() => toggle(g.id)} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, padding: '12px 20px', background: isSel ? 'var(--blue-light)' : 'none', border: 'none', borderBottom: '1px solid var(--border-light)', cursor: 'pointer', textAlign: 'left' as const }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontSize: 14, fontWeight: isSel ? 600 : 400, color: isSel ? 'var(--blue)' : 'var(--text-primary)', margin: 0 }}>{g.name}</p>
+                </div>
+                <div style={{ width: 20, height: 20, borderRadius: 5, flexShrink: 0, border: isSel ? 'none' : '1.5px solid var(--border)', background: isSel ? 'var(--blue)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.15s' }}>
+                  {isSel && <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>}
+                </div>
+              </button>
+            );
+          })}
+          {filtered.length === 0 && <p style={{ padding: '24px 20px', fontSize: 13, color: 'var(--text-muted)', textAlign: 'center', fontStyle: 'italic' }}>No groups found.</p>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ShepherdPickerSheet({ entries, currentIds, onConfirm, onBack }: {
+  entries: { id: string; name: string; subtitle: string }[];
+  currentIds: string[];
+  onConfirm: (ids: string[]) => void;
+  onBack: () => void;
+}) {
+  const [search, setSearch] = useState('');
+  const [selectedIds, setSelectedIds] = useState<string[]>(currentIds);
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => { searchRef.current?.focus(); }, []);
+
+  const q = search.toLowerCase();
+  const filtered = entries.filter((e) => !q || e.name.toLowerCase().includes(q));
+  const toggle = (id: string) =>
+    setSelectedIds((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 70, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+      <div className="animate-slide-up" style={{ background: 'var(--surface)', borderRadius: '20px 20px 0 0', width: '100%', maxWidth: 430, height: 'calc(100dvh - 48px)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div style={{ width: 36, height: 4, background: 'var(--border)', borderRadius: 2, margin: '14px auto 0', flexShrink: 0 }} />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 12px', flexShrink: 0, borderBottom: '1px solid var(--border-light)' }}>
+          <button onClick={onBack} style={{ fontSize: 14, color: 'var(--text-secondary)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Back</button>
+          <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>Shepherd</span>
+          <button onClick={() => onConfirm(selectedIds)} style={{ fontSize: 14, fontWeight: 600, color: 'var(--sage)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+            {selectedIds.length > 0 ? `Done (${selectedIds.length})` : 'Done'}
+          </button>
+        </div>
+        <div style={{ padding: '12px 20px', flexShrink: 0, borderBottom: '1px solid var(--border-light)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 10, padding: '9px 12px' }}>
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+            <input ref={searchRef} value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search shepherds…" style={{ flex: 1, fontSize: 14, color: 'var(--text-primary)', background: 'none', border: 'none', outline: 'none' }} />
+            {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', fontSize: 18, lineHeight: 1, padding: 0 }}>×</button>}
+          </div>
+        </div>
+        <div style={{ flex: 1, overflowY: 'auto' }}>
+          {filtered.map((entry, i) => {
+            const isSel = selectedIds.includes(entry.id);
+            const palette = shepherdAvatarPalette[i % shepherdAvatarPalette.length];
+            const initials = entry.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
+            return (
+              <button key={entry.id} onClick={() => toggle(entry.id)} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, padding: '12px 20px', background: isSel ? 'var(--sage-light)' : 'none', border: 'none', borderBottom: '1px solid var(--border-light)', cursor: 'pointer', textAlign: 'left' as const }}>
+                <div style={{ width: 36, height: 36, borderRadius: '50%', flexShrink: 0, background: isSel ? 'var(--sage)' : palette.bg, color: isSel ? '#fff' : palette.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700 }}>
+                  {initials}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontSize: 14, fontWeight: isSel ? 600 : 400, color: isSel ? 'var(--sage)' : 'var(--text-primary)', margin: 0 }}>{entry.name}</p>
+                  <p style={{ fontSize: 11, color: 'var(--text-muted)', margin: 0 }}>{entry.subtitle}</p>
+                </div>
+                <ShepherdCheckCircle selected={isSel} />
+              </button>
+            );
+          })}
+          {filtered.length === 0 && <p style={{ padding: '24px 20px', fontSize: 13, color: 'var(--text-muted)', textAlign: 'center', fontStyle: 'italic' }}>No shepherds found.</p>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ShepherdCheckCircle({ selected }: { selected: boolean }) {
+  return (
+    <div style={{ width: 20, height: 20, borderRadius: 5, flexShrink: 0, border: selected ? 'none' : '1.5px solid var(--border)', background: selected ? 'var(--sage)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.15s' }}>
+      {selected && <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>}
+    </div>
+  );
+}
+
+function PositionPickerSheet({ currentPositions, onConfirm, onBack }: {
+  currentPositions: string[];
+  onConfirm: (positions: string[]) => void;
+  onBack: () => void;
+}) {
+  const [search, setSearch] = useState('');
+  const [selectedPositions, setSelectedPositions] = useState<string[]>(currentPositions);
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => { searchRef.current?.focus(); }, []);
+
+  const q = search.toLowerCase();
+  const filtered = CHURCH_POSITIONS.filter(pos => !q || pos.toLowerCase().includes(q));
+  const toggle = (pos: string) =>
+    setSelectedPositions(prev => prev.includes(pos) ? prev.filter(x => x !== pos) : [...prev, pos]);
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 70, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
       <div
+        className="animate-slide-up"
         style={{
-          background: 'var(--surface)', borderRadius: '16px 16px 0 0',
+          background: 'var(--surface)', borderRadius: '20px 20px 0 0',
           width: '100%', maxWidth: 430,
-          paddingBottom: 'env(safe-area-inset-bottom, 24px)', overflow: 'hidden',
+          height: 'calc(100dvh - 48px)',
+          display: 'flex', flexDirection: 'column', overflow: 'hidden',
         }}
       >
-        <div style={{ width: 36, height: 4, background: 'var(--border)', borderRadius: 2, margin: '12px auto 0' }} />
-        <p style={{
-          fontSize: 12, fontWeight: 600, color: 'var(--text-muted)',
-          textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.06em',
-          padding: '12px 20px 10px', borderBottom: '1px solid var(--border-light)',
-        }}>Church Position</p>
-        {CHURCH_POSITIONS.map((pos) => {
-          const isSel = selected.includes(pos);
-          return (
-            <button
-              key={pos}
-              onClick={() => onToggle(pos)}
-              style={{
-                width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                padding: '15px 20px',
-                background: isSel ? 'var(--sage-light)' : 'none',
-                border: 'none', borderBottom: '1px solid var(--border-light)',
-                fontSize: 15, color: isSel ? 'var(--sage)' : 'var(--text-primary)',
-                fontWeight: isSel ? 600 : 400, cursor: 'pointer', textAlign: 'left' as const,
-              }}
-            >
-              <span>{pos}</span>
-              {isSel && (
-                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--sage)" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                </svg>
-              )}
-            </button>
-          );
-        })}
-        <div style={{ padding: '16px 20px 0' }}>
-          <button onClick={onDone} style={{ width: '100%', height: 44, borderRadius: 12, background: 'var(--sage)', color: '#fff', fontSize: 15, fontWeight: 600, border: 'none', cursor: 'pointer' }}>Done</button>
+        <div style={{ width: 36, height: 4, background: 'var(--border)', borderRadius: 2, margin: '14px auto 0', flexShrink: 0 }} />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 12px', flexShrink: 0, borderBottom: '1px solid var(--border-light)' }}>
+          <button onClick={onBack} style={{ fontSize: 14, color: 'var(--text-secondary)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Back</button>
+          <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>Church Position</span>
+          <button onClick={() => onConfirm(selectedPositions)} style={{ fontSize: 14, fontWeight: 600, color: 'var(--sage)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+            {selectedPositions.length > 0 ? `Done (${selectedPositions.length})` : 'Done'}
+          </button>
+        </div>
+        <div style={{ padding: '12px 20px', flexShrink: 0, borderBottom: '1px solid var(--border-light)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 10, padding: '9px 12px' }}>
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
+            <input
+              ref={searchRef}
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search positions…"
+              style={{ flex: 1, fontSize: 14, color: 'var(--text-primary)', background: 'none', border: 'none', outline: 'none' }}
+            />
+            {search && (
+              <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', fontSize: 18, lineHeight: 1, padding: 0 }}>×</button>
+            )}
+          </div>
+        </div>
+        <div style={{ flex: 1, overflowY: 'auto' }}>
+          {filtered.map((pos) => {
+            const isSel = selectedPositions.includes(pos);
+            return (
+              <button
+                key={pos}
+                onClick={() => toggle(pos)}
+                style={{
+                  width: '100%', display: 'flex', alignItems: 'center', gap: 12,
+                  padding: '12px 20px',
+                  background: isSel ? 'var(--sage-light)' : 'none',
+                  border: 'none', borderBottom: '1px solid var(--border-light)',
+                  cursor: 'pointer', textAlign: 'left' as const,
+                }}
+              >
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontSize: 14, fontWeight: isSel ? 600 : 400, color: isSel ? 'var(--sage)' : 'var(--text-primary)', margin: 0 }}>{pos}</p>
+                </div>
+                <div style={{
+                  width: 20, height: 20, borderRadius: 5, flexShrink: 0,
+                  border: isSel ? 'none' : '1.5px solid var(--border)',
+                  background: isSel ? 'var(--sage)' : 'transparent',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  transition: 'background 0.15s',
+                }}>
+                  {isSel && (
+                    <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth={3}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                  )}
+                </div>
+              </button>
+            );
+          })}
+          {filtered.length === 0 && (
+            <p style={{ padding: '24px 20px', fontSize: 13, color: 'var(--text-muted)', textAlign: 'center', fontStyle: 'italic' }}>No positions found.</p>
+          )}
         </div>
       </div>
     </div>
