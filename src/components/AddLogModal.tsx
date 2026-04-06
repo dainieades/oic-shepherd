@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { CheckCircle, HandsPraying, CalendarBlank, NotePencil, CaretRight } from '@phosphor-icons/react';
+import { CheckCircle, HandsPraying, CalendarBlank, NotePencil, CaretRight, Trash, User, UserPlus } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { NoteType, Note } from '@/lib/types';
 import PersonFamilyPicker from './PersonFamilyPicker';
@@ -17,7 +17,7 @@ interface AddLogModalProps {
 }
 
 const NOTE_TYPES: { value: NoteType; label: string; icon: React.ReactNode }[] = [
-  { value: 'check-in',       label: 'Check-in',      icon: <CheckCircle size={16} /> },
+  { value: 'check-in',       label: 'Follow-up',     icon: <CheckCircle size={16} /> },
   { value: 'prayer-request', label: 'Prayer request', icon: <HandsPraying size={16} /> },
   { value: 'event',          label: 'Event',          icon: <CalendarBlank size={16} /> },
   { value: 'general',        label: 'General note',   icon: <NotePencil size={16} /> },
@@ -137,9 +137,7 @@ export default function AddLogModal({ onClose, prefillFamilyId, prefillPersonId,
               }}
               title="Delete log"
             >
-              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-              </svg>
+              <Trash size={18} />
             </button>
           )}
 
@@ -155,7 +153,7 @@ export default function AddLogModal({ onClose, prefillFamilyId, prefillPersonId,
               {/* Scrollable body */}
               <div style={{ flex: 1, overflowY: 'auto', padding: `16px 20px ${isEditing ? 80 : 16}px`, background: 'var(--bg)', display: 'flex', flexDirection: 'column' }}>
                 {/* Fields */}
-                <div style={{ background: 'var(--surface)', borderRadius: 'var(--radius)', border: '1px solid var(--border-light)', overflow: 'hidden', padding: '0 16px', marginBottom: 16 }}>
+                <div style={{ background: 'var(--surface)', borderRadius: 'var(--radius)', border: '1px solid var(--border-light)', overflow: 'hidden', padding: '0 16px', marginBottom: 16, flexShrink: 0 }}>
                 <div className="no-last-border" style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
 
                   {/* Type */}
@@ -168,7 +166,7 @@ export default function AddLogModal({ onClose, prefillFamilyId, prefillPersonId,
 
                   {/* Who */}
                   <FieldRow
-                    icon={<PersonIcon />}
+                    icon={<User size={16} />}
                     label="Who"
                     value={whoLabel ?? 'Select…'}
                     valueColor={!whoLabel ? 'var(--text-muted)' : undefined}
@@ -187,7 +185,7 @@ export default function AddLogModal({ onClose, prefillFamilyId, prefillPersonId,
                     }}
                   >
                     <span style={{ width: 24, display: 'flex', justifyContent: 'center', flexShrink: 0, color: 'var(--text-muted)' }}>
-                      <CalendarIcon />
+                      <CalendarBlank size={16} />
                     </span>
                     <span style={{ fontSize: 12, color: 'var(--text-muted)', width: 60, flexShrink: 0 }}>Date</span>
                     <span style={{ flex: 1, fontSize: 14, color: logDate ? 'var(--text-primary)' : 'var(--text-muted)' }}>
@@ -210,7 +208,7 @@ export default function AddLogModal({ onClose, prefillFamilyId, prefillPersonId,
                     return (
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10, paddingTop: 12, paddingBottom: 12 }}>
                         <span style={{ width: 24, display: 'flex', justifyContent: 'center', flexShrink: 0, color: 'var(--text-muted)' }}>
-                          <PersonIcon />
+                          <UserPlus size={16} />
                         </span>
                         <span style={{ fontSize: 12, color: 'var(--text-muted)', width: 60, flexShrink: 0 }}>Created by</span>
                         <span style={{ flex: 1, fontSize: 14, color: 'var(--text-secondary)' }}>{creator?.name ?? 'Unknown'}</span>
@@ -227,10 +225,10 @@ export default function AddLogModal({ onClose, prefillFamilyId, prefillPersonId,
                   placeholder="What happened or what was shared…"
                   style={{
                     flex: 1, width: '100%', marginTop: 0,
-                    padding: 12, minHeight: 120,
+                    padding: 12, minHeight: 220,
                     background: 'var(--surface)', border: '1px solid var(--border-light)',
                     borderRadius: 10, fontSize: 14, color: 'var(--text-primary)',
-                    resize: 'none', outline: 'none', lineHeight: 1.5,
+                    resize: 'vertical', outline: 'none', lineHeight: 1.5,
                     boxSizing: 'border-box',
                   }}
                 />
@@ -282,21 +280,6 @@ function FieldRow({ icon, label, value, valueColor, onClick }: {
   );
 }
 
-function PersonIcon() {
-  return (
-    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-    </svg>
-  );
-}
-
-function CalendarIcon() {
-  return (
-    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
-    </svg>
-  );
-}
 
 export function DeleteConfirmDialog({ label, onCancel, onConfirm }: {
   label: string; onCancel: () => void; onConfirm: () => void;
