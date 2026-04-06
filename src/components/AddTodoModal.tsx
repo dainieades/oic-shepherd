@@ -122,9 +122,6 @@ return (
             position: 'relative',
           }}
         >
-          {/* Drag handle — fixed */}
-          <div style={{ width: 36, height: 4, background: 'var(--border)', borderRadius: 2, margin: '14px auto 0', flexShrink: 0 }} />
-
           {/* Floating delete button */}
           {isEditing && todo && !showWhoPicker && (
             <button

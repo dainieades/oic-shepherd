@@ -109,9 +109,6 @@ export default function AddLogModal({ onClose, prefillFamilyId, prefillPersonId,
             position: 'relative',
           }}
         >
-          {/* Drag handle — fixed */}
-          <div style={{ width: 36, height: 4, background: 'var(--border)', borderRadius: 2, margin: '14px auto 0', flexShrink: 0 }} />
-
           {showWhoPicker && (
             <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
               <PersonFamilyPicker
