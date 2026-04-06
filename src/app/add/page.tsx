@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/lib/context';
-import { MembershipStatus, Language } from '@/lib/types';
+import { MembershipStatus, ChurchAttendance, Language } from '@/lib/types';
 
 export default function AddPage() {
   const { addPerson } = useApp();
@@ -21,7 +21,8 @@ export default function AddPage() {
       englishName: englishName.trim(),
       chineseName: chineseName.trim() || undefined,
       phone:       phone.trim() || undefined,
-      membershipStatus: 'sunday-attendee' as MembershipStatus,
+      membershipStatus: 'non-member' as MembershipStatus,
+      churchAttendance: (isFirstTime ? 'first-time-visitor' : 'regular') as ChurchAttendance,
       language:    'english' as Language,
       isFirstTimeVisitor: isFirstTime,
     });

@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
-import { AppData, Persona, Person, Family, Note, Todo, NoteType, NoteVisibility, TodoAlert, TodoRepeat, AppRole } from './types';
+import { AppData, Persona, Person, Family, Note, Todo, NoteType, NoteVisibility, TodoAlert, TodoRepeat, AppRole, ChurchAttendance } from './types';
 import { initialData } from './data';
 import { generateId } from './utils';
 import { createClient } from '@/utils/supabase/client';
@@ -22,7 +22,7 @@ interface AppContextType {
   addPerson: (person: Omit<Person, 'id' | 'createdAt' | 'assignedShepherdIds' | 'groupIds' | 'followUpFrequencyDays'>) => void;
   deletePerson: (personId: string) => void;
   addFamily: (label: string, memberIds: string[]) => void;
-  updatePerson: (personId: string, updates: Partial<Pick<Person, 'englishName' | 'chineseName' | 'photo' | 'phone' | 'homePhone' | 'email' | 'homeAddress' | 'membershipStatus' | 'membershipDate' | 'language' | 'gender' | 'maritalStatus' | 'birthday' | 'baptismDate' | 'anniversary' | 'followUpFrequencyDays' | 'spiritualNeeds' | 'physicalNeeds' | 'isShepherd' | 'isBeingDiscipled' | 'churchPositions' | 'appRole'>>) => void;
+  updatePerson: (personId: string, updates: Partial<Pick<Person, 'englishName' | 'chineseName' | 'photo' | 'phone' | 'homePhone' | 'email' | 'homeAddress' | 'membershipStatus' | 'churchAttendance' | 'membershipDate' | 'language' | 'gender' | 'maritalStatus' | 'birthday' | 'baptismDate' | 'anniversary' | 'followUpFrequencyDays' | 'spiritualNeeds' | 'physicalNeeds' | 'isShepherd' | 'isBeingDiscipled' | 'churchPositions' | 'appRole'>>) => void;
   assignShepherds: (personId: string, shepherdIds: string[]) => void;
   updateFamily: (familyId: string, updates: Partial<Pick<Family, 'label' | 'photo' | 'primaryContactId' | 'childCount'>>) => void;
   updateFamilyMembers: (familyId: string, memberIds: string[]) => void;
@@ -63,6 +63,7 @@ function mapPerson(row: Record<string, unknown>, shepherdIds: string[], groupIds
     appRole: (row.app_role as AppRole | undefined) ?? 'no-access',
     churchPositions: row.church_positions as string[] | undefined,
     membershipStatus: row.membership_status as Person['membershipStatus'],
+    churchAttendance: (row.church_attendance as ChurchAttendance) ?? 'regular',
     language: (row.language as Person['language']) ?? 'english',
     familyId: row.family_id as string | undefined,
     followUpFrequencyDays: (row.follow_up_frequency_days as number) ?? 14,
@@ -522,14 +523,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
       home_phone: person.homePhone ?? null, email: person.email ?? null,
       home_address: person.homeAddress ?? null, spiritual_needs: person.spiritualNeeds ?? null, physical_needs: person.physicalNeeds ?? null,
       is_shepherd: person.isShepherd ?? false, church_positions: person.churchPositions ?? [],
-      membership_status: person.membershipStatus, language: person.language,
+      membership_status: person.membershipStatus, church_attendance: person.churchAttendance,
+      language: person.language,
       family_id: person.familyId ?? null, follow_up_frequency_days: 14,
       created_at: person.createdAt,
       created_by: person.createdBy ?? null,
     });
   }, [currentPersona.id]);
 
-  const updatePerson = useCallback(async (personId: string, updates: Partial<Pick<Person, 'englishName' | 'chineseName' | 'photo' | 'phone' | 'homePhone' | 'email' | 'homeAddress' | 'membershipStatus' | 'membershipDate' | 'language' | 'gender' | 'maritalStatus' | 'birthday' | 'baptismDate' | 'anniversary' | 'followUpFrequencyDays' | 'spiritualNeeds' | 'physicalNeeds' | 'isShepherd' | 'isBeingDiscipled' | 'churchPositions' | 'appRole'>>) => {
+  const updatePerson = useCallback(async (personId: string, updates: Partial<Pick<Person, 'englishName' | 'chineseName' | 'photo' | 'phone' | 'homePhone' | 'email' | 'homeAddress' | 'membershipStatus' | 'churchAttendance' | 'membershipDate' | 'language' | 'gender' | 'maritalStatus' | 'birthday' | 'baptismDate' | 'anniversary' | 'followUpFrequencyDays' | 'spiritualNeeds' | 'physicalNeeds' | 'isShepherd' | 'isBeingDiscipled' | 'churchPositions' | 'appRole'>>) => {
     setData((prev) => ({
       ...prev,
       people: prev.people.map((p) => p.id === personId ? { ...p, ...updates } : p),
@@ -544,6 +546,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (updates.email !== undefined) dbUpdates.email = updates.email;
     if (updates.homeAddress !== undefined) dbUpdates.home_address = updates.homeAddress;
     if (updates.membershipStatus !== undefined) dbUpdates.membership_status = updates.membershipStatus;
+    if (updates.churchAttendance !== undefined) dbUpdates.church_attendance = updates.churchAttendance;
     if (updates.membershipDate !== undefined) dbUpdates.membership_date = updates.membershipDate;
     if (updates.language !== undefined) dbUpdates.language = updates.language;
     if (updates.gender !== undefined) dbUpdates.gender = updates.gender;

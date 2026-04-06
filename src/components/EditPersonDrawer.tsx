@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useApp } from '@/lib/context';
 import { formatPhone } from '@/lib/utils';
-import { Person, MembershipStatus, Language, Gender, MaritalStatus, CHURCH_POSITIONS, AppRole } from '@/lib/types';
+import { Person, MembershipStatus, ChurchAttendance, Language, Gender, MaritalStatus, CHURCH_POSITIONS, AppRole } from '@/lib/types';
 import {
   User, TextT, Globe, GenderIntersex, Cake, Heart, Sparkle, Church,
   IdentificationCard, CalendarCheck, Drop, Compass, Buildings, BookOpenText,
@@ -20,11 +20,16 @@ interface Props {
 }
 
 const MEMBERSHIP_OPTIONS: { value: MembershipStatus; label: string }[] = [
-  { value: 'member',              label: 'Member' },
-  { value: 'sunday-attendee',     label: 'Sunday attendee' },
-  { value: 'fellowship-attendee', label: 'Fellowship attendee' },
-  { value: 'membership-class',    label: 'Membership class' },
-  { value: 'archive',             label: 'Archived' },
+  { value: 'member',           label: 'Member' },
+  { value: 'non-member',       label: 'Non-Member' },
+  { value: 'membership-track', label: 'Membership Track' },
+];
+
+const CHURCH_ATTENDANCE_OPTIONS: { value: ChurchAttendance; label: string }[] = [
+  { value: 'first-time-visitor', label: 'First-Time Visitor' },
+  { value: 'regular',            label: 'Regular Attendee' },
+  { value: 'on-leave',           label: 'On Leave' },
+  { value: 'fellowship-group-only',   label: 'Fellowship Group Only' },
 ];
 
 const LANGUAGE_OPTIONS: { value: Language; label: string }[] = [
@@ -73,6 +78,7 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
   const [groupIds, setGroupIds]           = useState<string[]>(person.groupIds ?? []);
   const [shepherdIds, setShepherdIds]     = useState<string[]>(person.assignedShepherdIds ?? []);
   const [status, setStatus]               = useState<MembershipStatus>(person.membershipStatus);
+  const [attendance, setAttendance]       = useState<ChurchAttendance>(person.churchAttendance);
   const [membershipDate, setMembershipDate] = useState(person.membershipDate ?? '');
   const [baptismDate, setBaptismDate]     = useState(person.baptismDate ?? '');
   const [isShepherd, setIsShepherd]           = useState(person.isShepherd ?? false);
@@ -108,7 +114,7 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
   const baptismDateRef   = useRef<HTMLInputElement>(null);
 
   // Picker state
-  const [openPicker, setOpenPicker] = useState<'status' | 'language' | 'gender' | 'marital' | 'appRole' | null>(null);
+  const [openPicker, setOpenPicker] = useState<'status' | 'attendance' | 'language' | 'gender' | 'marital' | 'appRole' | null>(null);
   const [showInvite, setShowInvite] = useState(false);
   const [showPositionPicker, setShowPositionPicker] = useState(false);
   const [showGroupPicker, setShowGroupPicker] = useState(false);
@@ -134,6 +140,7 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
       maritalStatus: maritalStatus || undefined,
       anniversary: (maritalStatus === 'married' && anniversary) ? anniversary : undefined,
       membershipStatus: status,
+      churchAttendance: attendance,
       membershipDate: (status === 'member' && membershipDate) ? membershipDate : undefined,
       baptismDate: baptismDate || undefined,
       isShepherd: isShepherd || undefined,
@@ -168,7 +175,8 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
       .map((p) => ({ id: p.id, name: p.englishName, subtitle: 'Shepherd' })),
   ];
 
-  const statusLabel   = MEMBERSHIP_OPTIONS.find((o) => o.value === status)?.label ?? '';
+  const statusLabel     = MEMBERSHIP_OPTIONS.find((o) => o.value === status)?.label ?? '';
+  const attendanceLabel = CHURCH_ATTENDANCE_OPTIONS.find((o) => o.value === attendance)?.label ?? attendance;
   const languageLabel = LANGUAGE_OPTIONS.find((o) => o.value === language)?.label ?? '';
   const genderLabel   = GENDER_OPTIONS.find((o) => o.value === gender)?.label ?? 'Not set';
   const maritalLabel  = MARITAL_OPTIONS.find((o) => o.value === maritalStatus)?.label ?? 'Not set';
@@ -271,6 +279,7 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
             {/* ── CHURCH ── */}
             <DrawerSection label="Church">
               <PickerRow icon={<IdentificationCard size={16} color="var(--text-muted)" />} label="Status" value={statusLabel} onClick={() => setOpenPicker('status')} />
+              <PickerRow icon={<Globe size={16} color="var(--text-muted)" />} label="Attendance" value={attendanceLabel} onClick={() => setOpenPicker('attendance')} />
               {status === 'member' && (
                 <DateRow icon={<CalendarCheck size={16} color="var(--text-muted)" />} label="Member Since" value={membershipDate} inputRef={membershipDateRef} onChange={setMembershipDate} />
               )}
@@ -385,6 +394,9 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
 
       {openPicker === 'status' && (
         <PickerMenu title="Membership status" options={MEMBERSHIP_OPTIONS} value={status} onSelect={(v) => setStatus(v as MembershipStatus)} onClose={() => setOpenPicker(null)} />
+      )}
+      {openPicker === 'attendance' && (
+        <PickerMenu title="Church Attendance" options={CHURCH_ATTENDANCE_OPTIONS} value={attendance} onSelect={(v) => setAttendance(v as ChurchAttendance)} onClose={() => setOpenPicker(null)} />
       )}
 
       {openPicker === 'gender' && (

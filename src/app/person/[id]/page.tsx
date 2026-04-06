@@ -4,7 +4,7 @@ import { use, useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useApp } from '@/lib/context';
-import { getTimeAgo, getMembershipLabel, getPersonNotes, getNoteTypeLabel, groupByMonth, categorizeTodos } from '@/lib/utils';
+import { getTimeAgo, getMembershipLabel, getChurchAttendanceLabel, getPersonNotes, getNoteTypeLabel, groupByMonth, categorizeTodos } from '@/lib/utils';
 import { Todo, Note, AppData, TodoAlert, NoteType, AppRole } from '@/lib/types';
 import AddLogModal from '@/components/AddLogModal';
 import AddTodoModal from '@/components/AddTodoModal';
@@ -167,9 +167,9 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
   };
 
   const handleArchive = () => {
-    updatePerson(person.id, { membershipStatus: person.membershipStatus === 'archive' ? 'sunday-attendee' : 'archive' });
+    updatePerson(person.id, { churchAttendance: person.churchAttendance === 'archived' ? 'regular' : 'archived' });
     setConfirmAction(null);
-    if (person.membershipStatus !== 'archive') router.back();
+    if (person.churchAttendance !== 'archived') router.back();
   };
 
   const handleDelete = () => {
@@ -265,7 +265,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                     <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-.375c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v.375c0 .621.504 1.125 1.125 1.125z" />
                     </svg>
-                    {person.membershipStatus === 'archive' ? 'Unarchive' : 'Archive'}
+                    {person.churchAttendance === 'archived' ? 'Unarchive' : 'Archive'}
                   </button>
                   <button
                     onClick={() => { setShowKebab(false); setConfirmAction('delete'); }}
@@ -504,19 +504,25 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
           })()}
 
           {/* PERSONAL */}
-          <InfoSection title="Personal">
-
-            {person.gender && <InfoRow icon={<GenderIntersex size={15} />} label="Gender" value={person.gender.charAt(0).toUpperCase() + person.gender.slice(1)} />}
-            {person.birthday && <InfoRow icon={<Cake size={15} />} label="Birthday" value={fmtShortDate(person.birthday)} />}
-            {person.maritalStatus && <InfoRow icon={<Heart size={15} />} label="Marital Status" value={person.maritalStatus.charAt(0).toUpperCase() + person.maritalStatus.slice(1)} />}
-            {person.maritalStatus === 'married' && person.anniversary && <InfoRow icon={<Sparkle size={15} />} label="Anniversary" value={fmtShortDate(person.anniversary)} />}
-          </InfoSection>
+          {(person.gender || person.birthday || person.maritalStatus) && (
+            <InfoSection title="Personal">
+              {person.gender && <InfoRow icon={<GenderIntersex size={15} />} label="Gender" value={person.gender.charAt(0).toUpperCase() + person.gender.slice(1)} />}
+              {person.birthday && <InfoRow icon={<Cake size={15} />} label="Birthday" value={fmtShortDate(person.birthday)} />}
+              {person.maritalStatus && <InfoRow icon={<Heart size={15} />} label="Marital Status" value={person.maritalStatus.charAt(0).toUpperCase() + person.maritalStatus.slice(1)} />}
+              {person.maritalStatus === 'married' && person.anniversary && <InfoRow icon={<Sparkle size={15} />} label="Anniversary" value={fmtShortDate(person.anniversary)} />}
+            </InfoSection>
+          )}
 
           {/* CHURCH */}
           <InfoSection title="Church">
             <InfoRow icon={<IdentificationCard size={15} />} label="Status" value={
               <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: '999px', background: 'var(--sage-light)', color: 'var(--sage)' }}>
                 {getMembershipLabel(person.membershipStatus)}
+              </span>
+            } />
+            <InfoRow icon={<Globe size={15} />} label="Attendance" value={
+              <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: '999px', background: 'var(--blue-light)', color: 'var(--blue)' }}>
+                {getChurchAttendanceLabel(person.churchAttendance)}
               </span>
             } />
             {person.membershipStatus === 'member' && person.membershipDate && (
@@ -743,10 +749,10 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
             {confirmAction === 'archive' ? (
               <>
                 <p style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)', textAlign: 'center', marginBottom: 6 }}>
-                  {person.membershipStatus === 'archive' ? 'Unarchive' : 'Archive'} {firstName}?
+                  {person.churchAttendance === 'archived' ? 'Unarchive' : 'Archive'} {firstName}?
                 </p>
                 <p style={{ fontSize: 13, color: 'var(--text-muted)', textAlign: 'center', marginBottom: 24 }}>
-                  {person.membershipStatus === 'archive'
+                  {person.churchAttendance === 'archived'
                     ? 'They will be visible in the directory again.'
                     : 'They will be hidden from the main directory but their history will be preserved.'}
                 </p>
@@ -754,7 +760,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                   onClick={handleArchive}
                   style={{ width: '100%', height: 50, borderRadius: 14, background: 'var(--sage)', color: '#fff', fontSize: 16, fontWeight: 600, border: 'none', cursor: 'pointer', marginBottom: 10 }}
                 >
-                  {person.membershipStatus === 'archive' ? 'Unarchive' : 'Archive'}
+                  {person.churchAttendance === 'archived' ? 'Unarchive' : 'Archive'}
                 </button>
                 <button
                   onClick={() => setConfirmAction(null)}

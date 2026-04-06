@@ -1,4 +1,4 @@
-import { Person, Note, Todo, Family, AppData } from './types';
+import { Person, Note, Todo, Family, AppData, ChurchAttendance } from './types';
 
 export function getTimeAgo(dateStr: string): string {
   const now = new Date();
@@ -154,10 +154,19 @@ export function searchFamiliesAndPeople(
 export function getMembershipLabel(status: Person['membershipStatus']): string {
   const labels: Record<string, string> = {
     member: 'Member',
-    'sunday-attendee': 'Sunday Attendee',
-    'fellowship-attendee': 'Fellowship Attendee',
-    'membership-class': 'In Membership Class',
-    archive: 'Archived',
+    'non-member': 'Non-Member',
+    'membership-track': 'Membership Track',
+  };
+  return labels[status] || status;
+}
+
+export function getChurchAttendanceLabel(status: ChurchAttendance): string {
+  const labels: Record<ChurchAttendance, string> = {
+    'first-time-visitor': 'First-Time Visitor',
+    regular: 'Regular Attendee',
+    'on-leave': 'On Leave',
+    'fellowship-group-only': 'Fellowship Group Only',
+    archived: 'Archived',
   };
   return labels[status] || status;
 }

@@ -12,10 +12,15 @@ export interface Persona {
 
 export type MembershipStatus =
   | 'member'
-  | 'sunday-attendee'
-  | 'fellowship-attendee'
-  | 'membership-class'
-  | 'archive';
+  | 'non-member'
+  | 'membership-track';
+
+export type ChurchAttendance =
+  | 'first-time-visitor'
+  | 'regular'
+  | 'on-leave'
+  | 'fellowship-group-only'
+  | 'archived';
 
 export type Language = 'english' | 'chinese' | 'bilingual';
 export type Gender = 'male' | 'female';
@@ -48,6 +53,7 @@ export interface Person {
   appRole?: AppRole;
   churchPositions?: string[];
   membershipStatus: MembershipStatus;
+  churchAttendance: ChurchAttendance;
   language: Language;
   assignedShepherdIds: string[];
   familyId?: string;

@@ -9,16 +9,21 @@ import {
 } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { formatPhone } from '@/lib/utils';
-import { MembershipStatus, Language, Gender, MaritalStatus, CHURCH_POSITIONS, AppRole } from '@/lib/types';
+import { MembershipStatus, ChurchAttendance, Language, Gender, MaritalStatus, CHURCH_POSITIONS, AppRole } from '@/lib/types';
 import PickerMenu from '@/components/PickerMenu';
 import AppRolePickerSheet from '@/components/AppRolePickerSheet';
 
 const MEMBERSHIP_OPTIONS: { value: MembershipStatus; label: string }[] = [
-  { value: 'member',              label: 'Member' },
-  { value: 'sunday-attendee',     label: 'Sunday attendee' },
-  { value: 'fellowship-attendee', label: 'Fellowship attendee' },
-  { value: 'membership-class',    label: 'Membership class' },
-  { value: 'archive',             label: 'Archived' },
+  { value: 'member',           label: 'Member' },
+  { value: 'non-member',       label: 'Non-Member' },
+  { value: 'membership-track', label: 'Membership Track' },
+];
+
+const CHURCH_ATTENDANCE_OPTIONS: { value: ChurchAttendance; label: string }[] = [
+  { value: 'first-time-visitor', label: 'First-Time Visitor' },
+  { value: 'regular',            label: 'Regular Attendee' },
+  { value: 'on-leave',           label: 'On Leave' },
+  { value: 'fellowship-group-only',   label: 'Fellowship Group Only' },
 ];
 const LANGUAGE_OPTIONS: { value: Language; label: string }[] = [
   { value: 'english',   label: 'English' },
@@ -91,6 +96,7 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
   const [groupIds, setGroupIds]           = useState<string[]>(person.groupIds ?? []);
   const [shepherdIds, setShepherdIds]     = useState<string[]>(person.assignedShepherdIds ?? []);
   const [status, setStatus]               = useState<MembershipStatus>(person.membershipStatus);
+  const [attendance, setAttendance]       = useState<ChurchAttendance>(person.churchAttendance);
   const [membershipDate, setMembershipDate] = useState(person.membershipDate ?? '');
   const [baptismDate, setBaptismDate]     = useState(person.baptismDate ?? '');
   const [isShepherd, setIsShepherd]           = useState(person.isShepherd ?? false);
@@ -119,7 +125,7 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
   const baptismDateRef    = useRef<HTMLInputElement>(null);
   const fileInputRef      = useRef<HTMLInputElement>(null);
 
-  const [openPicker, setOpenPicker] = useState<'status' | 'language' | 'gender' | 'marital' | 'appRole' | null>(null);
+  const [openPicker, setOpenPicker] = useState<'status' | 'attendance' | 'language' | 'gender' | 'marital' | 'appRole' | null>(null);
   const [appRole, setAppRole] = useState<AppRole>(person.appRole ?? 'no-access');
   const [showPositionPicker, setShowPositionPicker] = useState(false);
   const [showGroupPicker, setShowGroupPicker] = useState(false);
@@ -149,6 +155,7 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
       maritalStatus: maritalStatus || undefined,
       anniversary: (maritalStatus === 'married' && anniversary) ? anniversary : undefined,
       membershipStatus: status,
+      churchAttendance: attendance,
       membershipDate: (status === 'member' && membershipDate) ? membershipDate : undefined,
       baptismDate: baptismDate || undefined,
       isShepherd: isShepherd || undefined,
@@ -173,7 +180,8 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
 
   const selectedGroups = data.groups.filter((g) => groupIds.includes(g.id));
 
-  const statusLabel   = MEMBERSHIP_OPTIONS.find((o) => o.value === status)?.label ?? '';
+  const statusLabel     = MEMBERSHIP_OPTIONS.find((o) => o.value === status)?.label ?? '';
+  const attendanceLabel = CHURCH_ATTENDANCE_OPTIONS.find((o) => o.value === attendance)?.label ?? attendance;
   const languageLabel = LANGUAGE_OPTIONS.find((o) => o.value === language)?.label ?? '';
   const genderLabel   = GENDER_OPTIONS.find((o) => o.value === gender)?.label ?? 'Not set';
   const maritalLabel  = MARITAL_OPTIONS.find((o) => o.value === maritalStatus)?.label ?? 'Not set';
@@ -271,6 +279,7 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
 
         <FormSection label="Church">
           <PickerRow icon={<IdentificationCard size={16} color="var(--text-muted)" />} label="Status" value={statusLabel} onClick={() => setOpenPicker('status')} />
+          <PickerRow icon={<Globe size={16} color="var(--text-muted)" />} label="Attendance" value={attendanceLabel} onClick={() => setOpenPicker('attendance')} />
           {status === 'member' && (
             <DateRow icon={<CalendarCheck size={16} color="var(--text-muted)" />} label="Member Since" value={membershipDate} inputRef={membershipDateRef} onChange={setMembershipDate} />
           )}
@@ -342,6 +351,7 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
 
       {/* Pickers */}
       {openPicker === 'status'   && <PickerMenu title="Membership status" options={MEMBERSHIP_OPTIONS} value={status}        onSelect={(v) => setStatus(v as MembershipStatus)}         onClose={() => setOpenPicker(null)} />}
+      {openPicker === 'attendance' && <PickerMenu title="Church Attendance" options={CHURCH_ATTENDANCE_OPTIONS} value={attendance} onSelect={(v) => setAttendance(v as ChurchAttendance)} onClose={() => setOpenPicker(null)} />}
       {openPicker === 'language' && <PickerMenu title="Language"          options={LANGUAGE_OPTIONS}   value={language}      onSelect={(v) => setLanguage(v as Language)}               onClose={() => setOpenPicker(null)} />}
       {openPicker === 'gender'   && <PickerMenu title="Gender"            options={GENDER_OPTIONS}     value={gender}        onSelect={(v) => setGender(v as Gender | '')}              onClose={() => setOpenPicker(null)} />}
       {openPicker === 'marital'  && <PickerMenu title="Marital Status"    options={MARITAL_OPTIONS}    value={maritalStatus} onSelect={(v) => setMaritalStatus(v as MaritalStatus | '')} onClose={() => setOpenPicker(null)} />}

@@ -6,9 +6,9 @@ import { useApp } from '@/lib/context';
 import {
   getPriorityScore, getTimeAgo,
   searchFamiliesAndPeople, getFamilyLastContact, getFamilyPriorityScore,
-  getMembershipLabel,
+  getMembershipLabel, getChurchAttendanceLabel,
 } from '@/lib/utils';
-import { Family, Person, MembershipStatus, AppRole } from '@/lib/types';
+import { Family, Person, MembershipStatus, ChurchAttendance, AppRole } from '@/lib/types';
 import { HandHeart, UserPlus, UsersThree, PaperPlaneTilt } from '@phosphor-icons/react';
 import AddPersonModal from '@/components/AddPersonModal';
 import AddFamilyModal from '@/components/AddFamilyModal';
@@ -22,13 +22,14 @@ type SortKey = 'last-contacted' | 'last-contacted-recent' | 'name' | 'group';
 interface Filters {
   shepherds: string[];      // 'mine' | shepherdId[]
   memberships: MembershipStatus[];
+  attendances: ChurchAttendance[];
   groups: string[];
   showArchived: boolean;
   discipleship: ('in' | 'not-in')[];
   appRoles: AppRole[];
 }
 
-const DEFAULT_FILTERS: Filters = { shepherds: ['mine'], memberships: [], groups: [], showArchived: false, discipleship: [], appRoles: [] };
+const DEFAULT_FILTERS: Filters = { shepherds: ['mine'], memberships: [], attendances: [], groups: [], showArchived: false, discipleship: [], appRoles: [] };
 
 const SORT_OPTIONS: { key: SortKey; label: string }[] = [
   { key: 'last-contacted',        label: 'Logged longest ago' },
@@ -86,7 +87,7 @@ export default function PeoplePage() {
 
   const openFilter  = () => { setDraft(filters); setDraftSort(sortKey); setActiveCategory('shepherd'); setShepherdSearch(''); setShowFilter(true); };
   const applyFilter = () => { setFilters(draft); setSortKey(draftSort); setShowFilter(false); };
-  const clearFilter = () => { setDraft(DEFAULT_FILTERS); setDraftSort('last-contacted'); setShepherdSearch(''); };
+  const clearFilter = () => { setDraft({ ...DEFAULT_FILTERS, attendances: [] }); setDraftSort('last-contacted'); setShepherdSearch(''); };
 
   // Build the list: families + solo individuals
   const entries = useMemo(() => {
@@ -122,9 +123,11 @@ export default function PeoplePage() {
         if (!matchesMine && !matchesSpecific) continue;
       }
       // Archive gate — skip fully-archived families unless showArchived is on
-      if (!filters.showArchived && members.every((m) => m.membershipStatus === 'archive')) continue;
+      if (!filters.showArchived && members.every((m) => m.churchAttendance === 'archived')) continue;
       // Membership filter (OR across selected)
       if (filters.memberships.length > 0 && !members.some((m) => filters.memberships.includes(m.membershipStatus))) continue;
+      // Attendance filter (OR across selected)
+      if (filters.attendances.length > 0 && !members.some((m) => filters.attendances.includes(m.churchAttendance))) continue;
       // Group filter (OR across selected)
       if (filters.groups.length > 0 && !members.some((m) => filters.groups.some((gid) => m.groupIds.includes(gid)))) continue;
       // Discipleship filter — OR logic: family passes if any member matches at least one selected state
@@ -149,8 +152,9 @@ export default function PeoplePage() {
         if (!matchesMine && !matchesSpecific) continue;
       }
       // Archive gate — skip archived individuals unless showArchived is on
-      if (!filters.showArchived && p.membershipStatus === 'archive') continue;
+      if (!filters.showArchived && p.churchAttendance === 'archived') continue;
       if (filters.memberships.length > 0 && !filters.memberships.includes(p.membershipStatus)) continue;
+      if (filters.attendances.length > 0 && !filters.attendances.includes(p.churchAttendance)) continue;
       if (filters.groups.length > 0 && !filters.groups.some((gid) => p.groupIds.includes(gid))) continue;
       if (filters.discipleship.length > 0) {
         const passes =
@@ -206,7 +210,7 @@ export default function PeoplePage() {
     const notedPersonIds = new Set(data.notes.map((n) => n.personId).filter(Boolean) as string[]);
     return data.people
       .filter((p) => {
-        if (p.membershipStatus === 'archive') return false;
+        if (p.churchAttendance === 'archived') return false;
         if (notedPersonIds.has(p.id)) return false;
         if (new Date(p.createdAt).getTime() < cutoff) return false;
         if (currentPersona.role === 'shepherd') return currentPersona.assignedPeopleIds.includes(p.id);
@@ -216,15 +220,15 @@ export default function PeoplePage() {
   }, [data.people, data.notes, currentPersona]);
 
   const activeFilterCount =
-    filters.shepherds.length + filters.memberships.length + filters.groups.length
+    filters.shepherds.length + filters.memberships.length + filters.attendances.length + filters.groups.length
     + (filters.showArchived ? 1 : 0) + filters.discipleship.length + filters.appRoles.length;
 
   const draftTotalCount =
-    draft.shepherds.length + draft.memberships.length + draft.groups.length
+    draft.shepherds.length + draft.memberships.length + draft.attendances.length + draft.groups.length
     + (draft.showArchived ? 1 : 0) + draft.discipleship.length + draft.appRoles.length;
   const FILTER_CATEGORIES = [
     { key: 'shepherd' as const,     label: 'Shepherd by',  count: draft.shepherds.length },
-    { key: 'membership' as const,   label: 'Status',       count: draft.memberships.length + (draft.showArchived ? 1 : 0) },
+    { key: 'membership' as const,   label: 'Status',       count: draft.memberships.length + draft.attendances.length + (draft.showArchived ? 1 : 0) },
     { key: 'discipleship' as const, label: 'Discipleship', count: draft.discipleship.length },
     { key: 'group' as const,        label: 'Group',        count: draft.groups.length },
     { key: 'app-role' as const,     label: 'App Role',     count: draft.appRoles.length },
@@ -238,6 +242,9 @@ export default function PeoplePage() {
   });
   filters.memberships.forEach((ms) => {
     chips.push({ key: `m-${ms}`, label: getMembershipLabel(ms), clear: () => setFilters((f) => ({ ...f, memberships: f.memberships.filter((m) => m !== ms) })) });
+  });
+  filters.attendances.forEach((at) => {
+    chips.push({ key: `at-${at}`, label: at, clear: () => setFilters((f) => ({ ...f, attendances: f.attendances.filter((a) => a !== at) })) });
   });
   filters.groups.forEach((gid) => {
     const g = data.groups.find((g) => g.id === gid);
@@ -720,14 +727,27 @@ export default function PeoplePage() {
 
                   {activeCategory === 'membership' && (
                     <>
-                      <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>Status</p>
-                      {(['member', 'sunday-attendee', 'fellowship-attendee', 'membership-class'] as const).map((val) => (
+                      <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>Membership</p>
+                      {(['member', 'non-member', 'membership-track'] as MembershipStatus[]).map((val) => (
                         <CheckRow
                           key={val}
                           checked={draft.memberships.includes(val)}
                           onToggle={() => setDraft((d) => ({ ...d, memberships: d.memberships.includes(val) ? d.memberships.filter((m) => m !== val) : [...d.memberships, val] }))}
                         >{getMembershipLabel(val)}</CheckRow>
                       ))}
+                      <div style={{ marginTop: 16, paddingTop: 12, borderTop: '1px solid var(--border-light)' }}>
+                        <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>Attendance</p>
+                        {(['first-time-visitor', 'regular', 'on-leave', 'fellowship-group-only'] as ChurchAttendance[]).map((val) => {
+                          const ATTENDANCE_LABELS: Record<string, string> = { 'first-time-visitor': 'First-Time Visitor', regular: 'Regular Attendee', 'on-leave': 'On Leave', 'fellowship-group-only': 'Fellowship Group Only' };
+                          return (
+                            <CheckRow
+                              key={val}
+                              checked={draft.attendances.includes(val)}
+                              onToggle={() => setDraft((d) => ({ ...d, attendances: d.attendances.includes(val) ? d.attendances.filter((a) => a !== val) : [...d.attendances, val] }))}
+                            >{ATTENDANCE_LABELS[val]}</CheckRow>
+                          );
+                        })}
+                      </div>
                       <div style={{ marginTop: 16, paddingTop: 12, borderTop: '1px solid var(--border-light)' }}>
                         <CheckRow
                           checked={draft.showArchived}
@@ -909,7 +929,7 @@ function IndividualRow({ person }: { person: Person }) {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{getMembershipLabel(person.membershipStatus)}</span>
+            <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{getMembershipLabel(person.membershipStatus)} · {getChurchAttendanceLabel(person.churchAttendance)}</span>
             {person.lastContactDate && (
               <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>· Logged {new Date(person.lastContactDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
             )}
