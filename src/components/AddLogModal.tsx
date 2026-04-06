@@ -153,7 +153,7 @@ export default function AddLogModal({ onClose, prefillFamilyId, prefillPersonId,
               </div>
 
               {/* Scrollable body */}
-              <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px 80px', background: 'var(--bg)' }}>
+              <div style={{ flex: 1, overflowY: 'auto', padding: `16px 20px ${isEditing ? 80 : 16}px`, background: 'var(--bg)', display: 'flex', flexDirection: 'column' }}>
                 {/* Fields */}
                 <div style={{ background: 'var(--surface)', borderRadius: 'var(--radius)', border: '1px solid var(--border-light)', overflow: 'hidden', padding: '0 16px', marginBottom: 16 }}>
                 <div className="no-last-border" style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
@@ -225,12 +225,12 @@ export default function AddLogModal({ onClose, prefillFamilyId, prefillPersonId,
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="What happened or what was shared…"
-                  rows={4}
                   style={{
-                    width: '100%', marginTop: 16, padding: 12,
-                    background: 'var(--bg)', border: '1px solid var(--border)',
+                    flex: 1, width: '100%', marginTop: 0,
+                    padding: 12, minHeight: 120,
+                    background: 'var(--surface)', border: '1px solid var(--border-light)',
                     borderRadius: 10, fontSize: 14, color: 'var(--text-primary)',
-                    resize: 'vertical', outline: 'none', lineHeight: 1.5,
+                    resize: 'none', outline: 'none', lineHeight: 1.5,
                     boxSizing: 'border-box',
                   }}
                 />

@@ -170,22 +170,7 @@ return (
               </div>
 
               {/* Scrollable body */}
-              <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px 80px', background: 'var(--bg)' }}>
-                {/* Title */}
-                <textarea
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="What needs to be done…"
-                  autoFocus
-                  rows={3}
-                  style={{
-                    width: '100%', padding: '12px 14px', marginBottom: 16,
-                    background: 'var(--bg)', border: '1px solid var(--border)',
-                    borderRadius: 10, fontSize: 15, color: 'var(--text-primary)',
-                    resize: 'none', outline: 'none', lineHeight: 1.5, boxSizing: 'border-box',
-                  }}
-                />
-
+              <div style={{ flex: 1, overflowY: 'auto', padding: `16px 20px ${isEditing ? 80 : 16}px`, background: 'var(--bg)', display: 'flex', flexDirection: 'column' }}>
                 {/* Field rows */}
                 <div style={{ background: 'var(--surface)', borderRadius: 'var(--radius)', border: '1px solid var(--border-light)', overflow: 'hidden', padding: '0 16px' }}>
                 <div className="no-last-border" style={{ display: 'flex', flexDirection: 'column' }}>
@@ -261,6 +246,21 @@ return (
                   })()}
                 </div>
                 </div>
+
+                {/* Title */}
+                <textarea
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="What needs to be done…"
+                  autoFocus
+                  style={{
+                    flex: 1, width: '100%', marginTop: 16,
+                    padding: 12, minHeight: 120,
+                    background: 'var(--surface)', border: '1px solid var(--border-light)',
+                    borderRadius: 10, fontSize: 15, color: 'var(--text-primary)',
+                    resize: 'none', outline: 'none', lineHeight: 1.5, boxSizing: 'border-box',
+                  }}
+                />
               </div>
             </>
           )}

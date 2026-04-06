@@ -462,10 +462,10 @@ export default function PeoplePage() {
               fontSize: 12, color: 'var(--text-muted)', cursor: 'pointer', fontWeight: 500,
             }}
           >
-            {currentSort.label}
-            <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
+            <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 16l4 4 4-4M7 20V4M21 8l-4-4-4 4M17 4v16" />
             </svg>
+            {currentSort.label}
           </button>
 
           {showSort && (
@@ -592,7 +592,7 @@ export default function PeoplePage() {
               {/* Header */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 12px', flexShrink: 0, borderBottom: '1px solid var(--border-light)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>Filter</h2>
+                  <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>Filter and Sort</h2>
                   {draftTotalCount > 0 && (
                     <span style={{ fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: '999px', background: 'var(--sage)', color: '#fff' }}>
                       {draftTotalCount}
@@ -617,29 +617,40 @@ export default function PeoplePage() {
                   {FILTER_CATEGORIES.map(({ key, label, count }) => {
                     const isActive = activeCategory === key;
                     return (
-                      <button
-                        key={key}
-                        onClick={() => setActiveCategory(key)}
-                        style={{
-                          width: '100%', padding: '14px 16px',
-                          textAlign: 'left', background: isActive ? 'var(--surface)' : 'none',
-                          border: 'none', borderLeft: isActive ? '3px solid var(--sage)' : '3px solid transparent',
-                          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                        }}
-                      >
-                        <span style={{ fontSize: 14, fontWeight: isActive ? 600 : 400, color: isActive ? 'var(--sage)' : 'var(--text-primary)' }}>{label}</span>
-                        {count > 0 && (
-                          <span style={{
-                            fontSize: 10, fontWeight: 700,
-                            minWidth: 18, height: 18, borderRadius: '999px',
-                            padding: '0 4px',
-                            background: 'var(--sage)', color: '#fff',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                          }}>
-                            {count}
-                          </span>
+                      <div key={key}>
+                        {key === 'sort' && (
+                          <div style={{ height: 1, background: 'var(--border-light)', margin: '0 12px' }} />
                         )}
-                      </button>
+                        <button
+                          onClick={() => setActiveCategory(key)}
+                          style={{
+                            width: '100%', padding: '14px 16px',
+                            textAlign: 'left', background: isActive ? 'var(--surface)' : 'none',
+                            border: 'none', borderLeft: isActive ? '3px solid var(--sage)' : '3px solid transparent',
+                            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                          }}
+                        >
+                          <span style={{ fontSize: 14, fontWeight: isActive ? 600 : 400, color: isActive ? 'var(--sage)' : 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: 5 }}>
+                            {key === 'sort' && (
+                              <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{ flexShrink: 0 }}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16l4 4 4-4M7 20V4M21 8l-4-4-4 4M17 4v16" />
+                              </svg>
+                            )}
+                            {label}
+                          </span>
+                          {count > 0 && (
+                            <span style={{
+                              fontSize: 10, fontWeight: 700,
+                              minWidth: 18, height: 18, borderRadius: '999px',
+                              padding: '0 4px',
+                              background: 'var(--sage)', color: '#fff',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                            }}>
+                              {count}
+                            </span>
+                          )}
+                        </button>
+                      </div>
                     );
                   })}
                 </div>
@@ -728,8 +739,7 @@ export default function PeoplePage() {
 
                   {activeCategory === 'discipleship' && (
                     <>
-                      <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>Discipleship</p>
-                      <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 12, lineHeight: 1.4 }}>Filter by whether someone is currently in a discipleship relationship.</p>
+                      <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>Discipleship</p>
                       <CheckRow
                         checked={draft.discipleship.includes('in')}
                         onToggle={() => setDraft((d) => ({ ...d, discipleship: d.discipleship.includes('in') ? d.discipleship.filter((x) => x !== 'in') : [...d.discipleship, 'in'] }))}
