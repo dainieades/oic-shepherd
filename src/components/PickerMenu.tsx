@@ -9,7 +9,7 @@ interface PickerOption {
 }
 
 interface PickerMenuProps {
-  anchorRef?: React.RefObject<HTMLButtonElement>;
+  anchorRef?: React.RefObject<HTMLButtonElement | null>;
   title: string;
   options: PickerOption[];
   value: string;
