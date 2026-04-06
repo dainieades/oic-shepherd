@@ -9,6 +9,7 @@ import { createClient } from '@/utils/supabase/client';
 interface AppContextType {
   data: AppData;
   currentPersona: Persona;
+  accessDenied: boolean;
   switchPersona: (id: string) => void;
   loginWithSupabaseUser: (userId: string, name: string, email?: string) => void;
   addNote: (note: Omit<Note, 'id' | 'createdBy'> & { createdAt?: string }) => void;
@@ -137,6 +138,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<AppData>(initialData);
   const [currentPersona, setCurrentPersona] = useState<Persona>(initialData.personas[0]);
   const [loaded, setLoaded] = useState(false);
+  const [accessDenied, setAccessDenied] = useState(false);
 
   // ── Load all data from Supabase on mount ─────────────────────────────
   useEffect(() => {
@@ -264,6 +266,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // ── Supabase auth → persona sync ─────────────────────────────────────
   const loginWithSupabaseUser = useCallback(async (userId: string, name: string, email?: string) => {
     const supabase = createClient();
+
+    // 0. Access gate — email must be on the approved list
+    if (!email) {
+      await supabase.auth.signOut();
+      setAccessDenied(true);
+      setLoaded(true);
+      return;
+    }
+    const { data: approved } = await supabase
+      .from('approved_emails')
+      .select('email')
+      .eq('email', email)
+      .maybeSingle();
+    if (!approved) {
+      await supabase.auth.signOut();
+      setAccessDenied(true);
+      setLoaded(true);
+      return;
+    }
 
     // 1. Look up existing persona by user_id (fastest path, already linked)
     const { data: existing } = await supabase
@@ -806,7 +827,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   return (
     <AppContext.Provider
-      value={{ data, currentPersona, switchPersona, loginWithSupabaseUser, addNote, updateNote, deleteNote, addTodo, updateTodo, deleteTodo, toggleTodo, addPerson, deletePerson, addFamily, updatePerson, assignShepherds, updateFamily, updateFamilyMembers, addGroup, updateGroup, updateGroupMembers, assignGroupsToPerson, assignGroupsToFamily, assignShepherdsToFamily, setFollowUpFrequency, canViewNote }}
+      value={{ data, currentPersona, accessDenied, switchPersona, loginWithSupabaseUser, addNote, updateNote, deleteNote, addTodo, updateTodo, deleteTodo, toggleTodo, addPerson, deletePerson, addFamily, updatePerson, assignShepherds, updateFamily, updateFamilyMembers, addGroup, updateGroup, updateGroupMembers, assignGroupsToPerson, assignGroupsToFamily, assignShepherdsToFamily, setFollowUpFrequency, canViewNote }}
     >
       {children}
     </AppContext.Provider>

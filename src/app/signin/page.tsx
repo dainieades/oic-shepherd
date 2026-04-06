@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import { Envelope, Key, CaretDown, CaretUp } from '@phosphor-icons/react';
 import { createClient } from '@/utils/supabase/client';
 
@@ -390,14 +389,9 @@ export default function SignInPage() {
             textAlign: 'center',
           }}
         >
-          <p style={{ fontSize: 14, color: 'var(--text-secondary)' }}>
-            New here?{' '}
-            <Link
-              href="/signup"
-              style={{ color: 'var(--sage)', fontWeight: 500, textDecoration: 'none' }}
-            >
-              Create an account
-            </Link>
+          <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.5 }}>
+            Access is by invitation only.
+            <br />Contact your pastor to request access.
           </p>
         </div>
       </div>

@@ -9,9 +9,10 @@ import {
   getMembershipLabel,
 } from '@/lib/utils';
 import { Family, Person, MembershipStatus, AppRole } from '@/lib/types';
-import { HandHeart, UserPlus, UsersThree } from '@phosphor-icons/react';
+import { HandHeart, UserPlus, UsersThree, PaperPlaneTilt } from '@phosphor-icons/react';
 import AddPersonModal from '@/components/AddPersonModal';
 import AddFamilyModal from '@/components/AddFamilyModal';
+import InviteSheet from '@/components/InviteSheet';
 
 type SortKey = 'last-contacted' | 'last-contacted-recent' | 'name' | 'group';
 
@@ -55,6 +56,7 @@ export default function PeoplePage() {
   const [showAddChoice, setShowAddChoice] = useState(false);
   const [showAddPerson, setShowAddPerson] = useState(false);
   const [showAddFamily, setShowAddFamily] = useState(false);
+  const [showInvite, setShowInvite] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const sortRef = useRef<HTMLDivElement>(null);
 
@@ -513,6 +515,7 @@ export default function PeoplePage() {
 
       {showAddPerson && <AddPersonModal onClose={() => setShowAddPerson(false)} />}
       {showAddFamily && <AddFamilyModal onClose={() => setShowAddFamily(false)} />}
+      {showInvite && <InviteSheet onClose={() => setShowInvite(false)} />}
 
       {/* ── Add type choice sheet ── */}
       {showAddChoice && (
@@ -549,6 +552,18 @@ export default function PeoplePage() {
                 <div>
                   <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>Family</p>
                   <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: '2px 0 0' }}>Group existing individuals into a family</p>
+                </div>
+              </button>
+              <button
+                onClick={() => { setShowAddChoice(false); setShowInvite(true); }}
+                style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 16px', background: 'var(--bg)', borderRadius: 12, border: '1px solid var(--border-light)', cursor: 'pointer', textAlign: 'left' }}
+              >
+                <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--sage-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <PaperPlaneTilt size={20} color="var(--sage)" />
+                </div>
+                <div>
+                  <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>Invite to app</p>
+                  <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: '2px 0 0' }}>Give someone access to sign in</p>
                 </div>
               </button>
             </div>

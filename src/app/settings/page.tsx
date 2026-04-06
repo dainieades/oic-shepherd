@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { CaretRight, EnvelopeSimple, Lock, Question, SignOut, HandHeart, ShieldStar } from '@phosphor-icons/react';
+import { CaretRight, EnvelopeSimple, Lock, Question, SignOut, HandHeart, ShieldStar, Users } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { createClient } from '@/utils/supabase/client';
 import type { User } from '@supabase/supabase-js';
@@ -111,6 +111,18 @@ export default function SettingsPage() {
         <SettingsRow icon={<EnvelopeSimple size={18} color="var(--text-muted)" />} label="Email" value={displayEmail} />
         <SettingsRow icon={<Lock size={18} color="var(--text-muted)" />} label="Change Password" chevron />
       </SettingsCard>
+
+      {/* ── Admin ── */}
+      {currentPersona.role === 'admin' && (
+        <>
+          <SectionLabel>Admin</SectionLabel>
+          <SettingsCard>
+            <Link href="/settings/access" style={{ textDecoration: 'none', display: 'block' }}>
+              <SettingsRow icon={<Users size={18} color="var(--text-muted)" />} label="Access Management" chevron />
+            </Link>
+          </SettingsCard>
+        </>
+      )}
 
       {/* ── Help ── */}
       <SectionLabel>Help</SectionLabel>

@@ -8,9 +8,11 @@ import {
   User, TextT, Globe, GenderIntersex, Cake, Heart, Sparkle, Church,
   IdentificationCard, CalendarCheck, Drop, Compass, Buildings, BookOpenText,
   Phone, PhoneCall, Envelope, House, FirstAid, CaretRight, HandHeart, UsersFour,
+  PaperPlaneTilt,
 } from '@phosphor-icons/react';
 import PickerMenu from './PickerMenu';
 import AppRolePickerSheet from './AppRolePickerSheet';
+import InviteSheet from './InviteSheet';
 
 interface Props {
   person: Person;
@@ -107,6 +109,7 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
 
   // Picker state
   const [openPicker, setOpenPicker] = useState<'status' | 'language' | 'gender' | 'marital' | 'appRole' | null>(null);
+  const [showInvite, setShowInvite] = useState(false);
   const [showPositionPicker, setShowPositionPicker] = useState(false);
   const [showGroupPicker, setShowGroupPicker] = useState(false);
   const [showShepherdPicker, setShowShepherdPicker] = useState(false);
@@ -201,19 +204,35 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
             {/* ── ACCESS ── */}
             {(currentPersona.role === 'admin' || (currentPersona.role === 'shepherd' && (appRole === 'shepherd' || appRole === 'no-access'))) && (
               <DrawerSection label="Access">
-                <button
-                  className="field-row-hover"
-                  onClick={() => setOpenPicker('appRole')}
-                  style={rowBtnStyle}
-                >
-                  <span style={spacerStyle} />
-                  <IdentificationCard size={16} color="var(--text-muted)" />
-                  <span style={labelStyle}>App Role</span>
-                  <span style={{ flex: 1, fontSize: 14, color: 'var(--text-primary)', textAlign: 'right' }}>
-                    {{ admin: 'Admin', shepherd: 'Shepherd', 'welcome-team': 'Welcome Team', 'no-access': 'No Access' }[appRole]}
-                  </span>
-                  <CaretRight size={14} color="var(--text-muted)" />
-                </button>
+                {appRole === 'no-access' ? (
+                  <button
+                    className="field-row-hover"
+                    onClick={() => setShowInvite(true)}
+                    style={rowBtnStyle}
+                  >
+                    <span style={spacerStyle} />
+                    <PaperPlaneTilt size={16} color="var(--text-muted)" />
+                    <span style={labelStyle}>Invite</span>
+                    <span style={{ flex: 1, fontSize: 14, color: 'var(--sage)', textAlign: 'right' }}>
+                      Give app access…
+                    </span>
+                    <CaretRight size={14} color="var(--text-muted)" />
+                  </button>
+                ) : (
+                  <button
+                    className="field-row-hover"
+                    onClick={() => setOpenPicker('appRole')}
+                    style={rowBtnStyle}
+                  >
+                    <span style={spacerStyle} />
+                    <IdentificationCard size={16} color="var(--text-muted)" />
+                    <span style={labelStyle}>App Role</span>
+                    <span style={{ flex: 1, fontSize: 14, color: 'var(--text-primary)', textAlign: 'right' }}>
+                      {{ admin: 'Admin', shepherd: 'Shepherd', 'welcome-team': 'Welcome Team', 'no-access': 'No Access' }[appRole]}
+                    </span>
+                    <CaretRight size={14} color="var(--text-muted)" />
+                  </button>
+                )}
               </DrawerSection>
             )}
 
@@ -385,6 +404,15 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
           onClose={() => setOpenPicker(null)}
           isAdmin={currentPersona.role === 'admin'}
           personName={person.englishName.split(' ')[0]}
+        />
+      )}
+      {showInvite && (
+        <InviteSheet
+          onClose={() => setShowInvite(false)}
+          initialEmail={person.email ?? ''}
+          initialRole="shepherd"
+          personName={person.englishName}
+          personId={person.id}
         />
       )}
       {showPositionPicker && (

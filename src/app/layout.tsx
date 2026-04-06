@@ -5,6 +5,7 @@ import { AppProvider } from '@/lib/context';
 import BottomNav from '@/components/BottomNav';
 import PersonaSwitcherBar from '@/components/PersonaSwitcherBar';
 import AuthSync from '@/components/AuthSync';
+import AccessGate from '@/components/AccessGate';
 
 const lora = Lora({
   subsets: ['latin'],
@@ -31,6 +32,7 @@ export default function RootLayout({
       <body style={{ background: 'var(--bg)', color: 'var(--text-primary)' }}>
         <AppProvider>
           <AuthSync />
+          <AccessGate />
           <PersonaSwitcherBar />
           <main className="max-w-[430px] mx-auto w-full pt-9 pb-20 px-4 min-h-screen">
             {children}
