@@ -11,7 +11,7 @@ interface AppContextType {
   currentPersona: Persona;
   accessDenied: boolean;
   switchPersona: (id: string) => void;
-  loginWithSupabaseUser: (userId: string, name: string, email?: string) => void;
+  loginWithSupabaseUser: (userId: string, name: string, email?: string, avatarUrl?: string) => void;
   addNote: (note: Omit<Note, 'id' | 'createdBy'> & { createdAt?: string }) => void;
   updateNote: (noteId: string, updates: Partial<Pick<Note, 'type' | 'content' | 'familyId' | 'personId' | 'visibility' | 'createdAt'>>) => void;
   deleteNote: (noteId: string) => void;
@@ -101,6 +101,39 @@ function mapPersona(row: Record<string, unknown>, assignedPeopleIds: string[]): 
     userId: row.user_id as string | undefined,
     assignedPeopleIds,
   };
+}
+
+/** Google profile pictures live on this domain — lets us distinguish from user-uploaded photos. */
+function isGoogleAvatarUrl(url: string): boolean {
+  return url.startsWith('https://lh3.googleusercontent.com/');
+}
+
+/**
+ * Persist the Google profile picture into the linked person's photo field.
+ * Only writes if the person has no photo yet or their current photo is a
+ * Google avatar URL (i.e. not a custom upload). This lets the Google picture
+ * auto-refresh on each sign-in while respecting user-uploaded overrides.
+ */
+async function syncGoogleAvatar(
+  supabase: ReturnType<typeof createClient>,
+  personId: string,
+  avatarUrl: string,
+  setData: React.Dispatch<React.SetStateAction<AppData>>,
+) {
+  const { data: row } = await supabase
+    .from('people')
+    .select('photo')
+    .eq('id', personId)
+    .maybeSingle();
+  if (row && (!row.photo || isGoogleAvatarUrl(row.photo))) {
+    await supabase.from('people').update({ photo: avatarUrl }).eq('id', personId);
+    setData((prev) => ({
+      ...prev,
+      people: prev.people.map((p) =>
+        p.id === personId ? { ...p, photo: avatarUrl } : p,
+      ),
+    }));
+  }
 }
 
 function mapNote(row: Record<string, unknown>): Note {
@@ -265,7 +298,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [data.personas]);
 
   // ── Supabase auth → persona sync ─────────────────────────────────────
-  const loginWithSupabaseUser = useCallback(async (userId: string, name: string, email?: string) => {
+  const loginWithSupabaseUser = useCallback(async (userId: string, name: string, email?: string, avatarUrl?: string) => {
     const supabase = createClient();
 
     // 0. Access gate — email must be on the approved list
@@ -307,6 +340,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         if (prev.personas.find((p) => p.id === persona.id)) return prev;
         return { ...prev, personas: [...prev.personas, persona] };
       });
+      if (avatarUrl && persona.personId) {
+        syncGoogleAvatar(supabase, persona.personId, avatarUrl, setData);
+      }
       return;
     }
 
@@ -343,6 +379,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
             ...prev,
             personas: prev.personas.map((p) => p.id === persona.id ? persona : p),
           }));
+          if (avatarUrl && persona.personId) {
+            syncGoogleAvatar(supabase, persona.personId, avatarUrl, setData);
+          }
           return;
         }
       }
