@@ -15,7 +15,7 @@ insert into families (id, label, tags) values ('liu-family', 'Liu Family', '{}')
 
 -- ── People ───────────────────────────────────────────
 insert into people (id, english_name, chinese_name, gender, is_shepherd, membership_status, language, family_id, follow_up_frequency_days, created_at) values ('xiang-you', 'Bob You', 'Xiang', NULL, false, 'member', 'english', NULL, 14, now()) on conflict (id) do nothing;
-insert into people (id, english_name, gender, is_shepherd, membership_status, language, family_id, follow_up_frequency_days, created_at) values ('long-cheng', 'Long Cheng', 'male', true, 'member', 'english', 'cheng-household', 14, now()) on conflict (id) do nothing;
+insert into people (id, english_name, gender, is_shepherd, membership_status, language, family_id, follow_up_frequency_days, email, created_at) values ('long-cheng', 'Long Cheng', 'male', true, 'member', 'english', 'cheng-household', 14, 'long.cheng@test.oicshepherd.com', now()) on conflict (id) do nothing;
 insert into people (id, english_name, gender, is_shepherd, membership_status, language, family_id, follow_up_frequency_days, created_at) values ('david-kao', 'David Kao', 'male', true, 'member', 'english', 'kao-household', 14, now()) on conflict (id) do nothing;
 insert into people (id, english_name, gender, is_shepherd, membership_status, language, family_id, follow_up_frequency_days, created_at) values ('yu-shan-tsai', 'Yu-Shan Tsai', 'female', false, 'member', 'english', 'kao-household', 14, now()) on conflict (id) do nothing;
 insert into people (id, english_name, gender, is_shepherd, membership_status, language, family_id, follow_up_frequency_days, created_at) values ('harmon-blanding', 'Harmon Blanding', NULL, false, 'archive', 'english', NULL, 14, now()) on conflict (id) do nothing;
@@ -31,7 +31,7 @@ insert into people (id, english_name, gender, is_shepherd, membership_status, la
 insert into people (id, english_name, gender, is_shepherd, membership_status, language, family_id, follow_up_frequency_days, created_at) values ('hanping-bao', 'Hanping Bao', NULL, false, 'archive', 'english', NULL, 14, now()) on conflict (id) do nothing;
 insert into people (id, english_name, gender, is_shepherd, membership_status, language, family_id, follow_up_frequency_days, created_at) values ('yinong-fang', 'Yinong Fang', NULL, false, 'member', 'english', NULL, 14, now()) on conflict (id) do nothing;
 insert into people (id, english_name, gender, is_shepherd, membership_status, language, family_id, follow_up_frequency_days, created_at) values ('daini-eades', 'Daini Eades', NULL, false, 'member', 'english', 'eades-family', 14, now()) on conflict (id) do nothing;
-insert into people (id, english_name, gender, is_shepherd, membership_status, language, family_id, follow_up_frequency_days, created_at) values ('asia-brady', 'Asia Brady', 'female', true, 'member', 'english', NULL, 14, now()) on conflict (id) do nothing;
+insert into people (id, english_name, gender, is_shepherd, membership_status, language, family_id, follow_up_frequency_days, email, created_at) values ('asia-brady', 'Asia Brady', 'female', true, 'member', 'english', NULL, 14, 'asia.brady@test.oicshepherd.com', now()) on conflict (id) do nothing;
 insert into people (id, english_name, gender, is_shepherd, membership_status, language, family_id, follow_up_frequency_days, created_at) values ('keimei-chang', 'KeiMei Chang', NULL, false, 'member', 'english', NULL, 14, now()) on conflict (id) do nothing;
 insert into people (id, english_name, gender, is_shepherd, membership_status, language, family_id, follow_up_frequency_days, created_at) values ('fangyu-ai', 'Fangyu Ai', 'female', false, 'member', 'english', 'cheng-household', 14, now()) on conflict (id) do nothing;
 insert into people (id, english_name, gender, is_shepherd, membership_status, language, family_id, follow_up_frequency_days, created_at) values ('james-forbes', 'James Forbes', NULL, false, 'member', 'english', NULL, 14, now()) on conflict (id) do nothing;
@@ -57,7 +57,7 @@ insert into people (id, english_name, chinese_name, gender, is_shepherd, members
 insert into people (id, english_name, gender, is_shepherd, membership_status, language, family_id, follow_up_frequency_days, created_at) values ('yingguang-liu', 'Yingguang Liu', NULL, false, 'member', 'english', NULL, 14, now()) on conflict (id) do nothing;
 insert into people (id, english_name, gender, is_shepherd, membership_status, language, family_id, follow_up_frequency_days, created_at) values ('tom-mullett', 'Tom Mullett', NULL, false, 'member', 'english', NULL, 14, now()) on conflict (id) do nothing;
 insert into people (id, english_name, gender, is_shepherd, membership_status, language, family_id, follow_up_frequency_days, created_at) values ('jennifer-mariner', 'Jennifer Mariner', NULL, false, 'member', 'english', NULL, 14, now()) on conflict (id) do nothing;
-insert into people (id, english_name, chinese_name, gender, is_shepherd, membership_status, language, family_id, follow_up_frequency_days, created_at) values ('qing-liu', 'Paul Liu', 'Qing', 'male', true, 'member', 'english', 'liu-family', 14, now()) on conflict (id) do nothing;
+insert into people (id, english_name, chinese_name, gender, is_shepherd, membership_status, language, family_id, follow_up_frequency_days, email, created_at) values ('qing-liu', 'Paul Liu', 'Qing', 'male', true, 'member', 'english', 'liu-family', 14, 'paul.liu@test.oicshepherd.com', now()) on conflict (id) do nothing;
 insert into people (id, english_name, gender, is_shepherd, membership_status, language, family_id, follow_up_frequency_days, created_at) values ('mark-miller', 'Mark Miller', NULL, false, 'member', 'english', NULL, 14, now()) on conflict (id) do nothing;
 insert into people (id, english_name, gender, is_shepherd, membership_status, language, family_id, follow_up_frequency_days, created_at) values ('steven-ni', 'Steven Ni', NULL, false, 'member', 'english', NULL, 14, now()) on conflict (id) do nothing;
 insert into people (id, english_name, gender, is_shepherd, membership_status, language, family_id, follow_up_frequency_days, created_at) values ('chris-nixon', 'Chris Nixon', NULL, false, 'member', 'english', NULL, 14, now()) on conflict (id) do nothing;
@@ -67,7 +67,7 @@ insert into people (id, english_name, gender, is_shepherd, membership_status, la
 insert into people (id, english_name, gender, is_shepherd, membership_status, language, family_id, follow_up_frequency_days, created_at) values ('vicki-miller', 'Vicki Miller', NULL, false, 'member', 'english', NULL, 14, now()) on conflict (id) do nothing;
 insert into people (id, english_name, gender, is_shepherd, membership_status, language, family_id, follow_up_frequency_days, created_at) values ('franklin-wang', 'Franklin Wang', 'male', false, 'member', 'english', NULL, 14, now()) on conflict (id) do nothing;
 insert into people (id, english_name, gender, is_shepherd, membership_status, language, family_id, follow_up_frequency_days, created_at) values ('iona-nixon', 'Iona Nixon', NULL, false, 'member', 'english', NULL, 14, now()) on conflict (id) do nothing;
-insert into people (id, english_name, gender, is_shepherd, membership_status, language, family_id, follow_up_frequency_days, created_at) values ('miranda-sparklin', 'Miranda Sparklin', NULL, false, 'member', 'english', 'sparklin-family', 14, now()) on conflict (id) do nothing;
+insert into people (id, english_name, gender, is_shepherd, membership_status, language, family_id, follow_up_frequency_days, email, created_at) values ('miranda-sparklin', 'Miranda Sparklin', NULL, false, 'member', 'english', 'sparklin-family', 14, 'miranda.sparklin@test.oicshepherd.com', now()) on conflict (id) do nothing;
 insert into people (id, english_name, chinese_name, gender, is_shepherd, membership_status, language, family_id, follow_up_frequency_days, created_at) values ('jessica-wang', 'Jessica Wang', 'Huijin', 'female', true, 'member', 'english', NULL, 14, now()) on conflict (id) do nothing;
 insert into people (id, english_name, gender, is_shepherd, membership_status, language, family_id, follow_up_frequency_days, created_at) values ('ryan-sparklin', 'Ryan Sparklin', NULL, false, 'member', 'english', 'sparklin-family', 14, now()) on conflict (id) do nothing;
 insert into people (id, english_name, gender, is_shepherd, membership_status, language, family_id, follow_up_frequency_days, created_at) values ('shawn-thompson', 'Shawn Thompson', NULL, false, 'member', 'english', NULL, 14, now()) on conflict (id) do nothing;
@@ -357,7 +357,7 @@ insert into group_members (group_id, person_id) values ('young-family-group', 'r
 insert into personas (id, name, role, person_id) values ('admin', 'Pastor Qing (Paul) Liu', 'admin', 'qing-liu') on conflict (id) do nothing;
 insert into personas (id, name, role, person_id) values ('shepherd-1', 'Long Cheng', 'shepherd', 'long-cheng') on conflict (id) do nothing;
 insert into personas (id, name, role, person_id) values ('shepherd-2', 'Asia Brady', 'shepherd', 'asia-brady') on conflict (id) do nothing;
-insert into personas (id, name, role) values ('welcome-team', 'Welcome Team', 'welcome-team') on conflict (id) do nothing;
+insert into personas (id, name, role, person_id) values ('welcome-team', 'Welcome Team', 'welcome-team', 'miranda-sparklin') on conflict (id) do nothing;
 
 -- ── Persona → people assignments ────────────────────
 insert into persona_people (persona_id, person_id) values ('admin', 'long-cheng') on conflict do nothing;
@@ -599,3 +599,8 @@ insert into person_shepherds (person_id, shepherd_id) values ('jenna-bradfield',
 insert into person_shepherds (person_id, shepherd_id) values ('alpha-zhong', 'david-kao') on conflict do nothing;
 insert into person_shepherds (person_id, shepherd_id) values ('annie-xing', 'melinda-li') on conflict do nothing;
 
+-- ── Approved emails (test accounts) ─────────────────
+insert into approved_emails (email, label) values ('paul.liu@test.oicshepherd.com', 'Pastor Paul Liu (test)') on conflict (email) do nothing;
+insert into approved_emails (email, label) values ('long.cheng@test.oicshepherd.com', 'Long Cheng (test)') on conflict (email) do nothing;
+insert into approved_emails (email, label) values ('asia.brady@test.oicshepherd.com', 'Asia Brady (test)') on conflict (email) do nothing;
+insert into approved_emails (email, label) values ('miranda.sparklin@test.oicshepherd.com', 'Miranda Sparklin (test)') on conflict (email) do nothing;

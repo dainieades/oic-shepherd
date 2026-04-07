@@ -30,10 +30,16 @@ export default function SettingsPage() {
     ? data.people.find((p) => p.id === currentPersona.personId)
     : null;
 
-  // Prefer Google/Supabase info, then linked person's name, then persona name
-  const displayName = supabaseUser?.user_metadata?.full_name ?? person?.englishName ?? currentPersona.name;
-  const displayEmail = supabaseUser?.email ?? person?.email ?? '';
-  const avatarUrl = supabaseUser?.user_metadata?.avatar_url ?? null;
+  // When the dev persona switcher is overriding the logged-in user, show the
+  // persona's identity instead of the Google account's identity.
+  const isDevOverride = supabaseUser && currentPersona.userId !== supabaseUser.id;
+  const displayName = isDevOverride
+    ? (person?.englishName ?? currentPersona.name)
+    : (supabaseUser?.user_metadata?.full_name ?? person?.englishName ?? currentPersona.name);
+  const displayEmail = isDevOverride
+    ? (person?.email ?? '')
+    : (supabaseUser?.email ?? person?.email ?? '');
+  const avatarUrl = isDevOverride ? null : (supabaseUser?.user_metadata?.avatar_url ?? null);
   const initials = displayName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
 
   const roleLabel =
