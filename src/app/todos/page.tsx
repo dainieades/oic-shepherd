@@ -206,7 +206,7 @@ export default function TodosPage() {
     <div style={{ paddingBottom: 32 }}>
       {/* Sticky collapsing header */}
       <div style={{
-        position: 'sticky', top: 36, zIndex: 20,
+        position: 'sticky', top: 0, zIndex: 20,
         background: 'var(--bg)',
         marginLeft: -16, marginRight: -16,
         paddingLeft: 16, paddingRight: 16,
@@ -218,7 +218,7 @@ export default function TodosPage() {
             <ActionButtons />
           </div>
         ) : (
-          <div style={{ paddingTop: 20, paddingBottom: 14, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+          <div style={{ paddingTop: 20, paddingBottom: 14, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <h1 style={{ fontSize: 32, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.03em', lineHeight: 1 }}>To-dos</h1>
             <ActionButtons />
           </div>

@@ -191,7 +191,7 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
     <>
       {/* ── Fixed header ── */}
       <div style={{
-        position: 'fixed', top: 36, left: 0, right: 0, zIndex: 30,
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 30,
         background: 'var(--bg)',
         borderBottom: '1px solid var(--border-light)',
         height: 54,

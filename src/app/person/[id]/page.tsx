@@ -181,9 +181,9 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
   return (
     <div style={{ paddingBottom: 32 }}>
 
-      {/* ── Nav bar — sticky below persona switcher (36px) ── */}
+      {/* ── Nav bar ── */}
       <div style={{
-        position: 'sticky', top: 36, zIndex: 40,
+        position: 'sticky', top: 0, zIndex: 40,
         background: 'var(--bg)',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         height: 54,

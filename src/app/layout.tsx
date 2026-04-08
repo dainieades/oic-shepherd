@@ -3,7 +3,7 @@ import { Lora } from 'next/font/google';
 import './globals.css';
 import { AppProvider } from '@/lib/context';
 import BottomNav from '@/components/BottomNav';
-import PersonaSwitcherBar from '@/components/PersonaSwitcherBar';
+
 import AuthSync from '@/components/AuthSync';
 import AccessGate from '@/components/AccessGate';
 
@@ -33,8 +33,7 @@ export default function RootLayout({
         <AppProvider>
           <AuthSync />
           <AccessGate />
-          <PersonaSwitcherBar />
-          <main className={`max-w-[430px] mx-auto w-full pb-20 px-4 min-h-screen ${process.env.NODE_ENV === 'development' ? 'pt-9' : ''}`}>
+          <main className="max-w-[430px] mx-auto w-full pb-20 px-4 min-h-screen">
             {children}
           </main>
           <BottomNav />

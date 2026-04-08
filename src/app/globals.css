@@ -47,8 +47,6 @@
   --red-light: #FBF0EF;
   --red-border: #EDBBBA;
 
-  --dev-bg: #1A1A1A;
-  --dev-border: #333;
 
   --radius-sm: 10px;
   --radius: 14px;
@@ -112,11 +110,6 @@ body {
 .card-due-soon { border-left: 3px solid var(--amber) !important; }
 .card-ok       { border-left: 3px solid transparent  !important; }
 
-/* ── Dev rail ──────────────────────────────────── */
-.dev-rail {
-  background: var(--dev-bg);
-  border-bottom: 1px solid var(--dev-border);
-}
 
 /* ── Interactive affordance ─────────────────────── */
 
