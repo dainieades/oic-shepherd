@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Envelope, Key, CaretDown, CaretUp } from '@phosphor-icons/react';
 import { createClient } from '@/utils/supabase/client';
 
@@ -15,6 +16,7 @@ export default function SignInPage() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [status, setStatus] = useState<Status>({ type: 'idle' });
+  const router = useRouter();
 
   const supabase = createClient();
 
@@ -59,8 +61,11 @@ export default function SignInPage() {
       email: email.trim(),
       password,
     });
-    if (error) setStatus({ type: 'error', message: error.message });
-    // On success the middleware redirects to /
+    if (error) {
+      setStatus({ type: 'error', message: error.message });
+    } else {
+      router.push('/');
+    }
   }
 
   const isLoading = status.type === 'loading';

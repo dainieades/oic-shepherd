@@ -34,7 +34,7 @@ export default function RootLayout({
           <AuthSync />
           <AccessGate />
           <PersonaSwitcherBar />
-          <main className="max-w-[430px] mx-auto w-full pt-9 pb-20 px-4 min-h-screen">
+          <main className={`max-w-[430px] mx-auto w-full pb-20 px-4 min-h-screen ${process.env.NODE_ENV === 'development' ? 'pt-9' : ''}`}>
             {children}
           </main>
           <BottomNav />

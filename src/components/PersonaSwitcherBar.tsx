@@ -16,6 +16,8 @@ export default function PersonaSwitcherBar() {
   const router = useRouter();
   const isSignIn = pathname === '/signin';
 
+  // Only show in development mode
+  if (process.env.NODE_ENV !== 'development') return null;
   if (pathname === '/signup') return null;
 
   return (
