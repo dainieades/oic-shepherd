@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { CaretRight, Trash, User, CalendarBlank, ArrowsClockwise, Bell, UserPlus } from '@phosphor-icons/react';
+import { CaretRight, Trash, User, CalendarBlank, ArrowsClockwise, Bell, UserPlus, PlusCircle } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { TodoRepeat, TodoAlert, Todo } from '@/lib/types';
 import PersonFamilyPicker from './PersonFamilyPicker';
@@ -60,15 +60,24 @@ export default function AddTodoModal({ onClose, prefillFamilyId, prefillPersonId
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const dueDateRef = useRef<HTMLInputElement>(null);
 
+  const whoNames = [
+    ...familyIds.map((id) => data.families.find((f) => f.id === id)?.label ?? ''),
+    ...personIds.map((id) => data.people.find((p) => p.id === id)?.englishName ?? ''),
+  ].filter(Boolean);
   const whoLabel = (() => {
-    const total = familyIds.length + personIds.length;
-    if (total === 0) return null;
-    const names = [
-      ...familyIds.map((id) => data.families.find((f) => f.id === id)?.label ?? ''),
-      ...personIds.map((id) => data.people.find((p) => p.id === id)?.englishName ?? ''),
-    ].filter(Boolean);
-    if (total === 1) return names[0];
-    return `${names[0]} +${total - 1} more`;
+    if (whoNames.length === 0) return null;
+    // ~24 chars/line at 14px in the available field width (~180px); 3 lines ≈ 72 chars
+    const MAX_CHARS = 72;
+    let running = 0;
+    const shown: string[] = [];
+    for (const name of whoNames) {
+      const cost = shown.length === 0 ? name.length : 2 + name.length;
+      if (running + cost > MAX_CHARS && shown.length > 0) break;
+      shown.push(name);
+      running += cost;
+    }
+    const hidden = whoNames.length - shown.length;
+    return shown.join(', ') + (hidden > 0 ? ` +${hidden}` : '');
   })();
 
   const handleSave = () => {
@@ -177,6 +186,7 @@ return (
                     value={whoLabel ?? 'Select…'}
                     valueColor={!whoLabel ? 'var(--text-muted)' : undefined}
                     onClick={() => setShowWhoPicker(true)}
+                    trailingIcon={<PlusCircle size={22} color="var(--sage)" weight="fill" />}
                   />
 
                   {/* Due date */}
@@ -291,24 +301,27 @@ return (
   );
 }
 
-function FieldRow({ icon, label, value, valueColor, onClick }: {
-  icon: React.ReactNode; label: string; value: string; valueColor?: string; onClick: () => void;
+function FieldRow({ icon, label, value, valueColor, onClick, trailingIcon }: {
+  icon: React.ReactNode; label: string; value: string; valueColor?: string; onClick: () => void; trailingIcon?: React.ReactNode;
 }) {
   return (
     <button
       className="field-row-hover"
       onClick={onClick}
       style={{
-        display: 'flex', alignItems: 'center', gap: 10,
+        display: 'flex', alignItems: 'flex-start', gap: 10,
         paddingTop: 12, paddingBottom: 12,
         background: 'none', border: 'none', borderBottom: '1px solid var(--border-light)',
         cursor: 'pointer', textAlign: 'left' as const,
       }}
     >
-      <span style={{ width: 24, display: 'flex', justifyContent: 'center', flexShrink: 0, color: 'var(--text-muted)' }}>{icon}</span>
-      <span style={{ fontSize: 12, color: 'var(--text-muted)', width: 60, flexShrink: 0 }}>{label}</span>
-      <span style={{ fontSize: 14, color: valueColor ?? 'var(--text-primary)', flex: 1 }}>{value}</span>
-      <CaretRight size={14} color="var(--text-muted)" />
+      <span style={{ width: 24, display: 'flex', justifyContent: 'center', flexShrink: 0, color: 'var(--text-muted)', paddingTop: 1 }}>{icon}</span>
+      <span style={{ fontSize: 12, color: 'var(--text-muted)', width: 60, flexShrink: 0, paddingTop: 2 }}>{label}</span>
+      <span style={{
+        fontSize: 14, color: valueColor ?? 'var(--text-primary)', flex: 1,
+        wordBreak: 'break-word',
+      }}>{value}</span>
+      {trailingIcon ?? <CaretRight size={14} color="var(--text-muted)" />}
     </button>
   );
 }

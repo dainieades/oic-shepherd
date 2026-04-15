@@ -1,7 +1,26 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
-import { AppData, Persona, Person, Family, Note, Todo, NoteType, NoteVisibility, TodoAlert, TodoRepeat, AppRole, ChurchAttendance } from './types';
+import { createContext, useContext, useState, useEffect, ReactNode, useCallback, Dispatch, SetStateAction } from 'react';
+import { AppData, Persona, Person, Family, Note, Todo, NoteType, NoteVisibility, TodoAlert, TodoRepeat, AppRole, ChurchAttendance, MembershipStatus } from './types';
+
+// ── Shared filter types (exported so pages can import them) ──────────────────
+
+export type HomeSortKey = 'last-contacted' | 'last-contacted-recent' | 'name' | 'name-desc';
+
+export interface HomeFilters {
+  shepherds: string[];
+  memberships: MembershipStatus[];
+  attendances: ChurchAttendance[];
+  groups: string[];
+  showArchived: boolean;
+  discipleship: ('in' | 'not-in')[];
+  appRoles: AppRole[];
+}
+
+export const HOME_DEFAULT_FILTERS: HomeFilters = {
+  shepherds: ['mine'], memberships: [], attendances: [], groups: [],
+  showArchived: false, discipleship: [], appRoles: [],
+};
 import { initialData } from './data';
 import { generateId } from './utils';
 import { createClient } from '@/utils/supabase/client';
@@ -34,6 +53,15 @@ interface AppContextType {
   assignShepherdsToFamily: (familyId: string, shepherdIds: string[]) => void;
   setFollowUpFrequency: (personId: string, days: number) => void;
   canViewNote: (note: Note) => boolean;
+  // Persistent filter state (survives tab navigation within a session)
+  homeFilters: HomeFilters;
+  setHomeFilters: Dispatch<SetStateAction<HomeFilters>>;
+  homeSortKey: HomeSortKey;
+  setHomeSortKey: Dispatch<SetStateAction<HomeSortKey>>;
+  todosShepherdFilter: string[];
+  setTodosShepherdFilter: Dispatch<SetStateAction<string[]>>;
+  logsShepherdFilter: string[];
+  setLogsShepherdFilter: Dispatch<SetStateAction<string[]>>;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -174,6 +202,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [loaded, setLoaded] = useState(false);
   const [accessDenied, setAccessDenied] = useState(false);
 
+  // ── Persistent page filter state ─────────────────────────────────────
+  const [homeFilters, setHomeFilters] = useState<HomeFilters>(HOME_DEFAULT_FILTERS);
+  const [homeSortKey, setHomeSortKey] = useState<HomeSortKey>('last-contacted');
+  const [todosShepherdFilter, setTodosShepherdFilter] = useState<string[]>(['mine']);
+  const [logsShepherdFilter, setLogsShepherdFilter] = useState<string[]>(['mine']);
+
   // ── Load all data from Supabase on mount ─────────────────────────────
   useEffect(() => {
     async function load() {
@@ -296,6 +330,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('shepherd-app-persona', id);
     }
   }, [data.personas]);
+
+  // Reset all page filters when the active persona changes
+  useEffect(() => {
+    const resetHome = currentPersona.role === 'welcome-team'
+      ? { ...HOME_DEFAULT_FILTERS, shepherds: [] }
+      : HOME_DEFAULT_FILTERS;
+    setHomeFilters(resetHome);
+    setHomeSortKey('last-contacted');
+    setTodosShepherdFilter(['mine']);
+    setLogsShepherdFilter(['mine']);
+  }, [currentPersona.id]);
 
   // ── Supabase auth → persona sync ─────────────────────────────────────
   const loginWithSupabaseUser = useCallback(async (userId: string, name: string, email?: string, avatarUrl?: string) => {
@@ -870,7 +915,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   return (
     <AppContext.Provider
-      value={{ data, currentPersona, accessDenied, switchPersona, loginWithSupabaseUser, addNote, updateNote, deleteNote, addTodo, updateTodo, deleteTodo, toggleTodo, addPerson, deletePerson, addFamily, updatePerson, assignShepherds, updateFamily, updateFamilyMembers, addGroup, updateGroup, updateGroupMembers, assignGroupsToPerson, assignGroupsToFamily, assignShepherdsToFamily, setFollowUpFrequency, canViewNote }}
+      value={{ data, currentPersona, accessDenied, switchPersona, loginWithSupabaseUser, addNote, updateNote, deleteNote, addTodo, updateTodo, deleteTodo, toggleTodo, addPerson, deletePerson, addFamily, updatePerson, assignShepherds, updateFamily, updateFamilyMembers, addGroup, updateGroup, updateGroupMembers, assignGroupsToPerson, assignGroupsToFamily, assignShepherdsToFamily, setFollowUpFrequency, canViewNote, homeFilters, setHomeFilters, homeSortKey, setHomeSortKey, todosShepherdFilter, setTodosShepherdFilter, logsShepherdFilter, setLogsShepherdFilter }}
     >
       {children}
     </AppContext.Provider>

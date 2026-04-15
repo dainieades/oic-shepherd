@@ -114,7 +114,13 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
 
   const family    = person.familyId ? data.families.find((f) => f.id === person.familyId) : null;
   const groups    = data.groups.filter((g) => person.groupIds.includes(g.id));
-  const shepherds = data.personas.filter((p) => person.assignedShepherdIds.includes(p.id));
+  const personaPersonIds = new Set(data.personas.map((p) => p.personId).filter(Boolean));
+  const shepherds: { id: string; name: string; personId?: string }[] = [
+    ...data.personas.filter((p) => person.assignedShepherdIds.includes(p.id)),
+    ...data.people
+      .filter((p) => p.isShepherd && !personaPersonIds.has(p.id) && person.assignedShepherdIds.includes(p.id))
+      .map((p) => ({ id: p.id, name: p.englishName, personId: p.id })),
+  ];
   const notes     = getPersonNotes(person.id, data.notes).filter((n) => canViewNote(n));
   const todos     = data.todos.filter((t) => t.personId === person.id);
   const categorized = categorizeTodos(todos);

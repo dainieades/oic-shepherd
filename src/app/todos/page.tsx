@@ -27,7 +27,7 @@ function fmtDue(iso: string) {
 }
 
 export default function TodosPage() {
-  const { data, currentPersona, toggleTodo } = useApp();
+  const { data, currentPersona, toggleTodo, todosShepherdFilter: shepherdFilter, setTodosShepherdFilter: setShepherdFilter } = useApp();
   const [showAddTodo, setShowAddTodo] = useState(false);
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
   const [showAddLog, setShowAddLog] = useState(false);
@@ -42,7 +42,6 @@ export default function TodosPage() {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Shepherd filter (admin only)
-  const [shepherdFilter, setShepherdFilter] = useState<string[]>(['mine']);
   const [showFilter, setShowFilter] = useState(false);
   const [draftFilter, setDraftFilter] = useState<string[]>(['mine']);
   const [shepherdSearch, setShepherdSearch] = useState('');
@@ -54,8 +53,6 @@ export default function TodosPage() {
   }, []);
 
   useEffect(() => {
-    setShepherdFilter(['mine']);
-    setDraftFilter(['mine']);
     setSearch('');
     setShowSearch(false);
   }, [currentPersona.id]);
@@ -131,10 +128,10 @@ export default function TodosPage() {
     const personaPersonIds = new Set(data.personas.map((p) => p.personId).filter(Boolean));
     return [
       ...data.personas
-        .filter((p) => p.role === 'shepherd' || p.role === 'admin')
+        .filter((p) => (p.role === 'shepherd' || p.role === 'admin') && p.id !== currentPersona.id)
         .map((p) => ({ id: p.id, name: p.name })),
       ...data.people
-        .filter((p) => p.isShepherd && !personaPersonIds.has(p.id))
+        .filter((p) => p.isShepherd && !personaPersonIds.has(p.id) && p.id !== currentPersona.personId)
         .map((p) => ({ id: p.id, name: p.englishName })),
     ];
   })();
@@ -449,7 +446,7 @@ function TodoSection({ label, todos, onToggle, onEdit, data, defaultOpen = true 
           {todos.map((t) => {
             const person = t.personId ? data.people.find((p) => p.id === t.personId) : null;
             const family = t.familyId ? data.families.find((f) => f.id === t.familyId) : null;
-            const tag = family?.label || person?.englishName || '';
+            const targetChips = [family?.label, person?.englishName].filter(Boolean) as string[];
             const hasAlert = t.alert && t.alert !== 'none';
             const hasRepeat = t.repeat && t.repeat !== 'none';
             return (
@@ -476,7 +473,7 @@ function TodoSection({ label, todos, onToggle, onEdit, data, defaultOpen = true 
                   <p style={{ fontSize: 14, color: t.completed ? 'var(--text-muted)' : 'var(--text-primary)', lineHeight: 1.4, marginBottom: 4, textDecoration: t.completed ? 'line-through' : 'none' }}>
                     {t.title}
                   </p>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'nowrap', overflow: 'hidden' }}>
                     {t.dueDate && (
                       <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--text-muted)' }}>
                         <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
@@ -495,9 +492,14 @@ function TodoSection({ label, todos, onToggle, onEdit, data, defaultOpen = true 
                         <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
                       </svg>
                     )}
-                    {tag && (
-                      <span style={{ fontSize: 10, color: 'var(--blue)', padding: '1px 6px', borderRadius: '999px', background: 'var(--blue-light)', fontWeight: 500 }}>
-                        {tag}
+                    {targetChips.length > 0 && (
+                      <span style={{ fontSize: 10, color: 'var(--blue)', padding: '1px 6px', borderRadius: '999px', background: 'var(--blue-light)', fontWeight: 500, flexShrink: 0 }}>
+                        {targetChips[0]}
+                      </span>
+                    )}
+                    {targetChips.length > 1 && (
+                      <span style={{ fontSize: 10, color: 'var(--blue)', padding: '1px 6px', borderRadius: '999px', background: 'var(--blue-light)', fontWeight: 500, flexShrink: 0 }}>
+                        +{targetChips.length - 1}
                       </span>
                     )}
                   </div>

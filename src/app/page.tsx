@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { useApp } from '@/lib/context';
+import { useApp, HomeFilters, HomeSortKey, HOME_DEFAULT_FILTERS } from '@/lib/context';
 import {
   getPriorityScore, getTimeAgo,
   searchFamiliesAndPeople, getFamilyLastContact, getFamilyPriorityScore,
@@ -14,44 +14,22 @@ import AddPersonModal from '@/components/AddPersonModal';
 import AddFamilyModal from '@/components/AddFamilyModal';
 import InviteSheet from '@/components/InviteSheet';
 
-type SortKey = 'last-contacted' | 'last-contacted-recent' | 'name' | 'group';
-
-// Multi-select filter model. Empty array = no restriction ("all").
-// shepherds: 'mine' is a special value meaning the current persona's assigned people.
-// showArchived is a separate dimension — archive status is hidden by default.
-interface Filters {
-  shepherds: string[];      // 'mine' | shepherdId[]
-  memberships: MembershipStatus[];
-  attendances: ChurchAttendance[];
-  groups: string[];
-  showArchived: boolean;
-  discipleship: ('in' | 'not-in')[];
-  appRoles: AppRole[];
-}
-
-const DEFAULT_FILTERS: Filters = { shepherds: ['mine'], memberships: [], attendances: [], groups: [], showArchived: false, discipleship: [], appRoles: [] };
-
-const SORT_OPTIONS: { key: SortKey; label: string }[] = [
+const SORT_OPTIONS: { key: HomeSortKey; label: string }[] = [
   { key: 'last-contacted',        label: 'Logged longest ago' },
   { key: 'last-contacted-recent', label: 'Logged most recently' },
   { key: 'name',                  label: 'Name A → Z' },
-  { key: 'group',                 label: 'Group A → Z' },
+  { key: 'name-desc',             label: 'Name Z → A' },
 ];
 
 export default function PeoplePage() {
-  const { data, currentPersona } = useApp();
+  const { data, currentPersona, homeFilters: filters, setHomeFilters: setFilters, homeSortKey: sortKey, setHomeSortKey: setSortKey } = useApp();
   const [search, setSearch]        = useState('');
-  const [sortKey, setSortKey]      = useState<SortKey>('last-contacted');
-  const startFilters = currentPersona.role === 'welcome-team'
-    ? { ...DEFAULT_FILTERS, shepherds: [] }
-    : DEFAULT_FILTERS;
-  const [filters, setFilters]      = useState<Filters>(startFilters);
   const [showSearch, setShowSearch] = useState(false);
   const [showFilter, setShowFilter]= useState(false);
   const [showSort, setShowSort]    = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const [draft, setDraft]          = useState<Filters>(startFilters);
-  const [draftSort, setDraftSort]  = useState<SortKey>('last-contacted');
+  const [draft, setDraft]          = useState<HomeFilters>(filters);
+  const [draftSort, setDraftSort]  = useState<HomeSortKey>(sortKey);
   const [activeCategory, setActiveCategory] = useState<'sort' | 'shepherd' | 'membership' | 'discipleship' | 'group' | 'app-role'>('shepherd');
   const [shepherdSearch, setShepherdSearch] = useState('');
   const [showAddChoice, setShowAddChoice] = useState(false);
@@ -62,14 +40,6 @@ export default function PeoplePage() {
   const sortRef = useRef<HTMLDivElement>(null);
 
   const isAdmin = currentPersona.role === 'admin';
-
-  useEffect(() => {
-    const resetFilters = currentPersona.role === 'welcome-team'
-      ? { ...DEFAULT_FILTERS, shepherds: [] }
-      : DEFAULT_FILTERS;
-    setFilters(resetFilters);
-    setDraft(resetFilters);
-  }, [currentPersona.id]);
 
   useEffect(() => {
     function outside(e: MouseEvent) {
@@ -87,7 +57,7 @@ export default function PeoplePage() {
 
   const openFilter  = () => { setDraft(filters); setDraftSort(sortKey); setActiveCategory('shepherd'); setShepherdSearch(''); setShowFilter(true); };
   const applyFilter = () => { setFilters(draft); setSortKey(draftSort); setShowFilter(false); };
-  const clearFilter = () => { setDraft({ ...DEFAULT_FILTERS, attendances: [] }); setDraftSort('last-contacted'); setShepherdSearch(''); };
+  const clearFilter = () => { setDraft({ ...HOME_DEFAULT_FILTERS, attendances: [] }); setDraftSort('last-contacted'); setShepherdSearch(''); };
 
   // Build the list: families + solo individuals
   const entries = useMemo(() => {
@@ -190,11 +160,8 @@ export default function PeoplePage() {
           if (aTime !== bTime) return bTime - aTime;
           return aName.localeCompare(bName);
         }
-        case 'group': {
-          const aGroup = aMembers.flatMap((m) => m.groupIds).map((id) => data.groups.find((g) => g.id === id)?.name || '').sort()[0] || 'zzz';
-          const bGroup = bMembers.flatMap((m) => m.groupIds).map((id) => data.groups.find((g) => g.id === id)?.name || '').sort()[0] || 'zzz';
-          return aGroup.localeCompare(bGroup);
-        }
+        case 'name-desc':
+          return bName.localeCompare(aName);
         default: // priority
           return getFamilyPriorityScore(bMembers) - getFamilyPriorityScore(aMembers);
       }
@@ -902,9 +869,14 @@ function IndividualRow({ person }: { person: Person }) {
           width: 44, height: 44, borderRadius: '50%',
           background: palette.bg, color: palette.color,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 13, fontWeight: 700, flexShrink: 0,
+          fontSize: 13, fontWeight: 700, flexShrink: 0, overflow: 'hidden',
         }}>
-          {initials}
+          {person.photo ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={person.photo} alt={person.englishName} style={{ width: 44, height: 44, objectFit: 'cover' }} />
+          ) : (
+            initials
+          )}
         </div>
 
         {/* Info */}

@@ -14,7 +14,7 @@ const noteTypeColors: Record<string, { bg: string; color: string }> = {
 };
 
 export default function LogsPage() {
-  const { data, currentPersona, canViewNote } = useApp();
+  const { data, currentPersona, canViewNote, logsShepherdFilter: shepherdFilter, setLogsShepherdFilter: setShepherdFilter } = useApp();
   const [showAddLog, setShowAddLog] = useState(false);
   const [editingNote, setEditingNote] = useState<Note | null>(null);
   const [scrolled, setScrolled] = useState(false);
@@ -26,7 +26,6 @@ export default function LogsPage() {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Shepherd filter (admin only): array of selected values, 'mine' = current persona's sheep
-  const [shepherdFilter, setShepherdFilter] = useState<string[]>(['mine']);
   const [showFilter, setShowFilter] = useState(false);
   const [draftFilter, setDraftFilter] = useState<string[]>(['mine']);
   const [shepherdSearch, setShepherdSearch] = useState('');
@@ -37,10 +36,8 @@ export default function LogsPage() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Reset filter when persona changes
+  // Reset search when persona changes (filter reset is handled by context)
   useEffect(() => {
-    setShepherdFilter(['mine']);
-    setDraftFilter(['mine']);
     setSearch('');
     setShowSearch(false);
   }, [currentPersona.id]);
@@ -109,10 +106,10 @@ export default function LogsPage() {
     const personaPersonIds = new Set(data.personas.map((p) => p.personId).filter(Boolean));
     return [
       ...data.personas
-        .filter((p) => p.role === 'shepherd' || p.role === 'admin')
+        .filter((p) => (p.role === 'shepherd' || p.role === 'admin') && p.id !== currentPersona.id)
         .map((p) => ({ id: p.id, name: p.name })),
       ...data.people
-        .filter((p) => p.isShepherd && !personaPersonIds.has(p.id))
+        .filter((p) => p.isShepherd && !personaPersonIds.has(p.id) && p.id !== currentPersona.personId)
         .map((p) => ({ id: p.id, name: p.englishName })),
     ];
   })();
@@ -266,7 +263,7 @@ export default function LogsPage() {
           const creator = data.personas.find((p) => p.id === note.createdBy);
           const person = note.personId ? data.people.find((p) => p.id === note.personId) : null;
           const family = note.familyId ? data.families.find((f) => f.id === note.familyId) : null;
-          const targetName = family?.label || person?.englishName || '';
+          const targetChips = [family?.label, person?.englishName].filter(Boolean) as string[];
           return (
             <button
               key={note.id}
@@ -275,9 +272,14 @@ export default function LogsPage() {
               style={{ paddingTop: 10, paddingBottom: 10, borderBottom: '1px solid var(--border-light)', border: 'none', borderBottomStyle: 'solid', borderBottomWidth: 1, borderBottomColor: 'var(--border-light)', cursor: 'pointer', textAlign: 'left' as const }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: '999px', background: typeStyle.bg, color: typeStyle.color }}>{getNoteTypeLabel(note.type).toUpperCase()}</span>
-                  {targetName && <span style={{ fontSize: 12, color: 'var(--sage)', fontWeight: 500 }}>{targetName}</span>}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'nowrap', flex: 1, minWidth: 0, overflow: 'hidden' }}>
+                  <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: '999px', background: typeStyle.bg, color: typeStyle.color, flexShrink: 0 }}>{getNoteTypeLabel(note.type).toUpperCase()}</span>
+                  {targetChips.length > 0 && (
+                    <span style={{ fontSize: 10, color: 'var(--blue)', fontWeight: 500, padding: '1px 6px', borderRadius: '999px', background: 'var(--blue-light)', flexShrink: 0 }}>{targetChips[0]}</span>
+                  )}
+                  {targetChips.length > 1 && (
+                    <span style={{ fontSize: 10, color: 'var(--blue)', fontWeight: 500, padding: '1px 6px', borderRadius: '999px', background: 'var(--blue-light)', flexShrink: 0 }}>+{targetChips.length - 1}</span>
+                  )}
                 </div>
                 <span style={{ fontSize: 11, color: 'var(--text-muted)', flexShrink: 0, marginLeft: 8 }}>{getTimeAgo(note.createdAt)}</span>
               </div>

@@ -308,8 +308,8 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
                 <span style={labelStyle}>Shepherd by</span>
                 <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                   {shepherdIds.length > 0
-                    ? data.personas.filter((p) => shepherdIds.includes(p.id)).map((p) => (
-                        <span key={p.id} style={{ fontSize: 11, fontWeight: 500, padding: '2px 8px', borderRadius: 999, background: 'var(--sage-light)', color: 'var(--sage)', flexShrink: 0 }}>{p.name}</span>
+                    ? shepherdEntries.filter((e) => shepherdIds.includes(e.id)).map((e) => (
+                        <span key={e.id} style={{ fontSize: 11, fontWeight: 500, padding: '2px 8px', borderRadius: 999, background: 'var(--sage-light)', color: 'var(--sage)', flexShrink: 0 }}>{e.name}</span>
                       ))
                     : <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>None</span>
                   }
