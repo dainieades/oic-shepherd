@@ -4,8 +4,7 @@ import { useState, useMemo, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useApp, HomeFilters, HomeSortKey, HOME_DEFAULT_FILTERS } from '@/lib/context';
 import {
-  getPriorityScore, getTimeAgo,
-  searchFamiliesAndPeople, getFamilyLastContact, getFamilyPriorityScore,
+  searchFamiliesAndPeople, getFamilyPriorityScore,
   getMembershipLabel, getChurchAttendanceLabel,
 } from '@/lib/utils';
 import { Family, Person, MembershipStatus, ChurchAttendance, AppRole } from '@/lib/types';
@@ -794,6 +793,37 @@ export default function PeoplePage() {
 
 /* ── Row components ────────────────────────── */
 
+function LogStatusTag({ daysSince, lastNoteTs }: { daysSince: number | null; lastNoteTs: number | null }) {
+  if (lastNoteTs === null) {
+    return (
+      <span style={{
+        fontSize: 11, padding: '1px 7px', borderRadius: '999px',
+        background: 'var(--border-light)', color: 'var(--text-muted)',
+        fontWeight: 500, flexShrink: 0,
+      }}>
+        Never logged
+      </span>
+    );
+  }
+  if (daysSince !== null && daysSince >= 7) {
+    return (
+      <span style={{
+        fontSize: 11, padding: '1px 7px', borderRadius: '999px',
+        background: 'var(--amber-light)', color: 'var(--amber)',
+        border: '1px solid var(--amber-border)',
+        fontWeight: 500, flexShrink: 0,
+      }}>
+        {daysSince}d ago
+      </span>
+    );
+  }
+  return (
+    <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+      · Logged {new Date(lastNoteTs!).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+    </span>
+  );
+}
+
 const avatarPalette = [
   { bg: '#EAF2EE', color: '#5B8A72' },
   { bg: '#EBF1F7', color: '#6B8EAE' },
@@ -802,10 +832,19 @@ const avatarPalette = [
 ];
 
 function FamilyRow({ family, members }: { family: Family; members: Person[] }) {
-  const lastContact = getFamilyLastContact(members);
   const groupTag = members.flatMap((m) => m.groupIds)[0];
   const { data } = useApp();
   const group = groupTag ? data.groups.find((g) => g.id === groupTag) : null;
+
+  const memberIdSet = new Set(members.map((m) => m.id));
+  const relevantNotes = data.notes.filter(
+    (n) => (n.personId && memberIdSet.has(n.personId)) || n.familyId === family.id
+  );
+  const lastNoteTs = relevantNotes.length > 0
+    ? Math.max(...relevantNotes.map((n) => new Date(n.createdAt).getTime()))
+    : null;
+  const daysSinceNote = lastNoteTs !== null ? Math.floor((Date.now() - lastNoteTs) / 86400000) : null;
+
   return (
     <Link href={`/family/${family.id}`} className="row-hover" style={{ borderBottom: '1px solid var(--border-light)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0' }}>
@@ -827,11 +866,7 @@ function FamilyRow({ family, members }: { family: Family; members: Person[] }) {
             <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {family.label}
             </span>
-            {group && (
-              <span style={{ fontSize: 10, padding: '2px 7px', borderRadius: '999px', background: 'var(--blue-light)', color: 'var(--blue)', fontWeight: 600, flexShrink: 0 }}>
-                {group.name}
-              </span>
-            )}
+            <LogStatusTag daysSince={daysSinceNote} lastNoteTs={lastNoteTs} />
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
@@ -845,8 +880,10 @@ function FamilyRow({ family, members }: { family: Family; members: Person[] }) {
             {family.childCount && family.childCount > 0 ? (
               <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>, +{family.childCount} kid{family.childCount !== 1 ? 's' : ''}</span>
             ) : null}
-            {lastContact && (
-              <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>· Logged {new Date(lastContact).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+            {group && (
+              <span style={{ fontSize: 10, padding: '2px 7px', borderRadius: '999px', background: 'var(--blue-light)', color: 'var(--blue)', fontWeight: 600, flexShrink: 0 }}>
+                {group.name}
+              </span>
             )}
           </div>
         </div>
@@ -860,6 +897,12 @@ function IndividualRow({ person }: { person: Person }) {
   const initials = person.englishName.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
   const { data } = useApp();
   const group = person.groupIds[0] ? data.groups.find((g) => g.id === person.groupIds[0]) : null;
+
+  const personNotes = data.notes.filter((n) => n.personId === person.id);
+  const lastNoteTs = personNotes.length > 0
+    ? Math.max(...personNotes.map((n) => new Date(n.createdAt).getTime()))
+    : null;
+  const daysSinceNote = lastNoteTs !== null ? Math.floor((Date.now() - lastNoteTs) / 86400000) : null;
 
   return (
     <Link href={`/person/${person.id}`} className="row-hover" style={{ borderBottom: '1px solid var(--border-light)' }}>
@@ -881,7 +924,7 @@ function IndividualRow({ person }: { person: Person }) {
 
         {/* Info */}
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 6, marginBottom: 3 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, marginBottom: 3 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5, minWidth: 0, overflow: 'hidden' }}>
               {person.isShepherd && (
                 <HandHeart size={14} color="var(--sage)" style={{ flexShrink: 0 }} />
@@ -893,17 +936,15 @@ function IndividualRow({ person }: { person: Person }) {
                 <span style={{ fontSize: 12, color: 'var(--text-muted)', flexShrink: 0, whiteSpace: 'nowrap' }}>{person.chineseName}</span>
               )}
             </div>
-            {group && (
-              <span style={{ fontSize: 10, padding: '2px 7px', borderRadius: '999px', background: 'var(--blue-light)', color: 'var(--blue)', fontWeight: 600, flexShrink: 0 }}>
-                {group.name}
-              </span>
-            )}
+            <LogStatusTag daysSince={daysSinceNote} lastNoteTs={lastNoteTs} />
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap' }}>
             <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{getMembershipLabel(person.membershipStatus)} · {getChurchAttendanceLabel(person.churchAttendance)}</span>
-            {person.lastContactDate && (
-              <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>· Logged {new Date(person.lastContactDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+            {group && (
+              <span style={{ fontSize: 10, padding: '2px 7px', borderRadius: '999px', background: 'var(--blue-light)', color: 'var(--blue)', fontWeight: 600, flexShrink: 0 }}>
+                {group.name}
+              </span>
             )}
           </div>
         </div>

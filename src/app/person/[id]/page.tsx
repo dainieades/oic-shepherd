@@ -327,26 +327,21 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
 
         {/* Name + meta */}
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 7, flexWrap: 'wrap', marginBottom: 5 }}>
-            <h1 style={{ fontSize: 26, fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1.15, letterSpacing: '-0.02em' }}>
-              {person.englishName}
-            </h1>
-            {person.chineseName && (
-              <span style={{ fontSize: 14, fontWeight: 400, color: 'var(--text-muted)' }}>{person.chineseName}</span>
-            )}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 7, marginBottom: 5 }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 7, minWidth: 0, overflow: 'hidden' }}>
+              <h1 style={{ fontSize: 26, fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1.15, letterSpacing: '-0.02em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {person.englishName}
+              </h1>
+              {person.chineseName && (
+                <span style={{ fontSize: 14, fontWeight: 400, color: 'var(--text-muted)', flexShrink: 0 }}>{person.chineseName}</span>
+              )}
+            </div>
+            <PersonLogStatusTag personId={person.id} notes={data.notes} />
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap' }}>
             <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
               {getMembershipLabel(person.membershipStatus)}
             </span>
-            {person.lastContactDate && (
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-                <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>·</span>
-                <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>
-                  Logged {new Date(person.lastContactDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                </span>
-              </span>
-            )}
             {groups.map((g) => (
               <button key={g.id} onClick={() => setPreviewGroupId(g.id)} style={{
                 fontSize: 11, padding: '2px 7px', borderRadius: '999px',
@@ -937,6 +932,43 @@ function InfoSection({ title, children, muted }: { title: string; children: Reac
       <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>{title}</p>
       <div className="no-last-border" style={{ background: 'var(--surface)', borderRadius: 14, overflow: 'hidden', padding: 0 }}>{children}</div>
     </div>
+  );
+}
+
+function PersonLogStatusTag({ personId, notes }: { personId: string; notes: import('@/lib/types').Note[] }) {
+  const personNotes = notes.filter((n) => n.personId === personId);
+  const lastNoteTs = personNotes.length > 0
+    ? Math.max(...personNotes.map((n) => new Date(n.createdAt).getTime()))
+    : null;
+  const daysSince = lastNoteTs !== null ? Math.floor((Date.now() - lastNoteTs) / 86400000) : null;
+
+  if (lastNoteTs === null) {
+    return (
+      <span style={{
+        fontSize: 11, padding: '1px 7px', borderRadius: '999px',
+        background: 'var(--border-light)', color: 'var(--text-muted)',
+        fontWeight: 500, flexShrink: 0,
+      }}>
+        Never logged
+      </span>
+    );
+  }
+  if (daysSince !== null && daysSince >= 7) {
+    return (
+      <span style={{
+        fontSize: 11, padding: '1px 7px', borderRadius: '999px',
+        background: 'var(--amber-light)', color: 'var(--amber)',
+        border: '1px solid var(--amber-border)',
+        fontWeight: 500, flexShrink: 0,
+      }}>
+        {daysSince}d ago
+      </span>
+    );
+  }
+  return (
+    <span style={{ fontSize: 13, color: 'var(--text-muted)', flexShrink: 0 }}>
+      Logged {new Date(lastNoteTs!).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+    </span>
   );
 }
 

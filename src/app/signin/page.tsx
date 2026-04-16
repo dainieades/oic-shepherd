@@ -73,6 +73,10 @@ export default function SignInPage() {
     } else if (result.status === 'existing') {
       setStatus({ type: 'idle' });
       setStep({ type: 'sign-in', email: email.trim() });
+    } else if (result.status === 'no-service-key') {
+      // SUPABASE_SERVICE_ROLE_KEY not set in .env.local — fall back to password form
+      setStatus({ type: 'idle' });
+      setStep({ type: 'sign-in', email: email.trim() });
     } else {
       setStatus({ type: 'error', message: 'Something went wrong. Please try again.' });
     }

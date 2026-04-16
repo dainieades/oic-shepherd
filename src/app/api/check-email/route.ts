@@ -10,12 +10,21 @@ export async function POST(req: Request) {
   }
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  // 1. Check the approved_emails allowlist
-  const anonClient = createClient(supabaseUrl, anonKey);
-  const { data: approved } = await anonClient
+  if (!serviceKey) {
+    // Service key not configured — can't perform pre-login checks.
+    // Return a special status so the client can show a helpful message.
+    return NextResponse.json({ status: 'no-service-key' });
+  }
+
+  // Use the service role client so RLS doesn't block either check.
+  const adminClient = createClient(supabaseUrl, serviceKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+
+  // 1. Check the approved_emails allowlist (bypasses RLS with service key)
+  const { data: approved } = await adminClient
     .from('approved_emails')
     .select('email')
     .eq('email', email)
@@ -25,13 +34,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ status: 'not-invited' });
   }
 
-  // 2. Check auth identity providers — requires service role key
-  if (!serviceKey) {
-    // Graceful fallback when service key is not configured
-    return NextResponse.json({ status: 'invited' });
-  }
-
-  // Fetch all auth users (church app has a small, bounded user base)
+  // 2. Check auth identity providers for this email
   const res = await fetch(
     `${supabaseUrl}/auth/v1/admin/users?page=1&per_page=1000`,
     {
@@ -43,7 +46,7 @@ export async function POST(req: Request) {
   );
 
   if (!res.ok) {
-    // Admin API unavailable — fall back to treating as invited
+    // Auth admin API unavailable — treat as invited (no account yet)
     return NextResponse.json({ status: 'invited' });
   }
 
@@ -63,10 +66,8 @@ export async function POST(req: Request) {
   const hasPassword = identities.some((i) => i.provider === 'email');
 
   if (hasGoogle && !hasPassword) {
-    // Google-only account
     return NextResponse.json({ status: 'google' });
   }
 
-  // Has a password account (may also have Google linked)
   return NextResponse.json({ status: 'existing' });
 }
