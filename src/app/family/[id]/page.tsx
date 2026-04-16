@@ -42,9 +42,9 @@ const avatarPalette = [
 
 const noteTypeColors: Record<string, { bg: string; color: string }> = {
   'check-in':       { bg: 'var(--sage-light)', color: 'var(--sage)' },
-  'prayer-request': { bg: '#F0EBF5', color: '#7A6A8C' },
-  'event':          { bg: 'var(--blue-light)', color: 'var(--blue)' },
-  'general':        { bg: 'var(--border-light)', color: 'var(--text-secondary)' },
+  'prayer-request': { bg: 'var(--sage-light)', color: 'var(--sage)' },
+  'event':          { bg: 'var(--sage-light)', color: 'var(--sage)' },
+  'general':        { bg: 'var(--sage-light)', color: 'var(--sage)' },
 };
 
 export default function FamilyDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -87,6 +87,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
   const notes = getFamilyNotes(id, data.people, data.notes).filter((n) => canViewNote(n));
   const todos = getFamilyTodos(id, data.people, data.todos);
   const categorized = categorizeTodos(todos);
+  const incompleteTodosCount = todos.filter((t) => !t.completed).length;
   const familyShepherds = data.personas.filter((p) => members.some((m) => m.assignedShepherdIds.includes(p.id)));
   const familyGroups = data.groups.filter((g) => members.some((m) => m.groupIds.includes(g.id)));
 
@@ -260,6 +261,11 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
           }}>
             <TabIcon tab={t} active={tab === t} />
             {TAB_LABELS[t]}
+            {t === 'todos' && incompleteTodosCount > 0 && (
+              <span style={{ fontSize: 11, fontWeight: 600, background: 'var(--sage)', color: 'white', borderRadius: 10, padding: '1px 6px', lineHeight: 1.5 }}>
+                {incompleteTodosCount}
+              </span>
+            )}
           </button>
         ))}
       </div>

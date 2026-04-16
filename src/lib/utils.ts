@@ -174,7 +174,7 @@ export function getChurchAttendanceLabel(status: ChurchAttendance): string {
 export function getNoteTypeLabel(type: Note['type']): string {
   const labels: Record<string, string> = {
     'prayer-request': 'Prayer Request',
-    'check-in': 'Check-in',
+    'check-in': 'Follow-up',
     event: 'Event',
     general: 'General',
   };

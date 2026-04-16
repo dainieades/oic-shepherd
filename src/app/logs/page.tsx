@@ -8,9 +8,9 @@ import AddLogModal from '@/components/AddLogModal';
 
 const noteTypeColors: Record<string, { bg: string; color: string }> = {
   'check-in':        { bg: 'var(--sage-light)', color: 'var(--sage)' },
-  'prayer-request':  { bg: '#F0EBF5', color: '#7A6A8C' },
-  'event':           { bg: 'var(--blue-light)', color: 'var(--blue)' },
-  'general':         { bg: 'var(--border-light)', color: 'var(--text-secondary)' },
+  'prayer-request':  { bg: 'var(--sage-light)', color: 'var(--sage)' },
+  'event':           { bg: 'var(--sage-light)', color: 'var(--sage)' },
+  'general':         { bg: 'var(--sage-light)', color: 'var(--sage)' },
 };
 
 export default function LogsPage() {

@@ -36,9 +36,9 @@ function fmtDue(iso: string) {
 
 const noteTypeColors: Record<string, { bg: string; color: string }> = {
   'check-in':       { bg: 'var(--sage-light)', color: 'var(--sage)' },
-  'prayer-request': { bg: '#F0EBF5', color: '#7A6A8C' },
-  'event':          { bg: 'var(--blue-light)', color: 'var(--blue)' },
-  'general':        { bg: 'var(--border-light)', color: 'var(--text-secondary)' },
+  'prayer-request': { bg: 'var(--sage-light)', color: 'var(--sage)' },
+  'event':          { bg: 'var(--sage-light)', color: 'var(--sage)' },
+  'general':        { bg: 'var(--sage-light)', color: 'var(--sage)' },
 };
 
 function fmtDate(iso: string) {
@@ -124,6 +124,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
   const notes     = getPersonNotes(person.id, data.notes).filter((n) => canViewNote(n));
   const todos     = data.todos.filter((t) => t.personId === person.id);
   const categorized = categorizeTodos(todos);
+  const incompleteTodosCount = todos.filter((t) => !t.completed).length;
 
   // Shepherd → Sheep relationship
   const shepherdPersona = person.isShepherd ? data.personas.find((p) => p.personId === person.id) : null;
@@ -382,6 +383,11 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
           >
             <TabIcon tab={t as Tab} active={activeTab === t} />
             {TAB_LABELS[t as Tab]}
+            {t === 'todos' && incompleteTodosCount > 0 && (
+              <span style={{ fontSize: 11, fontWeight: 600, background: 'var(--sage)', color: 'white', borderRadius: 10, padding: '1px 6px', lineHeight: 1.5 }}>
+                {incompleteTodosCount}
+              </span>
+            )}
           </button>
         ))}
       </div>}

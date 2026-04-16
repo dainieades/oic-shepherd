@@ -2,28 +2,34 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Envelope, Key, CaretDown, CaretUp } from '@phosphor-icons/react';
 import { createClient } from '@/utils/supabase/client';
+
+type Step =
+  | { type: 'email' }
+  | { type: 'create-password'; email: string }
+  | { type: 'sign-in'; email: string }
+  | { type: 'signup-confirm'; email: string };
 
 type Status =
   | { type: 'idle' }
   | { type: 'loading' }
-  | { type: 'magic-sent'; email: string }
   | { type: 'error'; message: string };
 
 export default function SignInPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [step, setStep] = useState<Step>({ type: 'email' });
   const [status, setStatus] = useState<Status>({ type: 'idle' });
   const router = useRouter();
-
   const supabase = createClient();
 
   const redirectTo =
     typeof window !== 'undefined'
       ? `${window.location.origin}/auth/callback`
       : '/auth/callback';
+
+  const isLoading = status.type === 'loading';
 
   async function handleGoogle() {
     setStatus({ type: 'loading' });
@@ -34,31 +40,81 @@ export default function SignInPage() {
     if (error) setStatus({ type: 'error', message: error.message });
   }
 
-  async function handleMagicLink() {
+  async function handleContinue() {
     if (!email.trim()) {
       setStatus({ type: 'error', message: 'Please enter your email address.' });
       return;
     }
     setStatus({ type: 'loading' });
-    const { error } = await supabase.auth.signInWithOtp({
-      email: email.trim(),
+
+    let result: { status?: string; error?: string };
+    try {
+      const res = await fetch('/api/check-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+      result = await res.json();
+    } catch {
+      setStatus({ type: 'error', message: 'Something went wrong. Please try again.' });
+      return;
+    }
+
+    if (result.status === 'google') {
+      setStatus({ type: 'error', message: 'Log in with your Google account.' });
+    } else if (result.status === 'not-invited') {
+      setStatus({
+        type: 'error',
+        message: 'Access is by invitation only. Contact your pastor to request access.',
+      });
+    } else if (result.status === 'invited') {
+      setStatus({ type: 'idle' });
+      setStep({ type: 'create-password', email: email.trim() });
+    } else if (result.status === 'existing') {
+      setStatus({ type: 'idle' });
+      setStep({ type: 'sign-in', email: email.trim() });
+    } else {
+      setStatus({ type: 'error', message: 'Something went wrong. Please try again.' });
+    }
+  }
+
+  async function handleCreatePassword() {
+    if (step.type !== 'create-password') return;
+    if (!password) {
+      setStatus({ type: 'error', message: 'Please enter a password.' });
+      return;
+    }
+    if (password.length < 8) {
+      setStatus({ type: 'error', message: 'Password must be at least 8 characters.' });
+      return;
+    }
+    if (password !== confirmPassword) {
+      setStatus({ type: 'error', message: 'Passwords do not match.' });
+      return;
+    }
+    setStatus({ type: 'loading' });
+    const { error } = await supabase.auth.signUp({
+      email: step.email,
+      password,
       options: { emailRedirectTo: redirectTo },
     });
     if (error) {
       setStatus({ type: 'error', message: error.message });
     } else {
-      setStatus({ type: 'magic-sent', email: email.trim() });
+      setStatus({ type: 'idle' });
+      setStep({ type: 'signup-confirm', email: step.email });
     }
   }
 
-  async function handlePassword() {
-    if (!email.trim() || !password) {
-      setStatus({ type: 'error', message: 'Please enter your email and password.' });
+  async function handleSignIn() {
+    if (step.type !== 'sign-in') return;
+    if (!password) {
+      setStatus({ type: 'error', message: 'Please enter your password.' });
       return;
     }
     setStatus({ type: 'loading' });
     const { error } = await supabase.auth.signInWithPassword({
-      email: email.trim(),
+      email: step.email,
       password,
     });
     if (error) {
@@ -68,127 +124,168 @@ export default function SignInPage() {
     }
   }
 
-  const isLoading = status.type === 'loading';
+  function resetToEmail() {
+    setStep({ type: 'email' });
+    setPassword('');
+    setConfirmPassword('');
+    setStatus({ type: 'idle' });
+  }
 
-  // ── Magic link sent confirmation ────────────────────────────────────────
-  if (status.type === 'magic-sent') {
+  // ── Email confirmation screen ───────────────────────────────────────────
+  if (step.type === 'signup-confirm') {
     return (
-      <div
-        style={{
-          position: 'fixed',
-          inset: 0,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: 'var(--bg)',
-          padding: '24px 16px',
-          zIndex: 10,
-        }}
-      >
-        <div
-          style={{
-            width: '100%',
-            maxWidth: 390,
-            background: 'var(--surface)',
-            borderRadius: 20,
-            border: '1px solid var(--border)',
-            padding: '40px 28px 36px',
-            boxShadow: 'var(--shadow-elevated)',
-            textAlign: 'center',
-          }}
-        >
-          <Envelope size={36} color="var(--sage)" style={{ marginBottom: 16 }} />
-          <h2
-            className="font-display"
-            style={{ fontSize: 22, fontWeight: 700, marginBottom: 10 }}
-          >
-            Check your inbox
-          </h2>
-          <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-            We sent a sign-in link to <strong>{status.email}</strong>.
-            <br />
-            Click the link in that email to sign in.
-          </p>
+      <div style={outerStyle}>
+        <div style={cardStyle}>
+          <div style={{ textAlign: 'center' }}>
+            <h2 className="font-display" style={{ fontSize: 22, fontWeight: 700, marginBottom: 10 }}>
+              Check your inbox
+            </h2>
+            <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 24 }}>
+              We sent a confirmation link to <strong>{step.email}</strong>.
+              <br />
+              Click the link to finish creating your account.
+            </p>
+            <button onClick={resetToEmail} style={ghostButtonStyle}>
+              Use a different email
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Create password screen ──────────────────────────────────────────────
+  if (step.type === 'create-password') {
+    return (
+      <div style={outerStyle}>
+        <div style={cardStyle}>
+          <div style={{ textAlign: 'center', marginBottom: 24 }}>
+            <h1 className="font-display" style={headingStyle}>Create your password</h1>
+            <p style={{ fontSize: 15, color: 'var(--text-secondary)' }}>{step.email}</p>
+          </div>
+
+          {status.type === 'error' && <ErrorBanner message={status.message} />}
+
+          <div style={{ marginBottom: 12 }}>
+            <label style={labelStyle}>Password</label>
+            <input
+              type="password"
+              placeholder="At least 8 characters"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={isLoading}
+              autoFocus
+              style={inputStyle}
+            />
+          </div>
+
+          <div style={{ marginBottom: 20 }}>
+            <label style={labelStyle}>Confirm password</label>
+            <input
+              type="password"
+              placeholder="••••••••"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              disabled={isLoading}
+              onKeyDown={(e) => e.key === 'Enter' && handleCreatePassword()}
+              style={inputStyle}
+            />
+          </div>
+
           <button
-            onClick={() => setStatus({ type: 'idle' })}
-            style={{
-              marginTop: 24,
-              background: 'none',
-              border: 'none',
-              color: 'var(--sage)',
-              fontSize: 14,
-              cursor: 'pointer',
-            }}
+            onClick={handleCreatePassword}
+            disabled={isLoading}
+            style={{ ...primaryButtonStyle, opacity: isLoading ? 0.6 : 1, cursor: isLoading ? 'not-allowed' : 'pointer', marginBottom: 12 }}
           >
-            Use a different email
+            {isLoading ? 'Creating account…' : 'Create account'}
+          </button>
+
+          <button onClick={resetToEmail} style={ghostButtonStyle}>
+            Back
           </button>
         </div>
       </div>
     );
   }
 
-  // ── Main sign-in card ───────────────────────────────────────────────────
+  // ── Sign in with password screen ────────────────────────────────────────
+  if (step.type === 'sign-in') {
+    return (
+      <div style={outerStyle}>
+        <div style={cardStyle}>
+          <div style={{ textAlign: 'center', marginBottom: 24 }}>
+            <h1 className="font-display" style={headingStyle}>Welcome back</h1>
+            <p style={{ fontSize: 15, color: 'var(--text-secondary)' }}>{step.email}</p>
+          </div>
+
+          {status.type === 'error' && <ErrorBanner message={status.message} />}
+
+          <div style={{ marginBottom: 20 }}>
+            <label style={labelStyle}>Password</label>
+            <input
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={isLoading}
+              autoFocus
+              onKeyDown={(e) => e.key === 'Enter' && handleSignIn()}
+              style={inputStyle}
+            />
+          </div>
+
+          <button
+            onClick={handleSignIn}
+            disabled={isLoading}
+            style={{ ...primaryButtonStyle, opacity: isLoading ? 0.6 : 1, cursor: isLoading ? 'not-allowed' : 'pointer', marginBottom: 12 }}
+          >
+            {isLoading ? 'Signing in…' : 'Sign in'}
+          </button>
+
+          <button onClick={resetToEmail} style={ghostButtonStyle}>
+            Back
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Main email entry screen ─────────────────────────────────────────────
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'var(--bg)',
-        padding: '24px 16px',
-        zIndex: 10,
-        overflowY: 'auto',
-      }}
-    >
-      <div
-        style={{
-          width: '100%',
-          maxWidth: 390,
-          background: 'var(--surface)',
-          borderRadius: 20,
-          border: '1px solid var(--border)',
-          padding: '36px 28px 32px',
-          boxShadow: 'var(--shadow-elevated)',
-        }}
-      >
+    <div style={outerStyle}>
+      <div style={cardStyle}>
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
-          <h1
-            className="font-display"
-            style={{
-              fontSize: 30,
-              fontWeight: 700,
-              color: 'var(--text-primary)',
-              marginBottom: 6,
-            }}
-          >
-            Welcome
-          </h1>
+          <h1 className="font-display" style={headingStyle}>Welcome</h1>
           <p style={{ fontSize: 15, color: 'var(--text-secondary)' }}>
             Sign in to the OIC Shepherd app
           </p>
         </div>
 
         {/* Error banner */}
-        {status.type === 'error' && (
-          <div
-            style={{
-              background: 'var(--red-light)',
-              border: '1px solid var(--red-border)',
-              borderRadius: 10,
-              padding: '10px 14px',
-              marginBottom: 16,
-              fontSize: 13,
-              color: 'var(--red)',
-            }}
-          >
-            {status.message}
-          </div>
-        )}
+        {status.type === 'error' && <ErrorBanner message={status.message} />}
 
         {/* Google button */}
+        <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
+          <span
+            style={{
+              position: 'absolute',
+              top: -10,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              background: 'var(--sage)',
+              color: '#fff',
+              fontSize: 11,
+              fontWeight: 700,
+              letterSpacing: '0.03em',
+              padding: '2px 8px',
+              borderRadius: 20,
+              pointerEvents: 'none',
+              zIndex: 1,
+            }}
+          >
+            Recommended
+          </span>
         <button
           onClick={handleGoogle}
           disabled={isLoading}
@@ -200,7 +297,7 @@ export default function SignInPage() {
             gap: 10,
             padding: '13px 20px',
             borderRadius: 12,
-            border: '1.5px solid var(--border)',
+            border: '1.5px solid var(--sage)',
             background: 'var(--surface)',
             fontSize: 15,
             fontWeight: 600,
@@ -217,173 +314,41 @@ export default function SignInPage() {
           </svg>
           Continue with Google
         </button>
-
-        <p
-          style={{
-            textAlign: 'center',
-            fontSize: 13,
-            color: 'var(--text-muted)',
-            marginTop: 10,
-            marginBottom: 20,
-            lineHeight: 1.5,
-          }}
-        >
-          Easiest option — sign in with your Google account in one tap
-        </p>
+        </div>
 
         {/* Divider */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '20px 0' }}>
           <div style={{ flex: 1, height: 1, background: 'var(--border-light)' }} />
-          <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>or use email</span>
+          <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>or</span>
           <div style={{ flex: 1, height: 1, background: 'var(--border-light)' }} />
         </div>
 
         {/* Email field */}
         <div style={{ marginBottom: 12 }}>
-          <label
-            style={{
-              display: 'block',
-              fontSize: 13,
-              fontWeight: 600,
-              color: 'var(--text-primary)',
-              marginBottom: 6,
-            }}
-          >
-            Email address
-          </label>
+          <label style={labelStyle}>Email address</label>
           <input
             type="email"
             placeholder="you@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             disabled={isLoading}
-            style={{
-              width: '100%',
-              padding: '12px 14px',
-              borderRadius: 12,
-              border: '1.5px solid var(--border)',
-              fontSize: 15,
-              color: 'var(--text-primary)',
-              background: 'var(--surface)',
-              outline: 'none',
-            }}
+            onKeyDown={(e) => e.key === 'Enter' && handleContinue()}
+            style={inputStyle}
           />
         </div>
 
-        {/* Magic link button */}
+        {/* Continue button */}
         <button
-          onClick={handleMagicLink}
-          disabled={isLoading}
+          onClick={handleContinue}
+          disabled={isLoading || !isValidEmail(email)}
           style={{
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-            padding: '13px 20px',
-            borderRadius: 12,
-            border: '1.5px solid var(--border)',
-            background: 'var(--surface)',
-            fontSize: 15,
-            fontWeight: 600,
-            color: 'var(--text-primary)',
-            cursor: isLoading ? 'not-allowed' : 'pointer',
-            opacity: isLoading ? 0.6 : 1,
-            marginBottom: 10,
+            ...primaryButtonStyle,
+            opacity: isLoading || !isValidEmail(email) ? 0.4 : 1,
+            cursor: isLoading || !isValidEmail(email) ? 'not-allowed' : 'pointer',
           }}
         >
-          <Envelope size={18} weight="regular" />
-          Email me a sign-in link
+          {isLoading ? 'Checking…' : 'Continue'}
         </button>
-
-        <p
-          style={{
-            textAlign: 'center',
-            fontSize: 13,
-            color: 'var(--text-muted)',
-            marginBottom: 20,
-            lineHeight: 1.5,
-          }}
-        >
-          No password needed — we'll email you a secure link to sign in
-        </p>
-
-        {/* Password toggle */}
-        <button
-          onClick={() => setShowPassword((v) => !v)}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 6,
-            width: '100%',
-            background: 'none',
-            border: 'none',
-            fontSize: 14,
-            color: 'var(--text-secondary)',
-            cursor: 'pointer',
-            padding: '4px 0',
-            marginBottom: showPassword ? 14 : 0,
-          }}
-        >
-          <Key size={16} weight="regular" />
-          Sign in with password
-          {showPassword ? <CaretUp size={14} /> : <CaretDown size={14} />}
-        </button>
-
-        {/* Password field (collapsed by default) */}
-        {showPassword && (
-          <div style={{ marginBottom: 4 }}>
-            <label
-              style={{
-                display: 'block',
-                fontSize: 13,
-                fontWeight: 600,
-                color: 'var(--text-primary)',
-                marginBottom: 6,
-              }}
-            >
-              Password
-            </label>
-            <input
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={isLoading}
-              onKeyDown={(e) => e.key === 'Enter' && handlePassword()}
-              style={{
-                width: '100%',
-                padding: '12px 14px',
-                borderRadius: 12,
-                border: '1.5px solid var(--border)',
-                fontSize: 15,
-                color: 'var(--text-primary)',
-                background: 'var(--surface)',
-                outline: 'none',
-                marginBottom: 12,
-              }}
-            />
-            <button
-              onClick={handlePassword}
-              disabled={isLoading}
-              style={{
-                width: '100%',
-                padding: '13px 20px',
-                borderRadius: 12,
-                border: 'none',
-                background: 'var(--sage)',
-                fontSize: 15,
-                fontWeight: 600,
-                color: '#fff',
-                cursor: isLoading ? 'not-allowed' : 'pointer',
-                opacity: isLoading ? 0.6 : 1,
-              }}
-            >
-              Sign in
-            </button>
-          </div>
-        )}
 
         {/* Footer */}
         <div
@@ -400,6 +365,101 @@ export default function SignInPage() {
           </p>
         </div>
       </div>
+    </div>
+  );
+}
+
+function isValidEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+}
+
+// ── Shared styles ─────────────────────────────────────────────────────────────
+
+const outerStyle: React.CSSProperties = {
+  position: 'fixed',
+  inset: 0,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  background: 'var(--bg)',
+  padding: '24px 16px',
+  zIndex: 10,
+  overflowY: 'auto',
+};
+
+const cardStyle: React.CSSProperties = {
+  width: '100%',
+  maxWidth: 390,
+  background: 'var(--surface)',
+  borderRadius: 20,
+  border: '1px solid var(--border)',
+  padding: '36px 28px 32px',
+  boxShadow: 'var(--shadow-elevated)',
+};
+
+const headingStyle: React.CSSProperties = {
+  fontSize: 30,
+  fontWeight: 700,
+  color: 'var(--text-primary)',
+  marginBottom: 6,
+};
+
+const labelStyle: React.CSSProperties = {
+  display: 'block',
+  fontSize: 13,
+  fontWeight: 600,
+  color: 'var(--text-primary)',
+  marginBottom: 6,
+};
+
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  padding: '12px 14px',
+  borderRadius: 12,
+  border: '1.5px solid var(--border)',
+  fontSize: 15,
+  color: 'var(--text-primary)',
+  background: 'var(--surface)',
+  outline: 'none',
+};
+
+const primaryButtonStyle: React.CSSProperties = {
+  width: '100%',
+  padding: '13px 20px',
+  borderRadius: 12,
+  border: 'none',
+  background: 'var(--sage)',
+  fontSize: 15,
+  fontWeight: 600,
+  color: '#fff',
+};
+
+const ghostButtonStyle: React.CSSProperties = {
+  display: 'block',
+  width: '100%',
+  background: 'none',
+  border: 'none',
+  color: 'var(--sage)',
+  fontSize: 14,
+  cursor: 'pointer',
+  textAlign: 'center',
+  padding: '4px 0',
+};
+
+function ErrorBanner({ message }: { message: string }) {
+  return (
+    <div
+      style={{
+        background: 'var(--red-light)',
+        border: '1px solid var(--red-border)',
+        borderRadius: 10,
+        padding: '10px 14px',
+        marginBottom: 16,
+        fontSize: 13,
+        color: 'var(--red)',
+      }}
+    >
+      {message}
     </div>
   );
 }
