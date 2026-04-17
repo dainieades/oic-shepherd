@@ -321,7 +321,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       const notes = (noteRows as Record<string, unknown>[]).map(mapNote);
       const todos = (todoRows as Record<string, unknown>[]).map(mapTodo);
-      const notices = (noticeRows as Record<string, unknown>[]).map(mapNotice);
+      const notices = ((noticeRows ?? []) as Record<string, unknown>[]).map(mapNotice);
 
       const loadedData: AppData = { people, families, groups, notes, todos, notices, personas };
       setData(loadedData);

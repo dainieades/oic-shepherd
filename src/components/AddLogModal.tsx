@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { CheckCircle, HandsPraying, CalendarBlank, NotePencil, CaretRight, Trash, User, UserPlus, PlusCircle } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { NoteType, Note } from '@/lib/types';
 import PersonFamilyPicker from './PersonFamilyPicker';
 import PickerMenu from './PickerMenu';
+import DatePickerSheet from './DatePickerSheet';
 
 interface AddLogModalProps {
   onClose: () => void;
@@ -23,20 +24,15 @@ const NOTE_TYPES: { value: NoteType; label: string; icon: React.ReactNode }[] = 
   { value: 'general',        label: 'General note',   icon: <NotePencil size={16} /> },
 ];
 
-function toDatetimeLocal(iso: string) {
-  const d = new Date(iso);
-  d.setSeconds(0, 0);
-  return d.toISOString().slice(0, 16);
-}
-
-function nowDatetimeLocal() {
-  return toDatetimeLocal(new Date().toISOString());
-}
-
-function fmtDatetimeLocal(value: string) {
-  if (!value) return '';
-  const d = new Date(value);
-  return d.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+function fmtLogDate(dateStr: string, timeStr: string, includeTime: boolean) {
+  const d = new Date(dateStr + 'T12:00:00');
+  const datePart = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  if (!includeTime) return datePart;
+  const [hStr, mStr] = timeStr.split(':');
+  const h = parseInt(hStr);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 || 12;
+  return `${datePart}, ${h12}:${mStr} ${ampm}`;
 }
 
 export default function AddLogModal({ onClose, prefillFamilyId, prefillPersonId, prefillContent, prefillType, note }: AddLogModalProps) {
@@ -51,12 +47,21 @@ export default function AddLogModal({ onClose, prefillFamilyId, prefillPersonId,
     note?.personId ? [note.personId] : prefillPersonId ? [prefillPersonId] : []
   );
   const [content, setContent] = useState(note?.content ?? prefillContent ?? '');
-  const [logDate, setLogDate] = useState(note?.createdAt ? toDatetimeLocal(note.createdAt) : nowDatetimeLocal());
+  const [dateStr, setDateStr] = useState(() => {
+    if (note?.createdAt) return note.createdAt.slice(0, 10);
+    return new Date().toISOString().slice(0, 10);
+  });
+  const [timeStr, setTimeStr] = useState(() => {
+    if (note?.createdAt) return note.createdAt.slice(11, 16);
+    const now = new Date();
+    return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+  });
+  const [includeTime, setIncludeTime] = useState(true);
 
   const [showWhoPicker, setShowWhoPicker] = useState(false);
   const [showTypePicker, setShowTypePicker] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const logDateRef = useRef<HTMLInputElement>(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const whoNames = [
     ...familyIds.map((id) => data.families.find((f) => f.id === id)?.label ?? ''),
@@ -79,7 +84,7 @@ export default function AddLogModal({ onClose, prefillFamilyId, prefillPersonId,
   })();
 
   const handleSave = () => {
-    const createdAt = logDate ? new Date(logDate).toISOString() : new Date().toISOString();
+    const createdAt = new Date(`${dateStr}T${includeTime ? timeStr : '00:00'}:00`).toISOString();
     if (isEditing && note) {
       updateNote(note.id, {
         type,
@@ -181,33 +186,12 @@ export default function AddLogModal({ onClose, prefillFamilyId, prefillPersonId,
                   />
 
                   {/* Date & Time */}
-                  <button
-                    className="field-row-hover"
-                    onClick={() => logDateRef.current?.showPicker()}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: 10,
-                      paddingTop: 12, paddingBottom: 12,
-                      background: 'none', border: 'none', borderBottom: '1px solid var(--border-light)',
-                      cursor: 'pointer', textAlign: 'left' as const, position: 'relative',
-                    }}
-                  >
-                    <span style={{ width: 24, display: 'flex', justifyContent: 'center', flexShrink: 0, color: 'var(--text-muted)' }}>
-                      <CalendarBlank size={16} />
-                    </span>
-                    <span style={{ fontSize: 12, color: 'var(--text-muted)', width: 60, flexShrink: 0 }}>Date</span>
-                    <span style={{ flex: 1, fontSize: 14, color: logDate ? 'var(--text-primary)' : 'var(--text-muted)' }}>
-                      {logDate ? fmtDatetimeLocal(logDate) : 'Not set'}
-                    </span>
-                    <CaretRight size={14} color="var(--text-muted)" />
-                    <input
-                      ref={logDateRef}
-                      type="datetime-local"
-                      value={logDate}
-                      max={nowDatetimeLocal()}
-                      onChange={(e) => setLogDate(e.target.value)}
-                      style={{ position: 'absolute', left: 0, top: '50%', width: '100%', opacity: 0, pointerEvents: 'none', height: 1 }}
-                    />
-                  </button>
+                  <FieldRow
+                    icon={<CalendarBlank size={16} />}
+                    label="Date"
+                    value={fmtLogDate(dateStr, timeStr, includeTime)}
+                    onClick={() => setShowDatePicker(true)}
+                  />
 
                   {/* Created by — edit mode only */}
                   {isEditing && note && (() => {
@@ -245,6 +229,15 @@ export default function AddLogModal({ onClose, prefillFamilyId, prefillPersonId,
         </div>
       </div>
 
+      {showDatePicker && (
+        <DatePickerSheet
+          date={dateStr}
+          time={timeStr}
+          includeTime={includeTime}
+          onConfirm={(d, t, it) => { setDateStr(d); setTimeStr(t); setIncludeTime(it); setShowDatePicker(false); }}
+          onClose={() => setShowDatePicker(false)}
+        />
+      )}
       {showTypePicker && (
         <PickerMenu
           title="Log type"
@@ -273,14 +266,14 @@ function FieldRow({ icon, label, value, valueColor, onClick, trailingIcon }: {
       className="field-row-hover"
       onClick={onClick}
       style={{
-        display: 'flex', alignItems: 'flex-start', gap: 10,
+        display: 'flex', alignItems: 'center', gap: 10,
         paddingTop: 12, paddingBottom: 12,
         background: 'none', border: 'none', borderBottom: '1px solid var(--border-light)',
         cursor: 'pointer', textAlign: 'left' as const,
       }}
     >
-      <span style={{ width: 24, display: 'flex', justifyContent: 'center', flexShrink: 0, color: 'var(--text-muted)', paddingTop: 1 }}>{icon}</span>
-      <span style={{ fontSize: 12, color: 'var(--text-muted)', width: 60, flexShrink: 0, paddingTop: 2 }}>{label}</span>
+      <span style={{ width: 24, display: 'flex', justifyContent: 'center', flexShrink: 0, color: 'var(--text-muted)' }}>{icon}</span>
+      <span style={{ fontSize: 12, color: 'var(--text-muted)', width: 60, flexShrink: 0 }}>{label}</span>
       <span style={{
         fontSize: 14, color: valueColor ?? 'var(--text-primary)', flex: 1,
         wordBreak: 'break-word',

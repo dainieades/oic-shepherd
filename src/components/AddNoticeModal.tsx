@@ -281,14 +281,14 @@ function FieldRow({ icon, label, value, valueColor, onClick, trailingIcon }: {
       className="field-row-hover"
       onClick={onClick}
       style={{
-        display: 'flex', alignItems: 'flex-start', gap: 10,
+        display: 'flex', alignItems: 'center', gap: 10,
         paddingTop: 12, paddingBottom: 12,
         background: 'none', border: 'none', borderBottom: '1px solid var(--border-light)',
         cursor: 'pointer', textAlign: 'left' as const,
       }}
     >
-      <span style={{ width: 24, display: 'flex', justifyContent: 'center', flexShrink: 0, color: 'var(--text-muted)', paddingTop: 1 }}>{icon}</span>
-      <span style={{ fontSize: 12, color: 'var(--text-muted)', width: 60, flexShrink: 0, paddingTop: 2 }}>{label}</span>
+      <span style={{ width: 24, display: 'flex', justifyContent: 'center', flexShrink: 0, color: 'var(--text-muted)' }}>{icon}</span>
+      <span style={{ fontSize: 12, color: 'var(--text-muted)', width: 60, flexShrink: 0 }}>{label}</span>
       <span style={{ fontSize: 14, color: valueColor ?? 'var(--text-primary)', flex: 1, wordBreak: 'break-word' }}>{value}</span>
       {trailingIcon ?? <CaretRight size={14} color="var(--text-muted)" />}
     </button>

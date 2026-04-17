@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { CaretLeft, CaretRight } from '@phosphor-icons/react';
 
 const MONTH_NAMES = [
@@ -39,9 +39,6 @@ export default function DatePickerSheet({
 
   const [viewYear, setViewYear] = useState(() => parseInt(date.slice(0, 4)));
   const [viewMonth, setViewMonth] = useState(() => parseInt(date.slice(5, 7)) - 1);
-
-  const startTimeRef = useRef<HTMLInputElement>(null);
-  const endTimeRef = useRef<HTMLInputElement>(null);
 
   function navigateTo(ds: string) {
     if (!ds || ds.length < 10) return;
@@ -131,7 +128,6 @@ export default function DatePickerSheet({
 
   function DatePill({ field, dateVal, timeVal }: { field: ActiveField; dateVal: string; timeVal: string }) {
     const isActive = active === field;
-    const timeRef = field === 'start' ? startTimeRef : endTimeRef;
 
     function handleDateChange(val: string) {
       setActive(field);
@@ -176,24 +172,18 @@ export default function DatePickerSheet({
         {showTime && (
           <>
             <div style={{ width: 1, background: 'var(--border-light)', margin: '8px 0', flexShrink: 0 }} />
-            <button
-              onClick={e => { e.stopPropagation(); setActive(field); timeRef.current?.showPicker(); }}
-              style={{
-                flex: 1, padding: '10px 14px',
-                background: 'none', border: 'none', cursor: 'pointer',
-                fontSize: 15, color: 'var(--text-secondary)',
-                textAlign: 'right' as const, whiteSpace: 'nowrap',
-              }}
-            >
-              {fmtTime(timeVal)}
-            </button>
-            <input
-              ref={timeRef}
-              type="time"
-              value={timeVal}
-              onChange={e => field === 'start' ? setStartTime(e.target.value) : setEndTime(e.target.value)}
-              style={{ position: 'absolute', opacity: 0, pointerEvents: 'none', width: 0, height: 0, top: 0, left: 0 }}
-            />
+            <div style={{ flex: 1, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+              <span style={{ padding: '10px 14px', fontSize: 15, color: 'var(--text-secondary)', whiteSpace: 'nowrap', pointerEvents: 'none' }}>
+                {fmtTime(timeVal)}
+              </span>
+              <input
+                type="time"
+                value={timeVal}
+                onChange={e => { setActive(field); field === 'start' ? setStartTime(e.target.value) : setEndTime(e.target.value); }}
+                onFocus={() => setActive(field)}
+                style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', width: '100%', height: '100%' }}
+              />
+            </div>
           </>
         )}
       </div>
@@ -286,7 +276,8 @@ export default function DatePickerSheet({
                   disabled={!cell.inMonth}
                   onClick={() => cell.dateStr && handleDayClick(cell.dateStr)}
                   style={{
-                    height: 34,
+                    width: 44, height: 44,
+                    margin: '0 auto',
                     borderRadius: '50%',
                     border: isToday && !isSelected ? '2px solid var(--sage)' : '2px solid transparent',
                     background: isSelected

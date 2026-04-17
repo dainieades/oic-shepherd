@@ -310,6 +310,7 @@ return (
         <CalendarPicker
           title={title.trim() || 'To-do'}
           dueDate={`${dateStr}T${includeTime ? timeStr : '00:00'}:00`}
+          allDay={!includeTime}
           onClose={() => setShowCalendarPicker(false)}
         />
       )}
@@ -317,18 +318,18 @@ return (
   );
 }
 
-function CalendarPicker({ title, dueDate, onClose }: { title: string; dueDate: string; onClose: () => void }) {
+function CalendarPicker({ title, dueDate, allDay, onClose }: { title: string; dueDate: string; allDay: boolean; onClose: () => void }) {
   const start = new Date(dueDate);
-  const end = new Date(start.getTime() + 60 * 60 * 1000); // +1 hour
+  const end = new Date(start.getTime() + 60 * 60 * 1000); // +1 hour (only used for timed events)
 
   function handleGoogleCalendar() {
-    window.open(buildGoogleCalendarUrl(title, start, end), '_blank', 'noopener,noreferrer');
+    window.open(buildGoogleCalendarUrl(title, start, end, allDay), '_blank', 'noopener,noreferrer');
     onClose();
   }
 
   function handleIcsDownload() {
     const uid = Date.now().toString(36);
-    const content = buildIcsContent(title, uid, start, end);
+    const content = buildIcsContent(title, uid, start, end, allDay);
     const blob = new Blob([content], { type: 'text/calendar;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -406,14 +407,14 @@ function FieldRow({ icon, label, value, valueColor, onClick, trailingIcon }: {
       className="field-row-hover"
       onClick={onClick}
       style={{
-        display: 'flex', alignItems: 'flex-start', gap: 10,
+        display: 'flex', alignItems: 'center', gap: 10,
         paddingTop: 12, paddingBottom: 12,
         background: 'none', border: 'none', borderBottom: '1px solid var(--border-light)',
         cursor: 'pointer', textAlign: 'left' as const,
       }}
     >
-      <span style={{ width: 24, display: 'flex', justifyContent: 'center', flexShrink: 0, color: 'var(--text-muted)', paddingTop: 1 }}>{icon}</span>
-      <span style={{ fontSize: 12, color: 'var(--text-muted)', width: 60, flexShrink: 0, paddingTop: 2 }}>{label}</span>
+      <span style={{ width: 24, display: 'flex', justifyContent: 'center', flexShrink: 0, color: 'var(--text-muted)' }}>{icon}</span>
+      <span style={{ fontSize: 12, color: 'var(--text-muted)', width: 60, flexShrink: 0 }}>{label}</span>
       <span style={{
         fontSize: 14, color: valueColor ?? 'var(--text-primary)', flex: 1,
         wordBreak: 'break-word',

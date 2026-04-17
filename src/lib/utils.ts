@@ -226,25 +226,40 @@ function toIcsDate(d: Date): string {
   return d.toISOString().replace(/[-:]/g, '').replace(/\.\d+/, '');
 }
 
+/** Format a Date to iCalendar date-only string (YYYYMMDD) */
+function toIcsDateOnly(d: Date): string {
+  return d.toISOString().slice(0, 10).replace(/-/g, '');
+}
+
 /** Returns a Google Calendar "Add event" URL (no OAuth required) */
-export function buildGoogleCalendarUrl(title: string, start: Date, end: Date): string {
+export function buildGoogleCalendarUrl(title: string, start: Date, end: Date, allDay = false): string {
+  const startStr = allDay ? toIcsDateOnly(start) : toIcsDate(start);
+  const endStr = allDay
+    ? toIcsDateOnly(new Date(start.getTime() + 24 * 60 * 60 * 1000))
+    : toIcsDate(end);
   const params = new URLSearchParams({
     action: 'TEMPLATE',
     text: title,
-    dates: `${toIcsDate(start)}/${toIcsDate(end)}`,
+    dates: `${startStr}/${endStr}`,
   });
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
 }
 
 /** Returns a .ics (iCalendar) file string for download */
-export function buildIcsContent(title: string, uid: string, start: Date, end: Date): string {
+export function buildIcsContent(title: string, uid: string, start: Date, end: Date, allDay = false): string {
+  const dtStart = allDay
+    ? `DTSTART;VALUE=DATE:${toIcsDateOnly(start)}`
+    : `DTSTART:${toIcsDate(start)}`;
+  const dtEnd = allDay
+    ? `DTEND;VALUE=DATE:${toIcsDateOnly(new Date(start.getTime() + 24 * 60 * 60 * 1000))}`
+    : `DTEND:${toIcsDate(end)}`;
   return [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
     'PRODID:-//OIC Shepherd//EN',
     'BEGIN:VEVENT',
-    `DTSTART:${toIcsDate(start)}`,
-    `DTEND:${toIcsDate(end)}`,
+    dtStart,
+    dtEnd,
     `SUMMARY:${title}`,
     `UID:${uid}@oic-shepherd`,
     `DTSTAMP:${toIcsDate(new Date())}`,
