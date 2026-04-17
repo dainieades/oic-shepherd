@@ -54,6 +54,12 @@ export default function SignInPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email.trim() }),
       });
+      if (!res.ok && res.headers.get('content-type')?.includes('text/html')) {
+        // Server returned an HTML error page (e.g. unhandled 500) — not JSON
+        console.error('check-email returned non-JSON response', res.status);
+        setStatus({ type: 'error', message: 'Something went wrong. Please try again.' });
+        return;
+      }
       result = await res.json();
     } catch {
       setStatus({ type: 'error', message: 'Something went wrong. Please try again.' });
