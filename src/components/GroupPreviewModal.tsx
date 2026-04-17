@@ -21,8 +21,9 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
   const group = data.groups.find((g) => g.id === groupId);
   if (!group) return null;
 
-  const leaders = data.people.filter((p) => group.leaderIds.includes(p.id));
-  const members = data.people.filter((p) => group.memberIds.includes(p.id) && !group.leaderIds.includes(p.id));
+  const leaders   = data.people.filter((p) => group.leaderIds.includes(p.id));
+  const shepherds = data.people.filter((p) => group.shepherdIds.includes(p.id) && !group.leaderIds.includes(p.id));
+  const members   = data.people.filter((p) => group.memberIds.includes(p.id) && !group.leaderIds.includes(p.id) && !group.shepherdIds.includes(p.id));
 
   return (
     <div
@@ -66,15 +67,16 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
 
           {/* Stats + description */}
           <div style={{ background: 'var(--surface)', borderRadius: 'var(--radius)', border: '1px solid var(--border-light)', padding: '14px 16px', marginBottom: 14 }}>
-            <div style={{ display: 'flex', gap: 8, marginBottom: group.description ? 12 : 0 }}>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: group.description ? 12 : 0 }}>
               <span style={{ fontSize: 11, fontWeight: 500, padding: '3px 10px', borderRadius: '999px', background: 'var(--sage-light)', color: 'var(--sage)' }}>
-                {members.length} {members.length === 1 ? 'member' : 'members'}
+                {group.memberIds.length} {group.memberIds.length === 1 ? 'member' : 'members'}
               </span>
-              {leaders.length > 0 && (
-                <span style={{ fontSize: 11, fontWeight: 500, padding: '3px 10px', borderRadius: '999px', background: 'var(--blue-light)', color: 'var(--blue)' }}>
-                  {leaders.length === 1 ? '1 leader' : `${leaders.length} leaders`}
-                </span>
-              )}
+              <span style={{ fontSize: 11, fontWeight: 500, padding: '3px 10px', borderRadius: '999px', background: '#EBF1F7', color: '#6B8EAE' }}>
+                {leaders.length} {leaders.length === 1 ? 'leader' : 'leaders'}
+              </span>
+              <span style={{ fontSize: 11, fontWeight: 500, padding: '3px 10px', borderRadius: '999px', background: '#EAF2EE', color: '#5B8A72' }}>
+                {group.shepherdIds.length} {group.shepherdIds.length === 1 ? 'shepherd' : 'shepherds'}
+              </span>
             </div>
             {group.description && (
               <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, paddingLeft: 12, borderLeft: '2px solid var(--sage-mid)', margin: 0 }}>
@@ -91,14 +93,43 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
                 {leaders.map((leader, i) => {
                   const palette = avatarPalette[i % avatarPalette.length];
                   const initials = leader.englishName.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
+                  const isAlsoShepherd = group.shepherdIds.includes(leader.id);
                   return (
                     <div key={leader.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 16px', borderBottom: '1px solid var(--border-light)' }}>
                       <div style={{ width: 36, height: 36, borderRadius: '50%', background: palette.bg, color: palette.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 600, flexShrink: 0 }}>
                         {initials}
                       </div>
-                      <div>
-                        <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>{leader.englishName}</p>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                          <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>{leader.englishName}</p>
+                          {isAlsoShepherd && (
+                            <span style={{ fontSize: 10, fontWeight: 600, padding: '1px 6px', borderRadius: '999px', background: '#EAF2EE', color: '#5B8A72' }}>Shepherd</span>
+                          )}
+                        </div>
                         <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0 }}>{getMembershipLabel(leader.membershipStatus)}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Shepherds (not also leaders) */}
+          {shepherds.length > 0 && (
+            <div style={{ marginBottom: 14 }}>
+              <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>Shepherds</p>
+              <div className="no-last-border" style={{ background: 'var(--surface)', borderRadius: 'var(--radius)', border: '1px solid var(--border-light)', overflow: 'hidden' }}>
+                {shepherds.map((shepherd, i) => {
+                  const initials = shepherd.englishName.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
+                  return (
+                    <div key={shepherd.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 16px', borderBottom: '1px solid var(--border-light)' }}>
+                      <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#EAF2EE', color: '#5B8A72', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 600, flexShrink: 0 }}>
+                        {initials}
+                      </div>
+                      <div>
+                        <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>{shepherd.englishName}</p>
+                        <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0 }}>{getMembershipLabel(shepherd.membershipStatus)}</p>
                       </div>
                     </div>
                   );

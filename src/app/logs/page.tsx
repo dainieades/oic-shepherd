@@ -254,6 +254,9 @@ export default function LogsPage() {
           <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.6, maxWidth: 260, margin: '0 auto' }}>
             Logs are a record of what's already happened — conversations, check-ins, prayer requests you've heard, and moments you've shared.
           </p>
+          <p style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.5, maxWidth: 260, margin: '10px auto 0', fontWeight: 600 }}>
+            Only assigned shepherds and pastors can see these.
+          </p>
         </div>
       )}
 

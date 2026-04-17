@@ -6,6 +6,7 @@ interface PickerOption {
   value: string;
   label: string;
   icon?: React.ReactNode;
+  description?: string;
 }
 
 interface PickerMenuProps {
@@ -41,7 +42,8 @@ export default function PickerMenu({ anchorRef, options, value, onSelect, onClos
     ? options.filter(o => o.label.toLowerCase().includes(search.toLowerCase()))
     : options;
 
-  const rowHeight = 41;
+  const hasDescriptions = options.some((o) => o.description);
+  const rowHeight = hasDescriptions ? 58 : 41;
   const searchHeight = showSearch ? 44 : 0;
   const menuHeight = Math.min(300, filtered.length * rowHeight + searchHeight);
 
@@ -106,10 +108,17 @@ export default function PickerMenu({ anchorRef, options, value, onSelect, onClos
             }}
           >
             {opt.icon && (
-              <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>{opt.icon}</span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0, color: isSelected ? 'var(--sage)' : 'var(--text-muted)' }}>{opt.icon}</span>
             )}
-            <span style={{ flex: 1, fontWeight: isSelected ? 600 : 400, color: isSelected ? 'var(--sage)' : 'var(--text-primary)' }}>
-              {opt.label}
+            <span style={{ flex: 1 }}>
+              <span style={{ display: 'block', fontWeight: isSelected ? 600 : 400, color: isSelected ? 'var(--sage)' : 'var(--text-primary)' }}>
+                {opt.label}
+              </span>
+              {opt.description && (
+                <span style={{ display: 'block', fontSize: 12, color: 'var(--text-muted)', marginTop: 1 }}>
+                  {opt.description}
+                </span>
+              )}
             </span>
             {isSelected && (
               <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--sage)" strokeWidth={2.5}>

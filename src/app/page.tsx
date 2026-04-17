@@ -29,7 +29,7 @@ export default function PeoplePage() {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [draft, setDraft]          = useState<HomeFilters>(filters);
   const [draftSort, setDraftSort]  = useState<HomeSortKey>(sortKey);
-  const [activeCategory, setActiveCategory] = useState<'sort' | 'shepherd' | 'membership' | 'discipleship' | 'group' | 'app-role'>('shepherd');
+  const [activeCategory, setActiveCategory] = useState<'sort' | 'shepherd' | 'membership' | 'discipleship' | 'group' | 'app-role' | 'archive'>('shepherd');
   const [shepherdSearch, setShepherdSearch] = useState('');
   const [showAddChoice, setShowAddChoice] = useState(false);
   const [showAddPerson, setShowAddPerson] = useState(false);
@@ -91,8 +91,8 @@ export default function PeoplePage() {
         const matchesSpecific = specificShepherdIds.some((sid) => members.some((m) => m.assignedShepherdIds.includes(sid)));
         if (!matchesMine && !matchesSpecific) continue;
       }
-      // Archive gate — skip fully-archived families unless showArchived is on
-      if (!filters.showArchived && members.every((m) => m.churchAttendance === 'archived')) continue;
+      if (filters.archiveFilter === 'hide' && members.every((m) => m.churchAttendance === 'archived')) continue;
+      if (filters.archiveFilter === 'only' && !members.every((m) => m.churchAttendance === 'archived')) continue;
       // Membership filter (OR across selected)
       if (filters.memberships.length > 0 && !members.some((m) => filters.memberships.includes(m.membershipStatus))) continue;
       // Attendance filter (OR across selected)
@@ -120,8 +120,8 @@ export default function PeoplePage() {
         const matchesSpecific = specificShepherdIds.some((sid) => p.assignedShepherdIds.includes(sid));
         if (!matchesMine && !matchesSpecific) continue;
       }
-      // Archive gate — skip archived individuals unless showArchived is on
-      if (!filters.showArchived && p.churchAttendance === 'archived') continue;
+      if (filters.archiveFilter === 'hide' && p.churchAttendance === 'archived') continue;
+      if (filters.archiveFilter === 'only' && p.churchAttendance !== 'archived') continue;
       if (filters.memberships.length > 0 && !filters.memberships.includes(p.membershipStatus)) continue;
       if (filters.attendances.length > 0 && !filters.attendances.includes(p.churchAttendance)) continue;
       if (filters.groups.length > 0 && !filters.groups.some((gid) => p.groupIds.includes(gid))) continue;
@@ -187,14 +187,15 @@ export default function PeoplePage() {
 
   const activeFilterCount =
     filters.shepherds.length + filters.memberships.length + filters.attendances.length + filters.groups.length
-    + (filters.showArchived ? 1 : 0) + filters.discipleship.length + filters.appRoles.length;
+    + (filters.archiveFilter !== 'hide' ? 1 : 0) + filters.discipleship.length + filters.appRoles.length;
 
   const draftTotalCount =
     draft.shepherds.length + draft.memberships.length + draft.attendances.length + draft.groups.length
-    + (draft.showArchived ? 1 : 0) + draft.discipleship.length + draft.appRoles.length;
+    + (draft.archiveFilter !== 'hide' ? 1 : 0) + draft.discipleship.length + draft.appRoles.length;
   const FILTER_CATEGORIES = [
     { key: 'shepherd' as const,     label: 'Shepherd by',  count: draft.shepherds.length },
-    { key: 'membership' as const,   label: 'Status',       count: draft.memberships.length + draft.attendances.length + (draft.showArchived ? 1 : 0) },
+    { key: 'membership' as const,   label: 'Status',       count: draft.memberships.length + draft.attendances.length },
+    { key: 'archive' as const,      label: 'Archive',      count: draft.archiveFilter !== 'hide' ? 1 : 0 },
     { key: 'discipleship' as const, label: 'Discipleship', count: draft.discipleship.length },
     { key: 'group' as const,        label: 'Group',        count: draft.groups.length },
     { key: 'app-role' as const,     label: 'App Role',     count: draft.appRoles.length },
@@ -216,8 +217,9 @@ export default function PeoplePage() {
     const g = data.groups.find((g) => g.id === gid);
     chips.push({ key: `g-${gid}`, label: g?.name ?? gid, clear: () => setFilters((f) => ({ ...f, groups: f.groups.filter((g) => g !== gid) })) });
   });
-  if (filters.showArchived) {
-    chips.push({ key: 'show-archived', label: 'Archived', clear: () => setFilters((f) => ({ ...f, showArchived: false })) });
+  if (filters.archiveFilter !== 'hide') {
+    const archiveLabel = filters.archiveFilter === 'only' ? 'Only archived' : 'Include archived';
+    chips.push({ key: 'archive-filter', label: archiveLabel, clear: () => setFilters((f) => ({ ...f, archiveFilter: 'hide' })) });
   }
   const DISCIPLESHIP_LABELS: Record<'in' | 'not-in', string> = { 'in': 'In discipleship', 'not-in': 'Not in discipleship' };
   filters.discipleship.forEach((d) => {
@@ -293,7 +295,7 @@ export default function PeoplePage() {
         onClick={() => setShowAddChoice(true)}
         style={{ height: btnSize, padding: btnPad, borderRadius: 8, background: 'var(--sage)', color: '#fff', fontSize: btnFont, fontWeight: 600, border: 'none', cursor: 'pointer' }}
       >
-        + Add
+        + People
       </button>
     </div>
   );
@@ -714,12 +716,21 @@ export default function PeoplePage() {
                           );
                         })}
                       </div>
-                      <div style={{ marginTop: 16, paddingTop: 12, borderTop: '1px solid var(--border-light)' }}>
-                        <CheckRow
-                          checked={draft.showArchived}
-                          onToggle={() => setDraft((d) => ({ ...d, showArchived: !d.showArchived }))}
-                        >Show archived</CheckRow>
-                      </div>
+                    </>
+                  )}
+
+                  {activeCategory === 'archive' && (
+                    <>
+                      <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>Archive</p>
+                      <RadioRow selected={draft.archiveFilter === 'hide'} onSelect={() => setDraft((d) => ({ ...d, archiveFilter: 'hide' }))}>
+                        Hide archived
+                      </RadioRow>
+                      <RadioRow selected={draft.archiveFilter === 'include'} onSelect={() => setDraft((d) => ({ ...d, archiveFilter: 'include' }))}>
+                        Include archived
+                      </RadioRow>
+                      <RadioRow selected={draft.archiveFilter === 'only'} onSelect={() => setDraft((d) => ({ ...d, archiveFilter: 'only' }))}>
+                        Only archived
+                      </RadioRow>
                     </>
                   )}
 

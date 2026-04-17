@@ -221,13 +221,47 @@ export function groupByMonth<T extends { createdAt: string }>(items: T[]): { lab
     }));
 }
 
-/** Categorize todos into today / upcoming / no due date / completed */
+/** Format a Date to iCalendar date-time string (YYYYMMDDTHHMMSSZ) */
+function toIcsDate(d: Date): string {
+  return d.toISOString().replace(/[-:]/g, '').replace(/\.\d+/, '');
+}
+
+/** Returns a Google Calendar "Add event" URL (no OAuth required) */
+export function buildGoogleCalendarUrl(title: string, start: Date, end: Date): string {
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: title,
+    dates: `${toIcsDate(start)}/${toIcsDate(end)}`,
+  });
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
+
+/** Returns a .ics (iCalendar) file string for download */
+export function buildIcsContent(title: string, uid: string, start: Date, end: Date): string {
+  return [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//OIC Shepherd//EN',
+    'BEGIN:VEVENT',
+    `DTSTART:${toIcsDate(start)}`,
+    `DTEND:${toIcsDate(end)}`,
+    `SUMMARY:${title}`,
+    `UID:${uid}@oic-shepherd`,
+    `DTSTAMP:${toIcsDate(new Date())}`,
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ].join('\r\n');
+}
+
+/** Categorize todos into overdue / today / upcoming / no due date / completed */
 export function categorizeTodos(todos: Todo[]): {
+  overdue: Todo[];
   today: Todo[];
   upcoming: Todo[];
   noDueDate: Todo[];
   completed: Todo[];
 } {
+  const overdue: Todo[] = [];
   const today: Todo[] = [];
   const upcoming: Todo[] = [];
   const noDueDate: Todo[] = [];
@@ -245,7 +279,9 @@ export function categorizeTodos(todos: Todo[]): {
       noDueDate.push(t);
     } else {
       const dueStr = new Date(t.dueDate).toISOString().slice(0, 10);
-      if (dueStr <= todayStr) {
+      if (dueStr < todayStr) {
+        overdue.push(t);
+      } else if (dueStr === todayStr) {
         today.push(t);
       } else {
         upcoming.push(t);
@@ -253,9 +289,11 @@ export function categorizeTodos(todos: Todo[]): {
     }
   }
 
+  // Sort overdue by due date ascending (oldest first)
+  overdue.sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime());
   // Sort upcoming by due date
   upcoming.sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime());
   completed.sort((a, b) => new Date(b.completedAt || b.createdAt).getTime() - new Date(a.completedAt || a.createdAt).getTime());
 
-  return { today, upcoming, noDueDate, completed };
+  return { overdue, today, upcoming, noDueDate, completed };
 }

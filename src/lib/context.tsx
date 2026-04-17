@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback, Dispatch, SetStateAction } from 'react';
-import { AppData, Persona, Person, Family, Note, Todo, NoteType, NoteVisibility, TodoAlert, TodoRepeat, AppRole, ChurchAttendance, MembershipStatus } from './types';
+import { AppData, Persona, Person, Family, Note, Todo, Notice, NoteType, NoteVisibility, TodoAlert, TodoRepeat, AppRole, ChurchAttendance, MembershipStatus } from './types';
 
 // ── Shared filter types (exported so pages can import them) ──────────────────
 
@@ -12,14 +12,14 @@ export interface HomeFilters {
   memberships: MembershipStatus[];
   attendances: ChurchAttendance[];
   groups: string[];
-  showArchived: boolean;
+  archiveFilter: 'hide' | 'include' | 'only';
   discipleship: ('in' | 'not-in')[];
   appRoles: AppRole[];
 }
 
 export const HOME_DEFAULT_FILTERS: HomeFilters = {
   shepherds: ['mine'], memberships: [], attendances: [], groups: [],
-  showArchived: false, discipleship: [], appRoles: [],
+  archiveFilter: 'hide', discipleship: [], appRoles: [],
 };
 import { initialData } from './data';
 import { generateId } from './utils';
@@ -46,13 +46,16 @@ interface AppContextType {
   updateFamily: (familyId: string, updates: Partial<Pick<Family, 'label' | 'photo' | 'primaryContactId' | 'childCount'>>) => void;
   updateFamilyMembers: (familyId: string, memberIds: string[]) => void;
   addGroup: (name: string, description?: string) => void;
-  updateGroup: (groupId: string, updates: Partial<Pick<import('./types').Group, 'name' | 'description' | 'leaderIds'>>) => void;
+  updateGroup: (groupId: string, updates: Partial<Pick<import('./types').Group, 'name' | 'description' | 'leaderIds' | 'shepherdIds'>>) => void;
   updateGroupMembers: (groupId: string, memberIds: string[]) => void;
   assignGroupsToPerson: (personId: string, groupIds: string[]) => void;
   assignGroupsToFamily: (familyId: string, groupIds: string[]) => void;
   assignShepherdsToFamily: (familyId: string, shepherdIds: string[]) => void;
   setFollowUpFrequency: (personId: string, days: number) => void;
   canViewNote: (note: Note) => boolean;
+  addNotice: (notice: Omit<Notice, 'id' | 'createdBy' | 'createdAt'>) => void;
+  updateNotice: (noticeId: string, updates: Partial<Pick<Notice, 'category' | 'urgency' | 'content' | 'personId' | 'familyId'>>) => void;
+  deleteNotice: (noticeId: string) => void;
   // Persistent filter state (survives tab navigation within a session)
   homeFilters: HomeFilters;
   setHomeFilters: Dispatch<SetStateAction<HomeFilters>>;
@@ -178,6 +181,19 @@ function mapNote(row: Record<string, unknown>): Note {
   };
 }
 
+function mapNotice(row: Record<string, unknown>): Notice {
+  return {
+    id: row.id as string,
+    personId: row.person_id as string | undefined,
+    familyId: row.family_id as string | undefined,
+    category: row.category as Notice['category'],
+    urgency: row.urgency as Notice['urgency'],
+    content: row.content as string,
+    createdBy: row.created_by as string,
+    createdAt: row.created_at as string,
+  };
+}
+
 function mapTodo(row: Record<string, unknown>): Todo {
   return {
     id: row.id as string,
@@ -224,6 +240,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         { data: personaPeopleRows },
         { data: noteRows },
         { data: todoRows },
+        { data: noticeRows },
       ] = await Promise.all([
         supabase.from('people').select('*'),
         supabase.from('families').select('*'),
@@ -235,6 +252,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         supabase.from('persona_people').select('*'),
         supabase.from('notes').select('*').order('created_at', { ascending: false }),
         supabase.from('todos').select('*').order('created_at', { ascending: false }),
+        supabase.from('notices').select('*').order('created_at', { ascending: false }),
       ]);
 
       // If no data in Supabase yet, fall back to seed data (before migration is run)
@@ -292,6 +310,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         name: r.name as string,
         description: r.description as string | undefined,
         leaderIds: (r.leader_ids as string[]) ?? [],
+        shepherdIds: (r.shepherd_ids as string[]) ?? [],
         memberIds: membersByGroup[r.id as string] ?? [],
         relatedFamilyIds: (r.related_family_ids as string[]) ?? [],
       }));
@@ -302,8 +321,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       const notes = (noteRows as Record<string, unknown>[]).map(mapNote);
       const todos = (todoRows as Record<string, unknown>[]).map(mapTodo);
+      const notices = (noticeRows as Record<string, unknown>[]).map(mapNotice);
 
-      const loadedData: AppData = { people, families, groups, notes, todos, personas };
+      const loadedData: AppData = { people, families, groups, notes, todos, notices, personas };
       setData(loadedData);
 
       // Restore last active persona from localStorage (just the ID, not the data)
@@ -749,23 +769,67 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const addGroup = useCallback(async (name: string, description?: string) => {
-    const group = { id: generateId(), name, description, leaderIds: [], memberIds: [], relatedFamilyIds: [] };
+    const group = { id: generateId(), name, description, leaderIds: [], shepherdIds: [], memberIds: [], relatedFamilyIds: [] };
     setData((prev) => ({ ...prev, groups: [...prev.groups, group] }));
     const supabase = createClient();
     await supabase.from('groups').insert({ id: group.id, name, description: description ?? null });
   }, []);
 
-  const updateGroup = useCallback(async (groupId: string, updates: Partial<Pick<import('./types').Group, 'name' | 'description' | 'leaderIds'>>) => {
-    setData((prev) => ({
-      ...prev,
-      groups: prev.groups.map((g) => g.id === groupId ? { ...g, ...updates } : g),
-    }));
+  const updateGroup = useCallback(async (groupId: string, updates: Partial<Pick<import('./types').Group, 'name' | 'description' | 'leaderIds' | 'shepherdIds'>>) => {
+    // Side-channel to capture computed values for DB ops after setData
+    let eligibleMemberIds: string[] = [];
+    let newShepherdPersonaIds: string[] = [];
+
+    setData((prev) => {
+      const group = prev.groups.find((g) => g.id === groupId);
+      const newGroups = prev.groups.map((g) => g.id === groupId ? { ...g, ...updates } : g);
+
+      if (updates.shepherdIds !== undefined && group) {
+        // Map shepherd person IDs → persona IDs (with person ID fallback, matching sheep-lookup logic)
+        newShepherdPersonaIds = updates.shepherdIds.flatMap((personId) => {
+          const persona = prev.personas.find((p) => p.personId === personId);
+          return [persona ? persona.id : personId];
+        });
+
+        // Eligible sheep: in group, not a leader, not themselves a shepherd
+        const effectiveLeaderIds = updates.leaderIds ?? group.leaderIds;
+        eligibleMemberIds = group.memberIds.filter((memberId) => {
+          if (effectiveLeaderIds.includes(memberId)) return false;
+          if (updates.shepherdIds!.includes(memberId)) return false;
+          const person = prev.people.find((p) => p.id === memberId);
+          return person ? !person.isShepherd : false;
+        });
+
+        const newPeople = prev.people.map((p) =>
+          eligibleMemberIds.includes(p.id)
+            ? { ...p, assignedShepherdIds: newShepherdPersonaIds }
+            : p
+        );
+        return { ...prev, groups: newGroups, people: newPeople };
+      }
+
+      return { ...prev, groups: newGroups };
+    });
+
     const supabase = createClient();
     const dbUpdates: Record<string, unknown> = {};
     if (updates.name !== undefined) dbUpdates.name = updates.name;
     if (updates.description !== undefined) dbUpdates.description = updates.description ?? null;
     if (updates.leaderIds !== undefined) dbUpdates.leader_ids = updates.leaderIds;
+    if (updates.shepherdIds !== undefined) dbUpdates.shepherd_ids = updates.shepherdIds;
     await supabase.from('groups').update(dbUpdates).eq('id', groupId);
+
+    // Persist auto-assigned shepherds to eligible group members
+    if (updates.shepherdIds !== undefined) {
+      for (const pid of eligibleMemberIds) {
+        await supabase.from('person_shepherds').delete().eq('person_id', pid);
+        if (newShepherdPersonaIds.length > 0) {
+          await supabase.from('person_shepherds').insert(
+            newShepherdPersonaIds.map((sid) => ({ person_id: pid, shepherd_id: sid }))
+          );
+        }
+      }
+    }
   }, []);
 
   const updateGroupMembers = useCallback(async (groupId: string, memberIds: string[]) => {
@@ -895,6 +959,44 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }).eq('id', personId);
   }, []);
 
+  // ── Notices ───────────────────────────────────────────────────────────
+  const addNotice = useCallback(async (noticeData: Omit<Notice, 'id' | 'createdBy' | 'createdAt'>) => {
+    const notice: Notice = {
+      ...noticeData,
+      id: generateId(),
+      createdBy: currentPersona.id,
+      createdAt: new Date().toISOString(),
+    };
+    setData((prev) => ({ ...prev, notices: [notice, ...prev.notices] }));
+    const supabase = createClient();
+    await supabase.from('notices').insert({
+      id: notice.id, person_id: notice.personId ?? null, family_id: notice.familyId ?? null,
+      category: notice.category, urgency: notice.urgency, content: notice.content,
+      created_by: notice.createdBy, created_at: notice.createdAt,
+    });
+  }, [currentPersona.id]);
+
+  const updateNotice = useCallback(async (noticeId: string, updates: Partial<Pick<Notice, 'category' | 'urgency' | 'content' | 'personId' | 'familyId'>>) => {
+    setData((prev) => ({
+      ...prev,
+      notices: prev.notices.map((n) => n.id === noticeId ? { ...n, ...updates } : n),
+    }));
+    const supabase = createClient();
+    const dbUpdates: Record<string, unknown> = {};
+    if (updates.category !== undefined) dbUpdates.category = updates.category;
+    if (updates.urgency !== undefined) dbUpdates.urgency = updates.urgency;
+    if (updates.content !== undefined) dbUpdates.content = updates.content;
+    if (updates.personId !== undefined) dbUpdates.person_id = updates.personId;
+    if (updates.familyId !== undefined) dbUpdates.family_id = updates.familyId;
+    await supabase.from('notices').update(dbUpdates).eq('id', noticeId);
+  }, []);
+
+  const deleteNotice = useCallback(async (noticeId: string) => {
+    setData((prev) => ({ ...prev, notices: prev.notices.filter((n) => n.id !== noticeId) }));
+    const supabase = createClient();
+    await supabase.from('notices').delete().eq('id', noticeId);
+  }, []);
+
   const canViewNote = useCallback((note: Note): boolean => {
     if (currentPersona.role === 'admin') return true;
     if (note.visibility === 'public') return true;
@@ -915,7 +1017,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   return (
     <AppContext.Provider
-      value={{ data, currentPersona, accessDenied, switchPersona, loginWithSupabaseUser, addNote, updateNote, deleteNote, addTodo, updateTodo, deleteTodo, toggleTodo, addPerson, deletePerson, addFamily, updatePerson, assignShepherds, updateFamily, updateFamilyMembers, addGroup, updateGroup, updateGroupMembers, assignGroupsToPerson, assignGroupsToFamily, assignShepherdsToFamily, setFollowUpFrequency, canViewNote, homeFilters, setHomeFilters, homeSortKey, setHomeSortKey, todosShepherdFilter, setTodosShepherdFilter, logsShepherdFilter, setLogsShepherdFilter }}
+      value={{ data, currentPersona, accessDenied, switchPersona, loginWithSupabaseUser, addNote, updateNote, deleteNote, addTodo, updateTodo, deleteTodo, toggleTodo, addNotice, updateNotice, deleteNotice, addPerson, deletePerson, addFamily, updatePerson, assignShepherds, updateFamily, updateFamilyMembers, addGroup, updateGroup, updateGroupMembers, assignGroupsToPerson, assignGroupsToFamily, assignShepherdsToFamily, setFollowUpFrequency, canViewNote, homeFilters, setHomeFilters, homeSortKey, setHomeSortKey, todosShepherdFilter, setTodosShepherdFilter, logsShepherdFilter, setLogsShepherdFilter }}
     >
       {children}
     </AppContext.Provider>

@@ -1,12 +1,14 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import { CaretRight, Trash, User, CalendarBlank, ArrowsClockwise, Bell, UserPlus, PlusCircle } from '@phosphor-icons/react';
+import { useState } from 'react';
+import { CaretRight, Trash, User, CalendarBlank, ArrowsClockwise, Bell, UserPlus, PlusCircle, CalendarPlus } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { TodoRepeat, TodoAlert, Todo } from '@/lib/types';
 import PersonFamilyPicker from './PersonFamilyPicker';
 import PickerMenu from './PickerMenu';
+import DatePickerSheet from './DatePickerSheet';
 import { DeleteConfirmDialog } from './AddLogModal';
+import { buildGoogleCalendarUrl, buildIcsContent } from '@/lib/utils';
 
 interface AddTodoModalProps {
   onClose: () => void;
@@ -46,11 +48,20 @@ export default function AddTodoModal({ onClose, prefillFamilyId, prefillPersonId
   const [personIds, setPersonIds] = useState<string[]>(
     todo?.personId ? [todo.personId] : prefillPersonId ? [prefillPersonId] : []
   );
-  const [dueDate, setDueDate] = useState(() => {
-    if (todo?.dueDate) return todo.dueDate.slice(0, 16);
-    const d = new Date(); d.setSeconds(0, 0);
-    return d.toISOString().slice(0, 16);
+  const [dateStr, setDateStr] = useState(() => {
+    if (todo?.dueDate) return todo.dueDate.slice(0, 10);
+    return new Date().toISOString().slice(0, 10);
   });
+  const [timeStr, setTimeStr] = useState(() => {
+    if (todo?.dueDate && todo.dueDate.length >= 16) return todo.dueDate.slice(11, 16);
+    return '12:00';
+  });
+  const [includeTime, setIncludeTime] = useState(() => {
+    if (!todo?.dueDate || todo.dueDate.length < 16) return false;
+    const t = todo.dueDate.slice(11, 16);
+    return t !== '' && t !== '00:00';
+  });
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [repeat, setRepeat] = useState<TodoRepeat>(todo?.repeat ?? 'none');
   const [alert, setAlert] = useState<TodoAlert>(todo?.alert ?? 'none');
 
@@ -58,7 +69,7 @@ export default function AddTodoModal({ onClose, prefillFamilyId, prefillPersonId
   const [showAlertPicker, setShowAlertPicker] = useState(false);
   const [showRepeatPicker, setShowRepeatPicker] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const dueDateRef = useRef<HTMLInputElement>(null);
+  const [showCalendarPicker, setShowCalendarPicker] = useState(false);
 
   const whoNames = [
     ...familyIds.map((id) => data.families.find((f) => f.id === id)?.label ?? ''),
@@ -82,9 +93,10 @@ export default function AddTodoModal({ onClose, prefillFamilyId, prefillPersonId
 
   const handleSave = () => {
     if (!title.trim()) return;
+    const dueDateValue = `${dateStr}T${includeTime ? timeStr : '00:00'}:00`;
     const base = {
       title: title.trim(),
-      dueDate: dueDate || undefined,
+      dueDate: dueDateValue,
       repeat: repeat !== 'none' ? repeat : undefined,
       alert: alert !== 'none' ? alert : undefined,
     };
@@ -101,15 +113,15 @@ export default function AddTodoModal({ onClose, prefillFamilyId, prefillPersonId
     onClose();
   };
 
-  function fmtDatetimeLocal(value: string) {
-    if (!value) return '';
-    const d = new Date(value);
-    return d.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
-  }
-
-  function nowDatetimeLocal() {
-    const d = new Date(); d.setSeconds(0, 0);
-    return d.toISOString().slice(0, 16);
+  function fmtDate() {
+    const d = new Date(dateStr + 'T12:00:00');
+    const datePart = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    if (!includeTime) return datePart;
+    const [hStr, mStr] = timeStr.split(':');
+    const h = parseInt(hStr);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const h12 = h % 12 || 12;
+    return `${datePart}, ${h12}:${mStr} ${ampm}`;
   }
 
   const repeatLabel = REPEAT_OPTIONS.find((r) => r.value === repeat)?.label ?? 'Never';
@@ -189,34 +201,22 @@ return (
                     trailingIcon={<PlusCircle size={22} color="var(--sage)" weight="fill" />}
                   />
 
-                  {/* Due date */}
-                  <button
-                    className="field-row-hover"
-                    onClick={() => dueDateRef.current?.showPicker()}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: 10,
-                      paddingTop: 12, paddingBottom: 12,
-                      background: 'none', border: 'none', borderBottom: '1px solid var(--border-light)',
-                      cursor: 'pointer', textAlign: 'left' as const, position: 'relative',
-                    }}
-                  >
-                    <span style={{ width: 24, display: 'flex', justifyContent: 'center', flexShrink: 0, color: 'var(--text-muted)' }}>
-                      <CalendarBlank size={16} />
-                    </span>
-                    <span style={{ fontSize: 12, color: 'var(--text-muted)', width: 60, flexShrink: 0 }}>Due date</span>
-                    <span style={{ flex: 1, fontSize: 14, color: dueDate ? 'var(--text-primary)' : 'var(--text-muted)' }}>
-                      {dueDate ? fmtDatetimeLocal(dueDate) : 'Not set'}
-                    </span>
-                    <CaretRight size={14} color="var(--text-muted)" />
-                    <input
-                      ref={dueDateRef}
-                      type="datetime-local"
-                      value={dueDate}
-                      min={nowDatetimeLocal()}
-                      onChange={(e) => setDueDate(e.target.value)}
-                      style={{ position: 'absolute', left: 0, top: '50%', width: '100%', opacity: 0, pointerEvents: 'none', height: 1 }}
-                    />
-                  </button>
+                  {/* Date */}
+                  <FieldRow
+                    icon={<CalendarBlank size={16} />}
+                    label="Date"
+                    value={fmtDate()}
+                    onClick={() => setShowDatePicker(true)}
+                  />
+
+                  {/* Add to Calendar */}
+                  <FieldRow
+                    icon={<CalendarPlus size={16} />}
+                    label="Calendar"
+                    value="Add to calendar"
+                    valueColor="var(--text-muted)"
+                    onClick={() => setShowCalendarPicker(true)}
+                  />
 
                   {/* Alert */}
                   <FieldRow
@@ -272,6 +272,15 @@ return (
         </div>
       </div>
 
+      {showDatePicker && (
+        <DatePickerSheet
+          date={dateStr}
+          time={timeStr}
+          includeTime={includeTime}
+          onConfirm={(d, t, it) => { setDateStr(d); setTimeStr(t); setIncludeTime(it); setShowDatePicker(false); }}
+          onClose={() => setShowDatePicker(false)}
+        />
+      )}
       {showAlertPicker && (
         <PickerMenu
           title="Alert"
@@ -297,6 +306,94 @@ return (
           onConfirm={() => { deleteTodo(todo.id); onClose(); }}
         />
       )}
+      {showCalendarPicker && (
+        <CalendarPicker
+          title={title.trim() || 'To-do'}
+          dueDate={`${dateStr}T${includeTime ? timeStr : '00:00'}:00`}
+          onClose={() => setShowCalendarPicker(false)}
+        />
+      )}
+    </>
+  );
+}
+
+function CalendarPicker({ title, dueDate, onClose }: { title: string; dueDate: string; onClose: () => void }) {
+  const start = new Date(dueDate);
+  const end = new Date(start.getTime() + 60 * 60 * 1000); // +1 hour
+
+  function handleGoogleCalendar() {
+    window.open(buildGoogleCalendarUrl(title, start, end), '_blank', 'noopener,noreferrer');
+    onClose();
+  }
+
+  function handleIcsDownload() {
+    const uid = Date.now().toString(36);
+    const content = buildIcsContent(title, uid, start, end);
+    const blob = new Blob([content], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${title.slice(0, 40).replace(/[^a-z0-9]/gi, '-')}.ics`;
+    a.click();
+    URL.revokeObjectURL(url);
+    onClose();
+  }
+
+  const btnStyle: React.CSSProperties = {
+    width: '100%', padding: '13px 16px', borderRadius: 10,
+    background: 'var(--surface)', border: '1px solid var(--border-light)',
+    fontSize: 15, color: 'var(--text-primary)', cursor: 'pointer',
+    textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12,
+  };
+
+  return (
+    <>
+      <div
+        style={{ position: 'fixed', inset: 0, background: 'rgba(30,26,24,0.45)', zIndex: 70 }}
+        onClick={onClose}
+      />
+      <div
+        style={{
+          position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 71,
+          display: 'flex', justifyContent: 'center',
+        }}
+      >
+      <div
+        className="animate-slide-up"
+        style={{
+          width: '100%', maxWidth: 430,
+          background: 'var(--bg)', borderRadius: '20px 20px 0 0',
+          padding: '20px 20px 40px',
+        }}
+      >
+        <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textAlign: 'center', marginBottom: 16, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+          Add to Calendar
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <button onClick={handleGoogleCalendar} style={btnStyle}>
+            <CalendarBlank size={18} color="var(--sage)" />
+            Google Calendar
+          </button>
+          <button onClick={handleIcsDownload} style={btnStyle}>
+            <CalendarBlank size={18} color="var(--text-muted)" />
+            <span>
+              Apple / Other Calendar
+              <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 6 }}>(.ics)</span>
+            </span>
+          </button>
+        </div>
+        <button
+          onClick={onClose}
+          style={{
+            marginTop: 12, width: '100%', padding: '13px 16px', borderRadius: 10,
+            background: 'var(--surface)', border: '1px solid var(--border-light)',
+            fontSize: 15, color: 'var(--text-secondary)', cursor: 'pointer', fontWeight: 500,
+          }}
+        >
+          Cancel
+        </button>
+      </div>
+      </div>
     </>
   );
 }

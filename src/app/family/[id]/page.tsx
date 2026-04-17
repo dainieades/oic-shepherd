@@ -246,9 +246,9 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
       {/* Hidden file input */}
       <input ref={fileInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handlePhotoFile} />
 
-      {/* ── Tabs — sticky below nav bar (36 + 44 = 80px) ── */}
+      {/* ── Tabs — sticky below nav bar ── */}
       <div style={{
-        position: 'sticky', top: 90, zIndex: 39,
+        position: 'sticky', top: 54, zIndex: 39,
         background: 'var(--bg)',
         display: 'flex', borderBottom: '2px solid var(--border-light)', marginBottom: 20,
       }}>
@@ -278,6 +278,9 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
               <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>No logs yet</p>
               <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.6, maxWidth: 240, margin: '0 auto' }}>
                 Logs capture past interactions — a conversation, a check-in, a prayer request, or a moment you shared together.
+              </p>
+              <p style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.5, maxWidth: 240, margin: '10px auto 0', fontWeight: 600 }}>
+                Only assigned shepherds and pastors can see these.
               </p>
             </div>
           )}
@@ -316,9 +319,12 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
           {categorized.completed.length > 0 && <TodoSection label="Completed" todos={categorized.completed} onToggle={handleTodoToggle} onEdit={setEditingTodo} data={data} defaultOpen={false} />}
           {todos.length === 0 && (
             <div style={{ textAlign: 'center', padding: '32px 20px' }}>
-              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>Nothing scheduled yet</p>
+              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>No to-dos yet</p>
               <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.6, maxWidth: 240, margin: '0 auto' }}>
                 To-dos are upcoming things to act on — a call to make, a visit to plan, or anything you want to follow up on.
+              </p>
+              <p style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.5, maxWidth: 240, margin: '10px auto 0', fontWeight: 600 }}>
+                Only assigned shepherds and pastors can see these.
               </p>
             </div>
           )}

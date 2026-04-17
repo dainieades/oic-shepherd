@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useApp } from '@/lib/context';
 import { categorizeTodos } from '@/lib/utils';
 import { Todo, TodoAlert, TodoRepeat } from '@/lib/types';
 import AddTodoModal from '@/components/AddTodoModal';
 import AddLogModal from '@/components/AddLogModal';
 import TodoLogPrompt from '@/components/TodoLogPrompt';
+
+type ViewMode = 'list' | 'calendar';
 
 const ALERT_LABELS: Record<TodoAlert, string> = {
   'none': '',
@@ -34,6 +36,7 @@ export default function TodosPage() {
   const [todoLogPrompt, setTodoLogPrompt] = useState<Todo | null>(null);
   const [pendingLogTodo, setPendingLogTodo] = useState<Todo | null>(null);
   const [scrolled, setScrolled] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
   const isAdmin = currentPersona.role === 'admin';
 
   // Search
@@ -142,6 +145,39 @@ export default function TodosPage() {
 
   const ActionButtons = () => (
     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+      {/* View toggle */}
+      <div style={{ display: 'flex', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, overflow: 'hidden', flexShrink: 0 }}>
+        <button
+          onClick={() => setViewMode('list')}
+          style={{
+            width: btnSize, height: btnSize,
+            background: viewMode === 'list' ? 'var(--sage-light)' : 'transparent',
+            border: 'none', borderRight: '1px solid var(--border)',
+            color: viewMode === 'list' ? 'var(--sage)' : 'var(--text-secondary)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+          }}
+          aria-label="List view"
+        >
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+          </svg>
+        </button>
+        <button
+          onClick={() => setViewMode('calendar')}
+          style={{
+            width: btnSize, height: btnSize,
+            background: viewMode === 'calendar' ? 'var(--sage-light)' : 'transparent',
+            border: 'none',
+            color: viewMode === 'calendar' ? 'var(--sage)' : 'var(--text-secondary)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+          }}
+          aria-label="Calendar view"
+        >
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+          </svg>
+        </button>
+      </div>
       {/* Search */}
       <button
         onClick={() => {
@@ -270,17 +306,26 @@ export default function TodosPage() {
         </div>
       )}
 
-      {categorized.today.length > 0 && (
-        <TodoSection label="Today" todos={categorized.today} onToggle={handleToggle} onEdit={setEditingTodo} data={data} />
-      )}
-      {categorized.upcoming.length > 0 && (
-        <TodoSection label="Upcoming" todos={categorized.upcoming} onToggle={handleToggle} onEdit={setEditingTodo} data={data} />
-      )}
-      {categorized.noDueDate.length > 0 && (
-        <TodoSection label="No due date" todos={categorized.noDueDate} onToggle={handleToggle} onEdit={setEditingTodo} data={data} />
-      )}
-      {categorized.completed.length > 0 && (
-        <TodoSection label="Completed" todos={categorized.completed} onToggle={handleToggle} onEdit={setEditingTodo} data={data} defaultOpen={false} />
+      {viewMode === 'calendar' ? (
+        <CalendarView todos={myTodos} onToggle={handleToggle} onEdit={setEditingTodo} data={data} />
+      ) : (
+        <>
+          {categorized.overdue.length > 0 && (
+            <TodoSection label="Overdue" todos={categorized.overdue} onToggle={handleToggle} onEdit={setEditingTodo} data={data} labelColor="var(--red, #c0392b)" />
+          )}
+          {categorized.today.length > 0 && (
+            <TodoSection label="Today" todos={categorized.today} onToggle={handleToggle} onEdit={setEditingTodo} data={data} />
+          )}
+          {categorized.upcoming.length > 0 && (
+            <TodoSection label="Upcoming" todos={categorized.upcoming} onToggle={handleToggle} onEdit={setEditingTodo} data={data} />
+          )}
+          {categorized.noDueDate.length > 0 && (
+            <TodoSection label="No due date" todos={categorized.noDueDate} onToggle={handleToggle} onEdit={setEditingTodo} data={data} />
+          )}
+          {categorized.completed.length > 0 && (
+            <TodoSection label="Completed" todos={categorized.completed} onToggle={handleToggle} onEdit={setEditingTodo} data={data} defaultOpen={false} />
+          )}
+        </>
       )}
 
       {myTodos.length === 0 && (
@@ -288,6 +333,9 @@ export default function TodosPage() {
           <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>Nothing coming up</p>
           <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.6, maxWidth: 260, margin: '0 auto' }}>
             To-dos are for future follow-ups — a call to make, a visit to plan, a birthday coming up, or anything you want to remember to do.
+          </p>
+          <p style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.5, maxWidth: 260, margin: '10px auto 0', fontWeight: 600 }}>
+            Only assigned shepherds and pastors can see these.
           </p>
         </div>
       )}
@@ -389,6 +437,185 @@ export default function TodosPage() {
   );
 }
 
+function CalendarView({ todos, onToggle, onEdit, data }: {
+  todos: Todo[];
+  onToggle: (id: string) => void;
+  onEdit: (todo: Todo) => void;
+  data: import('@/lib/types').AppData;
+}) {
+  const today = new Date();
+  const [calYear, setCalYear] = useState(today.getFullYear());
+  const [calMonth, setCalMonth] = useState(today.getMonth()); // 0-indexed
+  const [selectedDate, setSelectedDate] = useState<string | null>(null); // 'YYYY-MM-DD'
+
+  const monthLabel = new Date(calYear, calMonth, 1).toLocaleString('en-US', { month: 'long', year: 'numeric' });
+
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const firstDow = new Date(calYear, calMonth, 1).getDay(); // 0=Sun
+
+  // Map 'YYYY-MM-DD' -> todos with that due date
+  const todosByDate = useMemo(() => {
+    const map: Record<string, Todo[]> = {};
+    for (const t of todos) {
+      if (!t.dueDate) continue;
+      const d = t.dueDate.slice(0, 10);
+      if (!map[d]) map[d] = [];
+      map[d].push(t);
+    }
+    return map;
+  }, [todos]);
+
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+  const prevMonth = () => {
+    if (calMonth === 0) { setCalMonth(11); setCalYear((y) => y - 1); }
+    else setCalMonth((m) => m - 1);
+    setSelectedDate(null);
+  };
+  const nextMonth = () => {
+    if (calMonth === 11) { setCalMonth(0); setCalYear((y) => y + 1); }
+    else setCalMonth((m) => m + 1);
+    setSelectedDate(null);
+  };
+
+  const cells: (number | null)[] = [...Array(firstDow).fill(null), ...Array.from({ length: daysInMonth }, (_, i) => i + 1)];
+  // Pad to complete last row
+  while (cells.length % 7 !== 0) cells.push(null);
+
+  const selectedTodos = selectedDate ? (todosByDate[selectedDate] ?? []) : [];
+
+  return (
+    <div>
+      {/* Month nav */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+        <button
+          onClick={prevMonth}
+          style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        >
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+          </svg>
+        </button>
+        <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>{monthLabel}</span>
+        <button
+          onClick={nextMonth}
+          style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        >
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Day-of-week headers */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', marginBottom: 4 }}>
+        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => (
+          <div key={d} style={{ textAlign: 'center', fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em', paddingBottom: 4 }}>{d}</div>
+        ))}
+      </div>
+
+      {/* Calendar grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 3 }}>
+        {cells.map((day, i) => {
+          if (!day) return <div key={`empty-${i}`} />;
+          const dateStr = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+          const dayTodos = todosByDate[dateStr] ?? [];
+          const isToday = dateStr === todayStr;
+          const isSelected = dateStr === selectedDate;
+          const hasIncomplete = dayTodos.some((t) => !t.completed);
+          const allComplete = dayTodos.length > 0 && dayTodos.every((t) => t.completed);
+
+          return (
+            <button
+              key={dateStr}
+              onClick={() => setSelectedDate(isSelected ? null : dateStr)}
+              style={{
+                aspectRatio: '1', borderRadius: 8,
+                background: isSelected ? 'var(--sage)' : isToday ? 'var(--sage-light)' : 'transparent',
+                border: isToday && !isSelected ? '1.5px solid var(--sage-mid)' : isSelected ? 'none' : '1px solid transparent',
+                cursor: 'pointer',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2,
+                padding: 2,
+              }}
+            >
+              <span style={{ fontSize: 13, fontWeight: isToday || isSelected ? 700 : 400, color: isSelected ? '#fff' : isToday ? 'var(--sage)' : 'var(--text-primary)', lineHeight: 1 }}>
+                {day}
+              </span>
+              {dayTodos.length > 0 && (
+                <div style={{ display: 'flex', gap: 2 }}>
+                  {dayTodos.slice(0, 3).map((_, di) => (
+                    <div key={di} style={{ width: 4, height: 4, borderRadius: '50%', background: isSelected ? 'rgba(255,255,255,0.8)' : allComplete ? 'var(--text-muted)' : hasIncomplete ? 'var(--sage)' : 'var(--text-muted)' }} />
+                  ))}
+                  {dayTodos.length > 3 && <div style={{ width: 4, height: 4, borderRadius: '50%', background: isSelected ? 'rgba(255,255,255,0.6)' : 'var(--border)' }} />}
+                </div>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Selected day todos */}
+      {selectedDate && (
+        <div style={{ marginTop: 16 }}>
+          <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
+            {new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })} · {selectedTodos.length}
+          </p>
+          {selectedTodos.length === 0 ? (
+            <p style={{ fontSize: 13, color: 'var(--text-muted)', padding: '12px 0' }}>No to-dos on this day.</p>
+          ) : (
+            <div className="no-last-border" style={{ background: 'var(--surface)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
+              {selectedTodos.map((t) => {
+                const person = t.personId ? data.people.find((p) => p.id === t.personId) : null;
+                const family = t.familyId ? data.families.find((f) => f.id === t.familyId) : null;
+                const targetChips = [family?.label, person?.englishName].filter(Boolean) as string[];
+                return (
+                  <div key={t.id} className="row-card-hover" style={{ display: 'flex', alignItems: 'flex-start', gap: 10, paddingTop: 10, paddingBottom: 10, borderBottom: '1px solid var(--border-light)' }}>
+                    <button
+                      onClick={() => onToggle(t.id)}
+                      style={{
+                        width: 20, height: 20, borderRadius: '50%', flexShrink: 0, marginTop: 2,
+                        border: t.completed ? 'none' : '2px solid var(--border)',
+                        background: t.completed ? 'var(--sage)' : 'transparent',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                      }}
+                    >
+                      {t.completed && (
+                        <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth={3}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                        </svg>
+                      )}
+                    </button>
+                    <button
+                      onClick={() => onEdit(t)}
+                      style={{ flex: 1, minWidth: 0, background: 'none', border: 'none', textAlign: 'left', cursor: 'pointer', padding: 0 }}
+                    >
+                      <p style={{ fontSize: 14, color: t.completed ? 'var(--text-muted)' : 'var(--text-primary)', lineHeight: 1.4, marginBottom: 4, textDecoration: t.completed ? 'line-through' : 'none' }}>
+                        {t.title}
+                      </p>
+                      {targetChips.length > 0 && (
+                        <span style={{ fontSize: 10, color: 'var(--blue)', padding: '1px 6px', borderRadius: '999px', background: 'var(--blue-light)', fontWeight: 500 }}>
+                          {targetChips[0]}
+                        </span>
+                      )}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* No-date todos note */}
+      {todos.filter((t) => !t.dueDate && !t.completed).length > 0 && (
+        <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 16 }}>
+          {todos.filter((t) => !t.dueDate && !t.completed).length} to-do{todos.filter((t) => !t.dueDate && !t.completed).length !== 1 ? 's' : ''} with no due date — switch to list view to see them.
+        </p>
+      )}
+    </div>
+  );
+}
+
 function CheckRow({ checked, onToggle, children }: { checked: boolean; onToggle: () => void; children: React.ReactNode }) {
   return (
     <button
@@ -415,13 +642,14 @@ function CheckRow({ checked, onToggle, children }: { checked: boolean; onToggle:
   );
 }
 
-function TodoSection({ label, todos, onToggle, onEdit, data, defaultOpen = true }: {
+function TodoSection({ label, todos, onToggle, onEdit, data, defaultOpen = true, labelColor }: {
   label: string;
   todos: Todo[];
   onToggle: (id: string) => void;
   onEdit: (todo: Todo) => void;
   data: import('@/lib/types').AppData;
   defaultOpen?: boolean;
+  labelColor?: string;
 }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
@@ -432,7 +660,7 @@ function TodoSection({ label, todos, onToggle, onEdit, data, defaultOpen = true 
           display: 'flex', alignItems: 'center', gap: 6,
           padding: '4px 0', marginBottom: open ? 8 : 0,
           background: 'none', border: 'none', cursor: 'pointer',
-          fontSize: 10, fontWeight: 600, color: 'var(--text-muted)',
+          fontSize: 10, fontWeight: 600, color: labelColor ?? 'var(--text-muted)',
           textTransform: 'uppercase', letterSpacing: '0.06em',
         }}
       >

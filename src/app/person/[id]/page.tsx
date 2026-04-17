@@ -8,19 +8,22 @@ import { getTimeAgo, getMembershipLabel, getChurchAttendanceLabel, getPersonNote
 import { Todo, Note, AppData, TodoAlert, NoteType, AppRole } from '@/lib/types';
 import AddLogModal from '@/components/AddLogModal';
 import AddTodoModal from '@/components/AddTodoModal';
+import AddNoticeModal, { URGENCY_STYLE } from '@/components/AddNoticeModal';
 import TodoLogPrompt from '@/components/TodoLogPrompt';
 import EditPersonDrawer from '@/components/EditPersonDrawer';
 import GroupPreviewModal from '@/components/GroupPreviewModal';
-import { Notepad, CheckCircle, Info, Globe, Pulse, GenderIntersex, Cake, Heart, Sparkle, Church, IdentificationCard, CalendarCheck, Drop, Compass, Buildings, Phone, PhoneCall, Envelope, House, FirstAid, HandHeart, UsersFour, PencilSimple } from '@phosphor-icons/react';
+import { Notepad, CheckCircle, Info, Globe, Pulse, GenderIntersex, Cake, Heart, Sparkle, Church, IdentificationCard, CalendarCheck, Drop, Compass, Buildings, Phone, PhoneCall, Envelope, House, FirstAid, HandHeart, UsersFour, PencilSimple, Bell, Warning, Minus, ArrowDown } from '@phosphor-icons/react';
+import { Notice } from '@/lib/types';
 
-type Tab = 'logs' | 'todos' | 'info' | 'sheep';
+type Tab = 'logs' | 'todos' | 'notices' | 'info' | 'sheep';
 
-const TAB_LABELS: Record<Tab, string> = { logs: 'Logs', todos: 'To-dos', info: 'Info', sheep: 'Sheep' };
+const TAB_LABELS: Record<Tab, string> = { logs: 'Logs', todos: 'To-dos', notices: 'Notices', info: 'Info', sheep: 'Sheep' };
 
 function TabIcon({ tab, active }: { tab: Tab; active: boolean }) {
   const weight = active ? 'fill' : 'regular';
   if (tab === 'logs') return <Notepad size={16} weight={weight} />;
   if (tab === 'todos') return <CheckCircle size={16} weight={weight} />;
+  if (tab === 'notices') return <Bell size={16} weight={weight} />;
   if (tab === 'sheep') return <HandHeart size={16} weight={weight} />;
   return <Info size={16} weight={weight} />;
 }
@@ -66,6 +69,8 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
   };
   const [showAddLog, setShowAddLog] = useState(false);
   const [showAddTodo, setShowAddTodo] = useState(false);
+  const [showAddNotice, setShowAddNotice] = useState(false);
+  const [editingNotice, setEditingNotice] = useState<Notice | null>(null);
   const [showSheepPicker, setShowSheepPicker] = useState(false);
   const [editingNote, setEditingNote] = useState<Note | null>(null);
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
@@ -123,6 +128,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
   ];
   const notes     = getPersonNotes(person.id, data.notes).filter((n) => canViewNote(n));
   const todos     = data.todos.filter((t) => t.personId === person.id);
+  const notices   = (data.notices ?? []).filter((n) => n.personId === person.id);
   const categorized = categorizeTodos(todos);
   const incompleteTodosCount = todos.filter((t) => !t.completed).length;
 
@@ -134,12 +140,15 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
     ? data.people.filter((p) => p.assignedShepherdIds.includes(shepherdId))
     : [];
 
-  // Build the visible tabs — non-managers see only Info; shepherds also see Sheep
+  // Notices are visible to all shepherds/admins, not just assigned shepherds
+  const canSeeNotices = canEdit; // admin or shepherd role
+
+  // Build the visible tabs — non-managers see Info + Notices (if shepherd/admin); managers see all
   const visibleTabs: Tab[] = !canManage
-    ? ['info']
+    ? (canSeeNotices ? ['notices', 'info'] : ['info'])
     : person.isShepherd
-    ? ['logs', 'todos', 'sheep', 'info']
-    : ['logs', 'todos', 'info'];
+    ? ['logs', 'todos', 'sheep', 'notices', 'info']
+    : ['logs', 'todos', 'notices', 'info'];
 
   // If the active tab isn't in the visible set (e.g. persona switched), clamp to info
   const activeTab = visibleTabs.includes(tab) ? tab : 'info';
@@ -226,6 +235,15 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
               >
                 <PencilSimple size={scrolled ? 13 : 15} weight="bold" />
                 Info
+              </button>
+            )
+          ) : activeTab === 'notices' ? (
+            canSeeNotices && (
+              <button
+                onClick={() => setShowAddNotice(true)}
+                style={{ height: scrolled ? 30 : 36, padding: scrolled ? '0 12px' : '0 14px', borderRadius: 8, background: 'var(--sage)', color: '#fff', fontSize: scrolled ? 13 : 14, fontWeight: 600, border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}
+              >
+                + Notice
               </button>
             )
           ) : (
@@ -358,9 +376,9 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
       {/* Hidden file input */}
       <input ref={fileInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handlePhotoFile} />
 
-      {/* ── Tabs — sticky below nav bar (36 + 44 = 80px) ── */}
+      {/* ── Tabs — sticky below nav bar ── */}
       {visibleTabs.length > 1 && <div style={{
-        position: 'sticky', top: 90, zIndex: 39,
+        position: 'sticky', top: 54, zIndex: 39,
         background: 'var(--bg)',
         display: 'flex', borderBottom: '2px solid var(--border-light)', marginBottom: 20,
       }}>
@@ -383,6 +401,11 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                 {incompleteTodosCount}
               </span>
             )}
+            {t === 'notices' && notices.length > 0 && (
+              <span style={{ fontSize: 11, fontWeight: 600, background: 'var(--red)', color: 'white', borderRadius: 10, padding: '1px 6px', lineHeight: 1.5 }}>
+                {notices.length}
+              </span>
+            )}
           </button>
         ))}
       </div>}
@@ -395,6 +418,9 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
               <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>No logs yet</p>
               <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.6, maxWidth: 240, margin: '0 auto' }}>
                 Logs capture past interactions — a conversation, a check-in, a prayer request, or a moment you shared together.
+              </p>
+              <p style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.5, maxWidth: 240, margin: '10px auto 0', fontWeight: 600 }}>
+                Only assigned shepherds and pastors can see these.
               </p>
             </div>
           )}
@@ -433,10 +459,47 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
           {categorized.completed.length > 0 && <TodoSection label="Completed" todos={categorized.completed} onToggle={handleTodoToggle} onEdit={setEditingTodo} data={data} defaultOpen={false} />}
           {todos.length === 0 && (
             <div style={{ textAlign: 'center', padding: '32px 20px' }}>
-              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>Nothing scheduled yet</p>
+              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>No to-dos yet</p>
               <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.6, maxWidth: 240, margin: '0 auto' }}>
                 To-dos are upcoming things to act on — a call to make, a visit to plan, or anything you want to follow up on.
               </p>
+              <p style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.5, maxWidth: 240, margin: '10px auto 0', fontWeight: 600 }}>
+                Only assigned shepherds and pastors can see these.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Notices tab */}
+      {activeTab === 'notices' && (
+        <div>
+          {notices.length === 0 && (
+            <div style={{ textAlign: 'center', padding: '32px 20px' }}>
+              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>No notices yet</p>
+              <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.6, maxWidth: 260, margin: '0 auto' }}>
+                Use them for things every shepherd should know: health conditions, a difficult life season, or anything that calls for collective awareness.
+              </p>
+              <p style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.5, maxWidth: 260, margin: '10px auto 0', fontWeight: 600 }}>
+                Visible to anyone.
+              </p>
+            </div>
+          )}
+          {notices.length > 0 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {/* Sort: urgent first, then moderate, then ongoing */}
+              {(['urgent', 'moderate', 'ongoing'] as const).map((level) => {
+                const group = notices.filter((n) => n.urgency === level);
+                if (group.length === 0) return null;
+                return group.map((notice) => (
+                  <NoticeCard
+                    key={notice.id}
+                    notice={notice}
+                    personas={data.personas}
+                    onClick={() => { if (canSeeNotices) setEditingNotice(notice); }}
+                  />
+                ));
+              })}
             </div>
           )}
         </div>
@@ -661,6 +724,8 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
       {showAddTodo && <AddTodoModal onClose={() => setShowAddTodo(false)} prefillPersonId={person.id} />}
       {editingNote && <AddLogModal onClose={() => setEditingNote(null)} note={editingNote} />}
       {editingTodo && <AddTodoModal onClose={() => setEditingTodo(null)} todo={editingTodo} />}
+      {showAddNotice && <AddNoticeModal onClose={() => setShowAddNotice(false)} prefillPersonId={person.id} />}
+      {editingNotice && <AddNoticeModal onClose={() => setEditingNotice(null)} notice={editingNotice} />}
       {showEditPerson && <EditPersonDrawer person={person} onClose={() => setShowEditPerson(false)} />}
       {previewGroupId && <GroupPreviewModal groupId={previewGroupId} onClose={() => setPreviewGroupId(null)} />}
 
@@ -899,6 +964,38 @@ function InfoRow({ icon, label, value, muted }: { icon?: React.ReactNode; label:
       </div>
       <span style={{ fontSize: 13, color: muted ? 'var(--text-muted)' : 'var(--text-primary)', fontWeight: muted ? 400 : 500, textAlign: 'right', lineHeight: 1.5 }}>{value}</span>
     </div>
+  );
+}
+
+const URGENCY_LABEL: Record<string, string> = { urgent: 'Urgent', moderate: 'Moderate', ongoing: 'Ongoing' };
+const CATEGORY_LABEL: Record<string, string> = { 'physical-need': 'Physical Need', 'spiritual-need': 'Spiritual Need', other: 'Other' };
+
+function NoticeCard({ notice, personas, onClick }: { notice: Notice; personas: import('@/lib/types').Persona[]; onClick: () => void }) {
+  const style = URGENCY_STYLE[notice.urgency as import('@/lib/types').NoticeUrgency];
+  const creator = personas.find((p) => p.id === notice.createdBy);
+  return (
+    <button
+      onClick={onClick}
+      className="row-card-hover"
+      style={{
+        textAlign: 'left', cursor: 'pointer', border: `1px solid ${style.border || 'var(--border-light)'}`,
+        borderLeft: `4px solid ${style.color}`,
+        borderRadius: 12, padding: '12px 14px',
+        background: style.bg, width: '100%',
+        display: 'flex', flexDirection: 'column', gap: 6,
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+        <span style={{ fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: '999px', background: style.color, color: '#fff', letterSpacing: '0.03em' }}>
+          {URGENCY_LABEL[notice.urgency]}
+        </span>
+        <span style={{ fontSize: 11, fontWeight: 500, padding: '2px 8px', borderRadius: '999px', background: 'rgba(0,0,0,0.07)', color: style.color }}>
+          {CATEGORY_LABEL[notice.category]}
+        </span>
+      </div>
+      <p style={{ fontSize: 14, color: 'var(--text-primary)', lineHeight: 1.5, margin: 0 }}>{notice.content}</p>
+      <p style={{ fontSize: 11, color: style.color, opacity: 0.8, margin: 0 }}>Added by {creator?.name ?? 'Unknown'} · {getTimeAgo(notice.createdAt)}</p>
+    </button>
   );
 }
 

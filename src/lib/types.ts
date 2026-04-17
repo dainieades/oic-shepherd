@@ -84,6 +84,7 @@ export interface Group {
   name: string;
   description?: string;
   leaderIds: string[];
+  shepherdIds: string[];
   memberIds: string[];
   relatedFamilyIds: string[];
 }
@@ -122,11 +123,26 @@ export interface Todo {
   createdAt: string; // ISO datetime
 }
 
+export type NoticeCategory = 'physical-need' | 'spiritual-need' | 'other';
+export type NoticeUrgency = 'urgent' | 'moderate' | 'ongoing';
+
+export interface Notice {
+  id: string;
+  personId?: string;
+  familyId?: string;
+  category: NoticeCategory;
+  urgency: NoticeUrgency;
+  content: string;
+  createdBy: string; // persona ID
+  createdAt: string; // ISO datetime
+}
+
 export interface AppData {
   people: Person[];
   families: Family[];
   groups: Group[];
   notes: Note[];
   todos: Todo[];
+  notices: Notice[];
   personas: Persona[];
 }

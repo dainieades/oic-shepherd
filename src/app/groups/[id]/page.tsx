@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/lib/context';
 import { getTimeAgo, getDueLabel, getMembershipLabel } from '@/lib/utils';
-import { PencilSimple, TextT, AlignLeft, UsersThree, UserList, CaretRight } from '@phosphor-icons/react';
+import { PencilSimple, TextT, AlignLeft, UserList, CaretRight, Crown, HandHeart } from '@phosphor-icons/react';
 
 const avatarPalette = [
   { bg: '#EAF2EE', color: '#5B8A72' },
@@ -17,7 +17,7 @@ const avatarPalette = [
 export default function GroupDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
-  const { data, updateGroup, updateGroupMembers } = useApp();
+  const { data, currentPersona, updateGroup, updateGroupMembers } = useApp();
 
   const [scrolled, setScrolled] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
@@ -33,8 +33,13 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
     return <div style={{ paddingTop: 64, textAlign: 'center', color: 'var(--text-muted)' }}>Group not found</div>;
   }
 
-  const leaders  = data.people.filter((p) => group.leaderIds.includes(p.id));
-  const members  = data.people.filter((p) => group.memberIds.includes(p.id) && !group.leaderIds.includes(p.id));
+  const myPersonId = currentPersona.personId;
+  const iAmLeader   = myPersonId ? group.leaderIds.includes(myPersonId) : false;
+  const iAmShepherd = myPersonId ? group.shepherdIds.includes(myPersonId) : false;
+
+  const leaders   = data.people.filter((p) => group.leaderIds.includes(p.id));
+  const shepherds = data.people.filter((p) => group.shepherdIds.includes(p.id) && !group.leaderIds.includes(p.id));
+  const members   = data.people.filter((p) => group.memberIds.includes(p.id) && !group.leaderIds.includes(p.id) && !group.shepherdIds.includes(p.id));
 
   return (
     <div style={{ paddingBottom: 32 }}>
@@ -71,19 +76,30 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
 
       {/* ── Group header card ── */}
       <div style={{ background: 'var(--surface)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-light)', padding: '20px', marginBottom: 14 }}>
-        <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8, letterSpacing: '-0.02em' }}>
-          {group.name}
-        </h1>
-
-        <div style={{ display: 'flex', gap: 12, marginBottom: group.description ? 14 : 0 }}>
-          <span style={{ fontSize: 11, fontWeight: 500, padding: '3px 10px', borderRadius: '999px', background: 'var(--sage-light)', color: 'var(--sage)' }}>
-            {members.length} {members.length === 1 ? 'member' : 'members'}
-          </span>
-          {leaders.length > 0 && (
-            <span style={{ fontSize: 11, fontWeight: 500, padding: '3px 10px', borderRadius: '999px', background: 'var(--blue-light)', color: 'var(--blue)' }}>
-              {leaders.length === 1 ? '1 leader' : `${leaders.length} leaders`}
+        <div style={{ marginBottom: 10 }}>
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.02em', marginBottom: (iAmLeader || iAmShepherd) ? 4 : 0 }}>
+            {group.name}
+          </h1>
+          {(iAmLeader || iAmShepherd) && (
+            <span style={{ fontSize: 12, color: 'var(--sage)', fontWeight: 500 }}>
+              {iAmLeader && iAmShepherd ? "You're a leader & shepherd" : iAmLeader ? "You're a leader" : "You're a shepherd"}
             </span>
           )}
+        </div>
+
+        {/* Consistent chip row: always show all three */}
+        <div style={{ display: 'flex', gap: 8, marginBottom: group.description ? 14 : 0, flexWrap: 'wrap' }}>
+          <span style={{ fontSize: 11, fontWeight: 500, padding: '3px 10px', borderRadius: '999px', background: 'var(--sage-light)', color: 'var(--sage)' }}>
+            {group.memberIds.length} {group.memberIds.length === 1 ? 'member' : 'members'}
+          </span>
+          <span style={{ fontSize: 11, fontWeight: 500, padding: '3px 10px', borderRadius: '999px', background: '#EBF1F7', color: '#6B8EAE', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+            <Crown size={11} />
+            {leaders.length} {leaders.length === 1 ? 'leader' : 'leaders'}
+          </span>
+          <span style={{ fontSize: 11, fontWeight: 500, padding: '3px 10px', borderRadius: '999px', background: '#EAF2EE', color: '#5B8A72', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+            <HandHeart size={11} />
+            {group.shepherdIds.length} {group.shepherdIds.length === 1 ? 'shepherd' : 'shepherds'}
+          </span>
         </div>
 
         {group.description && (
@@ -101,6 +117,8 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
             {leaders.map((leader, i) => {
               const palette  = avatarPalette[i % avatarPalette.length];
               const initials = leader.englishName.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
+              const isMe     = myPersonId === leader.id;
+              const isAlsoShepherd = group.shepherdIds.includes(leader.id);
               return (
                 <Link
                   key={leader.id}
@@ -112,11 +130,50 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
                     {initials}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                       <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>{leader.englishName}</span>
                       {leader.chineseName && <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{leader.chineseName}</span>}
+                      {isAlsoShepherd && (
+                        <span style={{ fontSize: 10, fontWeight: 600, padding: '1px 6px', borderRadius: '999px', background: '#EAF2EE', color: '#5B8A72', display: 'inline-flex', alignItems: 'center', gap: 3 }}><HandHeart size={10} />Shepherd</span>
+                      )}
                     </div>
                     <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{getMembershipLabel(leader.membershipStatus)}</span>
+                  </div>
+                  <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                  </svg>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ── Shepherds (those who are shepherds but not leaders) ── */}
+      {shepherds.length > 0 && (
+        <div style={{ marginBottom: 14 }}>
+          <SectionLabel>Shepherds</SectionLabel>
+          <div className="no-last-border" style={{ background: 'var(--surface)', borderRadius: 'var(--radius)', border: '1px solid var(--border-light)', overflow: 'hidden' }}>
+            {shepherds.map((shepherd, i) => {
+              const palette  = avatarPalette[i % avatarPalette.length];
+              const initials = shepherd.englishName.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
+              const isMe     = myPersonId === shepherd.id;
+              return (
+                <Link
+                  key={shepherd.id}
+                  href={`/person/${shepherd.id}`}
+                  className="row-card-hover"
+                  style={{ display: 'flex', alignItems: 'center', gap: 12, paddingTop: 12, paddingBottom: 12, borderBottom: '1px solid var(--border-light)', textDecoration: 'none' }}
+                >
+                  <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#EAF2EE', color: '#5B8A72', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 600, flexShrink: 0 }}>
+                    {initials}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>{shepherd.englishName}</span>
+                      {shepherd.chineseName && <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{shepherd.chineseName}</span>}
+                    </div>
+                    <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{getMembershipLabel(shepherd.membershipStatus)}</span>
                   </div>
                   <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
@@ -139,6 +196,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
               const palette  = avatarPalette[i % avatarPalette.length];
               const initials = m.englishName.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
               const due      = getDueLabel(m.nextFollowUpDate);
+              const isMe     = myPersonId === m.id;
 
               return (
                 <Link
@@ -151,7 +209,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
                     {initials}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                       <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>{m.englishName}</span>
                       {m.chineseName && <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{m.chineseName}</span>}
                     </div>
@@ -198,27 +256,30 @@ function EditGroupDrawer({
 }: {
   group: import('@/lib/types').Group;
   onClose: () => void;
-  onSave: (updates: Partial<Pick<import('@/lib/types').Group, 'name' | 'description' | 'leaderIds'>>, memberIds: string[]) => void;
+  onSave: (updates: Partial<Pick<import('@/lib/types').Group, 'name' | 'description' | 'leaderIds' | 'shepherdIds'>>, memberIds: string[]) => void;
 }) {
   const { data } = useApp();
 
-  const [name, setName]           = useState(group.name);
-  const [description, setDesc]    = useState(group.description ?? '');
-  const [leaderIds, setLeaderIds] = useState<string[]>(group.leaderIds);
-  const [memberIds, setMemberIds] = useState<string[]>(group.memberIds);
+  const [name, setName]               = useState(group.name);
+  const [description, setDesc]        = useState(group.description ?? '');
+  const [leaderIds, setLeaderIds]     = useState<string[]>(group.leaderIds);
+  const [shepherdIds, setShepherdIds] = useState<string[]>(group.shepherdIds);
+  const [memberIds, setMemberIds]     = useState<string[]>(group.memberIds);
 
-  const [showLeaderPicker, setShowLeaderPicker] = useState(false);
-  const [showMemberPicker, setShowMemberPicker] = useState(false);
+  const [showLeaderPicker, setShowLeaderPicker]   = useState(false);
+  const [showShepherdPicker, setShowShepherdPicker] = useState(false);
+  const [showMemberPicker, setShowMemberPicker]   = useState(false);
 
   const nameRef = useRef<HTMLInputElement>(null);
   const descRef = useRef<HTMLTextAreaElement>(null);
 
-  const selectedLeaders = data.people.filter((p) => leaderIds.includes(p.id));
-  const selectedMembers = data.people.filter((p) => memberIds.includes(p.id));
+  const selectedLeaders   = data.people.filter((p) => leaderIds.includes(p.id));
+  const selectedShepherds = data.people.filter((p) => shepherdIds.includes(p.id));
+  const selectedMembers   = data.people.filter((p) => memberIds.includes(p.id));
 
   const handleSave = () => {
     if (!name.trim()) return;
-    onSave({ name: name.trim(), description: description.trim() || undefined, leaderIds }, memberIds);
+    onSave({ name: name.trim(), description: description.trim() || undefined, leaderIds, shepherdIds }, memberIds);
   };
 
   return (
@@ -268,10 +329,27 @@ function EditGroupDrawer({
                 style={pickerRowStyle}
               >
                 <span style={spacerStyle} />
-                <UsersThree size={16} color="var(--text-muted)" />
+                <Crown size={16} color="#6B8EAE" />
                 <span style={labelStyle}>Leaders</span>
                 <span style={{ flex: 1, fontSize: 14, color: selectedLeaders.length ? 'var(--text-primary)' : 'var(--text-muted)', textAlign: 'left' }}>
                   {selectedLeaders.length === 0 ? 'None' : selectedLeaders.map((p) => p.englishName.split(' ')[0]).join(', ')}
+                </span>
+                <CaretRight size={14} color="var(--text-muted)" />
+              </button>
+            </DrawerSection>
+
+            {/* ── SHEPHERDS ── */}
+            <DrawerSection label="Shepherds">
+              <button
+                className="field-row-hover"
+                onClick={() => setShowShepherdPicker(true)}
+                style={pickerRowStyle}
+              >
+                <span style={spacerStyle} />
+                <HandHeart size={16} color="#5B8A72" />
+                <span style={labelStyle}>Shepherds</span>
+                <span style={{ flex: 1, fontSize: 14, color: selectedShepherds.length ? 'var(--text-primary)' : 'var(--text-muted)', textAlign: 'left' }}>
+                  {selectedShepherds.length === 0 ? 'None' : selectedShepherds.map((p) => p.englishName.split(' ')[0]).join(', ')}
                 </span>
                 <CaretRight size={14} color="var(--text-muted)" />
               </button>
@@ -306,6 +384,17 @@ function EditGroupDrawer({
           selected={leaderIds}
           onToggle={(pid) => setLeaderIds((prev) => prev.includes(pid) ? prev.filter((x) => x !== pid) : [...prev, pid])}
           onDone={() => setShowLeaderPicker(false)}
+        />
+      )}
+
+      {/* Shepherd picker sheet */}
+      {showShepherdPicker && (
+        <PeoplePickerSheet
+          title="Shepherds"
+          people={data.people}
+          selected={shepherdIds}
+          onToggle={(pid) => setShepherdIds((prev) => prev.includes(pid) ? prev.filter((x) => x !== pid) : [...prev, pid])}
+          onDone={() => setShowShepherdPicker(false)}
         />
       )}
 
