@@ -480,9 +480,6 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
               <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.6, maxWidth: 260, margin: '0 auto' }}>
                 Use them for things every shepherd should know: health conditions, a difficult life season, or anything that calls for collective awareness.
               </p>
-              <p style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.5, maxWidth: 260, margin: '10px auto 0', fontWeight: 600 }}>
-                Visible to anyone.
-              </p>
             </div>
           )}
           {notices.length > 0 && (
@@ -688,7 +685,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
           )}
 
           {/* META */}
-          <InfoSection title="Meta">
+          <InfoSection title="Record info">
             <InfoRow label="Last logged" value={person.lastContactDate ? new Date(person.lastContactDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Never'} muted />
             <InfoRow label="Added" value={fmtShortDate(person.createdAt)} muted />
             {person.createdBy && (() => { const creator = data.personas.find((p) => p.id === person.createdBy); return creator ? <InfoRow label="Created by" value={creator.name} muted /> : null; })()}

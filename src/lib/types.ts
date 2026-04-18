@@ -125,6 +125,7 @@ export interface Todo {
 
 export type NoticeCategory = 'physical-need' | 'spiritual-need' | 'other';
 export type NoticeUrgency = 'urgent' | 'moderate' | 'ongoing';
+export type NoticePrivacy = 'pastor-only' | 'pastor-and-shepherds' | 'everyone';
 
 export interface Notice {
   id: string;
@@ -132,6 +133,7 @@ export interface Notice {
   familyId?: string;
   category: NoticeCategory;
   urgency: NoticeUrgency;
+  privacy: NoticePrivacy;
   content: string;
   createdBy: string; // persona ID
   createdAt: string; // ISO datetime

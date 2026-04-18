@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { FirstAid, HandsPraying, DotsThree, CaretRight, Trash, UserPlus, PlusCircle, Warning, Minus, ArrowDown, User } from '@phosphor-icons/react';
+import { FirstAid, HandsPraying, DotsThree, CaretRight, Trash, UserPlus, PlusCircle, Warning, Minus, ArrowDown, User, Lock, Users, Globe } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { useToast } from './Toast';
-import { Notice, NoticeCategory, NoticeUrgency } from '@/lib/types';
+import { Notice, NoticeCategory, NoticeUrgency, NoticePrivacy } from '@/lib/types';
 import PersonFamilyPicker from './PersonFamilyPicker';
 import PickerMenu from './PickerMenu';
 import { DeleteConfirmDialog } from './AddLogModal';
@@ -20,6 +20,12 @@ const CATEGORIES: { value: NoticeCategory; label: string; icon: React.ReactNode 
   { value: 'physical-need',  label: 'Physical Need',  icon: <FirstAid size={16} /> },
   { value: 'spiritual-need', label: 'Spiritual Need',  icon: <HandsPraying size={16} /> },
   { value: 'other',          label: 'Other',           icon: <DotsThree size={16} /> },
+];
+
+const PRIVACIES: { value: NoticePrivacy; label: string; icon: React.ReactNode }[] = [
+  { value: 'pastor-only',          label: 'Pastor only',                icon: <Lock size={16} /> },
+  { value: 'pastor-and-shepherds', label: 'Pastor and all shepherds',   icon: <Users size={16} /> },
+  { value: 'everyone',             label: 'Everyone with app access',   icon: <Globe size={16} /> },
 ];
 
 const URGENCIES: { value: NoticeUrgency; label: string; description: string; icon: React.ReactNode }[] = [
@@ -41,6 +47,7 @@ export default function AddNoticeModal({ onClose, prefillPersonId, prefillFamily
 
   const [category, setCategory] = useState<NoticeCategory>(notice?.category ?? 'physical-need');
   const [urgency, setUrgency] = useState<NoticeUrgency>(notice?.urgency ?? 'moderate');
+  const [privacy, setPrivacy] = useState<NoticePrivacy>(notice?.privacy ?? 'pastor-and-shepherds');
   const [content, setContent] = useState(notice?.content ?? '');
   const [familyIds, setFamilyIds] = useState<string[]>(
     notice?.familyId ? [notice.familyId] : prefillFamilyId ? [prefillFamilyId] : []
@@ -52,6 +59,7 @@ export default function AddNoticeModal({ onClose, prefillPersonId, prefillFamily
   const [showWhoPicker, setShowWhoPicker] = useState(false);
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
   const [showUrgencyPicker, setShowUrgencyPicker] = useState(false);
+  const [showPrivacyPicker, setShowPrivacyPicker] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const whoNames = [
@@ -80,17 +88,17 @@ export default function AddNoticeModal({ onClose, prefillPersonId, prefillFamily
     if (!canSave) return;
     if (isEditing && notice) {
       updateNotice(notice.id, {
-        category, urgency, content: content.trim(),
+        category, urgency, privacy, content: content.trim(),
         familyId: familyIds[0],
         personId: personIds[0],
       });
       showToast('Notice updated');
     } else {
       for (const familyId of familyIds) {
-        addNotice({ category, urgency, content: content.trim(), familyId });
+        addNotice({ category, urgency, privacy, content: content.trim(), familyId });
       }
       for (const personId of personIds) {
-        addNotice({ category, urgency, content: content.trim(), personId });
+        addNotice({ category, urgency, privacy, content: content.trim(), personId });
       }
       showToast('Notice added');
     }
@@ -100,6 +108,7 @@ export default function AddNoticeModal({ onClose, prefillPersonId, prefillFamily
   const categoryItem = CATEGORIES.find((c) => c.value === category) ?? CATEGORIES[0];
   const urgencyItem = URGENCIES.find((u) => u.value === urgency) ?? URGENCIES[1];
   const urgencyStyle = URGENCY_STYLE[urgency];
+  const privacyItem = PRIVACIES.find((p) => p.value === privacy) ?? PRIVACIES[1];
 
   return (
     <>
@@ -209,6 +218,14 @@ export default function AddNoticeModal({ onClose, prefillPersonId, prefillFamily
                       <CaretRight size={14} color="var(--text-muted)" />
                     </button>
 
+                    {/* Privacy */}
+                    <FieldRow
+                      icon={<Lock size={16} />}
+                      label="Visible to"
+                      value={privacyItem.label}
+                      onClick={() => setShowPrivacyPicker(true)}
+                    />
+
                     {/* Created by — edit mode */}
                     {isEditing && notice && (() => {
                       const creator = data.personas.find((p) => p.id === notice.createdBy);
@@ -263,6 +280,16 @@ export default function AddNoticeModal({ onClose, prefillPersonId, prefillFamily
           value={urgency}
           onSelect={(v) => setUrgency(v as NoticeUrgency)}
           onClose={() => setShowUrgencyPicker(false)}
+        />
+      )}
+
+      {showPrivacyPicker && (
+        <PickerMenu
+          title="Visible to"
+          options={PRIVACIES.map((p) => ({ value: p.value, label: p.label, icon: p.icon }))}
+          value={privacy}
+          onSelect={(v) => setPrivacy(v as NoticePrivacy)}
+          onClose={() => setShowPrivacyPicker(false)}
         />
       )}
 

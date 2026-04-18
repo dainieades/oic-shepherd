@@ -188,6 +188,7 @@ function mapNotice(row: Record<string, unknown>): Notice {
     familyId: row.family_id as string | undefined,
     category: row.category as Notice['category'],
     urgency: row.urgency as Notice['urgency'],
+    privacy: (row.privacy as Notice['privacy']) ?? 'pastor-and-shepherds',
     content: row.content as string,
     createdBy: row.created_by as string,
     createdAt: row.created_at as string,
@@ -971,12 +972,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const supabase = createClient();
     await supabase.from('notices').insert({
       id: notice.id, person_id: notice.personId ?? null, family_id: notice.familyId ?? null,
-      category: notice.category, urgency: notice.urgency, content: notice.content,
-      created_by: notice.createdBy, created_at: notice.createdAt,
+      category: notice.category, urgency: notice.urgency, privacy: notice.privacy,
+      content: notice.content, created_by: notice.createdBy, created_at: notice.createdAt,
     });
   }, [currentPersona.id]);
 
-  const updateNotice = useCallback(async (noticeId: string, updates: Partial<Pick<Notice, 'category' | 'urgency' | 'content' | 'personId' | 'familyId'>>) => {
+  const updateNotice = useCallback(async (noticeId: string, updates: Partial<Pick<Notice, 'category' | 'urgency' | 'privacy' | 'content' | 'personId' | 'familyId'>>) => {
     setData((prev) => ({
       ...prev,
       notices: prev.notices.map((n) => n.id === noticeId ? { ...n, ...updates } : n),
@@ -985,6 +986,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const dbUpdates: Record<string, unknown> = {};
     if (updates.category !== undefined) dbUpdates.category = updates.category;
     if (updates.urgency !== undefined) dbUpdates.urgency = updates.urgency;
+    if (updates.privacy !== undefined) dbUpdates.privacy = updates.privacy;
     if (updates.content !== undefined) dbUpdates.content = updates.content;
     if (updates.personId !== undefined) dbUpdates.person_id = updates.personId;
     if (updates.familyId !== undefined) dbUpdates.family_id = updates.familyId;

@@ -342,10 +342,6 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
           <TextareaRow icon={<House size={16} color="var(--text-muted)" />} label="Address" inputRef={addressRef} value={homeAddress} onChange={setHomeAddress} placeholder="123 Main St, City, State ZIP" rows={2} resizable />
         </FormSection>
 
-        <FormSection label="Notes">
-          <TextareaRow icon={<Church size={16} color="var(--text-muted)" />} label="Spiritual" inputRef={spiritualRef} value={spiritualNeeds} onChange={setSpiritualNeeds} placeholder="Spiritual needs" rows={3} resizable />
-          <TextareaRow icon={<FirstAid size={16} color="var(--text-muted)" />} label="Physical" inputRef={physicalRef} value={physicalNeeds} onChange={setPhysicalNeeds} placeholder="Physical needs" rows={3} resizable />
-        </FormSection>
 
       </div>
 
