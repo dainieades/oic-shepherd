@@ -70,7 +70,7 @@ export default function InviteSheet({ onClose, initialEmail = '', initialRole = 
 
     // If linked to a person record, save the role and email back to their profile
     if (personId) {
-      updatePerson(personId, { appRole: role, email: trimmed });
+      await updatePerson(personId, { appRole: role, email: trimmed });
     }
 
     setStatus('success');

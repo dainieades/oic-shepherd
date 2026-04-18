@@ -127,12 +127,11 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
 
   const selectedGroups = data.groups.filter((g) => groupIds.includes(g.id));
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!firstName.trim()) return;
-    assignGroupsToPerson(person.id, groupIds);
-    assignShepherds(person.id, shepherdIds);
-    showToast('Changes saved');
-    updatePerson(person.id, {
+    await assignGroupsToPerson(person.id, groupIds);
+    await assignShepherds(person.id, shepherdIds);
+    await updatePerson(person.id, {
       englishName: fullName,
       chineseName: chineseName.trim() || undefined,
       language,
@@ -152,8 +151,8 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
       homePhone: homePhone.trim() || undefined,
       email: email.trim() || undefined,
       homeAddress: homeAddress.trim() || undefined,
-
     });
+    showToast('Changes saved');
     onClose();
   };
 

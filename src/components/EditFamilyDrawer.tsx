@@ -54,12 +54,12 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
   const currentMembers = data.people.filter((p) => memberIds.includes(p.id));
   const primaryContact = currentMembers.find((m) => m.id === primaryContactId);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!label.trim()) return;
-    updateFamily(family.id, { label: label.trim(), primaryContactId: primaryContactId || undefined });
-    updateFamilyMembers(family.id, memberIds);
-    assignGroupsToFamily(family.id, groupIds);
-    assignShepherdsToFamily(family.id, shepherdIds);
+    await updateFamily(family.id, { label: label.trim(), primaryContactId: primaryContactId || undefined });
+    await updateFamilyMembers(family.id, memberIds);
+    await assignGroupsToFamily(family.id, groupIds);
+    await assignShepherdsToFamily(family.id, shepherdIds);
     showToast('Family updated');
     onClose();
   };

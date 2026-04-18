@@ -141,11 +141,11 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
 
   const fullName = [firstName.trim(), lastName.trim()].filter(Boolean).join(' ');
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!firstName.trim()) return;
-    assignGroupsToPerson(person.id, groupIds);
-    assignShepherds(person.id, shepherdIds);
-    updatePerson(person.id, {
+    await assignGroupsToPerson(person.id, groupIds);
+    await assignShepherds(person.id, shepherdIds);
+    await updatePerson(person.id, {
       englishName: fullName,
       chineseName: chineseName.trim() || undefined,
       photo: photo || undefined,

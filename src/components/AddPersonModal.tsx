@@ -154,8 +154,8 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
       spiritualNeeds: spiritualNeeds.trim() || undefined,
       physicalNeeds: physicalNeeds.trim() || undefined,
     });
-    if (groupIds.length > 0) assignGroupsToPerson(newId, groupIds);
-    if (shepherdIds.length > 0) assignShepherds(newId, shepherdIds);
+    if (groupIds.length > 0) await assignGroupsToPerson(newId, groupIds);
+    if (shepherdIds.length > 0) await assignShepherds(newId, shepherdIds);
     showToast('Person added');
     setSubmitted(true);
     setTimeout(() => onClose(), 1600);
