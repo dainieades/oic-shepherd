@@ -54,7 +54,7 @@ interface AppContextType {
   setFollowUpFrequency: (personId: string, days: number) => void;
   canViewNote: (note: Note) => boolean;
   addNotice: (notice: Omit<Notice, 'id' | 'createdBy' | 'createdAt'>) => void;
-  updateNotice: (noticeId: string, updates: Partial<Pick<Notice, 'category' | 'urgency' | 'content' | 'personId' | 'familyId'>>) => void;
+  updateNotice: (noticeId: string, updates: Partial<Pick<Notice, 'category' | 'urgency' | 'privacy' | 'content' | 'personId' | 'familyId'>>) => void;
   deleteNotice: (noticeId: string) => void;
   // Persistent filter state (survives tab navigation within a session)
   homeFilters: HomeFilters;

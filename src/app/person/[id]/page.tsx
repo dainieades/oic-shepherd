@@ -4,7 +4,7 @@ import { use, useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useApp } from '@/lib/context';
-import { getTimeAgo, getMembershipLabel, getChurchAttendanceLabel, getPersonNotes, getNoteTypeLabel, groupByMonth, categorizeTodos } from '@/lib/utils';
+import { getTimeAgo, getMembershipLabel, getChurchAttendanceLabel, getPersonNotes, getNoteTypeLabel, groupByMonth, categorizeTodos, getMapUrl, MapProvider, MAP_PROVIDERS_STORAGE_KEY } from '@/lib/utils';
 import { Todo, Note, AppData, TodoAlert, NoteType, AppRole } from '@/lib/types';
 import AddLogModal from '@/components/AddLogModal';
 import AddTodoModal from '@/components/AddTodoModal';
@@ -82,6 +82,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
   const [showPhotoMenu, setShowPhotoMenu] = useState(false);
   const [confirmAction, setConfirmAction] = useState<'archive' | 'delete' | null>(null);
   const [scrolled, setScrolled] = useState(false);
+  const [mapProvider, setMapProvider] = useState<MapProvider>('apple');
   const kebabRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -89,6 +90,11 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
     const onScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  useEffect(() => {
+    const stored = localStorage.getItem(MAP_PROVIDERS_STORAGE_KEY) as MapProvider | null;
+    if (stored) setMapProvider(stored);
   }, []);
 
   useEffect(() => {
@@ -674,7 +680,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
               {person.homeAddress && (
                 <InfoRow icon={<House size={15} />} label="Address" value={
                   <a
-                    href={`https://maps.apple.com/?q=${encodeURIComponent(person.homeAddress)}`}
+                    href={getMapUrl(person.homeAddress, mapProvider)}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{ color: 'var(--blue)', textDecoration: 'none', textAlign: 'right', lineHeight: 1.5, display: 'block', whiteSpace: 'pre-wrap' }}

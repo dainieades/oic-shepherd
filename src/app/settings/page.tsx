@@ -3,16 +3,19 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { CaretRight, EnvelopeSimple, Lock, Question, SignOut, HandHeart, ShieldStar, Users } from '@phosphor-icons/react';
+import { CaretRight, EnvelopeSimple, Lock, Question, SignOut, HandHeart, ShieldStar, Users, MapPin, Check } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { createClient } from '@/utils/supabase/client';
 import type { User } from '@supabase/supabase-js';
+import { MapProvider, MAP_PROVIDER_LABELS, MAP_PROVIDERS_STORAGE_KEY } from '@/lib/utils';
 
 export default function SettingsPage() {
   const { data, currentPersona, switchPersona } = useApp();
   const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
   const [showSignOutConfirm, setShowSignOutConfirm] = useState(false);
+  const [showMapPicker, setShowMapPicker] = useState(false);
+  const [mapProvider, setMapProvider] = useState<MapProvider>('apple');
   const [supabaseUser, setSupabaseUser] = useState<User | null>(null);
 
   useEffect(() => {
@@ -25,6 +28,17 @@ export default function SettingsPage() {
     const supabase = createClient();
     supabase.auth.getUser().then(({ data }) => setSupabaseUser(data.user));
   }, []);
+
+  useEffect(() => {
+    const stored = localStorage.getItem(MAP_PROVIDERS_STORAGE_KEY) as MapProvider | null;
+    if (stored && stored in MAP_PROVIDER_LABELS) setMapProvider(stored);
+  }, []);
+
+  const handleMapProviderSelect = (provider: MapProvider) => {
+    setMapProvider(provider);
+    localStorage.setItem(MAP_PROVIDERS_STORAGE_KEY, provider);
+    setShowMapPicker(false);
+  };
 
   const person = currentPersona.personId
     ? data.people.find((p) => p.id === currentPersona.personId)
@@ -118,6 +132,17 @@ export default function SettingsPage() {
         <SettingsRow icon={<Lock size={18} color="var(--text-muted)" />} label="Change Password" chevron />
       </SettingsCard>
 
+      {/* ── Preferences ── */}
+      <SectionLabel>Preferences</SectionLabel>
+      <SettingsCard>
+        <button
+          onClick={() => setShowMapPicker(true)}
+          style={{ width: '100%', background: 'none', border: 'none', padding: 0, cursor: 'pointer', textAlign: 'left', display: 'block' }}
+        >
+          <SettingsRow icon={<MapPin size={18} color="var(--text-muted)" />} label="Maps App" value={MAP_PROVIDER_LABELS[mapProvider]} chevron />
+        </button>
+      </SettingsCard>
+
       {/* ── Admin ── */}
       {currentPersona.role === 'admin' && (
         <>
@@ -150,6 +175,44 @@ export default function SettingsPage() {
         <SignOut size={18} color="var(--red)" />
         <span style={{ fontSize: 15, fontWeight: 500, color: 'var(--red)' }}>Sign Out</span>
       </button>
+
+      {showMapPicker && (
+        <div
+          style={{ position: 'fixed', inset: 0, zIndex: 80, background: 'rgba(30,26,24,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 32px' }}
+          onClick={(e) => { if (e.target === e.currentTarget) setShowMapPicker(false); }}
+        >
+          <div style={{ background: 'var(--surface)', borderRadius: 16, width: '100%', maxWidth: 320, overflow: 'hidden' }}>
+            <div style={{ padding: '20px 20px 12px', textAlign: 'center' }}>
+              <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 4px' }}>Maps App</p>
+              <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: 0 }}>Choose which app opens when you tap an address.</p>
+            </div>
+            <div style={{ borderTop: '1px solid var(--border-light)' }}>
+              {(['apple', 'google', 'waze'] as MapProvider[]).map((provider, i, arr) => (
+                <button
+                  key={provider}
+                  onClick={() => handleMapProviderSelect(provider)}
+                  style={{
+                    width: '100%', height: 50, background: 'none', border: 'none',
+                    borderBottom: i < arr.length - 1 ? '1px solid var(--border-light)' : 'none',
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    padding: '0 20px', cursor: 'pointer',
+                    fontSize: 15, color: 'var(--text-primary)', fontWeight: mapProvider === provider ? 600 : 400,
+                  }}
+                >
+                  <span>{MAP_PROVIDER_LABELS[provider]}</span>
+                  {mapProvider === provider && <Check size={17} color="var(--sage)" weight="bold" />}
+                </button>
+              ))}
+            </div>
+            <div style={{ borderTop: '1px solid var(--border-light)' }}>
+              <button
+                onClick={() => setShowMapPicker(false)}
+                style={{ width: '100%', height: 50, background: 'none', border: 'none', fontSize: 15, color: 'var(--text-muted)', cursor: 'pointer' }}
+              >Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showSignOutConfirm && (
         <div

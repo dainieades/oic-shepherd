@@ -182,6 +182,23 @@ export function getNoteTypeLabel(type: Note['type']): string {
 }
 
 
+export type MapProvider = 'apple' | 'google' | 'waze';
+
+export const MAP_PROVIDER_LABELS: Record<MapProvider, string> = {
+  apple: 'Apple Maps',
+  google: 'Google Maps',
+  waze: 'Waze',
+};
+
+export const MAP_PROVIDERS_STORAGE_KEY = 'shepherd-app-map-provider';
+
+export function getMapUrl(address: string, provider: MapProvider = 'apple'): string {
+  const q = encodeURIComponent(address);
+  if (provider === 'google') return `https://www.google.com/maps/search/?api=1&query=${q}`;
+  if (provider === 'waze') return `https://waze.com/ul?q=${q}`;
+  return `https://maps.apple.com/?q=${q}`;
+}
+
 export function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
 }
