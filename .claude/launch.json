@@ -3,9 +3,11 @@
   "configurations": [
     {
       "name": "shepherd-app",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
-      "port": 3000
+      "runtimeExecutable": "/bin/bash",
+      "runtimeArgs": ["/Users/dainieades/OIC Shepherd/shepherd-app/.claude/start-dev.sh"],
+      "port": 3000,
+      "autoPort": true,
+      "cwd": "/Users/dainieades/OIC Shepherd/shepherd-app"
     }
   ]
 }
