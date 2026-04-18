@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { CheckCircle, HandsPraying, CalendarBlank, NotePencil, CaretRight, Trash, User, UserPlus, PlusCircle } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { useToast } from './Toast';
@@ -64,6 +64,8 @@ export default function AddLogModal({ onClose, prefillFamilyId, prefillPersonId,
   const [showTypePicker, setShowTypePicker] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const typeBtnRef = useRef<HTMLButtonElement>(null);
 
   const whoNames = [
     ...familyIds.map((id) => data.families.find((f) => f.id === id)?.label ?? ''),
@@ -173,6 +175,7 @@ export default function AddLogModal({ onClose, prefillFamilyId, prefillPersonId,
 
                   {/* Type */}
                   <FieldRow
+                    btnRef={typeBtnRef}
                     icon={typeItem.icon}
                     label="Type"
                     value={typeItem.label}
@@ -244,6 +247,7 @@ export default function AddLogModal({ onClose, prefillFamilyId, prefillPersonId,
       )}
       {showTypePicker && (
         <PickerMenu
+          anchorRef={typeBtnRef}
           title="Log type"
           options={NOTE_TYPES}
           value={type}
@@ -262,11 +266,12 @@ export default function AddLogModal({ onClose, prefillFamilyId, prefillPersonId,
   );
 }
 
-function FieldRow({ icon, label, value, valueColor, onClick, trailingIcon }: {
-  icon: React.ReactNode; label: string; value: string; valueColor?: string; onClick: () => void; trailingIcon?: React.ReactNode;
+function FieldRow({ btnRef, icon, label, value, valueColor, onClick, trailingIcon }: {
+  btnRef?: React.RefObject<HTMLButtonElement | null>; icon: React.ReactNode; label: string; value: string; valueColor?: string; onClick: () => void; trailingIcon?: React.ReactNode;
 }) {
   return (
     <button
+      ref={btnRef}
       className="field-row-hover"
       onClick={onClick}
       style={{

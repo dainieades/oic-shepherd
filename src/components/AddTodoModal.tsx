@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { CaretRight, Trash, User, CalendarBlank, ArrowsClockwise, Bell, UserPlus, PlusCircle, CalendarPlus } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { useToast } from './Toast';
@@ -70,6 +70,9 @@ export default function AddTodoModal({ onClose, prefillFamilyId, prefillPersonId
   const [showWhoPicker, setShowWhoPicker] = useState(false);
   const [showAlertPicker, setShowAlertPicker] = useState(false);
   const [showRepeatPicker, setShowRepeatPicker] = useState(false);
+
+  const alertBtnRef = useRef<HTMLButtonElement>(null);
+  const repeatBtnRef = useRef<HTMLButtonElement>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showCalendarPicker, setShowCalendarPicker] = useState(false);
 
@@ -224,6 +227,7 @@ return (
 
                   {/* Alert */}
                   <FieldRow
+                    btnRef={alertBtnRef}
                     icon={<Bell size={16} />}
                     label="Alert"
                     value={alertLabel}
@@ -233,6 +237,7 @@ return (
 
                   {/* Repeat */}
                   <FieldRow
+                    btnRef={repeatBtnRef}
                     icon={<ArrowsClockwise size={16} />}
                     label="Repeat"
                     value={repeatLabel}
@@ -287,6 +292,7 @@ return (
       )}
       {showAlertPicker && (
         <PickerMenu
+          anchorRef={alertBtnRef}
           title="Alert"
           options={ALERT_OPTIONS}
           value={alert}
@@ -296,6 +302,7 @@ return (
       )}
       {showRepeatPicker && (
         <PickerMenu
+          anchorRef={repeatBtnRef}
           title="Repeat"
           options={REPEAT_OPTIONS}
           value={repeat}
@@ -403,11 +410,12 @@ function CalendarPicker({ title, dueDate, allDay, onClose }: { title: string; du
   );
 }
 
-function FieldRow({ icon, label, value, valueColor, onClick, trailingIcon }: {
-  icon: React.ReactNode; label: string; value: string; valueColor?: string; onClick: () => void; trailingIcon?: React.ReactNode;
+function FieldRow({ btnRef, icon, label, value, valueColor, onClick, trailingIcon }: {
+  btnRef?: React.RefObject<HTMLButtonElement | null>; icon: React.ReactNode; label: string; value: string; valueColor?: string; onClick: () => void; trailingIcon?: React.ReactNode;
 }) {
   return (
     <button
+      ref={btnRef}
       className="field-row-hover"
       onClick={onClick}
       style={{

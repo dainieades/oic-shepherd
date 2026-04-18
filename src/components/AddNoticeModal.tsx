@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { FirstAid, HandsPraying, DotsThree, CaretRight, Trash, UserPlus, PlusCircle, Warning, Minus, ArrowDown, User, Lock, Users, Globe } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { useToast } from './Toast';
@@ -61,6 +61,10 @@ export default function AddNoticeModal({ onClose, prefillPersonId, prefillFamily
   const [showUrgencyPicker, setShowUrgencyPicker] = useState(false);
   const [showPrivacyPicker, setShowPrivacyPicker] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  const categoryBtnRef = useRef<HTMLButtonElement>(null);
+  const urgencyBtnRef = useRef<HTMLButtonElement>(null);
+  const privacyBtnRef = useRef<HTMLButtonElement>(null);
 
   const whoNames = [
     ...familyIds.map((id) => data.families.find((f) => f.id === id)?.label ?? ''),
@@ -187,6 +191,7 @@ export default function AddNoticeModal({ onClose, prefillPersonId, prefillFamily
 
                     {/* Category */}
                     <FieldRow
+                      btnRef={categoryBtnRef}
                       icon={categoryItem.icon}
                       label="Category"
                       value={categoryItem.label}
@@ -195,6 +200,7 @@ export default function AddNoticeModal({ onClose, prefillPersonId, prefillFamily
 
                     {/* Urgency */}
                     <button
+                      ref={urgencyBtnRef}
                       className="field-row-hover"
                       onClick={() => setShowUrgencyPicker(true)}
                       style={{
@@ -220,6 +226,7 @@ export default function AddNoticeModal({ onClose, prefillPersonId, prefillFamily
 
                     {/* Privacy */}
                     <FieldRow
+                      btnRef={privacyBtnRef}
                       icon={<Lock size={16} />}
                       label="Visible to"
                       value={privacyItem.label}
@@ -265,6 +272,7 @@ export default function AddNoticeModal({ onClose, prefillPersonId, prefillFamily
 
       {showCategoryPicker && (
         <PickerMenu
+          anchorRef={categoryBtnRef}
           title="Category"
           options={CATEGORIES}
           value={category}
@@ -275,6 +283,7 @@ export default function AddNoticeModal({ onClose, prefillPersonId, prefillFamily
 
       {showUrgencyPicker && (
         <PickerMenu
+          anchorRef={urgencyBtnRef}
           title="Urgency level"
           options={URGENCIES.map((u) => ({ value: u.value, label: u.label, icon: u.icon, description: u.description }))}
           value={urgency}
@@ -285,6 +294,7 @@ export default function AddNoticeModal({ onClose, prefillPersonId, prefillFamily
 
       {showPrivacyPicker && (
         <PickerMenu
+          anchorRef={privacyBtnRef}
           title="Visible to"
           options={PRIVACIES.map((p) => ({ value: p.value, label: p.label, icon: p.icon }))}
           value={privacy}
@@ -304,11 +314,12 @@ export default function AddNoticeModal({ onClose, prefillPersonId, prefillFamily
   );
 }
 
-function FieldRow({ icon, label, value, valueColor, onClick, trailingIcon }: {
-  icon: React.ReactNode; label: string; value: string; valueColor?: string; onClick: () => void; trailingIcon?: React.ReactNode;
+function FieldRow({ btnRef, icon, label, value, valueColor, onClick, trailingIcon }: {
+  btnRef?: React.RefObject<HTMLButtonElement | null>; icon: React.ReactNode; label: string; value: string; valueColor?: string; onClick: () => void; trailingIcon?: React.ReactNode;
 }) {
   return (
     <button
+      ref={btnRef}
       className="field-row-hover"
       onClick={onClick}
       style={{
