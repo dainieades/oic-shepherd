@@ -75,6 +75,7 @@ export default function DatePickerSheet({
   }
 
   function handleDayClick(ds: string) {
+    if (ds > todayStr) return;
     if (active === 'start') setStartDate(ds);
     else setEndDate(ds);
   }
@@ -130,9 +131,10 @@ export default function DatePickerSheet({
     const isActive = active === field;
 
     function handleDateChange(val: string) {
+      const clamped = val > todayStr ? todayStr : val;
       setActive(field);
-      if (field === 'start') { setStartDate(val); navigateTo(val); }
-      else { setEndDate(val); navigateTo(val); }
+      if (field === 'start') { setStartDate(clamped); navigateTo(clamped); }
+      else { setEndDate(clamped); navigateTo(clamped); }
     }
 
     return (
@@ -154,7 +156,8 @@ export default function DatePickerSheet({
           onBlur={e => {
             const parsed = new Date(e.target.value);
             if (!isNaN(parsed.getTime())) {
-              handleDateChange(parsed.toISOString().slice(0, 10));
+              const ds = parsed.toISOString().slice(0, 10);
+              handleDateChange(ds > todayStr ? todayStr : ds);
             } else {
               e.target.value = fmtDate(dateVal);
             }
@@ -268,12 +271,13 @@ export default function DatePickerSheet({
               const inRange = showEndDate && cell.dateStr !== null
                 && cell.dateStr > rangeStart && cell.dateStr < rangeEnd;
               const isToday = cell.dateStr === todayStr;
+              const isFuture = cell.dateStr !== null && cell.dateStr > todayStr;
               const isSelected = isStart || isEnd;
 
               return (
                 <button
                   key={i}
-                  disabled={!cell.inMonth}
+                  disabled={!cell.inMonth || isFuture}
                   onClick={() => cell.dateStr && handleDayClick(cell.dateStr)}
                   style={{
                     width: 44, height: 44,
@@ -287,15 +291,15 @@ export default function DatePickerSheet({
                         : 'none',
                     color: isSelected
                       ? '#fff'
-                      : !cell.inMonth
+                      : !cell.inMonth || isFuture
                         ? 'var(--text-muted)'
                         : isToday
                           ? 'var(--sage)'
                           : 'var(--text-primary)',
                     fontSize: 15,
                     fontWeight: isSelected || isToday ? 600 : 400,
-                    cursor: cell.inMonth ? 'pointer' : 'default',
-                    opacity: cell.inMonth ? 1 : 0.35,
+                    cursor: cell.inMonth && !isFuture ? 'pointer' : 'default',
+                    opacity: cell.inMonth && !isFuture ? 1 : 0.35,
                   }}
                 >
                   {cell.day}

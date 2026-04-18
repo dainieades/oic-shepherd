@@ -428,13 +428,31 @@ function PeoplePickerSheet({ title, people, selected, onToggle, onDone }: {
   );
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 70, background: 'rgba(30,26,24,0.35)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}
-      onClick={(e) => { if (e.target === e.currentTarget) onDone(); }}>
-      <div style={{ background: 'var(--surface)', borderRadius: '16px 16px 0 0', width: '100%', maxWidth: 430, maxHeight: '80dvh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        <div style={{ width: 36, height: 4, background: 'var(--border)', borderRadius: 2, margin: '12px auto 0', flexShrink: 0 }} />
-        <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '12px 20px 10px', borderBottom: '1px solid var(--border-light)', flexShrink: 0 }}>
-          {title ?? 'Members'} · {selected.length} selected
-        </p>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 70, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', overflow: 'hidden' }}>
+      <div
+        className="animate-slide-in-right"
+        style={{ background: 'var(--surface)', borderRadius: '20px 20px 0 0', width: '100%', maxWidth: 430, height: 'calc(100dvh - 48px)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
+      >
+        {/* Header with back button */}
+        <div style={{ display: 'flex', alignItems: 'center', padding: '14px 20px 12px', flexShrink: 0, borderBottom: '1px solid var(--border-light)' }}>
+          <button
+            onClick={onDone}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 14, color: 'var(--sage)', background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0 }}
+          >
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            </svg>
+            Back
+          </button>
+          <span style={{ flex: 1, textAlign: 'center', fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
+            {title ?? 'Members'}
+            {selected.length > 0 && <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-muted)', marginLeft: 6 }}>· {selected.length}</span>}
+          </span>
+          {/* Spacer to visually center the title */}
+          <span style={{ width: 52, flexShrink: 0 }} />
+        </div>
+
+        {/* Search */}
         <div style={{ padding: '10px 16px', borderBottom: '1px solid var(--border-light)', flexShrink: 0 }}>
           <input
             autoFocus
@@ -444,6 +462,8 @@ function PeoplePickerSheet({ title, people, selected, onToggle, onDone }: {
             style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid var(--border)', fontSize: 14, background: 'var(--bg)', color: 'var(--text-primary)', outline: 'none', boxSizing: 'border-box' }}
           />
         </div>
+
+        {/* People list */}
         <div style={{ flex: 1, overflowY: 'auto' }}>
           {filtered.map((p) => {
             const isSel = selected.includes(p.id);
@@ -463,6 +483,8 @@ function PeoplePickerSheet({ title, people, selected, onToggle, onDone }: {
             );
           })}
         </div>
+
+        {/* Done button */}
         <div style={{ padding: '16px 20px', flexShrink: 0 }}>
           <button onClick={onDone} style={{ width: '100%', height: 44, borderRadius: 12, background: 'var(--sage)', color: '#fff', fontSize: 15, fontWeight: 600, border: 'none', cursor: 'pointer' }}>Done</button>
         </div>

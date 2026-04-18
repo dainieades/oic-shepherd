@@ -969,6 +969,11 @@ function InfoRow({ icon, label, value, muted }: { icon?: React.ReactNode; label:
 
 const URGENCY_LABEL: Record<string, string> = { urgent: 'Urgent', moderate: 'Moderate', ongoing: 'Ongoing' };
 const CATEGORY_LABEL: Record<string, string> = { 'physical-need': 'Physical Need', 'spiritual-need': 'Spiritual Need', other: 'Other' };
+const CATEGORY_STYLE: Record<string, { bg: string; color: string }> = {
+  'physical-need': { bg: 'var(--blue-light)', color: 'var(--blue)' },
+  'spiritual-need': { bg: 'var(--sage-light)', color: 'var(--sage)' },
+  'other':          { bg: 'var(--border-light)', color: 'var(--text-muted)' },
+};
 
 function NoticeCard({ notice, personas, onClick }: { notice: Notice; personas: import('@/lib/types').Persona[]; onClick: () => void }) {
   const style = URGENCY_STYLE[notice.urgency as import('@/lib/types').NoticeUrgency];
@@ -978,8 +983,7 @@ function NoticeCard({ notice, personas, onClick }: { notice: Notice; personas: i
       onClick={onClick}
       className="row-card-hover"
       style={{
-        textAlign: 'left', cursor: 'pointer', border: `1px solid ${style.border || 'var(--border-light)'}`,
-        borderLeft: `4px solid ${style.color}`,
+        textAlign: 'left', cursor: 'pointer', border: '1px solid var(--border-light)',
         borderRadius: 12, padding: '12px 14px',
         background: style.bg, width: '100%',
         display: 'flex', flexDirection: 'column', gap: 6,
@@ -989,12 +993,12 @@ function NoticeCard({ notice, personas, onClick }: { notice: Notice; personas: i
         <span style={{ fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: '999px', background: style.color, color: '#fff', letterSpacing: '0.03em' }}>
           {URGENCY_LABEL[notice.urgency]}
         </span>
-        <span style={{ fontSize: 11, fontWeight: 500, padding: '2px 8px', borderRadius: '999px', background: 'rgba(0,0,0,0.07)', color: style.color }}>
+        <span style={{ fontSize: 11, fontWeight: 500, padding: '2px 8px', borderRadius: '999px', background: CATEGORY_STYLE[notice.category]?.bg, color: CATEGORY_STYLE[notice.category]?.color }}>
           {CATEGORY_LABEL[notice.category]}
         </span>
       </div>
       <p style={{ fontSize: 14, color: 'var(--text-primary)', lineHeight: 1.5, margin: 0 }}>{notice.content}</p>
-      <p style={{ fontSize: 11, color: style.color, opacity: 0.8, margin: 0 }}>Added by {creator?.name ?? 'Unknown'} · {getTimeAgo(notice.createdAt)}</p>
+      <p style={{ fontSize: 11, color: 'var(--text-muted)', margin: 0 }}>Added by {creator?.name ?? 'Unknown'} · {getTimeAgo(notice.createdAt)}</p>
     </button>
   );
 }

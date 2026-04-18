@@ -28,9 +28,9 @@ const URGENCIES: { value: NoticeUrgency; label: string; description: string; ico
 ];
 
 export const URGENCY_STYLE: Record<NoticeUrgency, { bg: string; color: string; border: string }> = {
-  urgent:   { bg: 'var(--red-light)',   color: 'var(--red)',   border: 'var(--red-border)' },
-  moderate: { bg: 'var(--amber-light)', color: 'var(--amber)', border: 'var(--amber-border)' },
-  ongoing:  { bg: 'var(--blue-light)',  color: 'var(--blue)',  border: 'transparent' },
+  urgent:   { bg: 'var(--surface)', color: 'var(--red)',   border: 'var(--border-light)' },
+  moderate: { bg: 'var(--surface)', color: 'var(--amber)', border: 'var(--border-light)' },
+  ongoing:  { bg: 'var(--surface)', color: 'var(--blue)',  border: 'var(--border-light)' },
 };
 
 export default function AddNoticeModal({ onClose, prefillPersonId, prefillFamilyId, notice }: AddNoticeModalProps) {
