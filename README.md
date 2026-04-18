@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# OIC Shepherd
+
+Mobile-first church shepherding app for One In Christ Church. Shepherds track and manage pastoral relationships with members — including people, families, groups, todos, logs, and notices.
+
+## Tech Stack
+
+- **Next.js 16** (App Router)
+- **React 19**
+- **TypeScript** (strict)
+- **Tailwind CSS 4**
+- **Supabase** (auth + database)
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+shepherd-app/
+  src/
+    app/                    Next.js App Router pages + layouts
+      layout.tsx            Root layout (providers, fonts)
+      page.tsx              Main dashboard
+      globals.css           Design tokens + base styles
+      [feature]/            Each feature: page.tsx + optional api/route.ts
+    components/             Shared UI components
+    lib/
+      context.tsx           AppContext — single source of all state
+      data.ts               Seed data + initial state
+      types.ts              All TypeScript types and enums
+      utils.ts              Date, sort, format utilities
+    utils/
+      supabase/
+        client.ts           Browser Supabase instance
+        server.ts           Server Supabase instance (SSR)
+  supabase/
+    migrations/             SQL migrations (numbered)
+    seed.sql                Dev seed data
+```
 
-## Learn More
+## Key Conventions
 
-To learn more about Next.js, take a look at the following resources:
+- All app state lives in `AppContext` (`src/lib/context.tsx`) — never call Supabase directly from page components.
+- All shared TypeScript types belong in `src/lib/types.ts`.
+- Design tokens are CSS custom properties in `globals.css` — no hardcoded hex values.
+- Icons use [Phosphor Icons](https://phosphoricons.com): `import { IconName } from '@phosphor-icons/react'`
+- Path alias: `@/*` → `./src/*`
+- Run `npx tsc --noEmit` to type-check before committing.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Pages
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Route | Description |
+|---|---|
+| `/` | Home dashboard |
+| `/person/[id]` | Person detail |
+| `/family/[id]` | Family detail |
+| `/groups/[id]` | Group detail |
+| `/add` | Add person |
+| `/todos` | Todos |
+| `/logs` | Logs |
+| `/profile` | User profile |
+| `/settings/profile` | Profile settings |
+| `/settings/access` | Access management |

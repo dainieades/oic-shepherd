@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/lib/context';
 import { getTimeAgo, getDueLabel, getMembershipLabel } from '@/lib/utils';
-import { PencilSimple, TextT, AlignLeft, UserList, CaretRight, Crown, HandHeart } from '@phosphor-icons/react';
+import { PencilSimpleIcon, TextT, AlignLeft, UserList, CaretRight, Crown, HandHeart, CaretLeft, Check } from '@phosphor-icons/react';
 
 const avatarPalette = [
   { bg: '#EAF2EE', color: '#5B8A72' },
@@ -55,9 +55,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
           onClick={() => router.back()}
           style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 13, color: 'var(--sage)', background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0 }}
         >
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-          </svg>
+          <CaretLeft size={16} />
           Back
         </button>
 
@@ -69,7 +67,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
           onClick={() => setShowEdit(true)}
           style={{ height: scrolled ? 30 : 36, padding: scrolled ? '0 10px' : '0 12px', borderRadius: 8, background: 'var(--sage)', color: '#fff', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5, fontSize: scrolled ? 13 : 14, fontWeight: 600, whiteSpace: 'nowrap', flexShrink: 0 }}
         >
-          <PencilSimple size={scrolled ? 13 : 15} weight="bold" />
+          <PencilSimpleIcon size={scrolled ? 13 : 15} weight="bold" />
           Edit
         </button>
       </div>
@@ -117,7 +115,6 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
             {leaders.map((leader, i) => {
               const palette  = avatarPalette[i % avatarPalette.length];
               const initials = leader.englishName.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
-              const isMe     = myPersonId === leader.id;
               const isAlsoShepherd = group.shepherdIds.includes(leader.id);
               return (
                 <Link
@@ -139,9 +136,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
                     </div>
                     <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{getMembershipLabel(leader.membershipStatus)}</span>
                   </div>
-                  <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                  </svg>
+                  <CaretRight size={14} color="var(--text-muted)" />
                 </Link>
               );
             })}
@@ -154,10 +149,8 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
         <div style={{ marginBottom: 14 }}>
           <SectionLabel>Shepherds</SectionLabel>
           <div className="no-last-border" style={{ background: 'var(--surface)', borderRadius: 'var(--radius)', border: '1px solid var(--border-light)', overflow: 'hidden' }}>
-            {shepherds.map((shepherd, i) => {
-              const palette  = avatarPalette[i % avatarPalette.length];
+            {shepherds.map((shepherd) => {
               const initials = shepherd.englishName.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
-              const isMe     = myPersonId === shepherd.id;
               return (
                 <Link
                   key={shepherd.id}
@@ -175,9 +168,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
                     </div>
                     <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{getMembershipLabel(shepherd.membershipStatus)}</span>
                   </div>
-                  <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                  </svg>
+                  <CaretRight size={14} color="var(--text-muted)" />
                 </Link>
               );
             })}
@@ -196,7 +187,6 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
               const palette  = avatarPalette[i % avatarPalette.length];
               const initials = m.englishName.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
               const due      = getDueLabel(m.nextFollowUpDate);
-              const isMe     = myPersonId === m.id;
 
               return (
                 <Link
@@ -221,9 +211,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
                       )}
                     </div>
                   </div>
-                  <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                  </svg>
+                  <CaretRight size={14} color="var(--text-muted)" />
                 </Link>
               );
             })}
@@ -275,7 +263,6 @@ function EditGroupDrawer({
 
   const selectedLeaders   = data.people.filter((p) => leaderIds.includes(p.id));
   const selectedShepherds = data.people.filter((p) => shepherdIds.includes(p.id));
-  const selectedMembers   = data.people.filter((p) => memberIds.includes(p.id));
 
   const handleSave = () => {
     if (!name.trim()) return;
@@ -439,9 +426,7 @@ function PeoplePickerSheet({ title, people, selected, onToggle, onDone }: {
             onClick={onDone}
             style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 14, color: 'var(--sage)', background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0 }}
           >
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-            </svg>
+            <CaretLeft size={16} />
             Back
           </button>
           <span style={{ flex: 1, textAlign: 'center', fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
@@ -478,7 +463,7 @@ function PeoplePickerSheet({ title, people, selected, onToggle, onDone }: {
                   <span style={{ fontSize: 14, fontWeight: isSel ? 600 : 400, color: isSel ? 'var(--sage)' : 'var(--text-primary)' }}>{p.englishName}</span>
                   {p.chineseName && <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 6 }}>{p.chineseName}</span>}
                 </div>
-                {isSel && <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--sage)" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>}
+                {isSel && <Check size={16} color="var(--sage)" weight="bold" />}
               </button>
             );
           })}

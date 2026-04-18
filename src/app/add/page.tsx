@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/lib/context';
-import { MembershipStatus, ChurchAttendance, Language } from '@/lib/types';
+import { type MembershipStatus, type ChurchAttendance } from '@/lib/types';
+import { Check } from '@phosphor-icons/react';
 
 export default function AddPage() {
   const { addPerson } = useApp();
@@ -23,7 +24,7 @@ export default function AddPage() {
       phone:       phone.trim() || undefined,
       membershipStatus: 'non-member' as MembershipStatus,
       churchAttendance: (isFirstTime ? 'first-time-visitor' : 'regular') as ChurchAttendance,
-      language:    'english' as Language,
+      language:    ['English'],
       isFirstTimeVisitor: isFirstTime,
     });
     setSubmitted(true);
@@ -46,9 +47,7 @@ export default function AddPage() {
             margin: '0 auto 16px',
           }}
         >
-          <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="var(--sage)" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-          </svg>
+          <Check size={28} color="var(--sage)" weight="bold" />
         </div>
         <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>Person Added</h2>
         <p style={{ fontSize: 14, color: 'var(--text-muted)' }}>{englishName} has been added to the directory.</p>

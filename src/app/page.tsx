@@ -2,13 +2,13 @@
 
 import { useState, useMemo, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { useApp, HomeFilters, HomeSortKey, HOME_DEFAULT_FILTERS } from '@/lib/context';
+import { useApp, type HomeFilters, type HomeSortKey, HOME_DEFAULT_FILTERS } from '@/lib/context';
 import {
   searchFamiliesAndPeople, getFamilyPriorityScore,
   getMembershipLabel, getChurchAttendanceLabel,
 } from '@/lib/utils';
-import { Family, Person, MembershipStatus, ChurchAttendance, AppRole } from '@/lib/types';
-import { HandHeart, UserPlus, UsersThree, PaperPlaneTilt } from '@phosphor-icons/react';
+import { type Family, type Person, type MembershipStatus, type ChurchAttendance, type AppRole } from '@/lib/types';
+import { HandHeart, UserPlus, UsersThree, PaperPlaneTilt, MagnifyingGlass, Funnel, X, ArrowsDownUp, House, Check } from '@phosphor-icons/react';
 import AddPersonModal from '@/components/AddPersonModal';
 import AddFamilyModal from '@/components/AddFamilyModal';
 import InviteSheet from '@/components/InviteSheet';
@@ -256,9 +256,7 @@ export default function PeoplePage() {
           cursor: 'pointer', flexShrink: 0,
         }}
       >
-        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-        </svg>
+        <MagnifyingGlass size={14} />
       </button>
       {/* Filter button */}
       <div style={{ position: 'relative', flexShrink: 0 }}>
@@ -273,9 +271,7 @@ export default function PeoplePage() {
             cursor: 'pointer',
           }}
         >
-          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
-          </svg>
+          <Funnel size={14} />
         </button>
         {activeFilterCount > 0 && (
           <span style={{
@@ -326,12 +322,7 @@ export default function PeoplePage() {
       {/* ── Search (expandable) ─────────────── */}
       {(showSearch || search) && (
         <div style={{ position: 'relative', marginBottom: 10, marginTop: 8 }}>
-          <svg
-            width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={1.8}
-            style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-          </svg>
+          <MagnifyingGlass size={14} color="var(--text-muted)" style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
           <input
             ref={searchInputRef}
             type="text"
@@ -362,9 +353,7 @@ export default function PeoplePage() {
               }}
             >
               {chip.label}
-              <svg width="9" height="9" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <X size={9} />
             </button>
           ))}
         </div>
@@ -437,9 +426,7 @@ export default function PeoplePage() {
               fontSize: 12, color: 'var(--text-muted)', cursor: 'pointer', fontWeight: 500,
             }}
           >
-            <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 16l4 4 4-4M7 20V4M21 8l-4-4-4 4M17 4v16" />
-            </svg>
+            <ArrowsDownUp size={11} />
             {currentSort.label}
           </button>
 
@@ -578,9 +565,7 @@ export default function PeoplePage() {
                   onClick={() => setShowFilter(false)}
                   style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--bg)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}
                 >
-                  <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  <X size={12} />
                 </button>
               </div>
 
@@ -607,9 +592,7 @@ export default function PeoplePage() {
                         >
                           <span style={{ fontSize: 14, fontWeight: isActive ? 600 : 400, color: isActive ? 'var(--sage)' : 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: 5 }}>
                             {key === 'sort' && (
-                              <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{ flexShrink: 0 }}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16l4 4 4-4M7 20V4M21 8l-4-4-4 4M17 4v16" />
-                              </svg>
+                              <ArrowsDownUp size={13} style={{ flexShrink: 0 }} />
                             )}
                             {label}
                           </span>
@@ -648,10 +631,7 @@ export default function PeoplePage() {
                     <>
                       <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>Shepherd by</p>
                       <div style={{ position: 'relative', marginBottom: 10 }}>
-                        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={2}
-                          style={{ position: 'absolute', left: 9, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                        </svg>
+                        <MagnifyingGlass size={13} color="var(--text-muted)" style={{ position: 'absolute', left: 9, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                         <input
                           type="text"
                           value={shepherdSearch}
@@ -865,9 +845,7 @@ function FamilyRow({ family, members }: { family: Family; members: Person[] }) {
             // eslint-disable-next-line @next/next/no-img-element
             <img src={family.photo} alt={family.label} style={{ width: 44, height: 44, objectFit: 'cover' }} />
           ) : (
-            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="var(--sage)" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-            </svg>
+            <House size={22} color="var(--sage)" />
           )}
         </div>
 
@@ -984,11 +962,7 @@ function CheckRow({ checked, onToggle, children }: { checked: boolean; onToggle:
         background: checked ? 'var(--sage)' : 'transparent',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
-        {checked && (
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth={3}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-          </svg>
-        )}
+        {checked && <Check size={10} color="#fff" weight="bold" />}
       </div>
       <span style={{ fontSize: 14, color: 'var(--text-primary)', fontWeight: checked ? 500 : 400 }}>{children}</span>
     </button>

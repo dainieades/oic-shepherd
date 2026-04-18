@@ -4,7 +4,7 @@ import { useState, useRef } from 'react';
 import { FirstAid, HandsPraying, DotsThree, CaretRight, Trash, UserPlus, PlusCircle, Warning, Minus, ArrowDown, User, Lock, Users, Globe } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { useToast } from './Toast';
-import { Notice, NoticeCategory, NoticeUrgency, NoticePrivacy } from '@/lib/types';
+import { type Notice, type NoticeCategory, type NoticeUrgency, type NoticePrivacy } from '@/lib/types';
 import PersonFamilyPicker from './PersonFamilyPicker';
 import PickerMenu from './PickerMenu';
 import { DeleteConfirmDialog } from './AddLogModal';

@@ -5,11 +5,12 @@ import {
   User, TextT, Pulse, GenderIntersex, Cake, Heart, Sparkle, Church,
   IdentificationCard, CalendarCheck, Drop, Compass, Buildings, BookOpenText,
   Phone, PhoneCall, Envelope, House, FirstAid, CaretRight, HandHeart, UsersFour,
+  MagnifyingGlass, Check,
 } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { useToast } from './Toast';
 import { formatPhone } from '@/lib/utils';
-import { MembershipStatus, ChurchAttendance, Gender, MaritalStatus, CHURCH_POSITIONS } from '@/lib/types';
+import { type MembershipStatus, type ChurchAttendance, type Gender, type MaritalStatus, CHURCH_POSITIONS } from '@/lib/types';
 import PickerMenu from './PickerMenu';
 
 interface AddPersonModalProps {
@@ -135,7 +136,7 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
     const newId = await addPerson({
       englishName: fullName,
       chineseName: chineseName.trim() || undefined,
-      language: 'english',
+      language: ['English'],
       gender: gender || undefined,
       birthday: birthday || undefined,
       maritalStatus: maritalStatus || undefined,
@@ -200,9 +201,7 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
             {submitted ? (
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, paddingTop: 60 }}>
                 <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--sage-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="var(--sage)" strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                  </svg>
+                  <Check size={24} color="var(--sage)" weight="bold" />
                 </div>
                 <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)' }}>Person added</p>
                 <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>{fullName} has been added to the directory.</p>
@@ -454,7 +453,7 @@ function DrawerSection({ label, children }: { label: string; children: React.Rea
 
 const PickerRow = React.forwardRef<HTMLButtonElement, {
   icon: React.ReactNode; label: string; value: string; onClick: () => void;
-}>(({ icon, label, value, onClick }, ref) => {
+}>(function PickerRow({ icon, label, value, onClick }, ref) {
   return (
     <button
       ref={ref}
@@ -548,7 +547,7 @@ function GroupPickerSheet({ groups, currentIds, onConfirm, onBack }: {
         </div>
         <div style={{ padding: '12px 20px', flexShrink: 0, borderBottom: '1px solid var(--border-light)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 10, padding: '9px 12px' }}>
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+            <MagnifyingGlass size={14} color="var(--text-muted)" />
             <input ref={searchRef} value={search} onChange={e => setSearch(e.target.value)} placeholder="Search groups…" style={{ flex: 1, fontSize: 14, color: 'var(--text-primary)', background: 'none', border: 'none', outline: 'none' }} />
             {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', fontSize: 18, lineHeight: 1, padding: 0 }}>×</button>}
           </div>
@@ -562,7 +561,7 @@ function GroupPickerSheet({ groups, currentIds, onConfirm, onBack }: {
                   <p style={{ fontSize: 14, fontWeight: isSel ? 600 : 400, color: isSel ? 'var(--blue)' : 'var(--text-primary)', margin: 0 }}>{g.name}</p>
                 </div>
                 <div style={{ width: 20, height: 20, borderRadius: 5, flexShrink: 0, border: isSel ? 'none' : '1.5px solid var(--border)', background: isSel ? 'var(--blue)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.15s' }}>
-                  {isSel && <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>}
+                  {isSel && <Check size={11} color="#fff" weight="bold" />}
                 </div>
               </button>
             );
@@ -604,7 +603,7 @@ function ShepherdPickerSheet({ entries, currentIds, onConfirm, onBack }: {
         </div>
         <div style={{ padding: '12px 20px', flexShrink: 0, borderBottom: '1px solid var(--border-light)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 10, padding: '9px 12px' }}>
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+            <MagnifyingGlass size={14} color="var(--text-muted)" />
             <input ref={searchRef} value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search shepherds…" style={{ flex: 1, fontSize: 14, color: 'var(--text-primary)', background: 'none', border: 'none', outline: 'none' }} />
             {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', fontSize: 18, lineHeight: 1, padding: 0 }}>×</button>}
           </div>
@@ -637,7 +636,7 @@ function ShepherdPickerSheet({ entries, currentIds, onConfirm, onBack }: {
 function ShepherdCheckCircle({ selected }: { selected: boolean }) {
   return (
     <div style={{ width: 20, height: 20, borderRadius: 5, flexShrink: 0, border: selected ? 'none' : '1.5px solid var(--border)', background: selected ? 'var(--sage)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.15s' }}>
-      {selected && <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>}
+      {selected && <Check size={11} color="#fff" weight="bold" />}
     </div>
   );
 }
@@ -679,9 +678,7 @@ function PositionPickerSheet({ currentPositions, onConfirm, onBack }: {
         </div>
         <div style={{ padding: '12px 20px', flexShrink: 0, borderBottom: '1px solid var(--border-light)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 10, padding: '9px 12px' }}>
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-            </svg>
+            <MagnifyingGlass size={14} color="var(--text-muted)" />
             <input
               ref={searchRef}
               value={search}
@@ -719,11 +716,7 @@ function PositionPickerSheet({ currentPositions, onConfirm, onBack }: {
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   transition: 'background 0.15s',
                 }}>
-                  {isSel && (
-                    <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth={3}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                    </svg>
-                  )}
+                  {isSel && <Check size={11} color="#fff" weight="bold" />}
                 </div>
               </button>
             );

@@ -1,6 +1,6 @@
 'use client';
 
-import { Todo } from '@/lib/types';
+import { type Todo } from '@/lib/types';
 
 interface TodoLogPromptProps {
   todo: Todo;
@@ -32,7 +32,7 @@ export default function TodoLogPrompt({ todo, onAddLog, onSkip }: TodoLogPromptP
           Add a log?
         </p>
         <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 20, lineHeight: 1.5 }}>
-          You completed "{todo.title}". Want to log what happened?
+          You completed &ldquo;{todo.title}&rdquo;. Want to log what happened?
         </p>
         <div style={{ display: 'flex', gap: 10 }}>
           <button

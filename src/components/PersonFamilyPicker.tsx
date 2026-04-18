@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { AppData } from '@/lib/types';
+import { type AppData } from '@/lib/types';
+import { CaretLeft, MagnifyingGlass, Check } from '@phosphor-icons/react';
 
 interface PersonFamilyPickerProps {
   data: AppData;
@@ -60,9 +61,7 @@ export default function PersonFamilyPicker({
           onClick={onBack}
           style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--sage)', display: 'flex', alignItems: 'center', gap: 4, fontSize: 14, padding: 0 }}
         >
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-          </svg>
+          <CaretLeft size={16} />
           Back
         </button>
         <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>Select who</span>
@@ -85,9 +84,7 @@ export default function PersonFamilyPicker({
         background: 'var(--bg)', border: '1px solid var(--border)',
         borderRadius: 10, padding: '9px 12px', marginBottom: 16, flexShrink: 0,
       }}>
-        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-        </svg>
+        <MagnifyingGlass size={14} color="var(--text-muted)" />
         <input
           autoFocus
           value={search}
@@ -199,9 +196,7 @@ function CheckCircle({ selected }: { selected: boolean }) {
       width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
       background: 'var(--sage)', display: 'flex', alignItems: 'center', justifyContent: 'center',
     }}>
-      <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth={3}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-      </svg>
+      <Check size={12} color="#fff" weight="bold" />
     </div>
   ) : (
     <div style={{

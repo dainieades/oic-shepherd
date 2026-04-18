@@ -4,16 +4,16 @@ import { use, useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useApp } from '@/lib/context';
-import { getTimeAgo, getMembershipLabel, getChurchAttendanceLabel, getPersonNotes, getNoteTypeLabel, groupByMonth, categorizeTodos, getMapUrl, MapProvider, MAP_PROVIDERS_STORAGE_KEY } from '@/lib/utils';
-import { Todo, Note, AppData, NoteType, AppRole } from '@/lib/types';
+import { getTimeAgo, getMembershipLabel, getChurchAttendanceLabel, getPersonNotes, getNoteTypeLabel, groupByMonth, categorizeTodos, getMapUrl, type MapProvider, MAP_PROVIDERS_STORAGE_KEY } from '@/lib/utils';
+import { type Todo, type Note, type AppData, type AppRole } from '@/lib/types';
 import AddLogModal from '@/components/AddLogModal';
 import AddTodoModal from '@/components/AddTodoModal';
 import AddNoticeModal, { URGENCY_STYLE } from '@/components/AddNoticeModal';
 import TodoLogPrompt from '@/components/TodoLogPrompt';
 import EditPersonDrawer from '@/components/EditPersonDrawer';
 import GroupPreviewModal from '@/components/GroupPreviewModal';
-import { Notepad, CheckCircle, Info, Globe, Pulse, GenderIntersex, Cake, Heart, Sparkle, Church, IdentificationCard, CalendarCheck, Drop, Compass, Buildings, Phone, PhoneCall, Envelope, House, FirstAid, HandHeart, UsersFour, PencilSimple, Bell, Warning, Minus, ArrowDown } from '@phosphor-icons/react';
-import { Notice } from '@/lib/types';
+import { Notepad, CheckCircle, Info, Globe, Pulse, GenderIntersex, Cake, Heart, Sparkle, IdentificationCard, CalendarCheck, Drop, Compass, Buildings, Phone, PhoneCall, Envelope, House, HandHeart, UsersFour, PencilSimpleIcon, Bell, CaretLeft, CaretRight, DotsThreeVertical, Camera, Trash, Archive, Check, Clock, ArrowsClockwise, CaretDown, Plus } from '@phosphor-icons/react';
+import { type Notice } from '@/lib/types';
 
 type Tab = 'logs' | 'todos' | 'notices' | 'info' | 'sheep';
 
@@ -39,12 +39,6 @@ const noteTypeColors: Record<string, { bg: string; color: string }> = {
   'event':          { bg: 'var(--sage-light)', color: 'var(--sage)' },
   'general':        { bg: 'var(--sage-light)', color: 'var(--sage)' },
 };
-
-function fmtDate(iso: string) {
-  const d = new Date(iso);
-  return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase();
-}
-
 
 export default function PersonPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -179,11 +173,6 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
     }
   };
 
-  const addAction = () => {
-    if (activeTab === 'logs') setShowAddLog(true);
-    else if (activeTab === 'todos') setShowAddTodo(true);
-  };
-
   const handleArchive = () => {
     updatePerson(person.id, { churchAttendance: person.churchAttendance === 'archived' ? 'regular' : 'archived' });
     setConfirmAction(null);
@@ -210,9 +199,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
           onClick={() => router.back()}
           style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 13, color: 'var(--sage)', background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0 }}
         >
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-          </svg>
+          <CaretLeft size={16} />
           Back
         </button>
 
@@ -226,7 +213,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
               onClick={() => setShowSheepPicker(true)}
               style={{ height: scrolled ? 30 : 36, padding: scrolled ? '0 10px' : '0 12px', borderRadius: 8, background: 'var(--sage)', color: '#fff', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5, fontSize: scrolled ? 13 : 14, fontWeight: 600, whiteSpace: 'nowrap' }}
             >
-              <PencilSimple size={scrolled ? 13 : 15} weight="bold" />
+              <PencilSimpleIcon size={scrolled ? 13 : 15} weight="bold" />
               Sheep
             </button>
           ) : activeTab === 'info' ? (
@@ -235,7 +222,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                 onClick={() => setShowEditPerson(true)}
                 style={{ height: scrolled ? 30 : 36, padding: scrolled ? '0 10px' : '0 12px', borderRadius: 8, background: 'var(--sage)', color: '#fff', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5, fontSize: scrolled ? 13 : 14, fontWeight: 600, whiteSpace: 'nowrap' }}
               >
-                <PencilSimple size={scrolled ? 13 : 15} weight="bold" />
+                <PencilSimpleIcon size={scrolled ? 13 : 15} weight="bold" />
                 Info
               </button>
             )
@@ -263,11 +250,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                 onClick={() => setShowKebab((v) => !v)}
                 style={{ width: scrolled ? 30 : 36, height: scrolled ? 30 : 36, borderRadius: '50%', background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
               >
-                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                  <circle cx="12" cy="5" r="1.5" />
-                  <circle cx="12" cy="12" r="1.5" />
-                  <circle cx="12" cy="19" r="1.5" />
-                </svg>
+                <DotsThreeVertical size={16} />
               </button>
               {showKebab && (
                 <div style={{
@@ -281,9 +264,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                       onClick={() => { setShowKebab(false); setShowEditPerson(true); }}
                       style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '13px 16px', background: 'none', border: 'none', borderBottom: '1px solid var(--border-light)', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)', textAlign: 'left' }}
                     >
-                      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                      </svg>
+                      <PencilSimpleIcon size={16} />
                       Edit info
                     </button>
                   )}
@@ -291,18 +272,14 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                     onClick={() => { setShowKebab(false); setConfirmAction('archive'); }}
                     style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '13px 16px', background: 'none', border: 'none', borderBottom: '1px solid var(--border-light)', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)', textAlign: 'left' }}
                   >
-                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-.375c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v.375c0 .621.504 1.125 1.125 1.125z" />
-                    </svg>
+                    <Archive size={16} />
                     {person.churchAttendance === 'archived' ? 'Unarchive' : 'Archive'}
                   </button>
                   <button
                     onClick={() => { setShowKebab(false); setConfirmAction('delete'); }}
                     style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '13px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--red)', textAlign: 'left' }}
                   >
-                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                    </svg>
+                    <Trash size={16} />
                     Delete
                   </button>
                 </div>
@@ -340,10 +317,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
             background: 'var(--sage)', border: '2px solid var(--bg)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z" />
-            </svg>
+            <Camera size={11} color="#fff" weight="fill" />
           </div>
         </button>
 
@@ -540,9 +514,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                         {s.lastContactDate && <span> · Logged {new Date(s.lastContactDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>}
                       </div>
                     </div>
-                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                    </svg>
+                    <CaretRight size={14} color="var(--text-muted)" />
                   </Link>
                 );
               })}
@@ -577,8 +549,17 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
           })()}
 
           {/* PERSONAL */}
-          {(person.gender || person.birthday || person.maritalStatus) && (
+          {(person.gender || person.birthday || person.maritalStatus || (person.language && person.language.length > 0)) && (
             <InfoSection title="Personal">
+              {person.language && person.language.length > 0 && (
+                <InfoRow icon={<Globe size={15} />} label="Language" value={
+                  <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                    {person.language.map((l) => (
+                      <span key={l} style={{ fontSize: 11, padding: '3px 9px', borderRadius: '999px', background: 'var(--blue-light)', color: 'var(--blue)', fontWeight: 500 }}>{l}</span>
+                    ))}
+                  </div>
+                } />
+              )}
               {person.gender && <InfoRow icon={<GenderIntersex size={15} />} label="Gender" value={person.gender.charAt(0).toUpperCase() + person.gender.slice(1)} />}
               {person.birthday && <InfoRow icon={<Cake size={15} />} label="Birthday" value={fmtShortDate(person.birthday)} />}
               {person.maritalStatus && <InfoRow icon={<Heart size={15} />} label="Marital Status" value={person.maritalStatus.charAt(0).toUpperCase() + person.maritalStatus.slice(1)} />}
@@ -619,7 +600,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                           </div>
                         )}
                         <span style={{ fontSize: 13, fontWeight: 500, color: sp ? 'var(--blue)' : 'var(--text-primary)' }}>{s.name}</span>
-                        {sp && <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="var(--blue)" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>}
+                        {sp && <CaretRight size={11} color="var(--blue)" />}
                       </div>
                     );
                     return sp ? (
@@ -659,7 +640,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
               <InfoRow label="Family" value={
                 <Link href={`/family/${family.id}`} style={{ color: 'var(--blue)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                   {family.label}
-                  <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                  <CaretRight size={13} />
                 </Link>
               } />
             )}
@@ -758,10 +739,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
               style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 14, padding: '14px 4px', background: 'none', border: 'none', borderBottom: '1px solid var(--border-light)', cursor: 'pointer', textAlign: 'left' }}
             >
               <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--sage-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--sage)" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z" />
-                </svg>
+                <Camera size={18} color="var(--sage)" />
               </div>
               <span style={{ fontSize: 16, color: 'var(--text-primary)', fontWeight: 500 }}>
                 {person.photo ? 'Replace photo' : 'Upload photo'}
@@ -775,9 +753,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                 style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 14, padding: '14px 4px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
               >
                 <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#FEF2F2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--red)" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                  </svg>
+                  <Trash size={18} color="var(--red)" />
                 </div>
                 <span style={{ fontSize: 16, color: 'var(--red)', fontWeight: 500 }}>Remove photo</span>
               </button>
@@ -874,9 +850,7 @@ function TodoSection({ label, todos, onToggle, onEdit, data, defaultOpen = true 
         }}
       >
         {label} · {todos.length}
-        <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} style={{ transition: 'transform 0.2s', transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-        </svg>
+        <CaretDown size={10} style={{ transition: 'transform 0.2s', transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }} />
       </button>
       {open && (
         <div className="no-last-border" style={{ background: 'var(--surface)', borderRadius: 'var(--radius)', overflow: 'hidden', padding: 0 }}>
@@ -896,11 +870,7 @@ function TodoSection({ label, todos, onToggle, onEdit, data, defaultOpen = true 
                     display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                   }}
                 >
-                  {t.completed && (
-                    <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth={3}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                    </svg>
-                  )}
+                  {t.completed && <Check size={11} color="#fff" weight="bold" />}
                 </button>
                 <button onClick={() => onEdit(t)} style={{ flex: 1, minWidth: 0, background: 'none', border: 'none', textAlign: 'left', cursor: 'pointer', padding: 0 }}>
                   <p style={{ fontSize: 14, color: t.completed ? 'var(--text-muted)' : 'var(--text-primary)', lineHeight: 1.4, marginBottom: 4, textDecoration: t.completed ? 'line-through' : 'none' }}>
@@ -909,16 +879,12 @@ function TodoSection({ label, todos, onToggle, onEdit, data, defaultOpen = true 
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     {t.dueDate && (
                       <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--text-muted)' }}>
-                        <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                          <circle cx="12" cy="12" r="9" /><path strokeLinecap="round" d="M12 7v5l3 3" />
-                        </svg>
+                        <Clock size={12} />
                         <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{fmtDue(t.dueDate)}</span>
                       </div>
                     )}
                     {hasRepeat && (
-                      <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={1.8}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-                      </svg>
+                      <ArrowsClockwise size={12} color="var(--text-muted)" />
                     )}
                     {tag && (
                       <span style={{ fontSize: 10, color: 'var(--blue)', padding: '1px 6px', borderRadius: '999px', background: 'var(--blue-light)', fontWeight: 500 }}>
@@ -999,58 +965,19 @@ function LogSection({ label, count, children }: { label: string; count: number; 
         }}
       >
         {label} · {count}
-        <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} style={{ transition: 'transform 0.2s', transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-        </svg>
+        <CaretDown size={10} style={{ transition: 'transform 0.2s', transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }} />
       </button>
       {open && children}
     </div>
   );
 }
 
-function InfoSection({ title, children, muted }: { title: string; children: React.ReactNode; muted?: boolean }) {
+function InfoSection({ title, children, muted: _muted }: { title: string; children: React.ReactNode; muted?: boolean }) {
   return (
     <div>
       <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>{title}</p>
       <div className="no-last-border" style={{ background: 'var(--surface)', borderRadius: 14, overflow: 'hidden', padding: 0 }}>{children}</div>
     </div>
-  );
-}
-
-function PersonLogStatusTag({ personId, notes }: { personId: string; notes: import('@/lib/types').Note[] }) {
-  const personNotes = notes.filter((n) => n.personId === personId);
-  const lastNoteTs = personNotes.length > 0
-    ? Math.max(...personNotes.map((n) => new Date(n.createdAt).getTime()))
-    : null;
-  const daysSince = lastNoteTs !== null ? Math.floor((Date.now() - lastNoteTs) / 86400000) : null;
-
-  if (lastNoteTs === null) {
-    return (
-      <span style={{
-        fontSize: 11, padding: '1px 7px', borderRadius: '999px',
-        background: 'var(--border-light)', color: 'var(--text-muted)',
-        fontWeight: 500, flexShrink: 0,
-      }}>
-        Never logged
-      </span>
-    );
-  }
-  if (daysSince !== null && daysSince >= 7) {
-    return (
-      <span style={{
-        fontSize: 11, padding: '1px 7px', borderRadius: '999px',
-        background: 'var(--amber-light)', color: 'var(--amber)',
-        border: '1px solid var(--amber-border)',
-        fontWeight: 500, flexShrink: 0,
-      }}>
-        {daysSince}d ago
-      </span>
-    );
-  }
-  return (
-    <span style={{ fontSize: 13, color: 'var(--text-muted)', flexShrink: 0 }}>
-      Logged {new Date(lastNoteTs!).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-    </span>
   );
 }
 
@@ -1069,7 +996,7 @@ const sheepPickerPalette = [
   { bg: '#F0EBF5', color: '#7A6A8C' },
 ];
 
-function SheepPickerModal({ data, shepherdPersonaId, currentSheepIds, excludePersonId, onToggle, onClose }: {
+function SheepPickerModal({ data, shepherdPersonaId: _shepherdPersonaId, currentSheepIds, excludePersonId, onToggle, onClose }: {
   data: AppData;
   shepherdPersonaId: string;
   currentSheepIds: string[];
@@ -1170,13 +1097,9 @@ function SheepPickerModal({ data, shepherdPersonaId, currentSheepIds, excludePer
                   <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{getMembershipLabel(p.membershipStatus)}</span>
                 </div>
                 {isSheep ? (
-                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--sage)" strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                  </svg>
+                  <Check size={16} color="var(--sage)" weight="bold" />
                 ) : (
-                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                  </svg>
+                  <Plus size={16} color="var(--text-muted)" />
                 )}
               </button>
             );

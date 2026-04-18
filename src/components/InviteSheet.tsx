@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { PaperPlaneTilt, CheckCircle, HandHeart, ShieldStar, Users } from '@phosphor-icons/react';
+import { PaperPlaneTilt, CheckCircle, HandHeart, ShieldStar, Users, Check } from '@phosphor-icons/react';
 import { createClient } from '@/utils/supabase/client';
 import { useApp } from '@/lib/context';
 
@@ -156,7 +156,7 @@ export default function InviteSheet({ onClose, initialEmail = '', initialRole = 
                     </div>
                     {role === r.value && (
                       <div style={{ marginLeft: 'auto', width: 18, height: 18, borderRadius: '50%', background: 'var(--sage)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                        <Check size={10} color="white" weight="bold" />
                       </div>
                     )}
                   </button>

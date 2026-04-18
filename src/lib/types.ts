@@ -22,7 +22,6 @@ export type ChurchAttendance =
   | 'fellowship-group-only'
   | 'archived';
 
-export type Language = 'english' | 'chinese' | 'bilingual';
 export type Gender = 'male' | 'female';
 export type MaritalStatus = 'single' | 'married' | 'widowed' | 'divorced';
 
@@ -54,7 +53,7 @@ export interface Person {
   churchPositions?: string[];
   membershipStatus: MembershipStatus;
   churchAttendance: ChurchAttendance;
-  language: Language;
+  language: string[];
   assignedShepherdIds: string[];
   familyId?: string;
   groupIds: string[];

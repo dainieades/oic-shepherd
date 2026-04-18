@@ -1,4 +1,4 @@
-import { Person, Note, Todo, Family, AppData, ChurchAttendance } from './types';
+import { type Person, type Note, type Todo, type Family, type ChurchAttendance } from './types';
 
 export function getTimeAgo(dateStr: string): string {
   const now = new Date();
@@ -227,7 +227,6 @@ export function groupByMonth<T extends { createdAt: string }>(items: T[]): { lab
   for (const item of items) {
     const d = new Date(item.createdAt);
     const key = `${d.getFullYear()}-${String(d.getMonth()).padStart(2, '0')}`;
-    const label = d.toLocaleString('default', { month: 'long', year: 'numeric' });
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key)!.push(item);
   }

@@ -4,7 +4,7 @@ import { useState, useRef } from 'react';
 import { CheckCircle, HandsPraying, CalendarBlank, NotePencil, CaretRight, Trash, User, UserPlus, PlusCircle } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { useToast } from './Toast';
-import { NoteType, Note } from '@/lib/types';
+import { type NoteType, type Note } from '@/lib/types';
 import PersonFamilyPicker from './PersonFamilyPicker';
 import PickerMenu from './PickerMenu';
 import DatePickerSheet from './DatePickerSheet';
@@ -26,7 +26,7 @@ const NOTE_TYPES: { value: NoteType; label: string; icon: React.ReactNode }[] = 
 ];
 
 function fmtLogDate(dateStr: string, timeStr: string, includeTime: boolean) {
-  const d = new Date(dateStr + 'T12:00:00');
+  const d = new Date(`${dateStr  }T12:00:00`);
   const datePart = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   if (!includeTime) return datePart;
   const [hStr, mStr] = timeStr.split(':');

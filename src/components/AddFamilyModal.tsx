@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { MagnifyingGlass, CheckCircle } from '@phosphor-icons/react';
+import { MagnifyingGlass, CheckCircle, Check } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 
 interface AddFamilyModalProps {
@@ -247,9 +247,7 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
         {submitted && (
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
             <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--sage-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="var(--sage)" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-              </svg>
+              <Check size={24} color="var(--sage)" weight="bold" />
             </div>
             <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)' }}>Family created</p>
             <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>{familyName} has been added.</p>

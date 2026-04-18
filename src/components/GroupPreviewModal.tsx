@@ -120,7 +120,7 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
             <div style={{ marginBottom: 14 }}>
               <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>Shepherds</p>
               <div className="no-last-border" style={{ background: 'var(--surface)', borderRadius: 'var(--radius)', border: '1px solid var(--border-light)', overflow: 'hidden' }}>
-                {shepherds.map((shepherd, i) => {
+                {shepherds.map((shepherd, _i) => {
                   const initials = shepherd.englishName.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
                   return (
                     <div key={shepherd.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 16px', borderBottom: '1px solid var(--border-light)' }}>

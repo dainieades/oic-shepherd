@@ -3,10 +3,11 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useApp } from '@/lib/context';
 import { categorizeTodos } from '@/lib/utils';
-import { Todo, TodoRepeat } from '@/lib/types';
+import { type Todo } from '@/lib/types';
 import AddTodoModal from '@/components/AddTodoModal';
 import AddLogModal from '@/components/AddLogModal';
 import TodoLogPrompt from '@/components/TodoLogPrompt';
+import { CaretLeft, CaretRight, CaretDown, Clock, ArrowsClockwise, Check, MagnifyingGlass, Funnel, X, List, CalendarBlank } from '@phosphor-icons/react';
 
 type ViewMode = 'list' | 'calendar';
 
@@ -147,9 +148,7 @@ export default function TodosPage() {
           }}
           aria-label="List view"
         >
-          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-          </svg>
+          <List size={14} />
         </button>
         <button
           onClick={() => setViewMode('calendar')}
@@ -162,9 +161,7 @@ export default function TodosPage() {
           }}
           aria-label="Calendar view"
         >
-          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
-          </svg>
+          <CalendarBlank size={14} />
         </button>
       </div>
       {/* Search */}
@@ -181,9 +178,7 @@ export default function TodosPage() {
           display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0,
         }}
       >
-        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-        </svg>
+        <MagnifyingGlass size={14} />
       </button>
       {/* Filter (admin only) */}
       {isAdmin && (
@@ -198,9 +193,7 @@ export default function TodosPage() {
               display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
             }}
           >
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
-            </svg>
+            <Funnel size={14} />
           </button>
           {filterActive && (
             <span style={{
@@ -250,10 +243,7 @@ export default function TodosPage() {
       {/* Search bar */}
       {(showSearch || search) && (
         <div style={{ position: 'relative', marginBottom: 10, marginTop: 8 }}>
-          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={1.8}
-            style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-          </svg>
+          <MagnifyingGlass size={14} color="var(--text-muted)" style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
           <input
             ref={searchInputRef}
             type="text"
@@ -286,9 +276,7 @@ export default function TodosPage() {
                 }}
               >
                 {label}
-                <svg width="9" height="9" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <X size={9} />
               </button>
             );
           })}
@@ -369,19 +357,14 @@ export default function TodosPage() {
                 onClick={() => setShowFilter(false)}
                 style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--bg)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}
               >
-                <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <X size={12} />
               </button>
             </div>
 
             <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
               <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>Shepherd by</p>
               <div style={{ position: 'relative', marginBottom: 10 }}>
-                <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={2}
-                  style={{ position: 'absolute', left: 9, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                </svg>
+                <MagnifyingGlass size={13} color="var(--text-muted)" style={{ position: 'absolute', left: 9, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                 <input
                   type="text"
                   value={shepherdSearch}
@@ -481,18 +464,14 @@ function CalendarView({ todos, onToggle, onEdit, data }: {
           onClick={prevMonth}
           style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
         >
-          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-          </svg>
+          <CaretLeft size={14} />
         </button>
         <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>{monthLabel}</span>
         <button
           onClick={nextMonth}
           style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
         >
-          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-          </svg>
+          <CaretRight size={14} />
         </button>
       </div>
 
@@ -547,7 +526,7 @@ function CalendarView({ todos, onToggle, onEdit, data }: {
       {selectedDate && (
         <div style={{ marginTop: 16 }}>
           <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
-            {new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })} · {selectedTodos.length}
+            {new Date(`${selectedDate  }T00:00:00`).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })} · {selectedTodos.length}
           </p>
           {selectedTodos.length === 0 ? (
             <p style={{ fontSize: 13, color: 'var(--text-muted)', padding: '12px 0' }}>No to-dos on this day.</p>
@@ -568,11 +547,7 @@ function CalendarView({ todos, onToggle, onEdit, data }: {
                         display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                       }}
                     >
-                      {t.completed && (
-                        <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth={3}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                        </svg>
-                      )}
+                      {t.completed && <Check size={11} color="#fff" weight="bold" />}
                     </button>
                     <button
                       onClick={() => onEdit(t)}
@@ -620,11 +595,7 @@ function CheckRow({ checked, onToggle, children }: { checked: boolean; onToggle:
         background: checked ? 'var(--sage)' : 'transparent',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
-        {checked && (
-          <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth={3}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-          </svg>
-        )}
+        {checked && <Check size={10} color="#fff" weight="bold" />}
       </div>
       <span style={{ fontSize: 14, color: 'var(--text-primary)' }}>{children}</span>
     </button>
@@ -654,9 +625,7 @@ function TodoSection({ label, todos, onToggle, onEdit, data, defaultOpen = true,
         }}
       >
         {label} · {todos.length}
-        <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} style={{ transition: 'transform 0.2s', transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-        </svg>
+        <CaretDown size={10} style={{ transition: 'transform 0.2s', transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }} />
       </button>
       {open && (
         <div className="no-last-border" style={{ background: 'var(--surface)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
@@ -676,11 +645,7 @@ function TodoSection({ label, todos, onToggle, onEdit, data, defaultOpen = true,
                     display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                   }}
                 >
-                  {t.completed && (
-                    <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth={3}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                    </svg>
-                  )}
+                  {t.completed && <Check size={11} color="#fff" weight="bold" />}
                 </button>
                 <button
                   onClick={() => onEdit(t)}
@@ -692,16 +657,12 @@ function TodoSection({ label, todos, onToggle, onEdit, data, defaultOpen = true,
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'nowrap', overflow: 'hidden' }}>
                     {t.dueDate && (
                       <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--text-muted)' }}>
-                        <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                          <circle cx="12" cy="12" r="9" /><path strokeLinecap="round" d="M12 7v5l3 3" />
-                        </svg>
+                        <Clock size={12} />
                         <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{fmtDue(t.dueDate)}</span>
                       </div>
                     )}
                     {hasRepeat && (
-                      <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={1.8}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-                      </svg>
+                      <ArrowsClockwise size={12} color="var(--text-muted)" />
                     )}
                     {targetChips.length > 0 && (
                       <span style={{ fontSize: 10, color: 'var(--blue)', padding: '1px 6px', borderRadius: '999px', background: 'var(--blue-light)', fontWeight: 500, flexShrink: 0 }}>

@@ -1,11 +1,11 @@
 'use client';
 
 import { use, useState, useRef, useEffect } from 'react';
-import { Baby, Notepad, CheckCircle, Info, UsersFour, User, HandHeart, PencilSimple } from '@phosphor-icons/react';
+import { Baby, Notepad, CheckCircle, Info, UsersFour, User, HandHeart, PencilSimpleIcon, CaretLeft, CaretRight, DotsThreeVertical, Camera, Check, Clock, ArrowsClockwise, CaretDown, House } from '@phosphor-icons/react';
 import Link from 'next/link';
 import { useApp } from '@/lib/context';
 import { getTimeAgo, getMembershipLabel, getFamilyNotes, getFamilyTodos, getNoteTypeLabel, groupByMonth, categorizeTodos } from '@/lib/utils';
-import { Todo, Note, AppData, NoteType } from '@/lib/types';
+import { type Todo, type Note, type AppData } from '@/lib/types';
 import AddLogModal from '@/components/AddLogModal';
 import AddTodoModal from '@/components/AddTodoModal';
 import TodoLogPrompt from '@/components/TodoLogPrompt';
@@ -45,7 +45,7 @@ const noteTypeColors: Record<string, { bg: string; color: string }> = {
 
 export default function FamilyDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const { data, toggleTodo, canViewNote, updateFamily, updateFamilyMembers, assignGroupsToFamily, assignShepherdsToFamily } = useApp();
+  const { data, toggleTodo, canViewNote, updateFamily } = useApp();
   const [tab, setTab] = useState<Tab>('logs');
   const [showAddLog, setShowAddLog] = useState(false);
   const [showAddTodo, setShowAddTodo] = useState(false);
@@ -97,11 +97,6 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
     }
   };
 
-  const addAction = () => {
-    if (tab === 'logs') setShowAddLog(true);
-    else if (tab === 'todos') setShowAddTodo(true);
-  };
-
   const handlePhotoFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -120,8 +115,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
     return parts.join(' · ');
   })();
 
-  const fmtDate = (iso: string) =>
-    new Date(iso).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase();
+
 
   return (
     <div style={{ paddingBottom: 40 }}>
@@ -134,9 +128,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
         height: 54,
       }}>
         <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 13, color: 'var(--sage)', textDecoration: 'none', fontWeight: 500 }}>
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-          </svg>
+          <CaretLeft size={16} />
           Back
         </Link>
 
@@ -150,7 +142,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
               onClick={() => setShowEditFamily(true)}
               style={{ height: scrolled ? 30 : 36, padding: scrolled ? '0 10px' : '0 12px', borderRadius: 8, background: 'var(--sage)', color: '#fff', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5, fontSize: scrolled ? 13 : 14, fontWeight: 600, whiteSpace: 'nowrap' }}
             >
-              <PencilSimple size={scrolled ? 13 : 15} weight="bold" />
+              <PencilSimpleIcon size={scrolled ? 13 : 15} weight="bold" />
               Info
             </button>
           ) : (
@@ -166,9 +158,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
               onClick={() => setShowKebab(!showKebab)}
               style={{ width: scrolled ? 30 : 36, height: scrolled ? 30 : 36, borderRadius: '50%', background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
             >
-              <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                <circle cx="12" cy="5" r="1.5" /><circle cx="12" cy="12" r="1.5" /><circle cx="12" cy="19" r="1.5" />
-              </svg>
+              <DotsThreeVertical size={16} />
             </button>
             {showKebab && (
               <div style={{ position: 'absolute', right: 0, top: 'calc(100% + 6px)', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12, boxShadow: '0 8px 28px rgba(0,0,0,0.12)', zIndex: 50, minWidth: 180, overflow: 'hidden' }}>
@@ -176,9 +166,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                   onClick={() => { setShowKebab(false); setShowEditFamily(true); }}
                   style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '13px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)', textAlign: 'left' }}
                 >
-                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                  </svg>
+                  <PencilSimpleIcon size={16} />
                   Edit info
                 </button>
               </div>
@@ -204,9 +192,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
               background: 'var(--sage-light)', border: '2px dashed var(--sage)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <svg width="30" height="30" fill="none" viewBox="0 0 24 24" stroke="var(--sage)" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-              </svg>
+              <House size={30} color="var(--sage)" />
             </div>
           )}
           {/* Camera badge */}
@@ -216,10 +202,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
             background: 'var(--sage)', border: '2px solid var(--bg)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z" />
-            </svg>
+            <Camera size={11} color="#fff" weight="fill" />
           </div>
         </button>
 
@@ -356,9 +339,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                         {m.lastContactDate && <span> · Logged {new Date(m.lastContactDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>}
                       </p>
                     </div>
-                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={1.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                    </svg>
+                    <CaretRight size={14} color="var(--text-muted)" />
                   </Link>
                 );
               })}
@@ -407,7 +388,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                             </div>
                           )}
                           <span style={{ fontSize: 13, fontWeight: 500, color: sp ? 'var(--blue)' : 'var(--text-primary)' }}>{s.name}</span>
-                          {sp && <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="var(--blue)" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>}
+                          {sp && <CaretRight size={11} color="var(--blue)" />}
                         </div>
                       );
                       return sp ? (
@@ -470,9 +451,7 @@ function LogSection({ label, count, children }: { label: string; count: number; 
         }}
       >
         {label} · {count}
-        <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} style={{ transition: 'transform 0.2s', transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-        </svg>
+        <CaretDown size={10} style={{ transition: 'transform 0.2s', transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }} />
       </button>
       {open && children}
     </div>
@@ -496,9 +475,7 @@ function TodoSection({ label, todos, onToggle, onEdit, data, defaultOpen = true 
         }}
       >
         {label} · {todos.length}
-        <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} style={{ transition: 'transform 0.2s', transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-        </svg>
+        <CaretDown size={10} style={{ transition: 'transform 0.2s', transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }} />
       </button>
       {open && (
         <div className="no-last-border" style={{ background: 'var(--surface)', borderRadius: 'var(--radius)', overflow: 'hidden', padding: 0 }}>
@@ -518,11 +495,7 @@ function TodoSection({ label, todos, onToggle, onEdit, data, defaultOpen = true 
                     display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                   }}
                 >
-                  {t.completed && (
-                    <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth={3}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                    </svg>
-                  )}
+                  {t.completed && <Check size={11} color="#fff" weight="bold" />}
                 </button>
                 <button onClick={() => onEdit(t)} style={{ flex: 1, minWidth: 0, background: 'none', border: 'none', textAlign: 'left', cursor: 'pointer', padding: 0 }}>
                   <p style={{ fontSize: 14, color: t.completed ? 'var(--text-muted)' : 'var(--text-primary)', lineHeight: 1.4, marginBottom: 4, textDecoration: t.completed ? 'line-through' : 'none' }}>
@@ -531,16 +504,12 @@ function TodoSection({ label, todos, onToggle, onEdit, data, defaultOpen = true 
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     {t.dueDate && (
                       <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--text-muted)' }}>
-                        <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                          <circle cx="12" cy="12" r="9" /><path strokeLinecap="round" d="M12 7v5l3 3" />
-                        </svg>
+                        <Clock size={12} />
                         <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{fmtDue(t.dueDate)}</span>
                       </div>
                     )}
                     {hasRepeat && (
-                      <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={1.8}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-                      </svg>
+                      <ArrowsClockwise size={12} color="var(--text-muted)" />
                     )}
                     {tag && (
                       <span style={{ fontSize: 10, color: 'var(--blue)', padding: '1px 6px', borderRadius: '999px', background: 'var(--blue-light)', fontWeight: 500 }}>

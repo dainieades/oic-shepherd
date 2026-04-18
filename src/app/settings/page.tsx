@@ -7,7 +7,7 @@ import { CaretRight, EnvelopeSimple, Lock, Question, SignOut, HandHeart, ShieldS
 import { useApp } from '@/lib/context';
 import { createClient } from '@/utils/supabase/client';
 import type { User } from '@supabase/supabase-js';
-import { MapProvider, MAP_PROVIDER_LABELS, MAP_PROVIDERS_STORAGE_KEY } from '@/lib/utils';
+import { type MapProvider, MAP_PROVIDER_LABELS, MAP_PROVIDERS_STORAGE_KEY } from '@/lib/utils';
 
 type PasswordStatus =
   | { type: 'idle' }

@@ -3,8 +3,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { useApp } from '@/lib/context';
 import { useToast } from './Toast';
-import { Family, Person, Group } from '@/lib/types';
-import { CaretRight, User, UsersFour, Plus, House, HandHeart } from '@phosphor-icons/react';
+import { type Family, type Person, type Group } from '@/lib/types';
+import { CaretRight, User, UsersFour, Plus, House, HandHeart, X, MagnifyingGlass, Check } from '@phosphor-icons/react';
 import PickerMenu from './PickerMenu';
 
 interface Props {
@@ -62,10 +62,6 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
     await assignShepherdsToFamily(family.id, shepherdIds);
     showToast('Family updated');
     onClose();
-  };
-
-  const toggleGroup = (id: string) => {
-    setGroupIds((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
   };
 
   const toggleShepherd = (id: string) => {
@@ -153,9 +149,7 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
                       style={{ width: 28, height: 28, borderRadius: '50%', background: '#FEE2E2', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
                       aria-label={`Remove ${m.englishName}`}
                     >
-                      <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="#EF4444" strokeWidth={2.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                      </svg>
+                      <X size={12} color="#EF4444" />
                     </button>
                   </div>
                 );
@@ -381,9 +375,7 @@ function MemberPickerSheet({ pool, currentMemberIds, onConfirm, onBack }: {
         {/* Search */}
         <div style={{ padding: '12px 20px', flexShrink: 0, borderBottom: '1px solid var(--border-light)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 10, padding: '9px 12px' }}>
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-            </svg>
+            <MagnifyingGlass size={14} color="var(--text-muted)" />
             <input
               ref={searchRef}
               value={search}
@@ -443,9 +435,7 @@ function MemberPickerSheet({ pool, currentMemberIds, onConfirm, onBack }: {
 function MemberCheckCircle({ selected }: { selected: boolean }) {
   return selected ? (
     <div style={{ width: 22, height: 22, borderRadius: '50%', flexShrink: 0, background: 'var(--sage)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth={3}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-      </svg>
+      <Check size={12} color="#fff" weight="bold" />
     </div>
   ) : (
     <div style={{ width: 22, height: 22, borderRadius: '50%', flexShrink: 0, border: '2px solid var(--border)', background: 'transparent' }} />
@@ -490,9 +480,7 @@ function GroupPickerSheet({ groups, currentIds, onConfirm, onBack }: {
         </div>
         <div style={{ padding: '12px 20px', flexShrink: 0, borderBottom: '1px solid var(--border-light)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 10, padding: '9px 12px' }}>
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-            </svg>
+            <MagnifyingGlass size={14} color="var(--text-muted)" />
             <input
               ref={searchRef}
               value={search}
@@ -530,11 +518,7 @@ function GroupPickerSheet({ groups, currentIds, onConfirm, onBack }: {
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   transition: 'background 0.15s',
                 }}>
-                  {isSel && (
-                    <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth={3}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                    </svg>
-                  )}
+                  {isSel && <Check size={11} color="#fff" weight="bold" />}
                 </div>
               </button>
             );
@@ -594,11 +578,7 @@ function ShepherdPickerSheet({ personas, selected, onToggle, onDone }: {
                   <p style={{ fontSize: 11, color: 'var(--text-muted)', margin: 0, textTransform: 'capitalize' }}>{p.role}</p>
                 </div>
               </div>
-              {isSel && (
-                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--sage)" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                </svg>
-              )}
+              {isSel && <Check size={16} color="var(--sage)" weight="bold" />}
             </button>
           );
         })}

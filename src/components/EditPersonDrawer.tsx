@@ -4,12 +4,13 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '@/lib/context';
 import { useToast } from './Toast';
 import { formatPhone } from '@/lib/utils';
-import { Person, MembershipStatus, ChurchAttendance, Language, Gender, MaritalStatus, CHURCH_POSITIONS, AppRole } from '@/lib/types';
+import { type Person, type MembershipStatus, type ChurchAttendance, type Gender, type MaritalStatus, CHURCH_POSITIONS, type AppRole } from '@/lib/types';
+import LanguagePickerSheet from './LanguagePickerSheet';
 import {
-  User, TextT, Globe, Pulse, GenderIntersex, Cake, Heart, Sparkle, Church,
+  User, TextT, Globe, Pulse, GenderIntersex, Cake, Heart, Sparkle,
   IdentificationCard, CalendarCheck, Drop, Compass, Buildings, BookOpenText,
-  Phone, PhoneCall, Envelope, House, FirstAid, CaretRight, HandHeart, UsersFour,
-  PaperPlaneTilt,
+  Phone, PhoneCall, Envelope, House, CaretRight, HandHeart, UsersFour,
+  PaperPlaneTilt, MagnifyingGlass, Check,
 } from '@phosphor-icons/react';
 import PickerMenu from './PickerMenu';
 import AppRolePickerSheet from './AppRolePickerSheet';
@@ -33,11 +34,6 @@ const CHURCH_ATTENDANCE_OPTIONS: { value: ChurchAttendance; label: string }[] = 
   { value: 'fellowship-group-only',   label: 'Fellowship Group Only' },
 ];
 
-const LANGUAGE_OPTIONS: { value: Language; label: string }[] = [
-  { value: 'english',   label: 'English' },
-  { value: 'chinese',   label: 'Chinese (Mandarin)' },
-  { value: 'bilingual', label: 'Bilingual' },
-];
 
 const GENDER_OPTIONS: { value: Gender | ''; label: string }[] = [
   { value: '',       label: 'Not set' },
@@ -70,7 +66,7 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
   const [chineseName, setChineseName] = useState(person.chineseName ?? '');
 
   // Personal
-  const [language, setLanguage]           = useState<Language>(person.language);
+  const [language, setLanguage]           = useState<string[]>(person.language ?? []);
   const [gender, setGender]               = useState<Gender | ''>(person.gender ?? '');
   const [birthday, setBirthday]           = useState(person.birthday ?? '');
   const [maritalStatus, setMaritalStatus] = useState<MaritalStatus | ''>(person.maritalStatus ?? '');
@@ -109,7 +105,8 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
   const baptismDateRef   = useRef<HTMLInputElement>(null);
 
   // Picker state
-  const [openPicker, setOpenPicker] = useState<'status' | 'attendance' | 'language' | 'gender' | 'marital' | 'appRole' | null>(null);
+  const [openPicker, setOpenPicker] = useState<'status' | 'attendance' | 'gender' | 'marital' | 'appRole' | null>(null);
+  const [showLanguagePicker, setShowLanguagePicker] = useState(false);
   const statusBtnRef     = useRef<HTMLButtonElement>(null);
   const attendanceBtnRef = useRef<HTMLButtonElement>(null);
   const genderBtnRef     = useRef<HTMLButtonElement>(null);
@@ -121,9 +118,6 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
   const [showShepherdPicker, setShowShepherdPicker] = useState(false);
 
   const fullName = [firstName.trim(), lastName.trim()].filter(Boolean).join(' ');
-
-  const toggleGroup = (id: string) =>
-    setGroupIds((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
 
   const selectedGroups = data.groups.filter((g) => groupIds.includes(g.id));
 
@@ -156,11 +150,7 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
     onClose();
   };
 
-  const togglePosition = (pos: string) => {
-    setChurchPositions((prev) =>
-      prev.includes(pos) ? prev.filter((p) => p !== pos) : [...prev, pos]
-    );
-  };
+
 
   // Build unified shepherd list: named personas + isShepherd people not covered by a persona
   const personaPersonIds = new Set(data.personas.map((p) => p.personId).filter(Boolean));
@@ -176,7 +166,6 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
 
   const statusLabel     = MEMBERSHIP_OPTIONS.find((o) => o.value === status)?.label ?? '';
   const attendanceLabel = CHURCH_ATTENDANCE_OPTIONS.find((o) => o.value === attendance)?.label ?? attendance;
-  const languageLabel = LANGUAGE_OPTIONS.find((o) => o.value === language)?.label ?? '';
   const genderLabel   = GENDER_OPTIONS.find((o) => o.value === gender)?.label ?? 'Not set';
   const maritalLabel  = MARITAL_OPTIONS.find((o) => o.value === maritalStatus)?.label ?? 'Not set';
 
@@ -267,6 +256,20 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
 
             {/* ── PERSONAL ── */}
             <DrawerSection label="Personal">
+              <button className="field-row-hover" onClick={() => setShowLanguagePicker(true)} style={rowBtnStyle}>
+                <span style={spacerStyle} />
+                <Globe size={16} color="var(--text-muted)" />
+                <span style={labelStyle}>Language</span>
+                <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                  {language.length > 0
+                    ? language.map((l) => (
+                        <span key={l} style={{ fontSize: 11, fontWeight: 500, padding: '2px 8px', borderRadius: 999, background: 'var(--blue-light)', color: 'var(--blue)', flexShrink: 0 }}>{l}</span>
+                      ))
+                    : <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>None</span>
+                  }
+                </div>
+                <CaretRight size={14} color="var(--text-muted)" />
+              </button>
               <PickerRow ref={genderBtnRef} icon={<GenderIntersex size={16} color="var(--text-muted)" />} label="Gender" value={genderLabel} onClick={() => setOpenPicker('gender')} />
               <DateRow icon={<Cake size={16} color="var(--text-muted)" />} label="Birthday" value={birthday} inputRef={birthdayRef} onChange={setBirthday} />
               <PickerRow ref={maritalBtnRef} icon={<Heart size={16} color="var(--text-muted)" />} label="Marital" value={maritalLabel} onClick={() => setOpenPicker('marital')} />
@@ -407,6 +410,13 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
           personId={person.id}
         />
       )}
+      {showLanguagePicker && (
+        <LanguagePickerSheet
+          currentLanguages={language}
+          onConfirm={(langs) => { setLanguage(langs); setShowLanguagePicker(false); }}
+          onBack={() => setShowLanguagePicker(false)}
+        />
+      )}
       {showPositionPicker && (
         <PositionPickerSheet
           currentPositions={churchPositions}
@@ -488,7 +498,7 @@ function DrawerSection({ label, children }: { label: string; children: React.Rea
 
 const PickerRow = React.forwardRef<HTMLButtonElement, {
   icon: React.ReactNode; label: string; value: string; onClick: () => void;
-}>(({ icon, label, value, onClick }, ref) => {
+}>(function PickerRow({ icon, label, value, onClick }, ref) {
   return (
     <button ref={ref} className="field-row-hover" onClick={onClick} style={rowBtnStyle}>
       <span style={spacerStyle} />
@@ -574,9 +584,7 @@ function GroupPickerSheet({ groups, currentIds, onConfirm, onBack }: {
         </div>
         <div style={{ padding: '12px 20px', flexShrink: 0, borderBottom: '1px solid var(--border-light)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 10, padding: '9px 12px' }}>
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-            </svg>
+            <MagnifyingGlass size={14} color="var(--text-muted)" />
             <input
               ref={searchRef}
               value={search}
@@ -614,11 +622,7 @@ function GroupPickerSheet({ groups, currentIds, onConfirm, onBack }: {
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   transition: 'background 0.15s',
                 }}>
-                  {isSel && (
-                    <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth={3}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                    </svg>
-                  )}
+                  {isSel && <Check size={11} color="#fff" weight="bold" />}
                 </div>
               </button>
             );
@@ -671,9 +675,7 @@ function ShepherdPickerSheet({ entries, currentIds, onConfirm, onBack }: {
         </div>
         <div style={{ padding: '12px 20px', flexShrink: 0, borderBottom: '1px solid var(--border-light)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 10, padding: '9px 12px' }}>
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-            </svg>
+            <MagnifyingGlass size={14} color="var(--text-muted)" />
             <input
               ref={searchRef}
               value={search}
@@ -738,11 +740,7 @@ function ShepherdCheckCircle({ selected }: { selected: boolean }) {
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       transition: 'background 0.15s',
     }}>
-      {selected && (
-        <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth={3}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-        </svg>
-      )}
+      {selected && <Check size={11} color="#fff" weight="bold" />}
     </div>
   );
 }
@@ -784,9 +782,7 @@ function PositionPickerSheet({ currentPositions, onConfirm, onBack }: {
         </div>
         <div style={{ padding: '12px 20px', flexShrink: 0, borderBottom: '1px solid var(--border-light)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 10, padding: '9px 12px' }}>
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-            </svg>
+            <MagnifyingGlass size={14} color="var(--text-muted)" />
             <input
               ref={searchRef}
               value={search}
@@ -824,11 +820,7 @@ function PositionPickerSheet({ currentPositions, onConfirm, onBack }: {
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   transition: 'background 0.15s',
                 }}>
-                  {isSel && (
-                    <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth={3}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                    </svg>
-                  )}
+                  {isSel && <Check size={11} color="#fff" weight="bold" />}
                 </div>
               </button>
             );

@@ -1,6 +1,8 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useFloating, autoUpdate, offset, flip, size } from '@floating-ui/react';
+import { Check } from '@phosphor-icons/react';
 
 interface PickerOption {
   value: string;
@@ -19,13 +21,33 @@ interface PickerMenuProps {
 }
 
 export default function PickerMenu({ anchorRef, options, value, onSelect, onClose }: PickerMenuProps) {
-  const menuRef = useRef<HTMLDivElement>(null);
   const [search, setSearch] = useState('');
+
+  const { refs, floatingStyles } = useFloating({
+    placement: 'bottom-start',
+    strategy: 'fixed',
+    middleware: [
+      offset(4),
+      flip({ padding: 8 }),
+      size({
+        apply({ rects, elements }) {
+          elements.floating.style.width = `${rects.reference.width}px`;
+        },
+        padding: 8,
+      }),
+    ],
+    whileElementsMounted: autoUpdate,
+  });
+
+  useEffect(() => {
+    refs.setReference(anchorRef?.current ?? null);
+  }, [anchorRef, refs]);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
+      const floating = refs.floating.current;
       if (
-        menuRef.current && !menuRef.current.contains(e.target as Node) &&
+        floating && !floating.contains(e.target as Node) &&
         (!anchorRef?.current || !anchorRef.current.contains(e.target as Node))
       ) {
         onClose();
@@ -33,37 +55,27 @@ export default function PickerMenu({ anchorRef, options, value, onSelect, onClos
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
-  }, [onClose, anchorRef]);
-
-  const rect = anchorRef?.current?.getBoundingClientRect();
+  }, [onClose, anchorRef, refs.floating]);
 
   const showSearch = options.length > 10;
   const filtered = showSearch && search
     ? options.filter(o => o.label.toLowerCase().includes(search.toLowerCase()))
     : options;
 
-  const hasDescriptions = options.some((o) => o.description);
-  const rowHeight = hasDescriptions ? 58 : 41;
-  const searchHeight = showSearch ? 44 : 0;
-  const menuHeight = Math.min(300, filtered.length * rowHeight + searchHeight);
-
-  // If no anchor, center horizontally near the middle of the screen
-  const left   = rect ? rect.left : (window.innerWidth - Math.min(430, window.innerWidth - 32)) / 2;
-  const width  = rect ? rect.width : Math.min(430, window.innerWidth - 32);
-  const spaceBelow = rect ? window.innerHeight - rect.bottom - 8 : menuHeight + 1;
-  const openAbove  = rect ? spaceBelow < menuHeight && rect.top > spaceBelow : false;
-  const top = rect
-    ? (openAbove ? rect.top - menuHeight - 4 : rect.bottom + 4)
-    : (window.innerHeight - menuHeight) / 2;
+  // Fallback styles when there is no anchor (centered on screen)
+  const fallbackStyle: React.CSSProperties = anchorRef?.current ? {} : {
+    position: 'fixed' as const,
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: Math.min(430, window.innerWidth - 32),
+  };
 
   return (
     <div
-      ref={menuRef}
+      ref={refs.setFloating}
       style={{
-        position: 'fixed',
-        top,
-        left,
-        width,
+        ...(anchorRef?.current ? floatingStyles : fallbackStyle),
         background: 'var(--surface)',
         borderRadius: 12,
         boxShadow: '0 8px 32px rgba(0,0,0,0.14), 0 1px 4px rgba(0,0,0,0.08)',
@@ -120,11 +132,7 @@ export default function PickerMenu({ anchorRef, options, value, onSelect, onClos
                 </span>
               )}
             </span>
-            {isSelected && (
-              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--sage)" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-              </svg>
-            )}
+            {isSelected && <Check size={14} color="var(--sage)" weight="bold" />}
           </button>
         );
       })}

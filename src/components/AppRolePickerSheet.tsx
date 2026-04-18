@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { AppRole } from '@/lib/types';
+import { type AppRole } from '@/lib/types';
+import { Warning, Check } from '@phosphor-icons/react';
 
 const ROLE_OPTIONS: { value: AppRole; label: string; description: string }[] = [
   { value: 'admin',        label: 'Admin',        description: 'Full access. Can manage all records, logs, and settings.' },
@@ -39,9 +40,7 @@ export default function AppRolePickerSheet({ currentRole, onSelect, onRemove, on
           /* ── Warning state ── */
           <div style={{ padding: '24px 20px 8px' }}>
             <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#DC2626" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-              </svg>
+              <Warning size={20} color="#DC2626" />
             </div>
             <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', textAlign: 'center', marginBottom: 8 }}>Remove access?</p>
             <p style={{ fontSize: 14, color: 'var(--text-secondary)', textAlign: 'center', lineHeight: 1.5, marginBottom: 24 }}>
@@ -86,9 +85,7 @@ export default function AppRolePickerSheet({ currentRole, onSelect, onRemove, on
                     </p>
                   </div>
                   {isSelected && (
-                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--sage)" strokeWidth={2.5} style={{ flexShrink: 0 }}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                    </svg>
+                    <Check size={16} color="var(--sage)" weight="bold" style={{ flexShrink: 0 }} />
                   )}
                 </button>
               );

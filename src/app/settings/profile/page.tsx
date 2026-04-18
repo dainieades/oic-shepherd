@@ -3,15 +3,17 @@
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  User, TextT, Globe, Pulse, GenderIntersex, Cake, Heart, Sparkle, Church,
+  User, TextT, Globe, Pulse, GenderIntersex, Cake, Heart, Sparkle,
   IdentificationCard, CalendarCheck, Drop, Compass, Buildings, BookOpenText,
-  Phone, PhoneCall, Envelope, House, FirstAid, CaretRight, HandHeart, Camera, UsersFour,
+  Phone, PhoneCall, Envelope, House, CaretRight, HandHeart, Camera, UsersFour,
+  CaretLeft, Check,
 } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { formatPhone } from '@/lib/utils';
-import { MembershipStatus, ChurchAttendance, Language, Gender, MaritalStatus, CHURCH_POSITIONS, AppRole } from '@/lib/types';
+import { type MembershipStatus, type ChurchAttendance, type Gender, type MaritalStatus, CHURCH_POSITIONS, type AppRole } from '@/lib/types';
 import PickerMenu from '@/components/PickerMenu';
 import AppRolePickerSheet from '@/components/AppRolePickerSheet';
+import LanguagePickerSheet from '@/components/LanguagePickerSheet';
 
 const MEMBERSHIP_OPTIONS: { value: MembershipStatus; label: string }[] = [
   { value: 'member',           label: 'Member' },
@@ -24,11 +26,6 @@ const CHURCH_ATTENDANCE_OPTIONS: { value: ChurchAttendance; label: string }[] = 
   { value: 'regular',            label: 'Regular Attendee' },
   { value: 'on-leave',           label: 'On Leave' },
   { value: 'fellowship-group-only',   label: 'Fellowship Group Only' },
-];
-const LANGUAGE_OPTIONS: { value: Language; label: string }[] = [
-  { value: 'english',   label: 'English' },
-  { value: 'chinese',   label: 'Chinese (Mandarin)' },
-  { value: 'bilingual', label: 'Bilingual' },
 ];
 const GENDER_OPTIONS: { value: Gender | ''; label: string }[] = [
   { value: '',       label: 'Not set' },
@@ -59,9 +56,7 @@ export default function SettingsProfilePage() {
       <div style={{ minHeight: '100dvh' }}>
         <div style={navBarStyle}>
           <button onClick={() => router.back()} style={backBtnStyle}>
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-            </svg>
+            <CaretLeft size={16} />
             Settings
           </button>
           <span style={navTitleStyle}>My Profile</span>
@@ -87,7 +82,7 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
   const [chineseName, setChineseName] = useState(person.chineseName ?? '');
   const [photo, setPhoto] = useState(person.photo ?? '');
 
-  const [language, setLanguage]           = useState<Language>(person.language);
+  const [language, setLanguage]           = useState<string[]>(person.language ?? []);
   const [gender, setGender]               = useState<Gender | ''>(person.gender ?? '');
   const [birthday, setBirthday]           = useState(person.birthday ?? '');
   const [maritalStatus, setMaritalStatus] = useState<MaritalStatus | ''>(person.maritalStatus ?? '');
@@ -107,8 +102,8 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
   const [homePhone, setHomePhone]     = useState(person.homePhone ? formatPhone(person.homePhone) : '');
   const [email, setEmail]             = useState(person.email ?? '');
   const [homeAddress, setHomeAddress] = useState(person.homeAddress ?? '');
-  const [spiritualNeeds, setSpiritualNeeds] = useState(person.spiritualNeeds ?? '');
-  const [physicalNeeds, setPhysicalNeeds]   = useState(person.physicalNeeds ?? '');
+  const [spiritualNeeds] = useState(person.spiritualNeeds ?? '');
+  const [physicalNeeds]  = useState(person.physicalNeeds ?? '');
 
   const firstNameRef = useRef<HTMLInputElement>(null);
   const lastNameRef  = useRef<HTMLInputElement>(null);
@@ -117,15 +112,14 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
   const homePhoneRef = useRef<HTMLInputElement>(null);
   const emailRef     = useRef<HTMLInputElement>(null);
   const addressRef   = useRef<HTMLTextAreaElement>(null);
-  const spiritualRef = useRef<HTMLTextAreaElement>(null);
-  const physicalRef  = useRef<HTMLTextAreaElement>(null);
   const birthdayRef       = useRef<HTMLInputElement>(null);
   const anniversaryRef    = useRef<HTMLInputElement>(null);
   const membershipDateRef = useRef<HTMLInputElement>(null);
   const baptismDateRef    = useRef<HTMLInputElement>(null);
   const fileInputRef      = useRef<HTMLInputElement>(null);
 
-  const [openPicker, setOpenPicker] = useState<'status' | 'attendance' | 'language' | 'gender' | 'marital' | 'appRole' | null>(null);
+  const [openPicker, setOpenPicker] = useState<'status' | 'attendance' | 'gender' | 'marital' | 'appRole' | null>(null);
+  const [showLanguagePicker, setShowLanguagePicker] = useState(false);
   const [appRole, setAppRole] = useState<AppRole>(person.appRole ?? 'no-access');
   const [showPositionPicker, setShowPositionPicker] = useState(false);
   const [showGroupPicker, setShowGroupPicker] = useState(false);
@@ -182,7 +176,6 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
 
   const statusLabel     = MEMBERSHIP_OPTIONS.find((o) => o.value === status)?.label ?? '';
   const attendanceLabel = CHURCH_ATTENDANCE_OPTIONS.find((o) => o.value === attendance)?.label ?? attendance;
-  const languageLabel = LANGUAGE_OPTIONS.find((o) => o.value === language)?.label ?? '';
   const genderLabel   = GENDER_OPTIONS.find((o) => o.value === gender)?.label ?? 'Not set';
   const maritalLabel  = MARITAL_OPTIONS.find((o) => o.value === maritalStatus)?.label ?? 'Not set';
   const initials = fullName.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase();
@@ -268,7 +261,17 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
         </FormSection>
 
         <FormSection label="Personal">
-          <PickerRow icon={<Globe size={16} color="var(--text-muted)" />} label="Language" value={languageLabel} onClick={() => setOpenPicker('language')} />
+          <button className="field-row-hover" onClick={() => setShowLanguagePicker(true)} style={rowBtnStyle}>
+            <span style={spacerStyle} />
+            <Globe size={16} color="var(--text-muted)" />
+            <span style={labelStyle}>Language</span>
+            <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+              {language.length > 0
+                ? language.map((l) => <span key={l} style={{ fontSize: 11, fontWeight: 500, padding: '2px 8px', borderRadius: 999, background: 'var(--blue-light)', color: 'var(--blue)', flexShrink: 0 }}>{l}</span>)
+                : <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>None</span>}
+            </div>
+            <CaretRight size={14} color="var(--text-muted)" />
+          </button>
           <PickerRow icon={<GenderIntersex size={16} color="var(--text-muted)" />} label="Gender" value={genderLabel} onClick={() => setOpenPicker('gender')} />
           <DateRow icon={<Cake size={16} color="var(--text-muted)" />} label="Birthday" value={birthday} inputRef={birthdayRef} onChange={setBirthday} />
           <PickerRow icon={<Heart size={16} color="var(--text-muted)" />} label="Marital" value={maritalLabel} onClick={() => setOpenPicker('marital')} />
@@ -348,8 +351,8 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
       {/* Pickers */}
       {openPicker === 'status'   && <PickerMenu title="Membership status" options={MEMBERSHIP_OPTIONS} value={status}        onSelect={(v) => setStatus(v as MembershipStatus)}         onClose={() => setOpenPicker(null)} />}
       {openPicker === 'attendance' && <PickerMenu title="Church Attendance" options={CHURCH_ATTENDANCE_OPTIONS} value={attendance} onSelect={(v) => setAttendance(v as ChurchAttendance)} onClose={() => setOpenPicker(null)} />}
-      {openPicker === 'language' && <PickerMenu title="Language"          options={LANGUAGE_OPTIONS}   value={language}      onSelect={(v) => setLanguage(v as Language)}               onClose={() => setOpenPicker(null)} />}
       {openPicker === 'gender'   && <PickerMenu title="Gender"            options={GENDER_OPTIONS}     value={gender}        onSelect={(v) => setGender(v as Gender | '')}              onClose={() => setOpenPicker(null)} />}
+      {showLanguagePicker && <LanguagePickerSheet currentLanguages={language} onConfirm={(langs) => { setLanguage(langs); setShowLanguagePicker(false); }} onBack={() => setShowLanguagePicker(false)} />}
       {openPicker === 'marital'  && <PickerMenu title="Marital Status"    options={MARITAL_OPTIONS}    value={maritalStatus} onSelect={(v) => setMaritalStatus(v as MaritalStatus | '')} onClose={() => setOpenPicker(null)} />}
       {openPicker === 'appRole'  && (
         <AppRolePickerSheet
@@ -504,7 +507,7 @@ function GroupPickerSheet({ groups, selected, onToggle, onDone }: {
               <button key={g.id} onClick={() => onToggle(g.id)}
                 style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 20px', background: isSel ? 'var(--blue-light)' : 'none', border: 'none', borderBottom: '1px solid var(--border-light)', cursor: 'pointer', textAlign: 'left' as const }}>
                 <span style={{ fontSize: 15, fontWeight: isSel ? 600 : 400, color: isSel ? 'var(--blue)' : 'var(--text-primary)' }}>{g.name}</span>
-                {isSel && <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--blue)" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>}
+                {isSel && <Check size={16} color="var(--blue)" weight="bold" />}
               </button>
             );
           })}
@@ -539,7 +542,7 @@ function ShepherdPickerSheet({ personas, selected, onToggle, onDone }: {
                   <p style={{ fontSize: 11, color: 'var(--text-muted)', margin: 0, textTransform: 'capitalize' }}>{p.role}</p>
                 </div>
               </div>
-              {isSel && <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--sage)" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>}
+              {isSel && <Check size={16} color="var(--sage)" weight="bold" />}
             </button>
           );
         })}
@@ -563,7 +566,7 @@ function PositionPickerSheet({ selected, onToggle, onDone }: { selected: string[
           return (
             <button key={pos} onClick={() => onToggle(pos)} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '15px 20px', background: isSel ? 'var(--sage-light)' : 'none', border: 'none', borderBottom: '1px solid var(--border-light)', fontSize: 15, color: isSel ? 'var(--sage)' : 'var(--text-primary)', fontWeight: isSel ? 600 : 400, cursor: 'pointer', textAlign: 'left' as const }}>
               <span>{pos}</span>
-              {isSel && <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--sage)" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>}
+              {isSel && <Check size={16} color="var(--sage)" weight="bold" />}
             </button>
           );
         })}

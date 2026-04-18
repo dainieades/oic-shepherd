@@ -1,7 +1,7 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode, useCallback, Dispatch, SetStateAction } from 'react';
-import { AppData, Persona, Person, Family, Note, Todo, Notice, NoteType, NoteVisibility, TodoRepeat, AppRole, ChurchAttendance, MembershipStatus } from './types';
+import { createContext, useContext, useState, useEffect, type ReactNode, useCallback, type Dispatch, type SetStateAction } from 'react';
+import { type AppData, type Persona, type Person, type Family, type Note, type Todo, type Notice, type AppRole, type ChurchAttendance, type MembershipStatus } from './types';
 
 // ── Shared filter types (exported so pages can import them) ──────────────────
 
@@ -95,7 +95,13 @@ function mapPerson(row: Record<string, unknown>, shepherdIds: string[], groupIds
     churchPositions: row.church_positions as string[] | undefined,
     membershipStatus: row.membership_status as Person['membershipStatus'],
     churchAttendance: (row.church_attendance as ChurchAttendance) ?? 'regular',
-    language: (row.language as Person['language']) ?? 'english',
+    language: (() => {
+      const raw = row.language as string | null;
+      if (!raw) return ['English'];
+      if (raw.startsWith('[')) { try { return JSON.parse(raw) as string[]; } catch { return ['English']; } }
+      const legacyMap: Record<string, string> = { english: 'English', chinese: 'Mandarin Chinese', bilingual: 'English' };
+      return [legacyMap[raw] ?? 'English'];
+    })(),
     familyId: row.family_id as string | undefined,
     followUpFrequencyDays: (row.follow_up_frequency_days as number) ?? 14,
     lastContactDate: row.last_contact_date as string | undefined,
@@ -652,7 +658,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (updates.membershipStatus !== undefined) dbUpdates.membership_status = updates.membershipStatus;
     if (updates.churchAttendance !== undefined) dbUpdates.church_attendance = updates.churchAttendance;
     if (updates.membershipDate !== undefined) dbUpdates.membership_date = updates.membershipDate;
-    if (updates.language !== undefined) dbUpdates.language = updates.language;
+    if (updates.language !== undefined) dbUpdates.language = JSON.stringify(updates.language);
     if (updates.gender !== undefined) dbUpdates.gender = updates.gender;
     if (updates.maritalStatus !== undefined) dbUpdates.marital_status = updates.maritalStatus;
     if (updates.birthday !== undefined) dbUpdates.birthday = updates.birthday;
@@ -748,7 +754,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       });
       const newPeople = prev.people.map((p) => {
         if (removed.includes(p.id)) return { ...p, familyId: undefined };
-        if (added.includes(p.id)) return { ...p, familyId: familyId };
+        if (added.includes(p.id)) return { ...p, familyId };
         return p;
       });
       return { ...prev, families: newFamilies, people: newPeople };

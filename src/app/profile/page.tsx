@@ -1,6 +1,7 @@
 'use client';
 
 import { useApp } from '@/lib/context';
+import { CaretRight } from '@phosphor-icons/react';
 
 const roleLabel: Record<string, string> = {
   admin:          'Admin · Pastor',
@@ -144,9 +145,7 @@ export default function ProfilePage() {
                   <p style={{ fontSize: 14, color: 'var(--text-primary)', fontWeight: 500 }}>{row.label}</p>
                   <p style={{ fontSize: 11, color: 'var(--text-muted)' }}>{row.value}</p>
                 </div>
-                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--amber)" strokeWidth={1.8}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                </svg>
+                <CaretRight size={16} color="var(--amber)" />
               </div>
             </div>
           ))}
@@ -219,9 +218,7 @@ function SettingRow({ label, value, active, showDivider }: { label: string; valu
           <p style={{ fontSize: 14, color: 'var(--text-primary)', fontWeight: 500 }}>{label}</p>
           <p style={{ fontSize: 11, color: 'var(--text-muted)' }}>{value}</p>
         </div>
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={1.8}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-        </svg>
+        <CaretRight size={16} color="var(--text-muted)" />
       </div>
     </>
   );

@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { useFloating, autoUpdate, offset, flip, size } from '@floating-ui/react';
 import { CaretRight, Trash, User, CalendarBlank, ArrowsClockwise, UserPlus, PlusCircle, CalendarPlus } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { useToast } from './Toast';
-import { TodoRepeat, Todo } from '@/lib/types';
+import { type TodoRepeat, type Todo } from '@/lib/types';
 import PersonFamilyPicker from './PersonFamilyPicker';
 import PickerMenu from './PickerMenu';
 import DatePickerSheet from './DatePickerSheet';
@@ -108,7 +109,7 @@ export default function AddTodoModal({ onClose, prefillFamilyId, prefillPersonId
   };
 
   function fmtDate() {
-    const d = new Date(dateStr + 'T12:00:00');
+    const d = new Date(`${dateStr  }T12:00:00`);
     const datePart = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     if (!includeTime) return datePart;
     const [hStr, mStr] = timeStr.split(':');
@@ -298,14 +299,14 @@ return (
 }
 
 function CalendarPickerMenu({ anchorRef, title, dueDate, allDay, onClose }: { anchorRef: React.RefObject<HTMLButtonElement | null>; title: string; dueDate: string; allDay: boolean; onClose: () => void }) {
-  const menuRef = useRef<HTMLDivElement>(null);
   const start = new Date(dueDate);
   const end = new Date(start.getTime() + 60 * 60 * 1000);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
+      const floating = refs.floating.current;
       if (
-        menuRef.current && !menuRef.current.contains(e.target as Node) &&
+        floating && !floating.contains(e.target as Node) &&
         (!anchorRef?.current || !anchorRef.current.contains(e.target as Node))
       ) {
         onClose();
@@ -333,15 +334,25 @@ function CalendarPickerMenu({ anchorRef, title, dueDate, allDay, onClose }: { an
     onClose();
   }
 
-  const rect = anchorRef?.current?.getBoundingClientRect();
-  const menuHeight = 41 * 2;
-  const left   = rect ? rect.left : (window.innerWidth - Math.min(430, window.innerWidth - 32)) / 2;
-  const width  = rect ? rect.width : Math.min(430, window.innerWidth - 32);
-  const spaceBelow = rect ? window.innerHeight - rect.bottom - 8 : menuHeight + 1;
-  const openAbove  = rect ? spaceBelow < menuHeight && rect.top > spaceBelow : false;
-  const top = rect
-    ? (openAbove ? rect.top - menuHeight - 4 : rect.bottom + 4)
-    : (window.innerHeight - menuHeight) / 2;
+  const { refs, floatingStyles } = useFloating({
+    placement: 'bottom-start',
+    strategy: 'fixed',
+    middleware: [
+      offset(4),
+      flip({ padding: 8 }),
+      size({
+        apply({ rects, elements }) {
+          elements.floating.style.width = `${rects.reference.width}px`;
+        },
+        padding: 8,
+      }),
+    ],
+    whileElementsMounted: autoUpdate,
+  });
+
+  useEffect(() => {
+    refs.setReference(anchorRef?.current ?? null);
+  }, [anchorRef, refs]);
 
   const itemStyle: React.CSSProperties = {
     width: '100%', display: 'flex', alignItems: 'center', gap: 10,
@@ -353,9 +364,9 @@ function CalendarPickerMenu({ anchorRef, title, dueDate, allDay, onClose }: { an
 
   return (
     <div
-      ref={menuRef}
+      ref={refs.setFloating}
       style={{
-        position: 'fixed', top, left, width,
+        ...floatingStyles,
         background: 'var(--surface)',
         borderRadius: 12,
         boxShadow: '0 8px 32px rgba(0,0,0,0.14), 0 1px 4px rgba(0,0,0,0.08)',
