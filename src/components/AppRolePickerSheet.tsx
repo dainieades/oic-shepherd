@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React from 'react';
 import { type AppRole } from '@/lib/types';
 import { Warning, Check } from '@phosphor-icons/react';
 
@@ -39,7 +39,7 @@ export default function AppRolePickerSheet({
   isAdmin,
   personName,
 }: Props) {
-  const [confirmRemove, setConfirmRemove] = useState(false);
+  const [confirmRemove, setConfirmRemove] = React.useState(false);
 
   return (
     <div

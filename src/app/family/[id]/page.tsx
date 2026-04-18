@@ -1,7 +1,7 @@
 'use client';
 
 import { format, parseISO } from 'date-fns';
-import { use, useState, useRef, useEffect } from 'react';
+import React from 'react';
 import {
   Baby,
   Notepad,
@@ -70,29 +70,29 @@ const noteTypeColors: Record<string, { bg: string; color: string }> = {
 };
 
 export default function FamilyDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+  const { id } = React.use(params);
   const { data, toggleTodo, canViewNote, updateFamily } = useApp();
-  const [tab, setTab] = useState<Tab>('logs');
-  const [showAddLog, setShowAddLog] = useState(false);
-  const [showAddTodo, setShowAddTodo] = useState(false);
-  const [editingNote, setEditingNote] = useState<Note | null>(null);
-  const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
-  const [todoLogPrompt, setTodoLogPrompt] = useState<Todo | null>(null);
-  const [pendingLogTodo, setPendingLogTodo] = useState<Todo | null>(null);
-  const [showEditFamily, setShowEditFamily] = useState(false);
-  const [previewGroupId, setPreviewGroupId] = useState<string | null>(null);
-  const [showKebab, setShowKebab] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const kebabRef = useRef<HTMLDivElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [tab, setTab] = React.useState<Tab>('logs');
+  const [showAddLog, setShowAddLog] = React.useState(false);
+  const [showAddTodo, setShowAddTodo] = React.useState(false);
+  const [editingNote, setEditingNote] = React.useState<Note | null>(null);
+  const [editingTodo, setEditingTodo] = React.useState<Todo | null>(null);
+  const [todoLogPrompt, setTodoLogPrompt] = React.useState<Todo | null>(null);
+  const [pendingLogTodo, setPendingLogTodo] = React.useState<Todo | null>(null);
+  const [showEditFamily, setShowEditFamily] = React.useState(false);
+  const [previewGroupId, setPreviewGroupId] = React.useState<string | null>(null);
+  const [showKebab, setShowKebab] = React.useState(false);
+  const [scrolled, setScrolled] = React.useState(false);
+  const kebabRef = React.useRef<HTMLDivElement>(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  useEffect(() => {
+  React.useEffect(() => {
     function outside(e: MouseEvent) {
       if (kebabRef.current && !kebabRef.current.contains(e.target as Node)) setShowKebab(false);
     }
@@ -1055,7 +1055,7 @@ function LogSection({
   count: number;
   children: React.ReactNode;
 }) {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = React.useState(true);
   return (
     <div style={{ marginBottom: 16 }}>
       <button
@@ -1105,7 +1105,7 @@ function TodoSection({
   data: AppData;
   defaultOpen?: boolean;
 }) {
-  const [open, setOpen] = useState(defaultOpen);
+  const [open, setOpen] = React.useState(defaultOpen);
   return (
     <div style={{ marginBottom: 16 }}>
       <button

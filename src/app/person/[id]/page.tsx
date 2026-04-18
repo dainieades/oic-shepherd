@@ -1,7 +1,7 @@
 'use client';
 
 import { format, parseISO } from 'date-fns';
-import { use, useState, useRef, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useApp } from '@/lib/context';
@@ -92,7 +92,7 @@ const noteTypeColors: Record<string, { bg: string; color: string }> = {
 };
 
 export default function PersonPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+  const { id } = React.use(params);
   const router = useRouter();
   const searchParams = useSearchParams();
   const {
@@ -114,43 +114,43 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
   const initialTab: Tab = _canManageCheck
     ? ((searchParams.get('tab') as Tab | null) ?? 'logs')
     : 'info';
-  const [tab, setTabState] = useState<Tab>(initialTab);
+  const [tab, setTabState] = React.useState<Tab>(initialTab);
 
   const setTab = (t: Tab) => {
     setTabState(t);
     router.replace(`/person/${id}?tab=${t}`, { scroll: false });
   };
-  const [showAddLog, setShowAddLog] = useState(false);
-  const [showAddTodo, setShowAddTodo] = useState(false);
-  const [showAddNotice, setShowAddNotice] = useState(false);
-  const [editingNotice, setEditingNotice] = useState<Notice | null>(null);
-  const [showSheepPicker, setShowSheepPicker] = useState(false);
-  const [editingNote, setEditingNote] = useState<Note | null>(null);
-  const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
-  const [todoLogPrompt, setTodoLogPrompt] = useState<Todo | null>(null);
-  const [pendingLogTodo, setPendingLogTodo] = useState<Todo | null>(null);
-  const [showEditPerson, setShowEditPerson] = useState(false);
-  const [previewGroupId, setPreviewGroupId] = useState<string | null>(null);
-  const [showKebab, setShowKebab] = useState(false);
-  const [showPhotoMenu, setShowPhotoMenu] = useState(false);
-  const [confirmAction, setConfirmAction] = useState<'archive' | 'delete' | null>(null);
-  const [scrolled, setScrolled] = useState(false);
-  const [mapProvider, setMapProvider] = useState<MapProvider>('apple');
-  const kebabRef = useRef<HTMLDivElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showAddLog, setShowAddLog] = React.useState(false);
+  const [showAddTodo, setShowAddTodo] = React.useState(false);
+  const [showAddNotice, setShowAddNotice] = React.useState(false);
+  const [editingNotice, setEditingNotice] = React.useState<Notice | null>(null);
+  const [showSheepPicker, setShowSheepPicker] = React.useState(false);
+  const [editingNote, setEditingNote] = React.useState<Note | null>(null);
+  const [editingTodo, setEditingTodo] = React.useState<Todo | null>(null);
+  const [todoLogPrompt, setTodoLogPrompt] = React.useState<Todo | null>(null);
+  const [pendingLogTodo, setPendingLogTodo] = React.useState<Todo | null>(null);
+  const [showEditPerson, setShowEditPerson] = React.useState(false);
+  const [previewGroupId, setPreviewGroupId] = React.useState<string | null>(null);
+  const [showKebab, setShowKebab] = React.useState(false);
+  const [showPhotoMenu, setShowPhotoMenu] = React.useState(false);
+  const [confirmAction, setConfirmAction] = React.useState<'archive' | 'delete' | null>(null);
+  const [scrolled, setScrolled] = React.useState(false);
+  const [mapProvider, setMapProvider] = React.useState<MapProvider>('apple');
+  const kebabRef = React.useRef<HTMLDivElement>(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const stored = localStorage.getItem(MAP_PROVIDERS_STORAGE_KEY) as MapProvider | null;
     if (stored) setMapProvider(stored);
   }, []);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!showKebab) return;
     const handler = (e: MouseEvent) => {
       if (kebabRef.current && !kebabRef.current.contains(e.target as Node)) {
@@ -1927,7 +1927,7 @@ function TodoSection({
   data: AppData;
   defaultOpen?: boolean;
 }) {
-  const [open, setOpen] = useState(defaultOpen);
+  const [open, setOpen] = React.useState(defaultOpen);
   return (
     <div style={{ marginBottom: 16 }}>
       <button
@@ -2201,7 +2201,7 @@ function LogSection({
   count: number;
   children: React.ReactNode;
 }) {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = React.useState(true);
   return (
     <div style={{ marginBottom: 16 }}>
       <button
@@ -2297,7 +2297,7 @@ function SheepPickerModal({
   onToggle: (personId: string, isCurrentSheep: boolean) => void;
   onClose: () => void;
 }) {
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = React.useState('');
   const q = search.toLowerCase();
 
   const people = data.people.filter(

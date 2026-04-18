@@ -1,13 +1,13 @@
 'use client';
 
-import { useEffect } from 'react';
+import React from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { useApp } from '@/lib/context';
 
 export default function AuthSync() {
   const { loginWithSupabaseUser } = useApp();
 
-  useEffect(() => {
+  React.useEffect(() => {
     const supabase = createClient();
 
     const {

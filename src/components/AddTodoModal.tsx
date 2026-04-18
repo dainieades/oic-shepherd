@@ -1,7 +1,7 @@
 'use client';
 
 import { addHours, format } from 'date-fns';
-import { useState, useRef, useEffect } from 'react';
+import React from 'react';
 import { useFloating, autoUpdate, offset, flip, size } from '@floating-ui/react';
 import {
   CaretRight,
@@ -48,36 +48,36 @@ export default function AddTodoModal({
   const { showToast } = useToast();
   const isEditing = !!todo;
 
-  const [title, setTitle] = useState(todo?.title ?? '');
-  const [familyIds, setFamilyIds] = useState<string[]>(
+  const [title, setTitle] = React.useState(todo?.title ?? '');
+  const [familyIds, setFamilyIds] = React.useState<string[]>(
     todo?.familyId ? [todo.familyId] : prefillFamilyId ? [prefillFamilyId] : []
   );
-  const [personIds, setPersonIds] = useState<string[]>(
+  const [personIds, setPersonIds] = React.useState<string[]>(
     todo?.personId ? [todo.personId] : prefillPersonId ? [prefillPersonId] : []
   );
-  const [dateStr, setDateStr] = useState(() => {
+  const [dateStr, setDateStr] = React.useState(() => {
     if (todo?.dueDate) return todo.dueDate.slice(0, 10);
     return format(new Date(), 'yyyy-MM-dd');
   });
-  const [timeStr, setTimeStr] = useState(() => {
+  const [timeStr, setTimeStr] = React.useState(() => {
     if (todo?.dueDate && todo.dueDate.length >= 16) return todo.dueDate.slice(11, 16);
     return '12:00';
   });
-  const [includeTime, setIncludeTime] = useState(() => {
+  const [includeTime, setIncludeTime] = React.useState(() => {
     if (!todo?.dueDate || todo.dueDate.length < 16) return false;
     const t = todo.dueDate.slice(11, 16);
     return t !== '' && t !== '00:00';
   });
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [repeat, setRepeat] = useState<TodoRepeat>(todo?.repeat ?? 'none');
+  const [showDatePicker, setShowDatePicker] = React.useState(false);
+  const [repeat, setRepeat] = React.useState<TodoRepeat>(todo?.repeat ?? 'none');
 
-  const [showWhoPicker, setShowWhoPicker] = useState(false);
-  const [showRepeatPicker, setShowRepeatPicker] = useState(false);
+  const [showWhoPicker, setShowWhoPicker] = React.useState(false);
+  const [showRepeatPicker, setShowRepeatPicker] = React.useState(false);
 
-  const repeatBtnRef = useRef<HTMLButtonElement>(null);
-  const calendarBtnRef = useRef<HTMLButtonElement>(null);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [showCalendarPicker, setShowCalendarPicker] = useState(false);
+  const repeatBtnRef = React.useRef<HTMLButtonElement>(null);
+  const calendarBtnRef = React.useRef<HTMLButtonElement>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
+  const [showCalendarPicker, setShowCalendarPicker] = React.useState(false);
 
   const whoNames = [
     ...familyIds.map((id) => data.families.find((f) => f.id === id)?.label ?? ''),
@@ -456,7 +456,7 @@ function CalendarPickerMenu({
   const start = new Date(dueDate);
   const end = addHours(start, 1);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const handler = (e: MouseEvent) => {
       const floating = refs.floating.current;
       if (
@@ -505,7 +505,7 @@ function CalendarPickerMenu({
     whileElementsMounted: autoUpdate,
   });
 
-  useEffect(() => {
+  React.useEffect(() => {
     refs.setReference(anchorRef?.current ?? null);
   }, [anchorRef, refs]);
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { differenceInCalendarDays, differenceInHours, subDays, parseISO, isBefore, compareDesc, format } from 'date-fns';
-import { useState, useMemo, useRef, useEffect, useTransition, useDeferredValue, memo, lazy, Suspense } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { useApp, type HomeFilters, type HomeSortKey, HOME_DEFAULT_FILTERS } from '@/lib/context';
 import {
@@ -30,9 +30,9 @@ import {
   House,
   Check,
 } from '@phosphor-icons/react';
-const AddPersonModal = lazy(() => import('@/components/AddPersonModal'));
-const AddFamilyModal = lazy(() => import('@/components/AddFamilyModal'));
-const InviteSheet = lazy(() => import('@/components/InviteSheet'));
+const AddPersonModal = React.lazy(() => import('@/components/AddPersonModal'));
+const AddFamilyModal = React.lazy(() => import('@/components/AddFamilyModal'));
+const InviteSheet = React.lazy(() => import('@/components/InviteSheet'));
 
 const SORT_OPTIONS: { key: HomeSortKey; label: string }[] = [
   { key: 'last-contacted', label: 'Logged longest ago' },
@@ -50,30 +50,30 @@ export default function PeoplePage() {
     homeSortKey: sortKey,
     setHomeSortKey: setSortKey,
   } = useApp();
-  const [search, setSearch] = useState('');
-  const deferredSearch = useDeferredValue(search);
+  const [search, setSearch] = React.useState('');
+  const deferredSearch = React.useDeferredValue(search);
   const isSearchPending = search !== deferredSearch;
-  const [, startTransition] = useTransition();
-  const [showSearch, setShowSearch] = useState(false);
-  const [showFilter, setShowFilter] = useState(false);
-  const [showSort, setShowSort] = useState(false);
-  const searchInputRef = useRef<HTMLInputElement>(null);
-  const [draft, setDraft] = useState<HomeFilters>(filters);
-  const [draftSort, setDraftSort] = useState<HomeSortKey>(sortKey);
-  const [activeCategory, setActiveCategory] = useState<
+  const [, startTransition] = React.useTransition();
+  const [showSearch, setShowSearch] = React.useState(false);
+  const [showFilter, setShowFilter] = React.useState(false);
+  const [showSort, setShowSort] = React.useState(false);
+  const searchInputRef = React.useRef<HTMLInputElement>(null);
+  const [draft, setDraft] = React.useState<HomeFilters>(filters);
+  const [draftSort, setDraftSort] = React.useState<HomeSortKey>(sortKey);
+  const [activeCategory, setActiveCategory] = React.useState<
     'sort' | 'shepherd' | 'membership' | 'discipleship' | 'group' | 'app-role' | 'archive'
   >('shepherd');
-  const [shepherdSearch, setShepherdSearch] = useState('');
-  const [showAddChoice, setShowAddChoice] = useState(false);
-  const [showAddPerson, setShowAddPerson] = useState(false);
-  const [showAddFamily, setShowAddFamily] = useState(false);
-  const [showInvite, setShowInvite] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const sortRef = useRef<HTMLDivElement>(null);
+  const [shepherdSearch, setShepherdSearch] = React.useState('');
+  const [showAddChoice, setShowAddChoice] = React.useState(false);
+  const [showAddPerson, setShowAddPerson] = React.useState(false);
+  const [showAddFamily, setShowAddFamily] = React.useState(false);
+  const [showInvite, setShowInvite] = React.useState(false);
+  const [scrolled, setScrolled] = React.useState(false);
+  const sortRef = React.useRef<HTMLDivElement>(null);
 
   const isAdmin = currentPersona.role === 'admin';
 
-  useEffect(() => {
+  React.useEffect(() => {
     function outside(e: MouseEvent) {
       if (sortRef.current && !sortRef.current.contains(e.target as Node)) setShowSort(false);
     }
@@ -81,7 +81,7 @@ export default function PeoplePage() {
     return () => document.removeEventListener('mousedown', outside);
   }, []);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
@@ -108,7 +108,7 @@ export default function PeoplePage() {
   };
 
   // Build the list: families + solo individuals
-  const entries = useMemo(() => {
+  const entries = React.useMemo(() => {
     const { families: matchedFamilies, individuals } = searchFamiliesAndPeople(
       deferredSearch,
       data.families,
@@ -267,7 +267,7 @@ export default function PeoplePage() {
   }, [data, deferredSearch, filters, sortKey, isAdmin, currentPersona]);
 
   // New people: created in the last 60 days, no notes yet, not archived
-  const newPeople = useMemo(() => {
+  const newPeople = React.useMemo(() => {
     if (currentPersona.role === 'welcome-team') return [];
     const cutoff = subDays(new Date(), 60);
     const notedPersonIds = new Set(data.notes.map((n) => n.personId).filter(Boolean) as string[]);
@@ -856,11 +856,11 @@ export default function PeoplePage() {
         )}
       </div>
 
-      <Suspense fallback={null}>
+      <React.Suspense fallback={null}>
         {showAddPerson && <AddPersonModal onClose={() => setShowAddPerson(false)} />}
         {showAddFamily && <AddFamilyModal onClose={() => setShowAddFamily(false)} />}
         {showInvite && <InviteSheet onClose={() => setShowInvite(false)} />}
-      </Suspense>
+      </React.Suspense>
 
       {/* ── Add type choice sheet ── */}
       {showAddChoice && (
@@ -1709,7 +1709,7 @@ const avatarPalette = [
   { bg: '#F0EBF5', color: '#7A6A8C' },
 ];
 
-const FamilyRow = memo(function FamilyRow({
+const FamilyRow = React.memo(function FamilyRow({
   family,
   members,
   lastNoteTs,
@@ -1831,7 +1831,7 @@ const FamilyRow = memo(function FamilyRow({
   );
 });
 
-const IndividualRow = memo(function IndividualRow({
+const IndividualRow = React.memo(function IndividualRow({
   person,
   lastNoteTs,
   group,

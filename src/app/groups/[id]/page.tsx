@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useState, useEffect, useRef } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/lib/context';
@@ -25,14 +25,14 @@ const avatarPalette = [
 ];
 
 export default function GroupDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+  const { id } = React.use(params);
   const router = useRouter();
   const { data, currentPersona, updateGroup, updateGroupMembers } = useApp();
 
-  const [scrolled, setScrolled] = useState(false);
-  const [showEdit, setShowEdit] = useState(false);
+  const [scrolled, setScrolled] = React.useState(false);
+  const [showEdit, setShowEdit] = React.useState(false);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
@@ -549,18 +549,18 @@ function EditGroupDrawer({
 }) {
   const { data } = useApp();
 
-  const [name, setName] = useState(group.name);
-  const [description, setDesc] = useState(group.description ?? '');
-  const [leaderIds, setLeaderIds] = useState<string[]>(group.leaderIds);
-  const [shepherdIds, setShepherdIds] = useState<string[]>(group.shepherdIds);
-  const [memberIds, setMemberIds] = useState<string[]>(group.memberIds);
+  const [name, setName] = React.useState(group.name);
+  const [description, setDesc] = React.useState(group.description ?? '');
+  const [leaderIds, setLeaderIds] = React.useState<string[]>(group.leaderIds);
+  const [shepherdIds, setShepherdIds] = React.useState<string[]>(group.shepherdIds);
+  const [memberIds, setMemberIds] = React.useState<string[]>(group.memberIds);
 
-  const [showLeaderPicker, setShowLeaderPicker] = useState(false);
-  const [showShepherdPicker, setShowShepherdPicker] = useState(false);
-  const [showMemberPicker, setShowMemberPicker] = useState(false);
+  const [showLeaderPicker, setShowLeaderPicker] = React.useState(false);
+  const [showShepherdPicker, setShowShepherdPicker] = React.useState(false);
+  const [showMemberPicker, setShowMemberPicker] = React.useState(false);
 
-  const nameRef = useRef<HTMLInputElement>(null);
-  const descRef = useRef<HTMLTextAreaElement>(null);
+  const nameRef = React.useRef<HTMLInputElement>(null);
+  const descRef = React.useRef<HTMLTextAreaElement>(null);
 
   const selectedLeaders = data.people.filter((p) => leaderIds.includes(p.id));
   const selectedShepherds = data.people.filter((p) => shepherdIds.includes(p.id));
@@ -839,7 +839,7 @@ function PeoplePickerSheet({
   onToggle: (id: string) => void;
   onDone: () => void;
 }) {
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = React.useState('');
   const filtered = people.filter(
     (p) =>
       search === '' ||

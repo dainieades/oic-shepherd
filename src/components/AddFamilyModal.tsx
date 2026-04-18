@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import React from 'react';
 import { MagnifyingGlass, CheckCircle, Check } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 
@@ -39,13 +39,13 @@ function suggestFamilyName(
 
 export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
   const { data, addFamily } = useApp();
-  const [step, setStep] = useState<'members' | 'name'>('members');
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [search, setSearch] = useState('');
-  const [familyName, setFamilyName] = useState('');
-  const [submitted, setSubmitted] = useState(false);
-  const searchRef = useRef<HTMLInputElement>(null);
-  const nameRef = useRef<HTMLInputElement>(null);
+  const [step, setStep] = React.useState<'members' | 'name'>('members');
+  const [selectedIds, setSelectedIds] = React.useState<string[]>([]);
+  const [search, setSearch] = React.useState('');
+  const [familyName, setFamilyName] = React.useState('');
+  const [submitted, setSubmitted] = React.useState(false);
+  const searchRef = React.useRef<HTMLInputElement>(null);
+  const nameRef = React.useRef<HTMLInputElement>(null);
 
   // People who don't have a family yet
   const pool = data.people.filter((p) => !p.familyId && !p.isChild);
@@ -68,7 +68,7 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
     setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (step === 'members') {
       setTimeout(() => searchRef.current?.focus(), 80);
     } else if (step === 'name') {
