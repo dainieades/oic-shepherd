@@ -46,8 +46,8 @@ export default function InviteSheet({ onClose, initialEmail = '', initialRole = 
 
   const isAdmin = currentPersona.role === 'admin';
 
-  // Non-admins can only invite shepherds
-  const availableRoles = isAdmin ? ROLES : ROLES.filter((r) => r.value === 'shepherd');
+  // Non-admins can invite shepherds or welcome team; only admins can invite admins
+  const availableRoles = isAdmin ? ROLES : ROLES.filter((r) => r.value === 'shepherd' || r.value === 'welcome-team');
 
   async function handleInvite() {
     const trimmed = email.trim().toLowerCase();

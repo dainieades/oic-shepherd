@@ -687,22 +687,6 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
             </InfoSection>
           )}
 
-          {/* NEEDS */}
-          {(person.spiritualNeeds || person.physicalNeeds) && (
-            <InfoSection title="Needs">
-              {person.spiritualNeeds && (
-                <InfoRow icon={<Church size={15} />} label="Spiritual" value={
-                  <span style={{ textAlign: 'right', lineHeight: 1.5 }}>{person.spiritualNeeds}</span>
-                } />
-              )}
-              {person.physicalNeeds && (
-                <InfoRow icon={<FirstAid size={15} />} label="Physical" value={
-                  <span style={{ textAlign: 'right', lineHeight: 1.5 }}>{person.physicalNeeds}</span>
-                } />
-              )}
-            </InfoSection>
-          )}
-
           {/* META */}
           <InfoSection title="Meta">
             <InfoRow label="Last logged" value={person.lastContactDate ? new Date(person.lastContactDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Never'} muted />
