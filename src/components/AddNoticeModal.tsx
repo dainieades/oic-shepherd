@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import React from 'react';
 import {
   FirstAid,
   HandsPraying,
@@ -90,26 +90,26 @@ export default function AddNoticeModal({
   const { showToast } = useToast();
   const isEditing = !!notice;
 
-  const [category, setCategory] = useState<NoticeCategory>(notice?.category ?? 'physical-need');
-  const [urgency, setUrgency] = useState<NoticeUrgency>(notice?.urgency ?? 'moderate');
-  const [privacy, setPrivacy] = useState<NoticePrivacy>(notice?.privacy ?? 'pastor-and-shepherds');
-  const [content, setContent] = useState(notice?.content ?? '');
-  const [familyIds, setFamilyIds] = useState<string[]>(
+  const [category, setCategory] = React.useState<NoticeCategory>(notice?.category ?? 'physical-need');
+  const [urgency, setUrgency] = React.useState<NoticeUrgency>(notice?.urgency ?? 'moderate');
+  const [privacy, setPrivacy] = React.useState<NoticePrivacy>(notice?.privacy ?? 'pastor-and-shepherds');
+  const [content, setContent] = React.useState(notice?.content ?? '');
+  const [familyIds, setFamilyIds] = React.useState<string[]>(
     notice?.familyId ? [notice.familyId] : prefillFamilyId ? [prefillFamilyId] : []
   );
-  const [personIds, setPersonIds] = useState<string[]>(
+  const [personIds, setPersonIds] = React.useState<string[]>(
     notice?.personId ? [notice.personId] : prefillPersonId ? [prefillPersonId] : []
   );
 
-  const [showWhoPicker, setShowWhoPicker] = useState(false);
-  const [showCategoryPicker, setShowCategoryPicker] = useState(false);
-  const [showUrgencyPicker, setShowUrgencyPicker] = useState(false);
-  const [showPrivacyPicker, setShowPrivacyPicker] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showWhoPicker, setShowWhoPicker] = React.useState(false);
+  const [showCategoryPicker, setShowCategoryPicker] = React.useState(false);
+  const [showUrgencyPicker, setShowUrgencyPicker] = React.useState(false);
+  const [showPrivacyPicker, setShowPrivacyPicker] = React.useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
 
-  const categoryBtnRef = useRef<HTMLButtonElement>(null);
-  const urgencyBtnRef = useRef<HTMLButtonElement>(null);
-  const privacyBtnRef = useRef<HTMLButtonElement>(null);
+  const categoryBtnRef = React.useRef<HTMLButtonElement>(null);
+  const urgencyBtnRef = React.useRef<HTMLButtonElement>(null);
+  const privacyBtnRef = React.useRef<HTMLButtonElement>(null);
 
   const whoNames = [
     ...familyIds.map((id) => data.families.find((f) => f.id === id)?.label ?? ''),

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import React from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Plus, Trash, EnvelopeSimple } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
@@ -12,17 +12,17 @@ export default function AccessManagementPage() {
   const { currentPersona } = useApp();
   const router = useRouter();
 
-  const [emails, setEmails] = useState<ApprovedEmail[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [newEmail, setNewEmail] = useState('');
-  const [newLabel, setNewLabel] = useState('');
-  const [adding, setAdding] = useState(false);
-  const [error, setError] = useState('');
-  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [emails, setEmails] = React.useState<ApprovedEmail[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [newEmail, setNewEmail] = React.useState('');
+  const [newLabel, setNewLabel] = React.useState('');
+  const [adding, setAdding] = React.useState(false);
+  const [error, setError] = React.useState('');
+  const [confirmDelete, setConfirmDelete] = React.useState<string | null>(null);
 
   const isAdmin = currentPersona.role === 'admin';
 
-  const load = useCallback(async () => {
+  const load = React.useCallback(async () => {
     const supabase = createClient();
     const { data } = await supabase
       .from('approved_emails')
@@ -32,7 +32,7 @@ export default function AccessManagementPage() {
     setLoading(false);
   }, []);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!isAdmin) return;
     load();
   }, [isAdmin, load]);

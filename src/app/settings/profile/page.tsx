@@ -1,7 +1,7 @@
 'use client';
 
 import { format } from 'date-fns';
-import { useState, useRef } from 'react';
+import React from 'react';
 import { useRouter } from 'next/navigation';
 import {
   User,
@@ -114,57 +114,57 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
   const person = data.people.find((p) => p.id === personId)!;
 
   const _nameParts = person.englishName.trim().split(/\s+/);
-  const [firstName, setFirstName] = useState(_nameParts[0] ?? '');
-  const [lastName, setLastName] = useState(_nameParts.slice(1).join(' '));
-  const [chineseName, setChineseName] = useState(person.chineseName ?? '');
-  const [photo, setPhoto] = useState(person.photo ?? '');
+  const [firstName, setFirstName] = React.useState(_nameParts[0] ?? '');
+  const [lastName, setLastName] = React.useState(_nameParts.slice(1).join(' '));
+  const [chineseName, setChineseName] = React.useState(person.chineseName ?? '');
+  const [photo, setPhoto] = React.useState(person.photo ?? '');
 
-  const [language, setLanguage] = useState<string[]>(person.language ?? []);
-  const [gender, setGender] = useState<Gender | ''>(person.gender ?? '');
-  const [birthday, setBirthday] = useState(person.birthday ?? '');
-  const [maritalStatus, setMaritalStatus] = useState<MaritalStatus | ''>(
+  const [language, setLanguage] = React.useState<string[]>(person.language ?? []);
+  const [gender, setGender] = React.useState<Gender | ''>(person.gender ?? '');
+  const [birthday, setBirthday] = React.useState(person.birthday ?? '');
+  const [maritalStatus, setMaritalStatus] = React.useState<MaritalStatus | ''>(
     person.maritalStatus ?? ''
   );
-  const [anniversary, setAnniversary] = useState(person.anniversary ?? '');
+  const [anniversary, setAnniversary] = React.useState(person.anniversary ?? '');
 
-  const [groupIds, setGroupIds] = useState<string[]>(person.groupIds ?? []);
-  const [shepherdIds, setShepherdIds] = useState<string[]>(person.assignedShepherdIds ?? []);
-  const [status, setStatus] = useState<MembershipStatus>(person.membershipStatus);
-  const [attendance, setAttendance] = useState<ChurchAttendance>(person.churchAttendance);
-  const [membershipDate, setMembershipDate] = useState(person.membershipDate ?? '');
-  const [baptismDate, setBaptismDate] = useState(person.baptismDate ?? '');
-  const [isShepherd, setIsShepherd] = useState(person.isShepherd ?? false);
-  const [isBeingDiscipled, setIsBeingDiscipled] = useState(person.isBeingDiscipled ?? false);
-  const [churchPositions, setChurchPositions] = useState<string[]>(person.churchPositions ?? []);
+  const [groupIds, setGroupIds] = React.useState<string[]>(person.groupIds ?? []);
+  const [shepherdIds, setShepherdIds] = React.useState<string[]>(person.assignedShepherdIds ?? []);
+  const [status, setStatus] = React.useState<MembershipStatus>(person.membershipStatus);
+  const [attendance, setAttendance] = React.useState<ChurchAttendance>(person.churchAttendance);
+  const [membershipDate, setMembershipDate] = React.useState(person.membershipDate ?? '');
+  const [baptismDate, setBaptismDate] = React.useState(person.baptismDate ?? '');
+  const [isShepherd, setIsShepherd] = React.useState(person.isShepherd ?? false);
+  const [isBeingDiscipled, setIsBeingDiscipled] = React.useState(person.isBeingDiscipled ?? false);
+  const [churchPositions, setChurchPositions] = React.useState<string[]>(person.churchPositions ?? []);
 
-  const [phone, setPhone] = useState(person.phone ? formatPhone(person.phone) : '');
-  const [homePhone, setHomePhone] = useState(person.homePhone ? formatPhone(person.homePhone) : '');
-  const [email, setEmail] = useState(person.email ?? '');
-  const [homeAddress, setHomeAddress] = useState(person.homeAddress ?? '');
-  const [spiritualNeeds] = useState(person.spiritualNeeds ?? '');
-  const [physicalNeeds] = useState(person.physicalNeeds ?? '');
+  const [phone, setPhone] = React.useState(person.phone ? formatPhone(person.phone) : '');
+  const [homePhone, setHomePhone] = React.useState(person.homePhone ? formatPhone(person.homePhone) : '');
+  const [email, setEmail] = React.useState(person.email ?? '');
+  const [homeAddress, setHomeAddress] = React.useState(person.homeAddress ?? '');
+  const [spiritualNeeds] = React.useState(person.spiritualNeeds ?? '');
+  const [physicalNeeds] = React.useState(person.physicalNeeds ?? '');
 
-  const firstNameRef = useRef<HTMLInputElement>(null);
-  const lastNameRef = useRef<HTMLInputElement>(null);
-  const chineseRef = useRef<HTMLInputElement>(null);
-  const phoneRef = useRef<HTMLInputElement>(null);
-  const homePhoneRef = useRef<HTMLInputElement>(null);
-  const emailRef = useRef<HTMLInputElement>(null);
-  const addressRef = useRef<HTMLTextAreaElement>(null);
-  const birthdayRef = useRef<HTMLInputElement>(null);
-  const anniversaryRef = useRef<HTMLInputElement>(null);
-  const membershipDateRef = useRef<HTMLInputElement>(null);
-  const baptismDateRef = useRef<HTMLInputElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const firstNameRef = React.useRef<HTMLInputElement>(null);
+  const lastNameRef = React.useRef<HTMLInputElement>(null);
+  const chineseRef = React.useRef<HTMLInputElement>(null);
+  const phoneRef = React.useRef<HTMLInputElement>(null);
+  const homePhoneRef = React.useRef<HTMLInputElement>(null);
+  const emailRef = React.useRef<HTMLInputElement>(null);
+  const addressRef = React.useRef<HTMLTextAreaElement>(null);
+  const birthdayRef = React.useRef<HTMLInputElement>(null);
+  const anniversaryRef = React.useRef<HTMLInputElement>(null);
+  const membershipDateRef = React.useRef<HTMLInputElement>(null);
+  const baptismDateRef = React.useRef<HTMLInputElement>(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
-  const [openPicker, setOpenPicker] = useState<
+  const [openPicker, setOpenPicker] = React.useState<
     'status' | 'attendance' | 'gender' | 'marital' | 'appRole' | null
   >(null);
-  const [showLanguagePicker, setShowLanguagePicker] = useState(false);
-  const [appRole, setAppRole] = useState<AppRole>(person.appRole ?? 'no-access');
-  const [showPositionPicker, setShowPositionPicker] = useState(false);
-  const [showGroupPicker, setShowGroupPicker] = useState(false);
-  const [showShepherdPicker, setShowShepherdPicker] = useState(false);
+  const [showLanguagePicker, setShowLanguagePicker] = React.useState(false);
+  const [appRole, setAppRole] = React.useState<AppRole>(person.appRole ?? 'no-access');
+  const [showPositionPicker, setShowPositionPicker] = React.useState(false);
+  const [showGroupPicker, setShowGroupPicker] = React.useState(false);
+  const [showShepherdPicker, setShowShepherdPicker] = React.useState(false);
 
   const handlePhotoFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

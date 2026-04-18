@@ -1,7 +1,7 @@
 'use client';
 
 import { format, getDaysInMonth, getDay, parseISO, isValid } from 'date-fns';
-import { useState } from 'react';
+import React from 'react';
 import { CaretLeft, CaretRight } from '@phosphor-icons/react';
 
 const MONTH_NAMES = [
@@ -51,16 +51,16 @@ export default function DatePickerSheet({
   onConfirm,
   onClose,
 }: DatePickerSheetProps) {
-  const [startDate, setStartDate] = useState(date);
-  const [startTime, setStartTime] = useState(time || '09:00');
-  const [endDate, setEndDate] = useState(endDateProp || date);
-  const [endTime, setEndTime] = useState(endTimeProp || time || '09:00');
-  const [showTime, setShowTime] = useState(includeTime);
-  const [showEndDate, setShowEndDate] = useState(includeEndDateProp ?? false);
-  const [active, setActive] = useState<ActiveField>('start');
+  const [startDate, setStartDate] = React.useState(date);
+  const [startTime, setStartTime] = React.useState(time || '09:00');
+  const [endDate, setEndDate] = React.useState(endDateProp || date);
+  const [endTime, setEndTime] = React.useState(endTimeProp || time || '09:00');
+  const [showTime, setShowTime] = React.useState(includeTime);
+  const [showEndDate, setShowEndDate] = React.useState(includeEndDateProp ?? false);
+  const [active, setActive] = React.useState<ActiveField>('start');
 
-  const [viewYear, setViewYear] = useState(() => parseInt(date.slice(0, 4)));
-  const [viewMonth, setViewMonth] = useState(() => parseInt(date.slice(5, 7)) - 1);
+  const [viewYear, setViewYear] = React.useState(() => parseInt(date.slice(0, 4)));
+  const [viewMonth, setViewMonth] = React.useState(() => parseInt(date.slice(5, 7)) - 1);
 
   function navigateTo(ds: string) {
     if (!ds || ds.length < 10) return;

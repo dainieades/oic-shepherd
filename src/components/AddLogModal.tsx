@@ -1,7 +1,7 @@
 'use client';
 
 import { format } from 'date-fns';
-import { useState, useRef } from 'react';
+import React from 'react';
 import {
   CheckCircle,
   HandsPraying,
@@ -59,30 +59,30 @@ export default function AddLogModal({
   const { showToast } = useToast();
   const isEditing = !!note;
 
-  const [type, setType] = useState<NoteType>(note?.type ?? prefillType ?? 'check-in');
-  const [familyIds, setFamilyIds] = useState<string[]>(
+  const [type, setType] = React.useState<NoteType>(note?.type ?? prefillType ?? 'check-in');
+  const [familyIds, setFamilyIds] = React.useState<string[]>(
     note?.familyId ? [note.familyId] : prefillFamilyId ? [prefillFamilyId] : []
   );
-  const [personIds, setPersonIds] = useState<string[]>(
+  const [personIds, setPersonIds] = React.useState<string[]>(
     note?.personId ? [note.personId] : prefillPersonId ? [prefillPersonId] : []
   );
-  const [content, setContent] = useState(note?.content ?? prefillContent ?? '');
-  const [dateStr, setDateStr] = useState(() => {
+  const [content, setContent] = React.useState(note?.content ?? prefillContent ?? '');
+  const [dateStr, setDateStr] = React.useState(() => {
     if (note?.createdAt) return note.createdAt.slice(0, 10);
     return format(new Date(), 'yyyy-MM-dd');
   });
-  const [timeStr, setTimeStr] = useState(() => {
+  const [timeStr, setTimeStr] = React.useState(() => {
     if (note?.createdAt) return note.createdAt.slice(11, 16);
     return format(new Date(), 'HH:mm');
   });
-  const [includeTime, setIncludeTime] = useState(true);
+  const [includeTime, setIncludeTime] = React.useState(true);
 
-  const [showWhoPicker, setShowWhoPicker] = useState(false);
-  const [showTypePicker, setShowTypePicker] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showWhoPicker, setShowWhoPicker] = React.useState(false);
+  const [showTypePicker, setShowTypePicker] = React.useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
+  const [showDatePicker, setShowDatePicker] = React.useState(false);
 
-  const typeBtnRef = useRef<HTMLButtonElement>(null);
+  const typeBtnRef = React.useRef<HTMLButtonElement>(null);
 
   const whoNames = [
     ...familyIds.map((id) => data.families.find((f) => f.id === id)?.label ?? ''),

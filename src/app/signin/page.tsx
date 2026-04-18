@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 
@@ -13,11 +13,11 @@ type Step =
 type Status = { type: 'idle' } | { type: 'loading' } | { type: 'error'; message: string };
 
 export default function SignInPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [step, setStep] = useState<Step>({ type: 'email' });
-  const [status, setStatus] = useState<Status>({ type: 'idle' });
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [confirmPassword, setConfirmPassword] = React.useState('');
+  const [step, setStep] = React.useState<Step>({ type: 'email' });
+  const [status, setStatus] = React.useState<Status>({ type: 'idle' });
   const router = useRouter();
   const supabase = createClient();
 

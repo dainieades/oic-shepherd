@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React from 'react';
 import {
   PaperPlaneTilt,
   CheckCircle,
@@ -52,10 +52,10 @@ export default function InviteSheet({
   personId,
 }: Props) {
   const { currentPersona, updatePerson } = useApp();
-  const [email, setEmail] = useState(initialEmail);
-  const [role, setRole] = useState<InviteRole>(initialRole);
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const [errorMsg, setErrorMsg] = useState('');
+  const [email, setEmail] = React.useState(initialEmail);
+  const [role, setRole] = React.useState<InviteRole>(initialRole);
+  const [status, setStatus] = React.useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [errorMsg, setErrorMsg] = React.useState('');
 
   const isAdmin = currentPersona.role === 'admin';
 

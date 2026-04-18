@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React from 'react';
 import { type AppData } from '@/lib/types';
 import { CaretLeft, MagnifyingGlass, Check } from '@phosphor-icons/react';
 
@@ -26,9 +26,9 @@ export default function PersonFamilyPicker({
   onConfirm,
   onBack,
 }: PersonFamilyPickerProps) {
-  const [search, setSearch] = useState('');
-  const [selectedFamilyIds, setSelectedFamilyIds] = useState<string[]>(initialFamilyIds);
-  const [selectedPersonIds, setSelectedPersonIds] = useState<string[]>(initialPersonIds);
+  const [search, setSearch] = React.useState('');
+  const [selectedFamilyIds, setSelectedFamilyIds] = React.useState<string[]>(initialFamilyIds);
+  const [selectedPersonIds, setSelectedPersonIds] = React.useState<string[]>(initialPersonIds);
 
   const totalSelected = selectedFamilyIds.length + selectedPersonIds.length;
   const q = search.toLowerCase();

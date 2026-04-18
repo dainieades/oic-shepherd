@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -30,29 +30,29 @@ type PasswordStatus =
 export default function SettingsPage() {
   const { data, currentPersona, switchPersona } = useApp();
   const router = useRouter();
-  const [scrolled, setScrolled] = useState(false);
-  const [showSignOutConfirm, setShowSignOutConfirm] = useState(false);
-  const [showMapPicker, setShowMapPicker] = useState(false);
-  const [mapProvider, setMapProvider] = useState<MapProvider>('apple');
-  const [supabaseUser, setSupabaseUser] = useState<User | null>(null);
-  const [showChangePassword, setShowChangePassword] = useState(false);
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [passwordStatus, setPasswordStatus] = useState<PasswordStatus>({ type: 'idle' });
-  const [linkingGoogle, setLinkingGoogle] = useState(false);
+  const [scrolled, setScrolled] = React.useState(false);
+  const [showSignOutConfirm, setShowSignOutConfirm] = React.useState(false);
+  const [showMapPicker, setShowMapPicker] = React.useState(false);
+  const [mapProvider, setMapProvider] = React.useState<MapProvider>('apple');
+  const [supabaseUser, setSupabaseUser] = React.useState<User | null>(null);
+  const [showChangePassword, setShowChangePassword] = React.useState(false);
+  const [newPassword, setNewPassword] = React.useState('');
+  const [confirmPassword, setConfirmPassword] = React.useState('');
+  const [passwordStatus, setPasswordStatus] = React.useState<PasswordStatus>({ type: 'idle' });
+  const [linkingGoogle, setLinkingGoogle] = React.useState(false);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const supabase = createClient();
     supabase.auth.getUser().then(({ data }) => setSupabaseUser(data.user));
   }, []);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const stored = localStorage.getItem(MAP_PROVIDERS_STORAGE_KEY) as MapProvider | null;
     if (stored && stored in MAP_PROVIDER_LABELS) setMapProvider(stored);
   }, []);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/lib/context';
 import { type MembershipStatus, type ChurchAttendance } from '@/lib/types';
@@ -9,12 +9,12 @@ import { Check } from '@phosphor-icons/react';
 export default function AddPage() {
   const { addPerson } = useApp();
   const router = useRouter();
-  const [englishName, setEnglishName] = useState('');
-  const [chineseName, setChineseName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [isFirstTime, setIsFirstTime] = useState(false);
-  const [notes, setNotes] = useState('');
-  const [submitted, setSubmitted] = useState(false);
+  const [englishName, setEnglishName] = React.useState('');
+  const [chineseName, setChineseName] = React.useState('');
+  const [phone, setPhone] = React.useState('');
+  const [isFirstTime, setIsFirstTime] = React.useState(false);
+  const [notes, setNotes] = React.useState('');
+  const [submitted, setSubmitted] = React.useState(false);
 
   const handleSubmit = () => {
     if (!englishName.trim()) return;

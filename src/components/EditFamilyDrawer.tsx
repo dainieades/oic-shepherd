@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import React from 'react';
 import { useApp } from '@/lib/context';
 import { useToast } from './Toast';
 import { type Family, type Person, type Group } from '@/lib/types';
@@ -42,22 +42,22 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
   );
 
   // State
-  const [label, setLabel] = useState(family.label);
-  const [memberIds, setMemberIds] = useState<string[]>(family.memberIds);
-  const [primaryContactId, setPrimaryContactId] = useState<string>(
+  const [label, setLabel] = React.useState(family.label);
+  const [memberIds, setMemberIds] = React.useState<string[]>(family.memberIds);
+  const [primaryContactId, setPrimaryContactId] = React.useState<string>(
     family.primaryContactId ?? family.memberIds[0] ?? ''
   );
-  const [groupIds, setGroupIds] = useState<string[]>(initialGroupIds);
-  const [shepherdIds, setShepherdIds] = useState<string[]>(initialShepherdIds);
+  const [groupIds, setGroupIds] = React.useState<string[]>(initialGroupIds);
+  const [shepherdIds, setShepherdIds] = React.useState<string[]>(initialShepherdIds);
 
   // Picker open state
-  const [showMemberPicker, setShowMemberPicker] = useState(false);
-  const [showPrimaryContactPicker, setShowPrimaryContactPicker] = useState(false);
-  const [showGroupPicker, setShowGroupPicker] = useState(false);
-  const groupBtnRef = useRef<HTMLButtonElement>(null);
-  const [showShepherdPicker, setShowShepherdPicker] = useState(false);
+  const [showMemberPicker, setShowMemberPicker] = React.useState(false);
+  const [showPrimaryContactPicker, setShowPrimaryContactPicker] = React.useState(false);
+  const [showGroupPicker, setShowGroupPicker] = React.useState(false);
+  const groupBtnRef = React.useRef<HTMLButtonElement>(null);
+  const [showShepherdPicker, setShowShepherdPicker] = React.useState(false);
 
-  const labelRef = useRef<HTMLInputElement>(null);
+  const labelRef = React.useRef<HTMLInputElement>(null);
 
   // Derived
   const currentMembers = data.people.filter((p) => memberIds.includes(p.id));
@@ -549,11 +549,11 @@ function MemberPickerSheet({
   onConfirm: (ids: string[]) => void;
   onBack: () => void;
 }) {
-  const [search, setSearch] = useState('');
-  const [selectedIds, setSelectedIds] = useState<string[]>(currentMemberIds);
-  const searchRef = useRef<HTMLInputElement>(null);
+  const [search, setSearch] = React.useState('');
+  const [selectedIds, setSelectedIds] = React.useState<string[]>(currentMemberIds);
+  const searchRef = React.useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
+  React.useEffect(() => {
     searchRef.current?.focus();
   }, []);
 
@@ -826,11 +826,11 @@ function GroupPickerSheet({
   onConfirm: (ids: string[]) => void;
   onBack: () => void;
 }) {
-  const [search, setSearch] = useState('');
-  const [selectedIds, setSelectedIds] = useState<string[]>(currentIds);
-  const searchRef = useRef<HTMLInputElement>(null);
+  const [search, setSearch] = React.useState('');
+  const [selectedIds, setSelectedIds] = React.useState<string[]>(currentIds);
+  const searchRef = React.useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
+  React.useEffect(() => {
     searchRef.current?.focus();
   }, []);
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
+import React from 'react';
 import { CheckCircle } from '@phosphor-icons/react';
 
 interface Toast {
@@ -13,18 +13,18 @@ interface ToastContextType {
   showToast: (message: string) => void;
 }
 
-const ToastContext = createContext<ToastContextType | null>(null);
+const ToastContext = React.createContext<ToastContextType | null>(null);
 
 export function useToast() {
-  const ctx = useContext(ToastContext);
+  const ctx = React.useContext(ToastContext);
   if (!ctx) throw new Error('useToast must be used within ToastProvider');
   return ctx;
 }
 
-export function ToastProvider({ children }: { children: ReactNode }) {
-  const [toasts, setToasts] = useState<Toast[]>([]);
+export function ToastProvider({ children }: { children: React.ReactNode }) {
+  const [toasts, setToasts] = React.useState<Toast[]>([]);
 
-  const showToast = useCallback((message: string) => {
+  const showToast = React.useCallback((message: string) => {
     const id = Math.random().toString(36).slice(2);
     setToasts((prev) => [...prev, { id, message, exiting: false }]);
     setTimeout(() => {

@@ -1,18 +1,18 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { useApp } from '@/lib/context';
 import { Crown, HandHeart, Plus } from '@phosphor-icons/react';
 
 export default function GroupsPage() {
   const { data, currentPersona, addGroup } = useApp();
-  const [scrolled, setScrolled] = useState(false);
-  const [showAdd, setShowAdd] = useState(false);
-  const [newName, setNewName] = useState('');
-  const [newDesc, setNewDesc] = useState('');
+  const [scrolled, setScrolled] = React.useState(false);
+  const [showAdd, setShowAdd] = React.useState(false);
+  const [newName, setNewName] = React.useState('');
+  const [newDesc, setNewDesc] = React.useState('');
 
-  useEffect(() => {
+  React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
