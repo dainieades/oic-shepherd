@@ -182,10 +182,10 @@ export default function AddLogModal({ onClose, prefillFamilyId, prefillPersonId,
                     onClick={() => setShowTypePicker(true)}
                   />
 
-                  {/* Who */}
+                  {/* For */}
                   <FieldRow
                     icon={<User size={16} />}
-                    label="Who"
+                    label="For"
                     value={whoLabel ?? 'Select…'}
                     valueColor={!whoLabel ? 'var(--text-muted)' : undefined}
                     onClick={() => setShowWhoPicker(true)}
@@ -220,7 +220,7 @@ export default function AddLogModal({ onClose, prefillFamilyId, prefillPersonId,
                 <textarea
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  placeholder="What happened or what was shared…"
+                  placeholder="Logs capture past interactions — a conversation, a check-in, a prayer request, or a moment you shared together."
                   style={{
                     flex: 1, width: '100%', marginTop: 0,
                     padding: 12, minHeight: 220,

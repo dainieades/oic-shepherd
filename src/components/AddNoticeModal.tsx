@@ -253,7 +253,7 @@ export default function AddNoticeModal({ onClose, prefillPersonId, prefillFamily
                 <textarea
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  placeholder="What should all shepherds know about this person…"
+                  placeholder="Notices are things worth flagging for your shepherds or pastor — a health condition, a difficult season, or anything that calls for collective awareness."
                   autoFocus={!isEditing}
                   style={{
                     flex: 1, width: '100%',

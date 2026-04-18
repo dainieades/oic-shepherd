@@ -252,7 +252,7 @@ export default function LogsPage() {
         <div style={{ textAlign: 'center', padding: '64px 32px 32px' }}>
           <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>No logs yet</p>
           <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.6, maxWidth: 260, margin: '0 auto' }}>
-            Logs are a record of what's already happened — conversations, check-ins, prayer requests you've heard, and moments you've shared.
+            Logs capture past interactions — a conversation, a check-in, a prayer request, or a moment you shared together.
           </p>
           <p style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.5, maxWidth: 260, margin: '10px auto 0', fontWeight: 600 }}>
             Only assigned shepherds and pastors can see these.

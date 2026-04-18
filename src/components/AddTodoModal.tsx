@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import { CaretRight, Trash, User, CalendarBlank, ArrowsClockwise, Bell, UserPlus, PlusCircle, CalendarPlus } from '@phosphor-icons/react';
+import { useState, useRef, useEffect } from 'react';
+import { CaretRight, Trash, User, CalendarBlank, ArrowsClockwise, UserPlus, PlusCircle, CalendarPlus } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { useToast } from './Toast';
-import { TodoRepeat, TodoAlert, Todo } from '@/lib/types';
+import { TodoRepeat, Todo } from '@/lib/types';
 import PersonFamilyPicker from './PersonFamilyPicker';
 import PickerMenu from './PickerMenu';
 import DatePickerSheet from './DatePickerSheet';
@@ -27,16 +27,6 @@ const REPEAT_OPTIONS: { value: TodoRepeat; label: string }[] = [
   { value: 'yearly',    label: 'Every year' },
 ];
 
-const ALERT_OPTIONS: { value: TodoAlert; label: string }[] = [
-  { value: 'none',     label: 'No alert' },
-  { value: 'on-time',  label: 'At time of event' },
-  { value: '5min',     label: '5 minutes before' },
-  { value: '15min',    label: '15 minutes before' },
-  { value: '30min',    label: '30 minutes before' },
-  { value: '1hour',    label: '1 hour before' },
-  { value: '1day',     label: '1 day before' },
-  { value: '2days',    label: '2 days before' },
-];
 
 export default function AddTodoModal({ onClose, prefillFamilyId, prefillPersonId, todo }: AddTodoModalProps) {
   const { data, addTodo, updateTodo, deleteTodo } = useApp();
@@ -65,14 +55,12 @@ export default function AddTodoModal({ onClose, prefillFamilyId, prefillPersonId
   });
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [repeat, setRepeat] = useState<TodoRepeat>(todo?.repeat ?? 'none');
-  const [alert, setAlert] = useState<TodoAlert>(todo?.alert ?? 'none');
 
   const [showWhoPicker, setShowWhoPicker] = useState(false);
-  const [showAlertPicker, setShowAlertPicker] = useState(false);
   const [showRepeatPicker, setShowRepeatPicker] = useState(false);
 
-  const alertBtnRef = useRef<HTMLButtonElement>(null);
   const repeatBtnRef = useRef<HTMLButtonElement>(null);
+  const calendarBtnRef = useRef<HTMLButtonElement>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showCalendarPicker, setShowCalendarPicker] = useState(false);
 
@@ -103,7 +91,6 @@ export default function AddTodoModal({ onClose, prefillFamilyId, prefillPersonId
       title: title.trim(),
       dueDate: dueDateValue,
       repeat: repeat !== 'none' ? repeat : undefined,
-      alert: alert !== 'none' ? alert : undefined,
     };
     if (isEditing && todo) {
       updateTodo(todo.id, { ...base, familyId: familyIds[0], personId: personIds[0] });
@@ -132,7 +119,6 @@ export default function AddTodoModal({ onClose, prefillFamilyId, prefillPersonId
   }
 
   const repeatLabel = REPEAT_OPTIONS.find((r) => r.value === repeat)?.label ?? 'Never';
-  const alertLabel  = ALERT_OPTIONS.find((a) => a.value === alert)?.label ?? 'No alert';
 
 return (
     <>
@@ -218,21 +204,12 @@ return (
 
                   {/* Add to Calendar */}
                   <FieldRow
+                    btnRef={calendarBtnRef}
                     icon={<CalendarPlus size={16} />}
                     label="Calendar"
                     value="Add to calendar"
                     valueColor="var(--text-muted)"
                     onClick={() => setShowCalendarPicker(true)}
-                  />
-
-                  {/* Alert */}
-                  <FieldRow
-                    btnRef={alertBtnRef}
-                    icon={<Bell size={16} />}
-                    label="Alert"
-                    value={alertLabel}
-                    valueColor={alert === 'none' ? 'var(--text-muted)' : undefined}
-                    onClick={() => setShowAlertPicker(true)}
                   />
 
                   {/* Repeat */}
@@ -265,7 +242,7 @@ return (
                 <textarea
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="What needs to be done…"
+                  placeholder="To-dos are upcoming things to act on — a call to make, a visit to plan, or anything you want to follow up on."
                   autoFocus
                   style={{
                     flex: 1, width: '100%', marginTop: 16,
@@ -290,16 +267,6 @@ return (
           onClose={() => setShowDatePicker(false)}
         />
       )}
-      {showAlertPicker && (
-        <PickerMenu
-          anchorRef={alertBtnRef}
-          title="Alert"
-          options={ALERT_OPTIONS}
-          value={alert}
-          onSelect={(v) => setAlert(v as TodoAlert)}
-          onClose={() => setShowAlertPicker(false)}
-        />
-      )}
       {showRepeatPicker && (
         <PickerMenu
           anchorRef={repeatBtnRef}
@@ -318,7 +285,8 @@ return (
         />
       )}
       {showCalendarPicker && (
-        <CalendarPicker
+        <CalendarPickerMenu
+          anchorRef={calendarBtnRef}
           title={title.trim() || 'To-do'}
           dueDate={`${dateStr}T${includeTime ? timeStr : '00:00'}:00`}
           allDay={!includeTime}
@@ -329,9 +297,23 @@ return (
   );
 }
 
-function CalendarPicker({ title, dueDate, allDay, onClose }: { title: string; dueDate: string; allDay: boolean; onClose: () => void }) {
+function CalendarPickerMenu({ anchorRef, title, dueDate, allDay, onClose }: { anchorRef: React.RefObject<HTMLButtonElement | null>; title: string; dueDate: string; allDay: boolean; onClose: () => void }) {
+  const menuRef = useRef<HTMLDivElement>(null);
   const start = new Date(dueDate);
-  const end = new Date(start.getTime() + 60 * 60 * 1000); // +1 hour (only used for timed events)
+  const end = new Date(start.getTime() + 60 * 60 * 1000);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (
+        menuRef.current && !menuRef.current.contains(e.target as Node) &&
+        (!anchorRef?.current || !anchorRef.current.contains(e.target as Node))
+      ) {
+        onClose();
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [onClose, anchorRef]);
 
   function handleGoogleCalendar() {
     window.open(buildGoogleCalendarUrl(title, start, end, allDay), '_blank', 'noopener,noreferrer');
@@ -351,62 +333,47 @@ function CalendarPicker({ title, dueDate, allDay, onClose }: { title: string; du
     onClose();
   }
 
-  const btnStyle: React.CSSProperties = {
-    width: '100%', padding: '13px 16px', borderRadius: 10,
-    background: 'var(--surface)', border: '1px solid var(--border-light)',
-    fontSize: 15, color: 'var(--text-primary)', cursor: 'pointer',
-    textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12,
+  const rect = anchorRef?.current?.getBoundingClientRect();
+  const menuHeight = 41 * 2;
+  const left   = rect ? rect.left : (window.innerWidth - Math.min(430, window.innerWidth - 32)) / 2;
+  const width  = rect ? rect.width : Math.min(430, window.innerWidth - 32);
+  const spaceBelow = rect ? window.innerHeight - rect.bottom - 8 : menuHeight + 1;
+  const openAbove  = rect ? spaceBelow < menuHeight && rect.top > spaceBelow : false;
+  const top = rect
+    ? (openAbove ? rect.top - menuHeight - 4 : rect.bottom + 4)
+    : (window.innerHeight - menuHeight) / 2;
+
+  const itemStyle: React.CSSProperties = {
+    width: '100%', display: 'flex', alignItems: 'center', gap: 10,
+    padding: '10px 14px',
+    background: 'none', border: 'none', borderBottom: '1px solid var(--border-light)',
+    fontSize: 14, cursor: 'pointer', textAlign: 'left',
+    color: 'var(--text-primary)',
   };
 
   return (
-    <>
-      <div
-        style={{ position: 'fixed', inset: 0, background: 'rgba(30,26,24,0.45)', zIndex: 70 }}
-        onClick={onClose}
-      />
-      <div
-        style={{
-          position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 71,
-          display: 'flex', justifyContent: 'center',
-        }}
-      >
-      <div
-        className="animate-slide-up"
-        style={{
-          width: '100%', maxWidth: 430,
-          background: 'var(--bg)', borderRadius: '20px 20px 0 0',
-          padding: '20px 20px 40px',
-        }}
-      >
-        <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textAlign: 'center', marginBottom: 16, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
-          Add to Calendar
-        </p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <button onClick={handleGoogleCalendar} style={btnStyle}>
-            <CalendarBlank size={18} color="var(--sage)" />
-            Google Calendar
-          </button>
-          <button onClick={handleIcsDownload} style={btnStyle}>
-            <CalendarBlank size={18} color="var(--text-muted)" />
-            <span>
-              Apple / Other Calendar
-              <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 6 }}>(.ics)</span>
-            </span>
-          </button>
-        </div>
-        <button
-          onClick={onClose}
-          style={{
-            marginTop: 12, width: '100%', padding: '13px 16px', borderRadius: 10,
-            background: 'var(--surface)', border: '1px solid var(--border-light)',
-            fontSize: 15, color: 'var(--text-secondary)', cursor: 'pointer', fontWeight: 500,
-          }}
-        >
-          Cancel
-        </button>
-      </div>
-      </div>
-    </>
+    <div
+      ref={menuRef}
+      style={{
+        position: 'fixed', top, left, width,
+        background: 'var(--surface)',
+        borderRadius: 12,
+        boxShadow: '0 8px 32px rgba(0,0,0,0.14), 0 1px 4px rgba(0,0,0,0.08)',
+        border: '1px solid var(--border-light)',
+        zIndex: 80,
+        overflow: 'hidden',
+      }}
+    >
+      <button onClick={handleGoogleCalendar} style={itemStyle}>
+        <CalendarBlank size={16} color="var(--sage)" />
+        Google Calendar
+      </button>
+      <button onClick={handleIcsDownload} style={{ ...itemStyle, borderBottom: 'none' }}>
+        <CalendarBlank size={16} color="var(--text-muted)" />
+        Apple / Other Calendar
+        <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 2 }}>(.ics)</span>
+      </button>
+    </div>
   );
 }
 

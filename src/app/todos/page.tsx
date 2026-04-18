@@ -3,23 +3,12 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useApp } from '@/lib/context';
 import { categorizeTodos } from '@/lib/utils';
-import { Todo, TodoAlert, TodoRepeat } from '@/lib/types';
+import { Todo, TodoRepeat } from '@/lib/types';
 import AddTodoModal from '@/components/AddTodoModal';
 import AddLogModal from '@/components/AddLogModal';
 import TodoLogPrompt from '@/components/TodoLogPrompt';
 
 type ViewMode = 'list' | 'calendar';
-
-const ALERT_LABELS: Record<TodoAlert, string> = {
-  'none': '',
-  'on-time': 'On time',
-  '5min': '5 min before',
-  '15min': '15 min before',
-  '30min': '30 min before',
-  '1hour': '1 hr before',
-  '1day': '1 day before',
-  '2days': '2 days before',
-};
 
 function fmtDue(iso: string) {
   return new Date(iso).toLocaleString('en-US', {
@@ -332,7 +321,7 @@ export default function TodosPage() {
         <div style={{ textAlign: 'center', padding: '64px 32px 32px' }}>
           <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>Nothing coming up</p>
           <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.6, maxWidth: 260, margin: '0 auto' }}>
-            To-dos are for future follow-ups — a call to make, a visit to plan, a birthday coming up, or anything you want to remember to do.
+            To-dos are upcoming things to act on — a call to make, a visit to plan, or anything you want to follow up on.
           </p>
           <p style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.5, maxWidth: 260, margin: '10px auto 0', fontWeight: 600 }}>
             Only assigned shepherds and pastors can see these.
@@ -675,7 +664,6 @@ function TodoSection({ label, todos, onToggle, onEdit, data, defaultOpen = true,
             const person = t.personId ? data.people.find((p) => p.id === t.personId) : null;
             const family = t.familyId ? data.families.find((f) => f.id === t.familyId) : null;
             const targetChips = [family?.label, person?.englishName].filter(Boolean) as string[];
-            const hasAlert = t.alert && t.alert !== 'none';
             const hasRepeat = t.repeat && t.repeat !== 'none';
             return (
               <div key={t.id} className="row-card-hover" style={{ display: 'flex', alignItems: 'flex-start', gap: 10, paddingTop: 10, paddingBottom: 10, borderBottom: '1px solid var(--border-light)' }}>
@@ -709,11 +697,6 @@ function TodoSection({ label, todos, onToggle, onEdit, data, defaultOpen = true,
                         </svg>
                         <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{fmtDue(t.dueDate)}</span>
                       </div>
-                    )}
-                    {hasAlert && (
-                      <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={1.8} aria-label={ALERT_LABELS[t.alert!]}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
-                      </svg>
                     )}
                     {hasRepeat && (
                       <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={1.8}>

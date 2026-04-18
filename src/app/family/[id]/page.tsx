@@ -5,7 +5,7 @@ import { Baby, Notepad, CheckCircle, Info, UsersFour, User, HandHeart, PencilSim
 import Link from 'next/link';
 import { useApp } from '@/lib/context';
 import { getTimeAgo, getMembershipLabel, getFamilyNotes, getFamilyTodos, getNoteTypeLabel, groupByMonth, categorizeTodos } from '@/lib/utils';
-import { Todo, Note, AppData, TodoAlert, NoteType } from '@/lib/types';
+import { Todo, Note, AppData, NoteType } from '@/lib/types';
 import AddLogModal from '@/components/AddLogModal';
 import AddTodoModal from '@/components/AddTodoModal';
 import TodoLogPrompt from '@/components/TodoLogPrompt';
@@ -23,10 +23,6 @@ function TabIcon({ tab, active }: { tab: Tab; active: boolean }) {
   return <Info size={16} weight={weight} />;
 }
 
-const ALERT_LABELS: Record<TodoAlert, string> = {
-  'none': '', 'on-time': 'On time', '5min': '5 min before', '15min': '15 min before',
-  '30min': '30 min before', '1hour': '1 hr before', '1day': '1 day before', '2days': '2 days before',
-};
 
 function fmtDue(iso: string) {
   return new Date(iso).toLocaleString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
@@ -235,9 +231,12 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
           <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap' }}>
             <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{memberCountText}</span>
             {familyGroups.map((g) => (
-              <button key={g.id} onClick={() => setPreviewGroupId(g.id)} style={{ fontSize: 11, padding: '2px 7px', borderRadius: '999px', background: 'var(--blue-light)', color: 'var(--blue)', fontWeight: 600, border: 'none', cursor: 'pointer' }}>
-                {g.name}
-              </button>
+              <>
+                <span key={`dot-${g.id}`} style={{ fontSize: 13, color: 'var(--text-muted)' }}>·</span>
+                <button key={g.id} onClick={() => setPreviewGroupId(g.id)} style={{ fontSize: 11, padding: '2px 7px', borderRadius: '999px', background: 'var(--blue-light)', color: 'var(--blue)', fontWeight: 600, border: 'none', cursor: 'pointer' }}>
+                  {g.name}
+                </button>
+              </>
             ))}
           </div>
         </div>
@@ -507,7 +506,6 @@ function TodoSection({ label, todos, onToggle, onEdit, data, defaultOpen = true 
             const person = t.personId ? data.people.find((p) => p.id === t.personId) : null;
             const family = t.familyId ? data.families.find((f) => f.id === t.familyId) : null;
             const tag = person?.englishName || family?.label || '';
-            const hasAlert = t.alert && t.alert !== 'none';
             const hasRepeat = t.repeat && t.repeat !== 'none';
             return (
               <div key={t.id} className="row-card-hover" style={{ display: 'flex', alignItems: 'flex-start', gap: 10, paddingTop: 10, paddingBottom: 10, borderBottom: '1px solid var(--border-light)' }}>
@@ -538,11 +536,6 @@ function TodoSection({ label, todos, onToggle, onEdit, data, defaultOpen = true 
                         </svg>
                         <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{fmtDue(t.dueDate)}</span>
                       </div>
-                    )}
-                    {hasAlert && (
-                      <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={1.8} aria-label={ALERT_LABELS[t.alert!]}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
-                      </svg>
                     )}
                     {hasRepeat && (
                       <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="var(--text-muted)" strokeWidth={1.8}>

@@ -106,7 +106,6 @@ export interface Note {
 }
 
 export type TodoType = 'check-in' | 'task' | 'meeting' | 'message' | 'birthday' | 'anniversary';
-export type TodoAlert = 'none' | 'on-time' | '5min' | '15min' | '30min' | '1hour' | '1day' | '2days';
 export type TodoRepeat = 'none' | 'daily' | 'weekly' | 'biweekly' | 'monthly' | 'yearly';
 
 export interface Todo {
@@ -116,7 +115,6 @@ export interface Todo {
   title: string;
   dueDate?: string; // ISO datetime
   repeat?: TodoRepeat;
-  alert?: TodoAlert;
   completed: boolean;
   completedAt?: string; // ISO datetime
   createdBy: string; // persona ID

@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback, Dispatch, SetStateAction } from 'react';
-import { AppData, Persona, Person, Family, Note, Todo, Notice, NoteType, NoteVisibility, TodoAlert, TodoRepeat, AppRole, ChurchAttendance, MembershipStatus } from './types';
+import { AppData, Persona, Person, Family, Note, Todo, Notice, NoteType, NoteVisibility, TodoRepeat, AppRole, ChurchAttendance, MembershipStatus } from './types';
 
 // ── Shared filter types (exported so pages can import them) ──────────────────
 
@@ -35,7 +35,7 @@ interface AppContextType {
   updateNote: (noteId: string, updates: Partial<Pick<Note, 'type' | 'content' | 'familyId' | 'personId' | 'visibility' | 'createdAt'>>) => void;
   deleteNote: (noteId: string) => void;
   addTodo: (todo: Omit<Todo, 'id' | 'createdAt' | 'createdBy' | 'completed'>) => void;
-  updateTodo: (todoId: string, updates: Partial<Pick<Todo, 'title' | 'dueDate' | 'repeat' | 'alert' | 'familyId' | 'personId'>>) => void;
+  updateTodo: (todoId: string, updates: Partial<Pick<Todo, 'title' | 'dueDate' | 'repeat' | 'familyId' | 'personId'>>) => void;
   deleteTodo: (todoId: string) => void;
   toggleTodo: (todoId: string) => void;
   addPerson: (person: Omit<Person, 'id' | 'createdAt' | 'assignedShepherdIds' | 'groupIds' | 'followUpFrequencyDays'>) => Promise<string>;
@@ -203,7 +203,6 @@ function mapTodo(row: Record<string, unknown>): Todo {
     title: row.title as string,
     dueDate: row.due_date as string | undefined,
     repeat: row.repeat as Todo['repeat'],
-    alert: row.alert as Todo['alert'],
     completed: (row.completed as boolean) ?? false,
     completedAt: row.completed_at as string | undefined,
     createdBy: row.created_by as string,
@@ -562,12 +561,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     await supabase.from('todos').insert({
       id: todo.id, person_id: todo.personId ?? null, family_id: todo.familyId ?? null,
       title: todo.title,
-      due_date: todo.dueDate ?? null, repeat: todo.repeat ?? null, alert: todo.alert ?? null,
+      due_date: todo.dueDate ?? null, repeat: todo.repeat ?? null,
       completed: false, created_by: todo.createdBy, created_at: todo.createdAt,
     });
   }, [currentPersona.id]);
 
-  const updateTodo = useCallback(async (todoId: string, updates: Partial<Pick<Todo, 'title' | 'dueDate' | 'repeat' | 'alert' | 'familyId' | 'personId'>>) => {
+  const updateTodo = useCallback(async (todoId: string, updates: Partial<Pick<Todo, 'title' | 'dueDate' | 'repeat' | 'familyId' | 'personId'>>) => {
     setData((prev) => ({
       ...prev,
       todos: prev.todos.map((t) => t.id === todoId ? { ...t, ...updates } : t),
@@ -577,7 +576,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (updates.title !== undefined) dbUpdates.title = updates.title;
     if (updates.dueDate !== undefined) dbUpdates.due_date = updates.dueDate;
     if (updates.repeat !== undefined) dbUpdates.repeat = updates.repeat;
-    if (updates.alert !== undefined) dbUpdates.alert = updates.alert;
     if (updates.familyId !== undefined) dbUpdates.family_id = updates.familyId;
     if (updates.personId !== undefined) dbUpdates.person_id = updates.personId;
     await supabase.from('todos').update(dbUpdates).eq('id', todoId);
@@ -646,7 +644,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const dbUpdates: Record<string, unknown> = {};
     if (updates.englishName !== undefined) dbUpdates.english_name = updates.englishName;
     if (updates.chineseName !== undefined) dbUpdates.chinese_name = updates.chineseName;
-    if (updates.photo !== undefined) dbUpdates.photo = updates.photo;
+    if ('photo' in updates) dbUpdates.photo = updates.photo ?? null;
     if (updates.phone !== undefined) dbUpdates.phone = updates.phone;
     if (updates.homePhone !== undefined) dbUpdates.home_phone = updates.homePhone;
     if (updates.email !== undefined) dbUpdates.email = updates.email;
@@ -730,7 +728,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const supabase = createClient();
     const dbUpdates: Record<string, unknown> = {};
     if (updates.label !== undefined) dbUpdates.label = updates.label;
-    if (updates.photo !== undefined) dbUpdates.photo = updates.photo;
+    if ('photo' in updates) dbUpdates.photo = updates.photo ?? null;
     if (updates.primaryContactId !== undefined) dbUpdates.primary_contact_id = updates.primaryContactId;
     if (updates.childCount !== undefined) dbUpdates.child_count = updates.childCount;
     await supabase.from('families').update(dbUpdates).eq('id', familyId);

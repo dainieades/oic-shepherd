@@ -830,7 +830,7 @@ function LogStatusTag({ daysSince, lastNoteTs }: { daysSince: number | null; las
   }
   return (
     <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-      · Logged {new Date(lastNoteTs!).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+      Logged {new Date(lastNoteTs!).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
     </span>
   );
 }
@@ -892,9 +892,12 @@ function FamilyRow({ family, members }: { family: Family; members: Person[] }) {
               <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>, +{family.childCount} kid{family.childCount !== 1 ? 's' : ''}</span>
             ) : null}
             {group && (
-              <span style={{ fontSize: 10, padding: '2px 7px', borderRadius: '999px', background: 'var(--blue-light)', color: 'var(--blue)', fontWeight: 600, flexShrink: 0 }}>
-                {group.name}
-              </span>
+              <>
+                <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>·</span>
+                <span style={{ fontSize: 10, padding: '2px 7px', borderRadius: '999px', background: 'var(--blue-light)', color: 'var(--blue)', fontWeight: 600, flexShrink: 0 }}>
+                  {group.name}
+                </span>
+              </>
             )}
           </div>
         </div>
@@ -953,9 +956,12 @@ function IndividualRow({ person }: { person: Person }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap' }}>
             <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{getMembershipLabel(person.membershipStatus)} · {getChurchAttendanceLabel(person.churchAttendance)}</span>
             {group && (
-              <span style={{ fontSize: 10, padding: '2px 7px', borderRadius: '999px', background: 'var(--blue-light)', color: 'var(--blue)', fontWeight: 600, flexShrink: 0 }}>
-                {group.name}
-              </span>
+              <>
+                <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>·</span>
+                <span style={{ fontSize: 10, padding: '2px 7px', borderRadius: '999px', background: 'var(--blue-light)', color: 'var(--blue)', fontWeight: 600, flexShrink: 0 }}>
+                  {group.name}
+                </span>
+              </>
             )}
           </div>
         </div>
