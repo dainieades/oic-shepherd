@@ -20,7 +20,13 @@ interface PickerMenuProps {
   onClose: () => void;
 }
 
-export default function PickerMenu({ anchorRef, options, value, onSelect, onClose }: PickerMenuProps) {
+export default function PickerMenu({
+  anchorRef,
+  options,
+  value,
+  onSelect,
+  onClose,
+}: PickerMenuProps) {
   const [search, setSearch] = useState('');
 
   const { refs, floatingStyles } = useFloating({
@@ -47,7 +53,8 @@ export default function PickerMenu({ anchorRef, options, value, onSelect, onClos
     const handler = (e: MouseEvent) => {
       const floating = refs.floating.current;
       if (
-        floating && !floating.contains(e.target as Node) &&
+        floating &&
+        !floating.contains(e.target as Node) &&
         (!anchorRef?.current || !anchorRef.current.contains(e.target as Node))
       ) {
         onClose();
@@ -58,18 +65,21 @@ export default function PickerMenu({ anchorRef, options, value, onSelect, onClos
   }, [onClose, anchorRef, refs.floating]);
 
   const showSearch = options.length > 10;
-  const filtered = showSearch && search
-    ? options.filter(o => o.label.toLowerCase().includes(search.toLowerCase()))
-    : options;
+  const filtered =
+    showSearch && search
+      ? options.filter((o) => o.label.toLowerCase().includes(search.toLowerCase()))
+      : options;
 
   // Fallback styles when there is no anchor (centered on screen)
-  const fallbackStyle: React.CSSProperties = anchorRef?.current ? {} : {
-    position: 'fixed' as const,
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: Math.min(430, window.innerWidth - 32),
-  };
+  const fallbackStyle: React.CSSProperties = anchorRef?.current
+    ? {}
+    : {
+        position: 'fixed' as const,
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: Math.min(430, window.innerWidth - 32),
+      };
 
   return (
     <div
@@ -86,20 +96,26 @@ export default function PickerMenu({ anchorRef, options, value, onSelect, onClos
       }}
     >
       {showSearch && (
-        <div style={{
-          padding: '10px 14px',
-          borderBottom: '1px solid var(--border-light)',
-          position: 'sticky', top: 0,
-          background: 'var(--surface)',
-        }}>
+        <div
+          style={{
+            padding: '10px 14px',
+            borderBottom: '1px solid var(--border-light)',
+            position: 'sticky',
+            top: 0,
+            background: 'var(--surface)',
+          }}
+        >
           <input
             autoFocus
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={(e) => setSearch(e.target.value)}
             placeholder="Search…"
             style={{
-              width: '100%', border: 'none', outline: 'none',
-              fontSize: 14, background: 'transparent',
+              width: '100%',
+              border: 'none',
+              outline: 'none',
+              fontSize: 14,
+              background: 'transparent',
               color: 'var(--text-primary)',
             }}
           />
@@ -110,24 +126,55 @@ export default function PickerMenu({ anchorRef, options, value, onSelect, onClos
         return (
           <button
             key={opt.value}
-            onClick={() => { onSelect(opt.value); onClose(); }}
+            onClick={() => {
+              onSelect(opt.value);
+              onClose();
+            }}
             style={{
-              width: '100%', display: 'flex', alignItems: 'center', gap: 10,
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
               padding: '10px 14px',
               background: isSelected ? 'var(--sage-light)' : 'none',
-              border: 'none', borderBottom: '1px solid var(--border-light)',
-              fontSize: 14, cursor: 'pointer', textAlign: 'left' as const,
+              border: 'none',
+              borderBottom: '1px solid var(--border-light)',
+              fontSize: 14,
+              cursor: 'pointer',
+              textAlign: 'left' as const,
             }}
           >
             {opt.icon && (
-              <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0, color: isSelected ? 'var(--sage)' : 'var(--text-muted)' }}>{opt.icon}</span>
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  flexShrink: 0,
+                  color: isSelected ? 'var(--sage)' : 'var(--text-muted)',
+                }}
+              >
+                {opt.icon}
+              </span>
             )}
             <span style={{ flex: 1 }}>
-              <span style={{ display: 'block', fontWeight: isSelected ? 600 : 400, color: isSelected ? 'var(--sage)' : 'var(--text-primary)' }}>
+              <span
+                style={{
+                  display: 'block',
+                  fontWeight: isSelected ? 600 : 400,
+                  color: isSelected ? 'var(--sage)' : 'var(--text-primary)',
+                }}
+              >
                 {opt.label}
               </span>
               {opt.description && (
-                <span style={{ display: 'block', fontSize: 12, color: 'var(--text-muted)', marginTop: 1 }}>
+                <span
+                  style={{
+                    display: 'block',
+                    fontSize: 12,
+                    color: 'var(--text-muted)',
+                    marginTop: 1,
+                  }}
+                >
                   {opt.description}
                 </span>
               )}

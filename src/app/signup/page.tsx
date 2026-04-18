@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 
 export default function SignUpPage() {
   const router = useRouter();
-  useEffect(() => { router.replace('/signin'); }, [router]);
+  useEffect(() => {
+    router.replace('/signin');
+  }, [router]);
   return null;
 }

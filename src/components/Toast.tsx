@@ -28,7 +28,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     const id = Math.random().toString(36).slice(2);
     setToasts((prev) => [...prev, { id, message, exiting: false }]);
     setTimeout(() => {
-      setToasts((prev) => prev.map((t) => t.id === id ? { ...t, exiting: true } : t));
+      setToasts((prev) => prev.map((t) => (t.id === id ? { ...t, exiting: true } : t)));
     }, 2200);
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
@@ -40,9 +40,16 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       <div
         style={{
-          position: 'fixed', bottom: 84, left: 0, right: 0,
-          display: 'flex', flexDirection: 'column', alignItems: 'center',
-          gap: 8, zIndex: 200, pointerEvents: 'none',
+          position: 'fixed',
+          bottom: 84,
+          left: 0,
+          right: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 8,
+          zIndex: 200,
+          pointerEvents: 'none',
         }}
       >
         {toasts.map((toast) => (
@@ -50,12 +57,15 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             key={toast.id}
             className={toast.exiting ? 'toast-exit' : 'toast-enter'}
             style={{
-              display: 'flex', alignItems: 'center', gap: 8,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
               background: 'rgba(31, 37, 51, 0.92)',
               color: '#fff',
               padding: '10px 18px',
               borderRadius: 'var(--radius-pill)',
-              fontSize: 14, fontWeight: 500,
+              fontSize: 14,
+              fontWeight: 500,
               boxShadow: 'var(--shadow-elevated)',
               backdropFilter: 'blur(8px)',
               WebkitBackdropFilter: 'blur(8px)',

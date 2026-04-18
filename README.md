@@ -55,15 +55,15 @@ shepherd-app/
 
 ## Pages
 
-| Route | Description |
-|---|---|
-| `/` | Home dashboard |
-| `/person/[id]` | Person detail |
-| `/family/[id]` | Family detail |
-| `/groups/[id]` | Group detail |
-| `/add` | Add person |
-| `/todos` | Todos |
-| `/logs` | Logs |
-| `/profile` | User profile |
-| `/settings/profile` | Profile settings |
-| `/settings/access` | Access management |
+| Route               | Description       |
+| ------------------- | ----------------- |
+| `/`                 | Home dashboard    |
+| `/person/[id]`      | Person detail     |
+| `/family/[id]`      | Family detail     |
+| `/groups/[id]`      | Group detail      |
+| `/add`              | Add person        |
+| `/todos`            | Todos             |
+| `/logs`             | Logs              |
+| `/profile`          | User profile      |
+| `/settings/profile` | Profile settings  |
+| `/settings/access`  | Access management |

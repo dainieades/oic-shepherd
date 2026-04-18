@@ -4,9 +4,9 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useApp } from '@/lib/context';
 
 const personaLabels: Record<string, string> = {
-  admin:          'Admin',
-  'shepherd-1':   'Shepherd 1',
-  'shepherd-2':   'Shepherd 2',
+  admin: 'Admin',
+  'shepherd-1': 'Shepherd 1',
+  'shepherd-2': 'Shepherd 2',
   'welcome-team': 'Welcome',
 };
 
@@ -21,8 +21,8 @@ export default function PersonaSwitcherBar() {
   if (pathname === '/signup') return null;
 
   return (
-    <div className="dev-rail fixed top-0 left-0 right-0 z-50">
-      <div className="max-w-[430px] mx-auto px-3 h-9 flex items-center gap-3">
+    <div className="dev-rail fixed top-0 right-0 left-0 z-50">
+      <div className="mx-auto flex h-9 max-w-[430px] items-center gap-3 px-3">
         {/* DEV badge */}
         <span
           style={{
@@ -43,13 +43,16 @@ export default function PersonaSwitcherBar() {
         <div style={{ width: 1, height: 16, background: '#333', flexShrink: 0 }} />
 
         {/* Persona pills */}
-        <div className="flex gap-1.5 overflow-x-auto no-scrollbar flex-1">
+        <div className="no-scrollbar flex flex-1 gap-1.5 overflow-x-auto">
           {data.personas.map((persona) => {
             const isActive = currentPersona.id === persona.id;
             return (
               <button
                 key={persona.id}
-                onClick={() => { switchPersona(persona.id); if (isSignIn) router.push('/'); }}
+                onClick={() => {
+                  switchPersona(persona.id);
+                  if (isSignIn) router.push('/');
+                }}
                 style={{
                   flexShrink: 0,
                   fontSize: '11px',

@@ -47,8 +47,14 @@ export default function AccessManagementPage() {
 
   async function handleAdd() {
     const email = newEmail.trim().toLowerCase();
-    if (!email) { setError('Enter an email address.'); return; }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError('Enter a valid email address.'); return; }
+    if (!email) {
+      setError('Enter an email address.');
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError('Enter a valid email address.');
+      return;
+    }
     setAdding(true);
     setError('');
     const supabase = createClient();
@@ -75,40 +81,95 @@ export default function AccessManagementPage() {
   return (
     <div style={{ paddingBottom: 48 }}>
       {/* Header */}
-      <div style={{
-        position: 'sticky', top: 0, zIndex: 20,
-        background: 'var(--bg)',
-        marginLeft: -16, marginRight: -16,
-        paddingLeft: 16, paddingRight: 16,
-        borderBottom: '1px solid var(--border-light)',
-        height: 44, display: 'flex', alignItems: 'center', gap: 10,
-      }}>
+      <div
+        style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 20,
+          background: 'var(--bg)',
+          marginLeft: -16,
+          marginRight: -16,
+          paddingLeft: 16,
+          paddingRight: 16,
+          borderBottom: '1px solid var(--border-light)',
+          height: 44,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 10,
+        }}
+      >
         <button
           onClick={() => router.back()}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center' }}
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: 0,
+            display: 'flex',
+            alignItems: 'center',
+          }}
         >
           <ArrowLeft size={20} color="var(--text-primary)" />
         </button>
-        <span style={{ fontSize: 17, fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
+        <span
+          style={{
+            fontSize: 17,
+            fontWeight: 600,
+            color: 'var(--text-primary)',
+            letterSpacing: '-0.01em',
+          }}
+        >
           Access Management
         </span>
       </div>
 
-      <p style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 20, marginBottom: 20, lineHeight: 1.5 }}>
+      <p
+        style={{
+          fontSize: 13,
+          color: 'var(--text-muted)',
+          marginTop: 20,
+          marginBottom: 20,
+          lineHeight: 1.5,
+        }}
+      >
         Only people on this list can sign in. Add someone&apos;s email before they try to log in.
       </p>
 
       {/* Add form */}
-      <div style={{
-        background: 'var(--surface)', borderRadius: 'var(--radius)',
-        border: '1px solid var(--border-light)', padding: 16, marginBottom: 24,
-      }}>
-        <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
+      <div
+        style={{
+          background: 'var(--surface)',
+          borderRadius: 'var(--radius)',
+          border: '1px solid var(--border-light)',
+          padding: 16,
+          marginBottom: 24,
+        }}
+      >
+        <p
+          style={{
+            fontSize: 12,
+            fontWeight: 600,
+            color: 'var(--text-muted)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.06em',
+            marginBottom: 12,
+          }}
+        >
           Add access
         </p>
 
         {error && (
-          <div style={{ background: 'var(--red-light)', border: '1px solid var(--red-border)', borderRadius: 8, padding: '8px 12px', marginBottom: 12, fontSize: 13, color: 'var(--red)' }}>
+          <div
+            style={{
+              background: 'var(--red-light)',
+              border: '1px solid var(--red-border)',
+              borderRadius: 8,
+              padding: '8px 12px',
+              marginBottom: 12,
+              fontSize: 13,
+              color: 'var(--red)',
+            }}
+          >
             {error}
           </div>
         )}
@@ -117,13 +178,22 @@ export default function AccessManagementPage() {
           type="email"
           placeholder="Email address"
           value={newEmail}
-          onChange={(e) => { setNewEmail(e.target.value); setError(''); }}
+          onChange={(e) => {
+            setNewEmail(e.target.value);
+            setError('');
+          }}
           onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
           style={{
-            width: '100%', padding: '10px 12px', borderRadius: 10,
-            border: '1.5px solid var(--border)', fontSize: 15,
-            color: 'var(--text-primary)', background: 'var(--bg)',
-            outline: 'none', marginBottom: 8, boxSizing: 'border-box',
+            width: '100%',
+            padding: '10px 12px',
+            borderRadius: 10,
+            border: '1.5px solid var(--border)',
+            fontSize: 15,
+            color: 'var(--text-primary)',
+            background: 'var(--bg)',
+            outline: 'none',
+            marginBottom: 8,
+            boxSizing: 'border-box',
           }}
         />
         <input
@@ -133,21 +203,36 @@ export default function AccessManagementPage() {
           onChange={(e) => setNewLabel(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
           style={{
-            width: '100%', padding: '10px 12px', borderRadius: 10,
-            border: '1.5px solid var(--border)', fontSize: 15,
-            color: 'var(--text-primary)', background: 'var(--bg)',
-            outline: 'none', marginBottom: 12, boxSizing: 'border-box',
+            width: '100%',
+            padding: '10px 12px',
+            borderRadius: 10,
+            border: '1.5px solid var(--border)',
+            fontSize: 15,
+            color: 'var(--text-primary)',
+            background: 'var(--bg)',
+            outline: 'none',
+            marginBottom: 12,
+            boxSizing: 'border-box',
           }}
         />
         <button
           onClick={handleAdd}
           disabled={adding}
           style={{
-            width: '100%', padding: '11px 16px', borderRadius: 10,
-            border: 'none', background: 'var(--sage)', color: '#fff',
-            fontSize: 15, fontWeight: 600, cursor: adding ? 'not-allowed' : 'pointer',
+            width: '100%',
+            padding: '11px 16px',
+            borderRadius: 10,
+            border: 'none',
+            background: 'var(--sage)',
+            color: '#fff',
+            fontSize: 15,
+            fontWeight: 600,
+            cursor: adding ? 'not-allowed' : 'pointer',
             opacity: adding ? 0.6 : 1,
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
           }}
         >
           <Plus size={16} weight="bold" />
@@ -156,38 +241,105 @@ export default function AccessManagementPage() {
       </div>
 
       {/* Email list */}
-      <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
+      <p
+        style={{
+          fontSize: 12,
+          fontWeight: 600,
+          color: 'var(--text-muted)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.06em',
+          marginBottom: 8,
+        }}
+      >
         Approved ({emails.length})
       </p>
 
       {loading ? (
-        <p style={{ fontSize: 14, color: 'var(--text-muted)', textAlign: 'center', padding: '24px 0' }}>Loading…</p>
+        <p
+          style={{
+            fontSize: 14,
+            color: 'var(--text-muted)',
+            textAlign: 'center',
+            padding: '24px 0',
+          }}
+        >
+          Loading…
+        </p>
       ) : emails.length === 0 ? (
-        <div style={{
-          background: 'var(--surface)', borderRadius: 'var(--radius)',
-          border: '1px solid var(--border-light)', padding: '24px 16px', textAlign: 'center',
-        }}>
+        <div
+          style={{
+            background: 'var(--surface)',
+            borderRadius: 'var(--radius)',
+            border: '1px solid var(--border-light)',
+            padding: '24px 16px',
+            textAlign: 'center',
+          }}
+        >
           <EnvelopeSimple size={28} color="var(--text-muted)" style={{ marginBottom: 8 }} />
-          <p style={{ fontSize: 14, color: 'var(--text-muted)', margin: 0 }}>No approved emails yet.</p>
+          <p style={{ fontSize: 14, color: 'var(--text-muted)', margin: 0 }}>
+            No approved emails yet.
+          </p>
         </div>
       ) : (
-        <div className="no-last-border" style={{ background: 'var(--surface)', borderRadius: 'var(--radius)', border: '1px solid var(--border-light)', overflow: 'hidden' }}>
+        <div
+          className="no-last-border"
+          style={{
+            background: 'var(--surface)',
+            borderRadius: 'var(--radius)',
+            border: '1px solid var(--border-light)',
+            overflow: 'hidden',
+          }}
+        >
           {emails.map((e) => (
-            <div key={e.email} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', borderBottom: '1px solid var(--border-light)' }}>
+            <div
+              key={e.email}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                padding: '12px 16px',
+                borderBottom: '1px solid var(--border-light)',
+              }}
+            >
               <EnvelopeSimple size={16} color="var(--text-muted)" style={{ flexShrink: 0 }} />
               <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-primary)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <p
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 500,
+                    color: 'var(--text-primary)',
+                    margin: 0,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
                   {e.label ?? e.email}
                 </p>
                 {e.label && (
-                  <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <p
+                    style={{
+                      fontSize: 12,
+                      color: 'var(--text-muted)',
+                      margin: 0,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
                     {e.email}
                   </p>
                 )}
               </div>
               <button
                 onClick={() => setConfirmDelete(e.email)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, flexShrink: 0 }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: 4,
+                  flexShrink: 0,
+                }}
               >
                 <Trash size={16} color="var(--red)" />
               </button>
@@ -199,23 +351,83 @@ export default function AccessManagementPage() {
       {/* Delete confirm modal */}
       {confirmDelete && (
         <div
-          style={{ position: 'fixed', inset: 0, zIndex: 80, background: 'rgba(30,26,24,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 32px' }}
-          onClick={(e) => { if (e.target === e.currentTarget) setConfirmDelete(null); }}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 80,
+            background: 'rgba(30,26,24,0.45)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '0 32px',
+          }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setConfirmDelete(null);
+          }}
         >
-          <div style={{ background: 'var(--surface)', borderRadius: 16, width: '100%', maxWidth: 320, overflow: 'hidden' }}>
+          <div
+            style={{
+              background: 'var(--surface)',
+              borderRadius: 16,
+              width: '100%',
+              maxWidth: 320,
+              overflow: 'hidden',
+            }}
+          >
             <div style={{ padding: '24px 20px 16px', textAlign: 'center' }}>
-              <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 6px' }}>Remove access?</p>
-              <p style={{ fontSize: 14, color: 'var(--text-muted)', margin: 0, wordBreak: 'break-all' }}>{confirmDelete}</p>
+              <p
+                style={{
+                  fontSize: 16,
+                  fontWeight: 600,
+                  color: 'var(--text-primary)',
+                  margin: '0 0 6px',
+                }}
+              >
+                Remove access?
+              </p>
+              <p
+                style={{
+                  fontSize: 14,
+                  color: 'var(--text-muted)',
+                  margin: 0,
+                  wordBreak: 'break-all',
+                }}
+              >
+                {confirmDelete}
+              </p>
             </div>
             <div style={{ borderTop: '1px solid var(--border-light)', display: 'flex' }}>
               <button
                 onClick={() => setConfirmDelete(null)}
-                style={{ flex: 1, height: 50, background: 'none', border: 'none', borderRight: '1px solid var(--border-light)', fontSize: 15, color: 'var(--text-secondary)', cursor: 'pointer', fontWeight: 500 }}
-              >Cancel</button>
+                style={{
+                  flex: 1,
+                  height: 50,
+                  background: 'none',
+                  border: 'none',
+                  borderRight: '1px solid var(--border-light)',
+                  fontSize: 15,
+                  color: 'var(--text-secondary)',
+                  cursor: 'pointer',
+                  fontWeight: 500,
+                }}
+              >
+                Cancel
+              </button>
               <button
                 onClick={() => handleDelete(confirmDelete)}
-                style={{ flex: 1, height: 50, background: 'none', border: 'none', fontSize: 15, color: 'var(--red)', cursor: 'pointer', fontWeight: 600 }}
-              >Remove</button>
+                style={{
+                  flex: 1,
+                  height: 50,
+                  background: 'none',
+                  border: 'none',
+                  fontSize: 15,
+                  color: 'var(--red)',
+                  cursor: 'pointer',
+                  fontWeight: 600,
+                }}
+              >
+                Remove
+              </button>
             </div>
           </div>
         </div>

@@ -1,7 +1,28 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, type ReactNode, useCallback, type Dispatch, type SetStateAction } from 'react';
-import { type AppData, type Persona, type Person, type Family, type Note, type Todo, type Notice, type AppRole, type ChurchAttendance, type MembershipStatus } from './types';
+import { addDays, parseISO, formatISO } from 'date-fns';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  type ReactNode,
+  useCallback,
+  type Dispatch,
+  type SetStateAction,
+} from 'react';
+import {
+  type AppData,
+  type Persona,
+  type Person,
+  type Family,
+  type Note,
+  type Todo,
+  type Notice,
+  type AppRole,
+  type ChurchAttendance,
+  type MembershipStatus,
+} from './types';
 
 // ── Shared filter types (exported so pages can import them) ──────────────────
 
@@ -18,8 +39,13 @@ export interface HomeFilters {
 }
 
 export const HOME_DEFAULT_FILTERS: HomeFilters = {
-  shepherds: ['mine'], memberships: [], attendances: [], groups: [],
-  archiveFilter: 'hide', discipleship: [], appRoles: [],
+  shepherds: ['mine'],
+  memberships: [],
+  attendances: [],
+  groups: [],
+  archiveFilter: 'hide',
+  discipleship: [],
+  appRoles: [],
 };
 import { initialData } from './data';
 import { generateId } from './utils';
@@ -32,21 +58,72 @@ interface AppContextType {
   switchPersona: (id: string) => void;
   loginWithSupabaseUser: (userId: string, name: string, email?: string, avatarUrl?: string) => void;
   addNote: (note: Omit<Note, 'id' | 'createdBy'> & { createdAt?: string }) => void;
-  updateNote: (noteId: string, updates: Partial<Pick<Note, 'type' | 'content' | 'familyId' | 'personId' | 'visibility' | 'createdAt'>>) => void;
+  updateNote: (
+    noteId: string,
+    updates: Partial<
+      Pick<Note, 'type' | 'content' | 'familyId' | 'personId' | 'visibility' | 'createdAt'>
+    >
+  ) => void;
   deleteNote: (noteId: string) => void;
   addTodo: (todo: Omit<Todo, 'id' | 'createdAt' | 'createdBy' | 'completed'>) => void;
-  updateTodo: (todoId: string, updates: Partial<Pick<Todo, 'title' | 'dueDate' | 'repeat' | 'familyId' | 'personId'>>) => void;
+  updateTodo: (
+    todoId: string,
+    updates: Partial<Pick<Todo, 'title' | 'dueDate' | 'repeat' | 'familyId' | 'personId'>>
+  ) => void;
   deleteTodo: (todoId: string) => void;
   toggleTodo: (todoId: string) => void;
-  addPerson: (person: Omit<Person, 'id' | 'createdAt' | 'assignedShepherdIds' | 'groupIds' | 'followUpFrequencyDays'>) => Promise<string>;
+  addPerson: (
+    person: Omit<
+      Person,
+      'id' | 'createdAt' | 'assignedShepherdIds' | 'groupIds' | 'followUpFrequencyDays'
+    >
+  ) => Promise<string>;
   deletePerson: (personId: string) => void;
   addFamily: (label: string, memberIds: string[]) => void;
-  updatePerson: (personId: string, updates: Partial<Pick<Person, 'englishName' | 'chineseName' | 'photo' | 'phone' | 'homePhone' | 'email' | 'homeAddress' | 'membershipStatus' | 'churchAttendance' | 'membershipDate' | 'language' | 'gender' | 'maritalStatus' | 'birthday' | 'baptismDate' | 'anniversary' | 'followUpFrequencyDays' | 'spiritualNeeds' | 'physicalNeeds' | 'isShepherd' | 'isBeingDiscipled' | 'churchPositions' | 'appRole'>>) => Promise<void>;
+  updatePerson: (
+    personId: string,
+    updates: Partial<
+      Pick<
+        Person,
+        | 'englishName'
+        | 'chineseName'
+        | 'photo'
+        | 'phone'
+        | 'homePhone'
+        | 'email'
+        | 'homeAddress'
+        | 'membershipStatus'
+        | 'churchAttendance'
+        | 'membershipDate'
+        | 'language'
+        | 'gender'
+        | 'maritalStatus'
+        | 'birthday'
+        | 'baptismDate'
+        | 'anniversary'
+        | 'followUpFrequencyDays'
+        | 'spiritualNeeds'
+        | 'physicalNeeds'
+        | 'isShepherd'
+        | 'isBeingDiscipled'
+        | 'churchPositions'
+        | 'appRole'
+      >
+    >
+  ) => Promise<void>;
   assignShepherds: (personId: string, shepherdIds: string[]) => Promise<void>;
-  updateFamily: (familyId: string, updates: Partial<Pick<Family, 'label' | 'photo' | 'primaryContactId' | 'childCount'>>) => Promise<void>;
+  updateFamily: (
+    familyId: string,
+    updates: Partial<Pick<Family, 'label' | 'photo' | 'primaryContactId' | 'childCount'>>
+  ) => Promise<void>;
   updateFamilyMembers: (familyId: string, memberIds: string[]) => Promise<void>;
   addGroup: (name: string, description?: string) => void;
-  updateGroup: (groupId: string, updates: Partial<Pick<import('./types').Group, 'name' | 'description' | 'leaderIds' | 'shepherdIds'>>) => void;
+  updateGroup: (
+    groupId: string,
+    updates: Partial<
+      Pick<import('./types').Group, 'name' | 'description' | 'leaderIds' | 'shepherdIds'>
+    >
+  ) => void;
   updateGroupMembers: (groupId: string, memberIds: string[]) => void;
   assignGroupsToPerson: (personId: string, groupIds: string[]) => Promise<void>;
   assignGroupsToFamily: (familyId: string, groupIds: string[]) => Promise<void>;
@@ -54,7 +131,12 @@ interface AppContextType {
   setFollowUpFrequency: (personId: string, days: number) => void;
   canViewNote: (note: Note) => boolean;
   addNotice: (notice: Omit<Notice, 'id' | 'createdBy' | 'createdAt'>) => void;
-  updateNotice: (noticeId: string, updates: Partial<Pick<Notice, 'category' | 'urgency' | 'privacy' | 'content' | 'personId' | 'familyId'>>) => void;
+  updateNotice: (
+    noticeId: string,
+    updates: Partial<
+      Pick<Notice, 'category' | 'urgency' | 'privacy' | 'content' | 'personId' | 'familyId'>
+    >
+  ) => void;
   deleteNotice: (noticeId: string) => void;
   // Persistent filter state (survives tab navigation within a session)
   homeFilters: HomeFilters;
@@ -71,7 +153,11 @@ const AppContext = createContext<AppContextType | null>(null);
 
 // ── DB row → AppData mappers ──────────────────────────────────────────────
 
-function mapPerson(row: Record<string, unknown>, shepherdIds: string[], groupIds: string[]): Person {
+function mapPerson(
+  row: Record<string, unknown>,
+  shepherdIds: string[],
+  groupIds: string[]
+): Person {
   return {
     id: row.id as string,
     englishName: row.english_name as string,
@@ -98,8 +184,18 @@ function mapPerson(row: Record<string, unknown>, shepherdIds: string[], groupIds
     language: (() => {
       const raw = row.language as string | null;
       if (!raw) return ['English'];
-      if (raw.startsWith('[')) { try { return JSON.parse(raw) as string[]; } catch { return ['English']; } }
-      const legacyMap: Record<string, string> = { english: 'English', chinese: 'Mandarin Chinese', bilingual: 'English' };
+      if (raw.startsWith('[')) {
+        try {
+          return JSON.parse(raw) as string[];
+        } catch {
+          return ['English'];
+        }
+      }
+      const legacyMap: Record<string, string> = {
+        english: 'English',
+        chinese: 'Mandarin Chinese',
+        bilingual: 'English',
+      };
       return [legacyMap[raw] ?? 'English'];
     })(),
     familyId: row.family_id as string | undefined,
@@ -155,7 +251,7 @@ async function syncGoogleAvatar(
   supabase: ReturnType<typeof createClient>,
   personId: string,
   avatarUrl: string,
-  setData: React.Dispatch<React.SetStateAction<AppData>>,
+  setData: React.Dispatch<React.SetStateAction<AppData>>
 ) {
   const { data: row } = await supabase
     .from('people')
@@ -166,9 +262,7 @@ async function syncGoogleAvatar(
     await supabase.from('people').update({ photo: avatarUrl }).eq('id', personId);
     setData((prev) => ({
       ...prev,
-      people: prev.people.map((p) =>
-        p.id === personId ? { ...p, photo: avatarUrl } : p,
-      ),
+      people: prev.people.map((p) => (p.id === personId ? { ...p, photo: avatarUrl } : p)),
     }));
   }
 }
@@ -269,35 +363,35 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       // Build lookup maps
       const shepherdsByPerson: Record<string, string[]> = {};
-      for (const r of (personShepherdRows ?? [])) {
+      for (const r of personShepherdRows ?? []) {
         const row = r as { person_id: string; shepherd_id: string };
         if (!shepherdsByPerson[row.person_id]) shepherdsByPerson[row.person_id] = [];
         shepherdsByPerson[row.person_id].push(row.shepherd_id);
       }
 
       const groupsByPerson: Record<string, string[]> = {};
-      for (const r of (groupMemberRows ?? [])) {
+      for (const r of groupMemberRows ?? []) {
         const row = r as { group_id: string; person_id: string };
         if (!groupsByPerson[row.person_id]) groupsByPerson[row.person_id] = [];
         groupsByPerson[row.person_id].push(row.group_id);
       }
 
       const membersByFamily: Record<string, string[]> = {};
-      for (const r of (familyMemberRows ?? [])) {
+      for (const r of familyMemberRows ?? []) {
         const row = r as { family_id: string; person_id: string };
         if (!membersByFamily[row.family_id]) membersByFamily[row.family_id] = [];
         membersByFamily[row.family_id].push(row.person_id);
       }
 
       const membersByGroup: Record<string, string[]> = {};
-      for (const r of (groupMemberRows ?? [])) {
+      for (const r of groupMemberRows ?? []) {
         const row = r as { group_id: string; person_id: string };
         if (!membersByGroup[row.group_id]) membersByGroup[row.group_id] = [];
         membersByGroup[row.group_id].push(row.person_id);
       }
 
       const assignedByPersona: Record<string, string[]> = {};
-      for (const r of (personaPeopleRows ?? [])) {
+      for (const r of personaPeopleRows ?? []) {
         const row = r as { persona_id: string; person_id: string };
         if (!assignedByPersona[row.persona_id]) assignedByPersona[row.persona_id] = [];
         assignedByPersona[row.persona_id].push(row.person_id);
@@ -349,19 +443,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // ── Persona switching ─────────────────────────────────────────────────
-  const switchPersona = useCallback((id: string) => {
-    const persona = data.personas.find((p) => p.id === id);
-    if (persona) {
-      setCurrentPersona(persona);
-      localStorage.setItem('shepherd-app-persona', id);
-    }
-  }, [data.personas]);
+  const switchPersona = useCallback(
+    (id: string) => {
+      const persona = data.personas.find((p) => p.id === id);
+      if (persona) {
+        setCurrentPersona(persona);
+        localStorage.setItem('shepherd-app-persona', id);
+      }
+    },
+    [data.personas]
+  );
 
   // Reset all page filters when the active persona changes
   useEffect(() => {
-    const resetHome = currentPersona.role === 'welcome-team'
-      ? { ...HOME_DEFAULT_FILTERS, shepherds: [] }
-      : HOME_DEFAULT_FILTERS;
+    const resetHome =
+      currentPersona.role === 'welcome-team'
+        ? { ...HOME_DEFAULT_FILTERS, shepherds: [] }
+        : HOME_DEFAULT_FILTERS;
     setHomeFilters(resetHome);
     setHomeSortKey('last-contacted');
     setTodosShepherdFilter(['mine']);
@@ -369,186 +467,220 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [currentPersona.id]);
 
   // ── Supabase auth → persona sync ─────────────────────────────────────
-  const loginWithSupabaseUser = useCallback(async (userId: string, name: string, email?: string, avatarUrl?: string) => {
-    const supabase = createClient();
+  const loginWithSupabaseUser = useCallback(
+    async (userId: string, name: string, email?: string, avatarUrl?: string) => {
+      const supabase = createClient();
 
-    // 0. Access gate — email must be on the approved list
-    if (!email) {
-      await supabase.auth.signOut();
-      setAccessDenied(true);
-      setLoaded(true);
-      return;
-    }
-    const { data: approved } = await supabase
-      .from('approved_emails')
-      .select('email')
-      .eq('email', email)
-      .maybeSingle();
-    if (!approved) {
-      await supabase.auth.signOut();
-      setAccessDenied(true);
-      setLoaded(true);
-      return;
-    }
-
-    // 1. Look up existing persona by user_id (fastest path, already linked)
-    const { data: existing } = await supabase
-      .from('personas')
-      .select('*')
-      .eq('user_id', userId)
-      .maybeSingle();
-
-    if (existing) {
-      const { data: ppRows } = await supabase
-        .from('persona_people')
-        .select('person_id')
-        .eq('persona_id', existing.id);
-      const assignedPeopleIds = (ppRows ?? []).map((r: { person_id: string }) => r.person_id);
-      const persona = mapPersona(existing as Record<string, unknown>, assignedPeopleIds);
-      setCurrentPersona(persona);
-      localStorage.setItem('shepherd-app-persona', persona.id);
-      setData((prev) => {
-        if (prev.personas.find((p) => p.id === persona.id)) return prev;
-        return { ...prev, personas: [...prev.personas, persona] };
-      });
-      if (avatarUrl && persona.personId) {
-        syncGoogleAvatar(supabase, persona.personId, avatarUrl, setData);
+      // 0. Access gate — email must be on the approved list
+      if (!email) {
+        await supabase.auth.signOut();
+        setAccessDenied(true);
+        setLoaded(true);
+        return;
       }
-      return;
-    }
-
-    // 2. No user_id match — try to auto-link via email → people → persona chain.
-    //    This handles first-time sign-in for shepherds whose Person record already
-    //    has their email address in the system.
-    if (email) {
-      const { data: personRow } = await supabase
-        .from('people')
-        .select('id')
+      const { data: approved } = await supabase
+        .from('approved_emails')
+        .select('email')
         .eq('email', email)
         .maybeSingle();
+      if (!approved) {
+        await supabase.auth.signOut();
+        setAccessDenied(true);
+        setLoaded(true);
+        return;
+      }
 
-      if (personRow) {
-        const { data: personaRow } = await supabase
-          .from('personas')
-          .select('*')
-          .eq('person_id', personRow.id)
+      // 1. Look up existing persona by user_id (fastest path, already linked)
+      const { data: existing } = await supabase
+        .from('personas')
+        .select('*')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (existing) {
+        const { data: ppRows } = await supabase
+          .from('persona_people')
+          .select('person_id')
+          .eq('persona_id', existing.id);
+        const assignedPeopleIds = (ppRows ?? []).map((r: { person_id: string }) => r.person_id);
+        const persona = mapPersona(existing as Record<string, unknown>, assignedPeopleIds);
+        setCurrentPersona(persona);
+        localStorage.setItem('shepherd-app-persona', persona.id);
+        setData((prev) => {
+          if (prev.personas.find((p) => p.id === persona.id)) return prev;
+          return { ...prev, personas: [...prev.personas, persona] };
+        });
+        if (avatarUrl && persona.personId) {
+          syncGoogleAvatar(supabase, persona.personId, avatarUrl, setData);
+        }
+        return;
+      }
+
+      // 2. No user_id match — try to auto-link via email → people → persona chain.
+      //    This handles first-time sign-in for shepherds whose Person record already
+      //    has their email address in the system.
+      if (email) {
+        const { data: personRow } = await supabase
+          .from('people')
+          .select('id')
+          .eq('email', email)
           .maybeSingle();
 
-        if (personaRow) {
-          // Persona found — stamp it with the auth user_id so future logins are instant
-          await supabase.from('personas').update({ user_id: userId }).eq('id', personaRow.id);
-          const linked = { ...personaRow, user_id: userId };
-          const { data: ppRows } = await supabase
-            .from('persona_people')
-            .select('person_id')
-            .eq('persona_id', personaRow.id);
-          const assignedPeopleIds = (ppRows ?? []).map((r: { person_id: string }) => r.person_id);
-          const persona = mapPersona(linked as Record<string, unknown>, assignedPeopleIds);
-          setCurrentPersona(persona);
-          localStorage.setItem('shepherd-app-persona', persona.id);
-          setData((prev) => ({
-            ...prev,
-            personas: prev.personas.map((p) => p.id === persona.id ? persona : p),
-          }));
-          if (avatarUrl && persona.personId) {
-            syncGoogleAvatar(supabase, persona.personId, avatarUrl, setData);
+        if (personRow) {
+          const { data: personaRow } = await supabase
+            .from('personas')
+            .select('*')
+            .eq('person_id', personRow.id)
+            .maybeSingle();
+
+          if (personaRow) {
+            // Persona found — stamp it with the auth user_id so future logins are instant
+            await supabase.from('personas').update({ user_id: userId }).eq('id', personaRow.id);
+            const linked = { ...personaRow, user_id: userId };
+            const { data: ppRows } = await supabase
+              .from('persona_people')
+              .select('person_id')
+              .eq('persona_id', personaRow.id);
+            const assignedPeopleIds = (ppRows ?? []).map((r: { person_id: string }) => r.person_id);
+            const persona = mapPersona(linked as Record<string, unknown>, assignedPeopleIds);
+            setCurrentPersona(persona);
+            localStorage.setItem('shepherd-app-persona', persona.id);
+            setData((prev) => ({
+              ...prev,
+              personas: prev.personas.map((p) => (p.id === persona.id ? persona : p)),
+            }));
+            if (avatarUrl && persona.personId) {
+              syncGoogleAvatar(supabase, persona.personId, avatarUrl, setData);
+            }
+            return;
           }
-          return;
         }
       }
-    }
 
-    // 3. Truly new user — create a fresh shepherd persona
-    const { data: inserted } = await supabase
-      .from('personas')
-      .insert({ id: userId, user_id: userId, name, role: 'shepherd' })
-      .select()
-      .single();
-    if (inserted) {
-      const persona = mapPersona(inserted as Record<string, unknown>, []);
-      setCurrentPersona(persona);
-      localStorage.setItem('shepherd-app-persona', persona.id);
-      setData((prev) => ({ ...prev, personas: [...prev.personas, persona] }));
-    }
-  }, []);
+      // 3. Truly new user — create a fresh shepherd persona
+      const { data: inserted } = await supabase
+        .from('personas')
+        .insert({ id: userId, user_id: userId, name, role: 'shepherd' })
+        .select()
+        .single();
+      if (inserted) {
+        const persona = mapPersona(inserted as Record<string, unknown>, []);
+        setCurrentPersona(persona);
+        localStorage.setItem('shepherd-app-persona', persona.id);
+        setData((prev) => ({ ...prev, personas: [...prev.personas, persona] }));
+      }
+    },
+    []
+  );
 
   // ── Notes ─────────────────────────────────────────────────────────────
-  const addNote = useCallback(async (noteData: Omit<Note, 'id' | 'createdBy'> & { createdAt?: string }) => {
-    const note: Note = {
-      ...noteData,
-      id: generateId(),
-      createdBy: currentPersona.id,
-      createdAt: noteData.createdAt ?? new Date().toISOString(),
-    };
+  const addNote = useCallback(
+    async (noteData: Omit<Note, 'id' | 'createdBy'> & { createdAt?: string }) => {
+      const note: Note = {
+        ...noteData,
+        id: generateId(),
+        createdBy: currentPersona.id,
+        createdAt: noteData.createdAt ?? new Date().toISOString(),
+      };
 
-    // Optimistic update
-    setData((prev) => {
-      const newData = { ...prev, notes: [note, ...prev.notes] };
-      if (note.personId) {
-        newData.people = prev.people.map((p) => {
-          if (p.id === note.personId) {
-            const next = new Date();
-            next.setDate(next.getDate() + p.followUpFrequencyDays);
-            return { ...p, lastContactDate: new Date().toISOString(), nextFollowUpDate: next.toISOString() };
-          }
-          return p;
-        });
-      }
-      if (note.familyId) {
-        const family = prev.families.find((f) => f.id === note.familyId);
-        if (family) {
-          newData.people = (newData.people || prev.people).map((p) => {
-            if (family.memberIds.includes(p.id)) {
-              const next = new Date();
-              next.setDate(next.getDate() + p.followUpFrequencyDays);
-              return { ...p, lastContactDate: new Date().toISOString(), nextFollowUpDate: next.toISOString() };
+      // Optimistic update
+      setData((prev) => {
+        const newData = { ...prev, notes: [note, ...prev.notes] };
+        if (note.personId) {
+          newData.people = prev.people.map((p) => {
+            if (p.id === note.personId) {
+              const now = new Date();
+              return {
+                ...p,
+                lastContactDate: formatISO(now),
+                nextFollowUpDate: formatISO(addDays(now, p.followUpFrequencyDays)),
+              };
             }
             return p;
           });
         }
+        if (note.familyId) {
+          const family = prev.families.find((f) => f.id === note.familyId);
+          if (family) {
+            newData.people = (newData.people || prev.people).map((p) => {
+              if (family.memberIds.includes(p.id)) {
+                const now = new Date();
+                return {
+                  ...p,
+                  lastContactDate: formatISO(now),
+                  nextFollowUpDate: formatISO(addDays(now, p.followUpFrequencyDays)),
+                };
+              }
+              return p;
+            });
+          }
+        }
+        return newData;
+      });
+
+      // Persist to Supabase
+      const supabase = createClient();
+      await supabase.from('notes').insert({
+        id: note.id,
+        person_id: note.personId ?? null,
+        family_id: note.familyId ?? null,
+        type: note.type,
+        visibility: note.visibility,
+        content: note.content ?? null,
+        mentions: note.mentions ?? [],
+        created_by: note.createdBy,
+        created_at: note.createdAt,
+      });
+
+      // Update last_contact_date in DB
+      if (note.personId) {
+        const person = (
+          await supabase
+            .from('people')
+            .select('follow_up_frequency_days')
+            .eq('id', note.personId)
+            .single()
+        ).data;
+        if (person) {
+          const days =
+            (person as { follow_up_frequency_days: number }).follow_up_frequency_days ?? 14;
+          const now = new Date();
+          await supabase
+            .from('people')
+            .update({
+              last_contact_date: formatISO(now),
+              next_follow_up_date: formatISO(addDays(now, days)),
+            })
+            .eq('id', note.personId);
+        }
       }
-      return newData;
-    });
+    },
+    [currentPersona.id]
+  );
 
-    // Persist to Supabase
-    const supabase = createClient();
-    await supabase.from('notes').insert({
-      id: note.id, person_id: note.personId ?? null, family_id: note.familyId ?? null,
-      type: note.type, visibility: note.visibility,
-      content: note.content ?? null, mentions: note.mentions ?? [],
-      created_by: note.createdBy, created_at: note.createdAt,
-    });
-
-    // Update last_contact_date in DB
-    if (note.personId) {
-      const person = (await supabase.from('people').select('follow_up_frequency_days').eq('id', note.personId).single()).data;
-      if (person) {
-        const days = (person as { follow_up_frequency_days: number }).follow_up_frequency_days ?? 14;
-        const next = new Date();
-        next.setDate(next.getDate() + days);
-        await supabase.from('people').update({
-          last_contact_date: new Date().toISOString(),
-          next_follow_up_date: next.toISOString(),
-        }).eq('id', note.personId);
-      }
-    }
-  }, [currentPersona.id]);
-
-  const updateNote = useCallback(async (noteId: string, updates: Partial<Pick<Note, 'type' | 'content' | 'familyId' | 'personId' | 'visibility' | 'createdAt'>>) => {
-    setData((prev) => ({
-      ...prev,
-      notes: prev.notes.map((n) => n.id === noteId ? { ...n, ...updates } : n),
-    }));
-    const supabase = createClient();
-    const dbUpdates: Record<string, unknown> = {};
-    if (updates.type !== undefined) dbUpdates.type = updates.type;
-    if (updates.content !== undefined) dbUpdates.content = updates.content;
-    if (updates.familyId !== undefined) dbUpdates.family_id = updates.familyId;
-    if (updates.personId !== undefined) dbUpdates.person_id = updates.personId;
-    if (updates.visibility !== undefined) dbUpdates.visibility = updates.visibility;
-    if (updates.createdAt !== undefined) dbUpdates.created_at = updates.createdAt;
-    await supabase.from('notes').update(dbUpdates).eq('id', noteId);
-  }, []);
+  const updateNote = useCallback(
+    async (
+      noteId: string,
+      updates: Partial<
+        Pick<Note, 'type' | 'content' | 'familyId' | 'personId' | 'visibility' | 'createdAt'>
+      >
+    ) => {
+      setData((prev) => ({
+        ...prev,
+        notes: prev.notes.map((n) => (n.id === noteId ? { ...n, ...updates } : n)),
+      }));
+      const supabase = createClient();
+      const dbUpdates: Record<string, unknown> = {};
+      if (updates.type !== undefined) dbUpdates.type = updates.type;
+      if (updates.content !== undefined) dbUpdates.content = updates.content;
+      if (updates.familyId !== undefined) dbUpdates.family_id = updates.familyId;
+      if (updates.personId !== undefined) dbUpdates.person_id = updates.personId;
+      if (updates.visibility !== undefined) dbUpdates.visibility = updates.visibility;
+      if (updates.createdAt !== undefined) dbUpdates.created_at = updates.createdAt;
+      await supabase.from('notes').update(dbUpdates).eq('id', noteId);
+    },
+    []
+  );
 
   const deleteNote = useCallback(async (noteId: string) => {
     setData((prev) => ({ ...prev, notes: prev.notes.filter((n) => n.id !== noteId) }));
@@ -557,35 +689,52 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // ── Todos ─────────────────────────────────────────────────────────────
-  const addTodo = useCallback(async (todoData: Omit<Todo, 'id' | 'createdAt' | 'createdBy' | 'completed'>) => {
-    const todo: Todo = {
-      ...todoData, id: generateId(), completed: false,
-      createdBy: currentPersona.id, createdAt: new Date().toISOString(),
-    };
-    setData((prev) => ({ ...prev, todos: [todo, ...prev.todos] }));
-    const supabase = createClient();
-    await supabase.from('todos').insert({
-      id: todo.id, person_id: todo.personId ?? null, family_id: todo.familyId ?? null,
-      title: todo.title,
-      due_date: todo.dueDate ?? null, repeat: todo.repeat ?? null,
-      completed: false, created_by: todo.createdBy, created_at: todo.createdAt,
-    });
-  }, [currentPersona.id]);
+  const addTodo = useCallback(
+    async (todoData: Omit<Todo, 'id' | 'createdAt' | 'createdBy' | 'completed'>) => {
+      const todo: Todo = {
+        ...todoData,
+        id: generateId(),
+        completed: false,
+        createdBy: currentPersona.id,
+        createdAt: new Date().toISOString(),
+      };
+      setData((prev) => ({ ...prev, todos: [todo, ...prev.todos] }));
+      const supabase = createClient();
+      await supabase.from('todos').insert({
+        id: todo.id,
+        person_id: todo.personId ?? null,
+        family_id: todo.familyId ?? null,
+        title: todo.title,
+        due_date: todo.dueDate ?? null,
+        repeat: todo.repeat ?? null,
+        completed: false,
+        created_by: todo.createdBy,
+        created_at: todo.createdAt,
+      });
+    },
+    [currentPersona.id]
+  );
 
-  const updateTodo = useCallback(async (todoId: string, updates: Partial<Pick<Todo, 'title' | 'dueDate' | 'repeat' | 'familyId' | 'personId'>>) => {
-    setData((prev) => ({
-      ...prev,
-      todos: prev.todos.map((t) => t.id === todoId ? { ...t, ...updates } : t),
-    }));
-    const supabase = createClient();
-    const dbUpdates: Record<string, unknown> = {};
-    if (updates.title !== undefined) dbUpdates.title = updates.title;
-    if (updates.dueDate !== undefined) dbUpdates.due_date = updates.dueDate;
-    if (updates.repeat !== undefined) dbUpdates.repeat = updates.repeat;
-    if (updates.familyId !== undefined) dbUpdates.family_id = updates.familyId;
-    if (updates.personId !== undefined) dbUpdates.person_id = updates.personId;
-    await supabase.from('todos').update(dbUpdates).eq('id', todoId);
-  }, []);
+  const updateTodo = useCallback(
+    async (
+      todoId: string,
+      updates: Partial<Pick<Todo, 'title' | 'dueDate' | 'repeat' | 'familyId' | 'personId'>>
+    ) => {
+      setData((prev) => ({
+        ...prev,
+        todos: prev.todos.map((t) => (t.id === todoId ? { ...t, ...updates } : t)),
+      }));
+      const supabase = createClient();
+      const dbUpdates: Record<string, unknown> = {};
+      if (updates.title !== undefined) dbUpdates.title = updates.title;
+      if (updates.dueDate !== undefined) dbUpdates.due_date = updates.dueDate;
+      if (updates.repeat !== undefined) dbUpdates.repeat = updates.repeat;
+      if (updates.familyId !== undefined) dbUpdates.family_id = updates.familyId;
+      if (updates.personId !== undefined) dbUpdates.person_id = updates.personId;
+      await supabase.from('todos').update(dbUpdates).eq('id', todoId);
+    },
+    []
+  );
 
   const deleteTodo = useCallback(async (todoId: string) => {
     setData((prev) => ({ ...prev, todos: prev.todos.filter((t) => t.id !== todoId) }));
@@ -608,71 +757,136 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }),
     }));
     const supabase = createClient();
-    await supabase.from('todos').update({
-      completed: newCompleted,
-      completed_at: completedAt ?? null,
-    }).eq('id', todoId);
+    await supabase
+      .from('todos')
+      .update({
+        completed: newCompleted,
+        completed_at: completedAt ?? null,
+      })
+      .eq('id', todoId);
   }, []);
 
   // ── People ────────────────────────────────────────────────────────────
-  const addPerson = useCallback(async (personData: Omit<Person, 'id' | 'createdAt' | 'assignedShepherdIds' | 'groupIds' | 'followUpFrequencyDays'>): Promise<string> => {
-    const person: Person = {
-      ...personData, id: generateId(), assignedShepherdIds: [],
-      groupIds: [], followUpFrequencyDays: 14, createdAt: new Date().toISOString(),
-      createdBy: currentPersona.id,
-    };
-    setData((prev) => ({ ...prev, people: [...prev.people, person] }));
-    const supabase = createClient();
-    await supabase.from('people').insert({
-      id: person.id, english_name: person.englishName, chinese_name: person.chineseName ?? null,
-      photo: person.photo ?? null, gender: person.gender ?? null,
-      marital_status: person.maritalStatus ?? null, birthday: person.birthday ?? null,
-      baptism_date: person.baptismDate ?? null, membership_date: person.membershipDate ?? null,
-      anniversary: person.anniversary ?? null, phone: person.phone ?? null,
-      home_phone: person.homePhone ?? null, email: person.email ?? null,
-      home_address: person.homeAddress ?? null, spiritual_needs: person.spiritualNeeds ?? null, physical_needs: person.physicalNeeds ?? null,
-      is_shepherd: person.isShepherd ?? false, church_positions: person.churchPositions ?? [],
-      membership_status: person.membershipStatus, church_attendance: person.churchAttendance,
-      language: person.language,
-      family_id: person.familyId ?? null, follow_up_frequency_days: 14,
-      created_at: person.createdAt,
-      created_by: person.createdBy ?? null,
-    });
-    return person.id;
-  }, [currentPersona.id]);
+  const addPerson = useCallback(
+    async (
+      personData: Omit<
+        Person,
+        'id' | 'createdAt' | 'assignedShepherdIds' | 'groupIds' | 'followUpFrequencyDays'
+      >
+    ): Promise<string> => {
+      const person: Person = {
+        ...personData,
+        id: generateId(),
+        assignedShepherdIds: [],
+        groupIds: [],
+        followUpFrequencyDays: 14,
+        createdAt: new Date().toISOString(),
+        createdBy: currentPersona.id,
+      };
+      setData((prev) => ({ ...prev, people: [...prev.people, person] }));
+      const supabase = createClient();
+      await supabase.from('people').insert({
+        id: person.id,
+        english_name: person.englishName,
+        chinese_name: person.chineseName ?? null,
+        photo: person.photo ?? null,
+        gender: person.gender ?? null,
+        marital_status: person.maritalStatus ?? null,
+        birthday: person.birthday ?? null,
+        baptism_date: person.baptismDate ?? null,
+        membership_date: person.membershipDate ?? null,
+        anniversary: person.anniversary ?? null,
+        phone: person.phone ?? null,
+        home_phone: person.homePhone ?? null,
+        email: person.email ?? null,
+        home_address: person.homeAddress ?? null,
+        spiritual_needs: person.spiritualNeeds ?? null,
+        physical_needs: person.physicalNeeds ?? null,
+        is_shepherd: person.isShepherd ?? false,
+        church_positions: person.churchPositions ?? [],
+        membership_status: person.membershipStatus,
+        church_attendance: person.churchAttendance,
+        language: person.language,
+        family_id: person.familyId ?? null,
+        follow_up_frequency_days: 14,
+        created_at: person.createdAt,
+        created_by: person.createdBy ?? null,
+      });
+      return person.id;
+    },
+    [currentPersona.id]
+  );
 
-  const updatePerson = useCallback(async (personId: string, updates: Partial<Pick<Person, 'englishName' | 'chineseName' | 'photo' | 'phone' | 'homePhone' | 'email' | 'homeAddress' | 'membershipStatus' | 'churchAttendance' | 'membershipDate' | 'language' | 'gender' | 'maritalStatus' | 'birthday' | 'baptismDate' | 'anniversary' | 'followUpFrequencyDays' | 'spiritualNeeds' | 'physicalNeeds' | 'isShepherd' | 'isBeingDiscipled' | 'churchPositions' | 'appRole'>>) => {
-    setData((prev) => ({
-      ...prev,
-      people: prev.people.map((p) => p.id === personId ? { ...p, ...updates } : p),
-    }));
-    const supabase = createClient();
-    const dbUpdates: Record<string, unknown> = {};
-    if (updates.englishName !== undefined) dbUpdates.english_name = updates.englishName;
-    if (updates.chineseName !== undefined) dbUpdates.chinese_name = updates.chineseName;
-    if ('photo' in updates) dbUpdates.photo = updates.photo ?? null;
-    if (updates.phone !== undefined) dbUpdates.phone = updates.phone;
-    if (updates.homePhone !== undefined) dbUpdates.home_phone = updates.homePhone;
-    if (updates.email !== undefined) dbUpdates.email = updates.email;
-    if (updates.homeAddress !== undefined) dbUpdates.home_address = updates.homeAddress;
-    if (updates.membershipStatus !== undefined) dbUpdates.membership_status = updates.membershipStatus;
-    if (updates.churchAttendance !== undefined) dbUpdates.church_attendance = updates.churchAttendance;
-    if (updates.membershipDate !== undefined) dbUpdates.membership_date = updates.membershipDate;
-    if (updates.language !== undefined) dbUpdates.language = JSON.stringify(updates.language);
-    if (updates.gender !== undefined) dbUpdates.gender = updates.gender;
-    if (updates.maritalStatus !== undefined) dbUpdates.marital_status = updates.maritalStatus;
-    if (updates.birthday !== undefined) dbUpdates.birthday = updates.birthday;
-    if (updates.baptismDate !== undefined) dbUpdates.baptism_date = updates.baptismDate;
-    if (updates.anniversary !== undefined) dbUpdates.anniversary = updates.anniversary;
-    if (updates.followUpFrequencyDays !== undefined) dbUpdates.follow_up_frequency_days = updates.followUpFrequencyDays;
-    if (updates.spiritualNeeds !== undefined) dbUpdates.spiritual_needs = updates.spiritualNeeds;
-    if (updates.physicalNeeds !== undefined) dbUpdates.physical_needs = updates.physicalNeeds;
-    if (updates.isShepherd !== undefined) dbUpdates.is_shepherd = updates.isShepherd;
-    if (updates.isBeingDiscipled !== undefined) dbUpdates.is_being_discipled = updates.isBeingDiscipled;
-    if (updates.churchPositions !== undefined) dbUpdates.church_positions = updates.churchPositions;
-    if (updates.appRole !== undefined) dbUpdates.app_role = updates.appRole;
-    await supabase.from('people').update(dbUpdates).eq('id', personId);
-  }, []);
+  const updatePerson = useCallback(
+    async (
+      personId: string,
+      updates: Partial<
+        Pick<
+          Person,
+          | 'englishName'
+          | 'chineseName'
+          | 'photo'
+          | 'phone'
+          | 'homePhone'
+          | 'email'
+          | 'homeAddress'
+          | 'membershipStatus'
+          | 'churchAttendance'
+          | 'membershipDate'
+          | 'language'
+          | 'gender'
+          | 'maritalStatus'
+          | 'birthday'
+          | 'baptismDate'
+          | 'anniversary'
+          | 'followUpFrequencyDays'
+          | 'spiritualNeeds'
+          | 'physicalNeeds'
+          | 'isShepherd'
+          | 'isBeingDiscipled'
+          | 'churchPositions'
+          | 'appRole'
+        >
+      >
+    ) => {
+      setData((prev) => ({
+        ...prev,
+        people: prev.people.map((p) => (p.id === personId ? { ...p, ...updates } : p)),
+      }));
+      const supabase = createClient();
+      const dbUpdates: Record<string, unknown> = {};
+      if (updates.englishName !== undefined) dbUpdates.english_name = updates.englishName;
+      if (updates.chineseName !== undefined) dbUpdates.chinese_name = updates.chineseName;
+      if ('photo' in updates) dbUpdates.photo = updates.photo ?? null;
+      if (updates.phone !== undefined) dbUpdates.phone = updates.phone;
+      if (updates.homePhone !== undefined) dbUpdates.home_phone = updates.homePhone;
+      if (updates.email !== undefined) dbUpdates.email = updates.email;
+      if (updates.homeAddress !== undefined) dbUpdates.home_address = updates.homeAddress;
+      if (updates.membershipStatus !== undefined)
+        dbUpdates.membership_status = updates.membershipStatus;
+      if (updates.churchAttendance !== undefined)
+        dbUpdates.church_attendance = updates.churchAttendance;
+      if (updates.membershipDate !== undefined) dbUpdates.membership_date = updates.membershipDate;
+      if (updates.language !== undefined) dbUpdates.language = JSON.stringify(updates.language);
+      if (updates.gender !== undefined) dbUpdates.gender = updates.gender;
+      if (updates.maritalStatus !== undefined) dbUpdates.marital_status = updates.maritalStatus;
+      if (updates.birthday !== undefined) dbUpdates.birthday = updates.birthday;
+      if (updates.baptismDate !== undefined) dbUpdates.baptism_date = updates.baptismDate;
+      if (updates.anniversary !== undefined) dbUpdates.anniversary = updates.anniversary;
+      if (updates.followUpFrequencyDays !== undefined)
+        dbUpdates.follow_up_frequency_days = updates.followUpFrequencyDays;
+      if (updates.spiritualNeeds !== undefined) dbUpdates.spiritual_needs = updates.spiritualNeeds;
+      if (updates.physicalNeeds !== undefined) dbUpdates.physical_needs = updates.physicalNeeds;
+      if (updates.isShepherd !== undefined) dbUpdates.is_shepherd = updates.isShepherd;
+      if (updates.isBeingDiscipled !== undefined)
+        dbUpdates.is_being_discipled = updates.isBeingDiscipled;
+      if (updates.churchPositions !== undefined)
+        dbUpdates.church_positions = updates.churchPositions;
+      if (updates.appRole !== undefined) dbUpdates.app_role = updates.appRole;
+      await supabase.from('people').update(dbUpdates).eq('id', personId);
+    },
+    []
+  );
 
   const deletePerson = useCallback(async (personId: string) => {
     setData((prev) => ({
@@ -696,14 +910,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const assignShepherds = useCallback(async (personId: string, shepherdIds: string[]) => {
     setData((prev) => ({
       ...prev,
-      people: prev.people.map((p) => p.id === personId ? { ...p, assignedShepherdIds: shepherdIds } : p),
+      people: prev.people.map((p) =>
+        p.id === personId ? { ...p, assignedShepherdIds: shepherdIds } : p
+      ),
     }));
     const supabase = createClient();
     await supabase.from('person_shepherds').delete().eq('person_id', personId);
     if (shepherdIds.length > 0) {
-      await supabase.from('person_shepherds').insert(
-        shepherdIds.map((sid) => ({ person_id: personId, shepherd_id: sid }))
-      );
+      await supabase
+        .from('person_shepherds')
+        .insert(shepherdIds.map((sid) => ({ person_id: personId, shepherd_id: sid })));
     }
   }, []);
 
@@ -714,31 +930,40 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setData((prev) => ({
       ...prev,
       families: [...prev.families, family],
-      people: prev.people.map((p) => memberIds.includes(p.id) ? { ...p, familyId } : p),
+      people: prev.people.map((p) => (memberIds.includes(p.id) ? { ...p, familyId } : p)),
     }));
     const supabase = createClient();
     await supabase.from('families').insert({ id: familyId, label, tags: [] });
     if (memberIds.length > 0) {
-      await supabase.from('family_members').insert(memberIds.map((pid) => ({ family_id: familyId, person_id: pid })));
+      await supabase
+        .from('family_members')
+        .insert(memberIds.map((pid) => ({ family_id: familyId, person_id: pid })));
       for (const pid of memberIds) {
         await supabase.from('people').update({ family_id: familyId }).eq('id', pid);
       }
     }
   }, []);
 
-  const updateFamily = useCallback(async (familyId: string, updates: Partial<Pick<Family, 'label' | 'photo' | 'primaryContactId' | 'childCount'>>) => {
-    setData((prev) => ({
-      ...prev,
-      families: prev.families.map((f) => f.id === familyId ? { ...f, ...updates } : f),
-    }));
-    const supabase = createClient();
-    const dbUpdates: Record<string, unknown> = {};
-    if (updates.label !== undefined) dbUpdates.label = updates.label;
-    if ('photo' in updates) dbUpdates.photo = updates.photo ?? null;
-    if (updates.primaryContactId !== undefined) dbUpdates.primary_contact_id = updates.primaryContactId;
-    if (updates.childCount !== undefined) dbUpdates.child_count = updates.childCount;
-    await supabase.from('families').update(dbUpdates).eq('id', familyId);
-  }, []);
+  const updateFamily = useCallback(
+    async (
+      familyId: string,
+      updates: Partial<Pick<Family, 'label' | 'photo' | 'primaryContactId' | 'childCount'>>
+    ) => {
+      setData((prev) => ({
+        ...prev,
+        families: prev.families.map((f) => (f.id === familyId ? { ...f, ...updates } : f)),
+      }));
+      const supabase = createClient();
+      const dbUpdates: Record<string, unknown> = {};
+      if (updates.label !== undefined) dbUpdates.label = updates.label;
+      if ('photo' in updates) dbUpdates.photo = updates.photo ?? null;
+      if (updates.primaryContactId !== undefined)
+        dbUpdates.primary_contact_id = updates.primaryContactId;
+      if (updates.childCount !== undefined) dbUpdates.child_count = updates.childCount;
+      await supabase.from('families').update(dbUpdates).eq('id', familyId);
+    },
+    []
+  );
 
   const updateFamilyMembers = useCallback(async (familyId: string, newMemberIds: string[]) => {
     setData((prev) => {
@@ -763,9 +988,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const supabase = createClient();
     await supabase.from('family_members').delete().eq('family_id', familyId);
     if (newMemberIds.length > 0) {
-      await supabase.from('family_members').insert(
-        newMemberIds.map((pid) => ({ family_id: familyId, person_id: pid }))
-      );
+      await supabase
+        .from('family_members')
+        .insert(newMemberIds.map((pid) => ({ family_id: familyId, person_id: pid })));
     }
     // Update family_id on people rows
     for (const pid of newMemberIds) {
@@ -774,77 +999,94 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const addGroup = useCallback(async (name: string, description?: string) => {
-    const group = { id: generateId(), name, description, leaderIds: [], shepherdIds: [], memberIds: [], relatedFamilyIds: [] };
+    const group = {
+      id: generateId(),
+      name,
+      description,
+      leaderIds: [],
+      shepherdIds: [],
+      memberIds: [],
+      relatedFamilyIds: [],
+    };
     setData((prev) => ({ ...prev, groups: [...prev.groups, group] }));
     const supabase = createClient();
     await supabase.from('groups').insert({ id: group.id, name, description: description ?? null });
   }, []);
 
-  const updateGroup = useCallback(async (groupId: string, updates: Partial<Pick<import('./types').Group, 'name' | 'description' | 'leaderIds' | 'shepherdIds'>>) => {
-    // Side-channel to capture computed values for DB ops after setData
-    let eligibleMemberIds: string[] = [];
-    let newShepherdPersonaIds: string[] = [];
+  const updateGroup = useCallback(
+    async (
+      groupId: string,
+      updates: Partial<
+        Pick<import('./types').Group, 'name' | 'description' | 'leaderIds' | 'shepherdIds'>
+      >
+    ) => {
+      // Side-channel to capture computed values for DB ops after setData
+      let eligibleMemberIds: string[] = [];
+      let newShepherdPersonaIds: string[] = [];
 
-    setData((prev) => {
-      const group = prev.groups.find((g) => g.id === groupId);
-      const newGroups = prev.groups.map((g) => g.id === groupId ? { ...g, ...updates } : g);
+      setData((prev) => {
+        const group = prev.groups.find((g) => g.id === groupId);
+        const newGroups = prev.groups.map((g) => (g.id === groupId ? { ...g, ...updates } : g));
 
-      if (updates.shepherdIds !== undefined && group) {
-        // Map shepherd person IDs → persona IDs (with person ID fallback, matching sheep-lookup logic)
-        newShepherdPersonaIds = updates.shepherdIds.flatMap((personId) => {
-          const persona = prev.personas.find((p) => p.personId === personId);
-          return [persona ? persona.id : personId];
-        });
+        if (updates.shepherdIds !== undefined && group) {
+          // Map shepherd person IDs → persona IDs (with person ID fallback, matching sheep-lookup logic)
+          newShepherdPersonaIds = updates.shepherdIds.flatMap((personId) => {
+            const persona = prev.personas.find((p) => p.personId === personId);
+            return [persona ? persona.id : personId];
+          });
 
-        // Eligible sheep: in group, not a leader, not themselves a shepherd
-        const effectiveLeaderIds = updates.leaderIds ?? group.leaderIds;
-        eligibleMemberIds = group.memberIds.filter((memberId) => {
-          if (effectiveLeaderIds.includes(memberId)) return false;
-          if (updates.shepherdIds!.includes(memberId)) return false;
-          const person = prev.people.find((p) => p.id === memberId);
-          return person ? !person.isShepherd : false;
-        });
+          // Eligible sheep: in group, not a leader, not themselves a shepherd
+          const effectiveLeaderIds = updates.leaderIds ?? group.leaderIds;
+          eligibleMemberIds = group.memberIds.filter((memberId) => {
+            if (effectiveLeaderIds.includes(memberId)) return false;
+            if (updates.shepherdIds!.includes(memberId)) return false;
+            const person = prev.people.find((p) => p.id === memberId);
+            return person ? !person.isShepherd : false;
+          });
 
-        const newPeople = prev.people.map((p) =>
-          eligibleMemberIds.includes(p.id)
-            ? { ...p, assignedShepherdIds: newShepherdPersonaIds }
-            : p
-        );
-        return { ...prev, groups: newGroups, people: newPeople };
-      }
-
-      return { ...prev, groups: newGroups };
-    });
-
-    const supabase = createClient();
-    const dbUpdates: Record<string, unknown> = {};
-    if (updates.name !== undefined) dbUpdates.name = updates.name;
-    if (updates.description !== undefined) dbUpdates.description = updates.description ?? null;
-    if (updates.leaderIds !== undefined) dbUpdates.leader_ids = updates.leaderIds;
-    if (updates.shepherdIds !== undefined) dbUpdates.shepherd_ids = updates.shepherdIds;
-    await supabase.from('groups').update(dbUpdates).eq('id', groupId);
-
-    // Persist auto-assigned shepherds to eligible group members
-    if (updates.shepherdIds !== undefined) {
-      for (const pid of eligibleMemberIds) {
-        await supabase.from('person_shepherds').delete().eq('person_id', pid);
-        if (newShepherdPersonaIds.length > 0) {
-          await supabase.from('person_shepherds').insert(
-            newShepherdPersonaIds.map((sid) => ({ person_id: pid, shepherd_id: sid }))
+          const newPeople = prev.people.map((p) =>
+            eligibleMemberIds.includes(p.id)
+              ? { ...p, assignedShepherdIds: newShepherdPersonaIds }
+              : p
           );
+          return { ...prev, groups: newGroups, people: newPeople };
+        }
+
+        return { ...prev, groups: newGroups };
+      });
+
+      const supabase = createClient();
+      const dbUpdates: Record<string, unknown> = {};
+      if (updates.name !== undefined) dbUpdates.name = updates.name;
+      if (updates.description !== undefined) dbUpdates.description = updates.description ?? null;
+      if (updates.leaderIds !== undefined) dbUpdates.leader_ids = updates.leaderIds;
+      if (updates.shepherdIds !== undefined) dbUpdates.shepherd_ids = updates.shepherdIds;
+      await supabase.from('groups').update(dbUpdates).eq('id', groupId);
+
+      // Persist auto-assigned shepherds to eligible group members
+      if (updates.shepherdIds !== undefined) {
+        for (const pid of eligibleMemberIds) {
+          await supabase.from('person_shepherds').delete().eq('person_id', pid);
+          if (newShepherdPersonaIds.length > 0) {
+            await supabase
+              .from('person_shepherds')
+              .insert(newShepherdPersonaIds.map((sid) => ({ person_id: pid, shepherd_id: sid })));
+          }
         }
       }
-    }
-  }, []);
+    },
+    []
+  );
 
   const updateGroupMembers = useCallback(async (groupId: string, memberIds: string[]) => {
     setData((prev) => {
-      const newGroups = prev.groups.map((g) => g.id === groupId ? { ...g, memberIds } : g);
+      const newGroups = prev.groups.map((g) => (g.id === groupId ? { ...g, memberIds } : g));
       const newPeople = prev.people.map((p) => {
         const inGroup = memberIds.includes(p.id);
         const hadGroup = p.groupIds.includes(groupId);
         if (inGroup && !hadGroup) return { ...p, groupIds: [...p.groupIds, groupId] };
-        if (!inGroup && hadGroup) return { ...p, groupIds: p.groupIds.filter((id) => id !== groupId) };
+        if (!inGroup && hadGroup)
+          return { ...p, groupIds: p.groupIds.filter((id) => id !== groupId) };
         return p;
       });
       return { ...prev, groups: newGroups, people: newPeople };
@@ -852,18 +1094,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const supabase = createClient();
     await supabase.from('group_members').delete().eq('group_id', groupId);
     for (const pid of memberIds) {
-      await supabase.from('group_members').insert({ group_id: groupId, person_id: pid }).then(() => {});
+      await supabase
+        .from('group_members')
+        .insert({ group_id: groupId, person_id: pid })
+        .then(() => {});
     }
   }, []);
 
   const assignGroupsToPerson = useCallback(async (personId: string, groupIds: string[]) => {
     setData((prev) => {
-      const newPeople = prev.people.map((p) =>
-        p.id === personId ? { ...p, groupIds } : p
-      );
+      const newPeople = prev.people.map((p) => (p.id === personId ? { ...p, groupIds } : p));
       const newGroups = prev.groups.map((g) => {
         if (groupIds.includes(g.id)) {
-          return g.memberIds.includes(personId) ? g : { ...g, memberIds: [...g.memberIds, personId] };
+          return g.memberIds.includes(personId)
+            ? g
+            : { ...g, memberIds: [...g.memberIds, personId] };
         } else {
           return { ...g, memberIds: g.memberIds.filter((id) => id !== personId) };
         }
@@ -873,7 +1118,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const supabase = createClient();
     await supabase.from('group_members').delete().eq('person_id', personId);
     for (const gid of groupIds) {
-      await supabase.from('group_members').insert({ group_id: gid, person_id: personId }).then(() => {});
+      await supabase
+        .from('group_members')
+        .insert({ group_id: gid, person_id: personId })
+        .then(() => {});
     }
   }, []);
 
@@ -882,9 +1130,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const family = prev.families.find((f) => f.id === familyId);
       if (!family) return prev;
       const memberIds = family.memberIds;
-      const newPeople = prev.people.map((p) =>
-        memberIds.includes(p.id) ? { ...p, groupIds } : p
-      );
+      const newPeople = prev.people.map((p) => (memberIds.includes(p.id) ? { ...p, groupIds } : p));
       const newGroups = prev.groups.map((g) => {
         if (groupIds.includes(g.id)) {
           const merged = [...g.memberIds];
@@ -901,7 +1147,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
     const supabase = createClient();
     // Get current family members
-    const { data: fmRows } = await supabase.from('family_members').select('person_id').eq('family_id', familyId);
+    const { data: fmRows } = await supabase
+      .from('family_members')
+      .select('person_id')
+      .eq('family_id', familyId);
     const memberIds = (fmRows ?? []).map((r: { person_id: string }) => r.person_id);
     // Remove from all groups, re-add to selected
     for (const mid of memberIds) {
@@ -909,7 +1158,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
     for (const gid of groupIds) {
       for (const mid of memberIds) {
-        await supabase.from('group_members').insert({ group_id: gid, person_id: mid }).then(() => {});
+        await supabase
+          .from('group_members')
+          .insert({ group_id: gid, person_id: mid })
+          .then(() => {});
       }
     }
   }, []);
@@ -926,14 +1178,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
     });
 
     const supabase = createClient();
-    const { data: fmRows } = await supabase.from('family_members').select('person_id').eq('family_id', familyId);
+    const { data: fmRows } = await supabase
+      .from('family_members')
+      .select('person_id')
+      .eq('family_id', familyId);
     const memberIds = (fmRows ?? []).map((r: { person_id: string }) => r.person_id);
     for (const pid of memberIds) {
       await supabase.from('person_shepherds').delete().eq('person_id', pid);
       if (shepherdIds.length > 0) {
-        await supabase.from('person_shepherds').insert(
-          shepherdIds.map((sid) => ({ person_id: pid, shepherd_id: sid }))
-        );
+        await supabase
+          .from('person_shepherds')
+          .insert(shepherdIds.map((sid) => ({ person_id: pid, shepherd_id: sid })));
       }
     }
   }, []);
@@ -944,58 +1199,72 @@ export function AppProvider({ children }: { children: ReactNode }) {
       ...prev,
       people: prev.people.map((p) => {
         if (p.id === personId) {
-          const nextDate = new Date();
-          if (p.lastContactDate) {
-            const last = new Date(p.lastContactDate);
-            nextDate.setTime(last.getTime() + days * 24 * 60 * 60 * 1000);
-          } else {
-            nextDate.setDate(nextDate.getDate() + days);
-          }
-          nextFollowUpDate = nextDate.toISOString();
+          const base = p.lastContactDate ? parseISO(p.lastContactDate) : new Date();
+          nextFollowUpDate = formatISO(addDays(base, days));
           return { ...p, followUpFrequencyDays: days, nextFollowUpDate };
         }
         return p;
       }),
     }));
     const supabase = createClient();
-    await supabase.from('people').update({
-      follow_up_frequency_days: days,
-      next_follow_up_date: nextFollowUpDate ?? null,
-    }).eq('id', personId);
+    await supabase
+      .from('people')
+      .update({
+        follow_up_frequency_days: days,
+        next_follow_up_date: nextFollowUpDate ?? null,
+      })
+      .eq('id', personId);
   }, []);
 
   // ── Notices ───────────────────────────────────────────────────────────
-  const addNotice = useCallback(async (noticeData: Omit<Notice, 'id' | 'createdBy' | 'createdAt'>) => {
-    const notice: Notice = {
-      ...noticeData,
-      id: generateId(),
-      createdBy: currentPersona.id,
-      createdAt: new Date().toISOString(),
-    };
-    setData((prev) => ({ ...prev, notices: [notice, ...prev.notices] }));
-    const supabase = createClient();
-    await supabase.from('notices').insert({
-      id: notice.id, person_id: notice.personId ?? null, family_id: notice.familyId ?? null,
-      category: notice.category, urgency: notice.urgency, privacy: notice.privacy,
-      content: notice.content, created_by: notice.createdBy, created_at: notice.createdAt,
-    });
-  }, [currentPersona.id]);
+  const addNotice = useCallback(
+    async (noticeData: Omit<Notice, 'id' | 'createdBy' | 'createdAt'>) => {
+      const notice: Notice = {
+        ...noticeData,
+        id: generateId(),
+        createdBy: currentPersona.id,
+        createdAt: new Date().toISOString(),
+      };
+      setData((prev) => ({ ...prev, notices: [notice, ...prev.notices] }));
+      const supabase = createClient();
+      await supabase.from('notices').insert({
+        id: notice.id,
+        person_id: notice.personId ?? null,
+        family_id: notice.familyId ?? null,
+        category: notice.category,
+        urgency: notice.urgency,
+        privacy: notice.privacy,
+        content: notice.content,
+        created_by: notice.createdBy,
+        created_at: notice.createdAt,
+      });
+    },
+    [currentPersona.id]
+  );
 
-  const updateNotice = useCallback(async (noticeId: string, updates: Partial<Pick<Notice, 'category' | 'urgency' | 'privacy' | 'content' | 'personId' | 'familyId'>>) => {
-    setData((prev) => ({
-      ...prev,
-      notices: prev.notices.map((n) => n.id === noticeId ? { ...n, ...updates } : n),
-    }));
-    const supabase = createClient();
-    const dbUpdates: Record<string, unknown> = {};
-    if (updates.category !== undefined) dbUpdates.category = updates.category;
-    if (updates.urgency !== undefined) dbUpdates.urgency = updates.urgency;
-    if (updates.privacy !== undefined) dbUpdates.privacy = updates.privacy;
-    if (updates.content !== undefined) dbUpdates.content = updates.content;
-    if (updates.personId !== undefined) dbUpdates.person_id = updates.personId;
-    if (updates.familyId !== undefined) dbUpdates.family_id = updates.familyId;
-    await supabase.from('notices').update(dbUpdates).eq('id', noticeId);
-  }, []);
+  const updateNotice = useCallback(
+    async (
+      noticeId: string,
+      updates: Partial<
+        Pick<Notice, 'category' | 'urgency' | 'privacy' | 'content' | 'personId' | 'familyId'>
+      >
+    ) => {
+      setData((prev) => ({
+        ...prev,
+        notices: prev.notices.map((n) => (n.id === noticeId ? { ...n, ...updates } : n)),
+      }));
+      const supabase = createClient();
+      const dbUpdates: Record<string, unknown> = {};
+      if (updates.category !== undefined) dbUpdates.category = updates.category;
+      if (updates.urgency !== undefined) dbUpdates.urgency = updates.urgency;
+      if (updates.privacy !== undefined) dbUpdates.privacy = updates.privacy;
+      if (updates.content !== undefined) dbUpdates.content = updates.content;
+      if (updates.personId !== undefined) dbUpdates.person_id = updates.personId;
+      if (updates.familyId !== undefined) dbUpdates.family_id = updates.familyId;
+      await supabase.from('notices').update(dbUpdates).eq('id', noticeId);
+    },
+    []
+  );
 
   const deleteNotice = useCallback(async (noticeId: string) => {
     setData((prev) => ({ ...prev, notices: prev.notices.filter((n) => n.id !== noticeId) }));
@@ -1003,19 +1272,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
     await supabase.from('notices').delete().eq('id', noticeId);
   }, []);
 
-  const canViewNote = useCallback((note: Note): boolean => {
-    if (currentPersona.role === 'admin') return true;
-    if (note.visibility === 'public') return true;
-    if (note.createdBy === currentPersona.id) return true;
-    if (currentPersona.role === 'shepherd' && note.personId) {
-      return currentPersona.assignedPeopleIds.includes(note.personId);
-    }
-    return false;
-  }, [currentPersona]);
+  const canViewNote = useCallback(
+    (note: Note): boolean => {
+      if (currentPersona.role === 'admin') return true;
+      if (note.visibility === 'public') return true;
+      if (note.createdBy === currentPersona.id) return true;
+      if (currentPersona.role === 'shepherd' && note.personId) {
+        return currentPersona.assignedPeopleIds.includes(note.personId);
+      }
+      return false;
+    },
+    [currentPersona]
+  );
 
   if (!loaded) {
     return (
-      <div className="flex items-center justify-center min-h-screen" style={{ background: 'var(--bg)' }}>
+      <div
+        className="flex min-h-screen items-center justify-center"
+        style={{ background: 'var(--bg)' }}
+      >
         <div style={{ color: 'var(--text-muted)' }}>Loading...</div>
       </div>
     );
@@ -1023,7 +1298,46 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   return (
     <AppContext.Provider
-      value={{ data, currentPersona, accessDenied, switchPersona, loginWithSupabaseUser, addNote, updateNote, deleteNote, addTodo, updateTodo, deleteTodo, toggleTodo, addNotice, updateNotice, deleteNotice, addPerson, deletePerson, addFamily, updatePerson, assignShepherds, updateFamily, updateFamilyMembers, addGroup, updateGroup, updateGroupMembers, assignGroupsToPerson, assignGroupsToFamily, assignShepherdsToFamily, setFollowUpFrequency, canViewNote, homeFilters, setHomeFilters, homeSortKey, setHomeSortKey, todosShepherdFilter, setTodosShepherdFilter, logsShepherdFilter, setLogsShepherdFilter }}
+      value={{
+        data,
+        currentPersona,
+        accessDenied,
+        switchPersona,
+        loginWithSupabaseUser,
+        addNote,
+        updateNote,
+        deleteNote,
+        addTodo,
+        updateTodo,
+        deleteTodo,
+        toggleTodo,
+        addNotice,
+        updateNotice,
+        deleteNotice,
+        addPerson,
+        deletePerson,
+        addFamily,
+        updatePerson,
+        assignShepherds,
+        updateFamily,
+        updateFamilyMembers,
+        addGroup,
+        updateGroup,
+        updateGroupMembers,
+        assignGroupsToPerson,
+        assignGroupsToFamily,
+        assignShepherdsToFamily,
+        setFollowUpFrequency,
+        canViewNote,
+        homeFilters,
+        setHomeFilters,
+        homeSortKey,
+        setHomeSortKey,
+        todosShepherdFilter,
+        setTodosShepherdFilter,
+        logsShepherdFilter,
+        setLogsShepherdFilter,
+      }}
     >
       {children}
     </AppContext.Provider>

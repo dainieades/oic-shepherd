@@ -17,24 +17,27 @@ This version has breaking changes — APIs, conventions, and file structure may 
 ## Project State
 
 ### App Shell
+
 - Root layout (`src/app/layout.tsx`): wraps everything in `AppContext` provider, mounts `AuthSync`, `BottomNav`, `Toast`
 - Auth routes: `signin/`, `signup/`, `auth/callback/`
 
 ### Pages
-| Route | File |
-|---|---|
-| Home dashboard | `src/app/page.tsx` (55KB — use targeted reads) |
-| Person detail | `src/app/person/[id]/page.tsx` |
-| Family detail | `src/app/family/[id]/page.tsx` |
-| Group detail | `src/app/groups/[id]/page.tsx` |
-| Add person | `src/app/add/page.tsx` |
-| Profile | `src/app/profile/page.tsx` |
-| Settings — profile | `src/app/settings/profile/page.tsx` |
-| Settings — access | `src/app/settings/access/page.tsx` |
-| Todos | `src/app/todos/page.tsx` |
-| Logs | `src/app/logs/page.tsx` |
+
+| Route              | File                                           |
+| ------------------ | ---------------------------------------------- |
+| Home dashboard     | `src/app/page.tsx` (55KB — use targeted reads) |
+| Person detail      | `src/app/person/[id]/page.tsx`                 |
+| Family detail      | `src/app/family/[id]/page.tsx`                 |
+| Group detail       | `src/app/groups/[id]/page.tsx`                 |
+| Add person         | `src/app/add/page.tsx`                         |
+| Profile            | `src/app/profile/page.tsx`                     |
+| Settings — profile | `src/app/settings/profile/page.tsx`            |
+| Settings — access  | `src/app/settings/access/page.tsx`             |
+| Todos              | `src/app/todos/page.tsx`                       |
+| Logs               | `src/app/logs/page.tsx`                        |
 
 ### Components
+
 Large form drawers/modals: `EditPersonDrawer`, `AddPersonModal`, `EditFamilyDrawer`, `AddFamilyModal`, `AddTodoModal`, `AddLogModal`, `AddNoticeModal`, `DatePickerSheet`, `GroupPreviewModal`.
 
 Utility: `AccessGate` (permission guard), `AuthSync` (Supabase sync), `BottomNav`, `Toast`, `PersonFamilyPicker`, `PickerMenu`, `PersonaSwitcherBar`.
@@ -97,6 +100,7 @@ Persona switching (`setCurrentPersona`) affects which people and data are visibl
 - **Mobile-first** — design for small screens; use `sm:` / `md:` Tailwind prefixes to scale up
 - **No comments** unless the WHY is non-obvious (a hidden constraint, subtle invariant, or workaround)
 - No test framework is configured — rely on TypeScript for correctness; run `npx tsc --noEmit` to type-check
+- **Icons only — never text symbols** — use `<Plus weight="bold" />` for add buttons, never a literal `+` character or semantic variants like `UserPlus`; never invent SVG icons
 
 ### Type discipline
 

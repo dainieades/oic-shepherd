@@ -4,7 +4,17 @@ import { useState, useRef, useEffect } from 'react';
 import { useApp } from '@/lib/context';
 import { useToast } from './Toast';
 import { type Family, type Person, type Group } from '@/lib/types';
-import { CaretRight, User, UsersFour, Plus, House, HandHeart, X, MagnifyingGlass, Check } from '@phosphor-icons/react';
+import {
+  CaretRight,
+  User,
+  UsersFour,
+  Plus,
+  House,
+  HandHeart,
+  X,
+  MagnifyingGlass,
+  Check,
+} from '@phosphor-icons/react';
 import PickerMenu from './PickerMenu';
 
 interface Props {
@@ -20,14 +30,13 @@ const avatarPalette = [
 ];
 
 export default function EditFamilyDrawer({ family, onClose }: Props) {
-  const { data, updateFamily, updateFamilyMembers, assignGroupsToFamily, assignShepherdsToFamily } = useApp();
+  const { data, updateFamily, updateFamilyMembers, assignGroupsToFamily, assignShepherdsToFamily } =
+    useApp();
   const { showToast } = useToast();
 
   // Compute initial state from members
   const initialMembers = data.people.filter((p) => family.memberIds.includes(p.id));
-  const initialGroupIds = Array.from(
-    new Set(initialMembers.flatMap((m) => m.groupIds))
-  );
+  const initialGroupIds = Array.from(new Set(initialMembers.flatMap((m) => m.groupIds)));
   const initialShepherdIds = Array.from(
     new Set(initialMembers.flatMap((m) => m.assignedShepherdIds))
   );
@@ -56,7 +65,10 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
 
   const handleSave = async () => {
     if (!label.trim()) return;
-    await updateFamily(family.id, { label: label.trim(), primaryContactId: primaryContactId || undefined });
+    await updateFamily(family.id, {
+      label: label.trim(),
+      primaryContactId: primaryContactId || undefined,
+    });
     await updateFamilyMembers(family.id, memberIds);
     await assignGroupsToFamily(family.id, groupIds);
     await assignShepherdsToFamily(family.id, shepherdIds);
@@ -65,13 +77,11 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
   };
 
   const toggleShepherd = (id: string) => {
-    setShepherdIds((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
+    setShepherdIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   };
 
   // All people that can be toggled as members: no family, or already in this family
-  const memberPickerPool = data.people.filter(
-    (p) => !p.familyId || p.familyId === family.id
-  );
+  const memberPickerPool = data.people.filter((p) => !p.familyId || p.familyId === family.id);
 
   const selectedGroups = data.groups.filter((g) => groupIds.includes(g.id));
   const selectedShepherds = data.personas.filter((p) => shepherdIds.includes(p.id));
@@ -84,34 +94,97 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
   return (
     <>
       <div
-        style={{ position: 'fixed', inset: 0, background: 'rgba(30,26,24,0.45)', zIndex: 60, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}
-        onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+        style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(30,26,24,0.45)',
+          zIndex: 60,
+          display: 'flex',
+          alignItems: 'flex-end',
+          justifyContent: 'center',
+        }}
+        onClick={(e) => {
+          if (e.target === e.currentTarget) onClose();
+        }}
       >
         <div
           className="animate-slide-up"
           style={{
-            background: 'var(--surface)', borderRadius: '20px 20px 0 0',
-            width: '100%', maxWidth: 430,
+            background: 'var(--surface)',
+            borderRadius: '20px 20px 0 0',
+            width: '100%',
+            maxWidth: 430,
             height: 'calc(100dvh - 48px)',
-            display: 'flex', flexDirection: 'column', overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
           }}
         >
           {/* Drag handle */}
-          <div style={{ width: 36, height: 4, background: 'var(--border)', borderRadius: 2, margin: '14px auto 0', flexShrink: 0 }} />
+          <div
+            style={{
+              width: 36,
+              height: 4,
+              background: 'var(--border)',
+              borderRadius: 2,
+              margin: '14px auto 0',
+              flexShrink: 0,
+            }}
+          />
 
           {/* Header */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 12px', flexShrink: 0, borderBottom: '1px solid var(--border-light)' }}>
-            <button onClick={onClose} style={{ fontSize: 14, color: 'var(--text-secondary)', background: 'none', border: 'none', cursor: 'pointer' }}>Cancel</button>
-            <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>Edit family</span>
-            <button onClick={handleSave} style={{ height: 32, padding: '0 14px', borderRadius: 8, background: 'var(--sage)', color: '#fff', fontSize: 14, fontWeight: 600, border: 'none', cursor: 'pointer' }}>Save</button>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '14px 20px 12px',
+              flexShrink: 0,
+              borderBottom: '1px solid var(--border-light)',
+            }}
+          >
+            <button
+              onClick={onClose}
+              style={{
+                fontSize: 14,
+                color: 'var(--text-secondary)',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              Cancel
+            </button>
+            <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
+              Edit family
+            </span>
+            <button
+              onClick={handleSave}
+              style={{
+                height: 32,
+                padding: '0 14px',
+                borderRadius: 8,
+                background: 'var(--sage)',
+                color: '#fff',
+                fontSize: 14,
+                fontWeight: 600,
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              Save
+            </button>
           </div>
 
           {/* Scrollable body */}
           <div style={{ flex: 1, overflowY: 'auto', padding: '20px 20px 48px' }}>
-
             {/* ── BASIC ── */}
             <DrawerSection label="Basic">
-              <div className="field-row-hover" style={textRowStyle} onClick={() => labelRef.current?.focus()}>
+              <div
+                className="field-row-hover"
+                style={textRowStyle}
+                onClick={() => labelRef.current?.focus()}
+              >
                 <span style={asteriskStyle}>*</span>
                 <House size={16} color="var(--text-muted)" />
                 <span style={labelStyle}>Name</span>
@@ -129,24 +202,63 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
             <DrawerSection label="Members">
               {currentMembers.map((m, i) => {
                 const palette = avatarPalette[i % avatarPalette.length];
-                const inits = m.englishName.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
+                const inits = m.englishName
+                  .split(' ')
+                  .map((n) => n[0])
+                  .join('')
+                  .toUpperCase()
+                  .slice(0, 2);
                 return (
                   <div
                     key={m.id}
                     className="field-row-hover"
-                    style={{ display: 'flex', alignItems: 'center', gap: 10, paddingTop: 10, paddingBottom: 10, borderBottom: '1px solid var(--border-light)' }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 10,
+                      paddingTop: 10,
+                      paddingBottom: 10,
+                      borderBottom: '1px solid var(--border-light)',
+                    }}
                   >
-                    <div style={{ width: 32, height: 32, borderRadius: '50%', background: palette.bg, color: palette.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, flexShrink: 0 }}>
+                    <div
+                      style={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: '50%',
+                        background: palette.bg,
+                        color: palette.color,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: 11,
+                        fontWeight: 700,
+                        flexShrink: 0,
+                      }}
+                    >
                       {inits}
                     </div>
-                    <span style={{ flex: 1, fontSize: 14, color: 'var(--text-primary)' }}>{m.englishName}</span>
+                    <span style={{ flex: 1, fontSize: 14, color: 'var(--text-primary)' }}>
+                      {m.englishName}
+                    </span>
                     <button
                       onClick={() => {
                         const remaining = memberIds.filter((x) => x !== m.id);
                         setMemberIds(remaining);
                         if (primaryContactId === m.id) setPrimaryContactId(remaining[0] ?? '');
                       }}
-                      style={{ width: 28, height: 28, borderRadius: '50%', background: '#FEE2E2', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+                      style={{
+                        width: 28,
+                        height: 28,
+                        borderRadius: '50%',
+                        background: '#FEE2E2',
+                        border: 'none',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                      }}
                       aria-label={`Remove ${m.englishName}`}
                     >
                       <X size={12} color="#EF4444" />
@@ -158,11 +270,25 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
               <button
                 className="field-row-hover"
                 onClick={() => setShowMemberPicker(true)}
-                style={{ display: 'flex', alignItems: 'center', gap: 10, paddingTop: 12, paddingBottom: 12, border: 'none', borderBottom: '1px solid var(--border-light)', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' as const }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  paddingTop: 12,
+                  paddingBottom: 12,
+                  border: 'none',
+                  borderBottom: '1px solid var(--border-light)',
+                  background: 'none',
+                  cursor: 'pointer',
+                  width: '100%',
+                  textAlign: 'left' as const,
+                }}
               >
                 <span style={spacerStyle} />
                 <Plus size={16} color="var(--sage)" />
-                <span style={{ fontSize: 14, color: 'var(--sage)', fontWeight: 500 }}>Add member</span>
+                <span style={{ fontSize: 14, color: 'var(--sage)', fontWeight: 500 }}>
+                  Add member
+                </span>
               </button>
             </DrawerSection>
 
@@ -172,12 +298,31 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
               <button
                 className="field-row-hover"
                 onClick={() => setShowPrimaryContactPicker(true)}
-                style={{ display: 'flex', alignItems: 'center', gap: 10, paddingTop: 12, paddingBottom: 12, border: 'none', borderBottom: '1px solid var(--border-light)', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' as const }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  paddingTop: 12,
+                  paddingBottom: 12,
+                  border: 'none',
+                  borderBottom: '1px solid var(--border-light)',
+                  background: 'none',
+                  cursor: 'pointer',
+                  width: '100%',
+                  textAlign: 'left' as const,
+                }}
               >
                 <span style={spacerStyle} />
                 <User size={16} color="var(--text-muted)" />
                 <span style={labelStyle}>Primary</span>
-                <span style={{ flex: 1, fontSize: 14, color: primaryContact ? 'var(--text-primary)' : 'var(--text-muted)', textAlign: 'left' }}>
+                <span
+                  style={{
+                    flex: 1,
+                    fontSize: 14,
+                    color: primaryContact ? 'var(--text-primary)' : 'var(--text-muted)',
+                    textAlign: 'left',
+                  }}
+                >
                   {primaryContact ? primaryContact.englishName : 'Not set'}
                 </span>
                 <CaretRight size={14} color="var(--text-muted)" />
@@ -187,19 +332,45 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
               <button
                 ref={groupBtnRef}
                 className="field-row-hover"
-                onClick={() => setShowGroupPicker(v => !v)}
-                style={{ display: 'flex', alignItems: 'center', gap: 10, paddingTop: 12, paddingBottom: 12, border: 'none', borderBottom: '1px solid var(--border-light)', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' as const }}
+                onClick={() => setShowGroupPicker((v) => !v)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  paddingTop: 12,
+                  paddingBottom: 12,
+                  border: 'none',
+                  borderBottom: '1px solid var(--border-light)',
+                  background: 'none',
+                  cursor: 'pointer',
+                  width: '100%',
+                  textAlign: 'left' as const,
+                }}
               >
                 <span style={spacerStyle} />
                 <UsersFour size={16} color="var(--text-muted)" />
                 <span style={labelStyle}>Groups</span>
                 <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                  {selectedGroups.length > 0
-                    ? selectedGroups.map((g) => (
-                        <span key={g.id} style={{ fontSize: 11, fontWeight: 500, padding: '2px 8px', borderRadius: 999, background: 'var(--blue-light)', color: 'var(--blue)', flexShrink: 0 }}>{g.name}</span>
-                      ))
-                    : <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>None</span>
-                  }
+                  {selectedGroups.length > 0 ? (
+                    selectedGroups.map((g) => (
+                      <span
+                        key={g.id}
+                        style={{
+                          fontSize: 11,
+                          fontWeight: 500,
+                          padding: '2px 8px',
+                          borderRadius: 999,
+                          background: 'var(--blue-light)',
+                          color: 'var(--blue)',
+                          flexShrink: 0,
+                        }}
+                      >
+                        {g.name}
+                      </span>
+                    ))
+                  ) : (
+                    <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>None</span>
+                  )}
                 </div>
                 <CaretRight size={14} color="var(--text-muted)" />
               </button>
@@ -208,23 +379,48 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
               <button
                 className="field-row-hover"
                 onClick={() => setShowShepherdPicker(true)}
-                style={{ display: 'flex', alignItems: 'center', gap: 10, paddingTop: 12, paddingBottom: 12, border: 'none', borderBottom: '1px solid var(--border-light)', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' as const }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  paddingTop: 12,
+                  paddingBottom: 12,
+                  border: 'none',
+                  borderBottom: '1px solid var(--border-light)',
+                  background: 'none',
+                  cursor: 'pointer',
+                  width: '100%',
+                  textAlign: 'left' as const,
+                }}
               >
                 <span style={spacerStyle} />
                 <HandHeart size={16} color="var(--text-muted)" />
                 <span style={labelStyle}>Shepherd</span>
                 <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                  {selectedShepherds.length > 0
-                    ? selectedShepherds.map((p) => (
-                        <span key={p.id} style={{ fontSize: 11, fontWeight: 500, padding: '2px 8px', borderRadius: 999, background: 'var(--sage-light)', color: 'var(--sage)', flexShrink: 0 }}>{p.name}</span>
-                      ))
-                    : <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>None</span>
-                  }
+                  {selectedShepherds.length > 0 ? (
+                    selectedShepherds.map((p) => (
+                      <span
+                        key={p.id}
+                        style={{
+                          fontSize: 11,
+                          fontWeight: 500,
+                          padding: '2px 8px',
+                          borderRadius: 999,
+                          background: 'var(--sage-light)',
+                          color: 'var(--sage)',
+                          flexShrink: 0,
+                        }}
+                      >
+                        {p.name}
+                      </span>
+                    ))
+                  ) : (
+                    <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>None</span>
+                  )}
                 </div>
                 <CaretRight size={14} color="var(--text-muted)" />
               </button>
             </DrawerSection>
-
           </div>
         </div>
       </div>
@@ -260,7 +456,10 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
         <GroupPickerSheet
           groups={data.groups}
           currentIds={groupIds}
-          onConfirm={(ids) => { setGroupIds(ids); setShowGroupPicker(false); }}
+          onConfirm={(ids) => {
+            setGroupIds(ids);
+            setShowGroupPicker(false);
+          }}
           onBack={() => setShowGroupPicker(false)}
         />
       )}
@@ -281,31 +480,51 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
 // ── Styles ────────────────────────────────────────────────────────────────────
 
 const textRowStyle: React.CSSProperties = {
-  display: 'flex', alignItems: 'center', gap: 10,
-  paddingTop: 12, paddingBottom: 12,
-  borderBottom: '1px solid var(--border-light)', cursor: 'text',
+  display: 'flex',
+  alignItems: 'center',
+  gap: 10,
+  paddingTop: 12,
+  paddingBottom: 12,
+  borderBottom: '1px solid var(--border-light)',
+  cursor: 'text',
 };
 
 const asteriskStyle: React.CSSProperties = {
-  width: 10, fontSize: 14, color: 'var(--red)', flexShrink: 0, lineHeight: 1,
+  width: 10,
+  fontSize: 14,
+  color: 'var(--red)',
+  flexShrink: 0,
+  lineHeight: 1,
 };
 
 const spacerStyle: React.CSSProperties = {
-  width: 10, flexShrink: 0,
+  width: 10,
+  flexShrink: 0,
 };
 
 const labelStyle: React.CSSProperties = {
-  fontSize: 12, color: 'var(--text-muted)', width: 60, flexShrink: 0,
+  fontSize: 12,
+  color: 'var(--text-muted)',
+  width: 60,
+  flexShrink: 0,
 };
 
 const inputInlineStyle: React.CSSProperties = {
-  flex: 1, background: 'none', border: 'none', outline: 'none',
-  fontSize: 14, color: 'var(--text-primary)',
+  flex: 1,
+  background: 'none',
+  border: 'none',
+  outline: 'none',
+  fontSize: 14,
+  color: 'var(--text-primary)',
 };
 
 const sectionLabelStyle: React.CSSProperties = {
-  fontSize: 10, fontWeight: 600, color: 'var(--text-muted)',
-  textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4,
+  fontSize: 10,
+  fontWeight: 600,
+  color: 'var(--text-muted)',
+  textTransform: 'uppercase',
+  letterSpacing: '0.06em',
+  marginBottom: 4,
 };
 
 // ── Sub-components ─────────────────────────────────────────────────────────────
@@ -319,7 +538,12 @@ function DrawerSection({ label, children }: { label: string; children: React.Rea
   );
 }
 
-function MemberPickerSheet({ pool, currentMemberIds, onConfirm, onBack }: {
+function MemberPickerSheet({
+  pool,
+  currentMemberIds,
+  onConfirm,
+  onBack,
+}: {
   pool: Person[];
   currentMemberIds: string[];
   onConfirm: (ids: string[]) => void;
@@ -329,62 +553,149 @@ function MemberPickerSheet({ pool, currentMemberIds, onConfirm, onBack }: {
   const [selectedIds, setSelectedIds] = useState<string[]>(currentMemberIds);
   const searchRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => { searchRef.current?.focus(); }, []);
+  useEffect(() => {
+    searchRef.current?.focus();
+  }, []);
 
   const q = search.toLowerCase();
-  const filtered = pool.filter((p) =>
-    !q ||
-    p.englishName.toLowerCase().includes(q) ||
-    (p.chineseName && p.chineseName.toLowerCase().includes(q))
+  const filtered = pool.filter(
+    (p) =>
+      !q ||
+      p.englishName.toLowerCase().includes(q) ||
+      (p.chineseName && p.chineseName.toLowerCase().includes(q))
   );
 
   const toggle = (id: string) =>
-    setSelectedIds((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 70, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 70,
+        display: 'flex',
+        alignItems: 'flex-end',
+        justifyContent: 'center',
+      }}
+    >
       <div
         className="animate-slide-up"
         style={{
-          background: 'var(--surface)', borderRadius: '20px 20px 0 0',
-          width: '100%', maxWidth: 430,
+          background: 'var(--surface)',
+          borderRadius: '20px 20px 0 0',
+          width: '100%',
+          maxWidth: 430,
           height: 'calc(100dvh - 48px)',
-          display: 'flex', flexDirection: 'column', overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
         }}
       >
         {/* Drag handle */}
-        <div style={{ width: 36, height: 4, background: 'var(--border)', borderRadius: 2, margin: '14px auto 0', flexShrink: 0 }} />
+        <div
+          style={{
+            width: 36,
+            height: 4,
+            background: 'var(--border)',
+            borderRadius: 2,
+            margin: '14px auto 0',
+            flexShrink: 0,
+          }}
+        />
 
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 12px', flexShrink: 0, borderBottom: '1px solid var(--border-light)' }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '14px 20px 12px',
+            flexShrink: 0,
+            borderBottom: '1px solid var(--border-light)',
+          }}
+        >
           <button
             onClick={onBack}
-            style={{ fontSize: 14, color: 'var(--text-secondary)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+            style={{
+              fontSize: 14,
+              color: 'var(--text-secondary)',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 0,
+            }}
           >
             Back
           </button>
-          <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>Members</span>
+          <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
+            Members
+          </span>
           <button
             onClick={() => onConfirm(selectedIds)}
-            style={{ fontSize: 14, fontWeight: 600, color: 'var(--sage)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+            style={{
+              fontSize: 14,
+              fontWeight: 600,
+              color: 'var(--sage)',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 0,
+            }}
           >
             {selectedIds.length > 0 ? `Done (${selectedIds.length})` : 'Done'}
           </button>
         </div>
 
         {/* Search */}
-        <div style={{ padding: '12px 20px', flexShrink: 0, borderBottom: '1px solid var(--border-light)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 10, padding: '9px 12px' }}>
+        <div
+          style={{
+            padding: '12px 20px',
+            flexShrink: 0,
+            borderBottom: '1px solid var(--border-light)',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              background: 'var(--bg)',
+              border: '1px solid var(--border)',
+              borderRadius: 10,
+              padding: '9px 12px',
+            }}
+          >
             <MagnifyingGlass size={14} color="var(--text-muted)" />
             <input
               ref={searchRef}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search people…"
-              style={{ flex: 1, fontSize: 14, color: 'var(--text-primary)', background: 'none', border: 'none', outline: 'none' }}
+              style={{
+                flex: 1,
+                fontSize: 14,
+                color: 'var(--text-primary)',
+                background: 'none',
+                border: 'none',
+                outline: 'none',
+              }}
             />
             {search && (
-              <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', fontSize: 18, lineHeight: 1, padding: 0 }}>×</button>
+              <button
+                onClick={() => setSearch('')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'var(--text-muted)',
+                  fontSize: 18,
+                  lineHeight: 1,
+                  padding: 0,
+                }}
+              >
+                ×
+              </button>
             )}
           </div>
         </div>
@@ -394,37 +705,79 @@ function MemberPickerSheet({ pool, currentMemberIds, onConfirm, onBack }: {
           {filtered.map((p, i) => {
             const isSel = selectedIds.includes(p.id);
             const palette = avatarPalette[i % avatarPalette.length];
-            const inits = p.englishName.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
+            const inits = p.englishName
+              .split(' ')
+              .map((n) => n[0])
+              .join('')
+              .toUpperCase()
+              .slice(0, 2);
             return (
               <button
                 key={p.id}
                 onClick={() => toggle(p.id)}
                 style={{
-                  width: '100%', display: 'flex', alignItems: 'center', gap: 12,
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
                   padding: '12px 20px',
                   background: isSel ? 'var(--sage-light)' : 'none',
-                  border: 'none', borderBottom: '1px solid var(--border-light)',
-                  cursor: 'pointer', textAlign: 'left' as const,
+                  border: 'none',
+                  borderBottom: '1px solid var(--border-light)',
+                  cursor: 'pointer',
+                  textAlign: 'left' as const,
                 }}
               >
-                <div style={{
-                  width: 36, height: 36, borderRadius: '50%', flexShrink: 0,
-                  background: palette.bg, color: palette.color,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 12, fontWeight: 700,
-                }}>
+                <div
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: '50%',
+                    flexShrink: 0,
+                    background: palette.bg,
+                    color: palette.color,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 12,
+                    fontWeight: 700,
+                  }}
+                >
                   {inits}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontSize: 14, fontWeight: isSel ? 600 : 400, color: 'var(--text-primary)', margin: 0 }}>{p.englishName}</p>
-                  {p.chineseName && <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0 }}>{p.chineseName}</p>}
+                  <p
+                    style={{
+                      fontSize: 14,
+                      fontWeight: isSel ? 600 : 400,
+                      color: 'var(--text-primary)',
+                      margin: 0,
+                    }}
+                  >
+                    {p.englishName}
+                  </p>
+                  {p.chineseName && (
+                    <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0 }}>
+                      {p.chineseName}
+                    </p>
+                  )}
                 </div>
                 <MemberCheckCircle selected={isSel} />
               </button>
             );
           })}
           {filtered.length === 0 && (
-            <p style={{ padding: '24px 20px', fontSize: 13, color: 'var(--text-muted)', textAlign: 'center', fontStyle: 'italic' }}>No people found.</p>
+            <p
+              style={{
+                padding: '24px 20px',
+                fontSize: 13,
+                color: 'var(--text-muted)',
+                textAlign: 'center',
+                fontStyle: 'italic',
+              }}
+            >
+              No people found.
+            </p>
           )}
         </div>
       </div>
@@ -434,15 +787,40 @@ function MemberPickerSheet({ pool, currentMemberIds, onConfirm, onBack }: {
 
 function MemberCheckCircle({ selected }: { selected: boolean }) {
   return selected ? (
-    <div style={{ width: 22, height: 22, borderRadius: '50%', flexShrink: 0, background: 'var(--sage)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div
+      style={{
+        width: 22,
+        height: 22,
+        borderRadius: '50%',
+        flexShrink: 0,
+        background: 'var(--sage)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
       <Check size={12} color="#fff" weight="bold" />
     </div>
   ) : (
-    <div style={{ width: 22, height: 22, borderRadius: '50%', flexShrink: 0, border: '2px solid var(--border)', background: 'transparent' }} />
+    <div
+      style={{
+        width: 22,
+        height: 22,
+        borderRadius: '50%',
+        flexShrink: 0,
+        border: '2px solid var(--border)',
+        background: 'transparent',
+      }}
+    />
   );
 }
 
-function GroupPickerSheet({ groups, currentIds, onConfirm, onBack }: {
+function GroupPickerSheet({
+  groups,
+  currentIds,
+  onConfirm,
+  onBack,
+}: {
   groups: Group[];
   currentIds: string[];
   onConfirm: (ids: string[]) => void;
@@ -452,44 +830,138 @@ function GroupPickerSheet({ groups, currentIds, onConfirm, onBack }: {
   const [selectedIds, setSelectedIds] = useState<string[]>(currentIds);
   const searchRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => { searchRef.current?.focus(); }, []);
+  useEffect(() => {
+    searchRef.current?.focus();
+  }, []);
 
   const q = search.toLowerCase();
-  const filtered = groups.filter(g => !q || g.name.toLowerCase().includes(q));
+  const filtered = groups.filter((g) => !q || g.name.toLowerCase().includes(q));
   const toggle = (id: string) =>
-    setSelectedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 70, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 70,
+        display: 'flex',
+        alignItems: 'flex-end',
+        justifyContent: 'center',
+      }}
+    >
       <div
         className="animate-slide-up"
         style={{
-          background: 'var(--surface)', borderRadius: '20px 20px 0 0',
-          width: '100%', maxWidth: 430,
+          background: 'var(--surface)',
+          borderRadius: '20px 20px 0 0',
+          width: '100%',
+          maxWidth: 430,
           height: 'calc(100dvh - 48px)',
-          display: 'flex', flexDirection: 'column', overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
         }}
       >
-        <div style={{ width: 36, height: 4, background: 'var(--border)', borderRadius: 2, margin: '14px auto 0', flexShrink: 0 }} />
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 12px', flexShrink: 0, borderBottom: '1px solid var(--border-light)' }}>
-          <button onClick={onBack} style={{ fontSize: 14, color: 'var(--text-secondary)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Back</button>
-          <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>Fellowship Groups</span>
-          <button onClick={() => onConfirm(selectedIds)} style={{ fontSize: 14, fontWeight: 600, color: 'var(--sage)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+        <div
+          style={{
+            width: 36,
+            height: 4,
+            background: 'var(--border)',
+            borderRadius: 2,
+            margin: '14px auto 0',
+            flexShrink: 0,
+          }}
+        />
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '14px 20px 12px',
+            flexShrink: 0,
+            borderBottom: '1px solid var(--border-light)',
+          }}
+        >
+          <button
+            onClick={onBack}
+            style={{
+              fontSize: 14,
+              color: 'var(--text-secondary)',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 0,
+            }}
+          >
+            Back
+          </button>
+          <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
+            Fellowship Groups
+          </span>
+          <button
+            onClick={() => onConfirm(selectedIds)}
+            style={{
+              fontSize: 14,
+              fontWeight: 600,
+              color: 'var(--sage)',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 0,
+            }}
+          >
             {selectedIds.length > 0 ? `Done (${selectedIds.length})` : 'Done'}
           </button>
         </div>
-        <div style={{ padding: '12px 20px', flexShrink: 0, borderBottom: '1px solid var(--border-light)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 10, padding: '9px 12px' }}>
+        <div
+          style={{
+            padding: '12px 20px',
+            flexShrink: 0,
+            borderBottom: '1px solid var(--border-light)',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              background: 'var(--bg)',
+              border: '1px solid var(--border)',
+              borderRadius: 10,
+              padding: '9px 12px',
+            }}
+          >
             <MagnifyingGlass size={14} color="var(--text-muted)" />
             <input
               ref={searchRef}
               value={search}
-              onChange={e => setSearch(e.target.value)}
+              onChange={(e) => setSearch(e.target.value)}
               placeholder="Search groups…"
-              style={{ flex: 1, fontSize: 14, color: 'var(--text-primary)', background: 'none', border: 'none', outline: 'none' }}
+              style={{
+                flex: 1,
+                fontSize: 14,
+                color: 'var(--text-primary)',
+                background: 'none',
+                border: 'none',
+                outline: 'none',
+              }}
             />
             {search && (
-              <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', fontSize: 18, lineHeight: 1, padding: 0 }}>×</button>
+              <button
+                onClick={() => setSearch('')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'var(--text-muted)',
+                  fontSize: 18,
+                  lineHeight: 1,
+                  padding: 0,
+                }}
+              >
+                ×
+              </button>
             )}
           </div>
         </div>
@@ -501,30 +973,61 @@ function GroupPickerSheet({ groups, currentIds, onConfirm, onBack }: {
                 key={g.id}
                 onClick={() => toggle(g.id)}
                 style={{
-                  width: '100%', display: 'flex', alignItems: 'center', gap: 12,
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
                   padding: '12px 20px',
                   background: isSel ? 'var(--blue-light)' : 'none',
-                  border: 'none', borderBottom: '1px solid var(--border-light)',
-                  cursor: 'pointer', textAlign: 'left' as const,
+                  border: 'none',
+                  borderBottom: '1px solid var(--border-light)',
+                  cursor: 'pointer',
+                  textAlign: 'left' as const,
                 }}
               >
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontSize: 14, fontWeight: isSel ? 600 : 400, color: isSel ? 'var(--blue)' : 'var(--text-primary)', margin: 0 }}>{g.name}</p>
+                  <p
+                    style={{
+                      fontSize: 14,
+                      fontWeight: isSel ? 600 : 400,
+                      color: isSel ? 'var(--blue)' : 'var(--text-primary)',
+                      margin: 0,
+                    }}
+                  >
+                    {g.name}
+                  </p>
                 </div>
-                <div style={{
-                  width: 20, height: 20, borderRadius: 5, flexShrink: 0,
-                  border: isSel ? 'none' : '1.5px solid var(--border)',
-                  background: isSel ? 'var(--blue)' : 'transparent',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  transition: 'background 0.15s',
-                }}>
+                <div
+                  style={{
+                    width: 20,
+                    height: 20,
+                    borderRadius: 5,
+                    flexShrink: 0,
+                    border: isSel ? 'none' : '1.5px solid var(--border)',
+                    background: isSel ? 'var(--blue)' : 'transparent',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'background 0.15s',
+                  }}
+                >
                   {isSel && <Check size={11} color="#fff" weight="bold" />}
                 </div>
               </button>
             );
           })}
           {filtered.length === 0 && (
-            <p style={{ padding: '24px 20px', fontSize: 13, color: 'var(--text-muted)', textAlign: 'center', fontStyle: 'italic' }}>No groups found.</p>
+            <p
+              style={{
+                padding: '24px 20px',
+                fontSize: 13,
+                color: 'var(--text-muted)',
+                textAlign: 'center',
+                fontStyle: 'italic',
+              }}
+            >
+              No groups found.
+            </p>
           )}
         </div>
       </div>
@@ -532,7 +1035,12 @@ function GroupPickerSheet({ groups, currentIds, onConfirm, onBack }: {
   );
 }
 
-function ShepherdPickerSheet({ personas, selected, onToggle, onDone }: {
+function ShepherdPickerSheet({
+  personas,
+  selected,
+  onToggle,
+  onDone,
+}: {
   personas: import('@/lib/types').Persona[];
   selected: string[];
   onToggle: (id: string) => void;
@@ -540,42 +1048,117 @@ function ShepherdPickerSheet({ personas, selected, onToggle, onDone }: {
 }) {
   return (
     <div
-      style={{ position: 'fixed', inset: 0, zIndex: 70, background: 'rgba(30,26,24,0.35)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}
-      onClick={(e) => { if (e.target === e.currentTarget) onDone(); }}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 70,
+        background: 'rgba(30,26,24,0.35)',
+        display: 'flex',
+        alignItems: 'flex-end',
+        justifyContent: 'center',
+      }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onDone();
+      }}
     >
       <div
         style={{
-          background: 'var(--surface)', borderRadius: '16px 16px 0 0',
-          width: '100%', maxWidth: 430,
-          paddingBottom: 'env(safe-area-inset-bottom, 24px)', overflow: 'hidden',
+          background: 'var(--surface)',
+          borderRadius: '16px 16px 0 0',
+          width: '100%',
+          maxWidth: 430,
+          paddingBottom: 'env(safe-area-inset-bottom, 24px)',
+          overflow: 'hidden',
         }}
       >
-        <div style={{ width: 36, height: 4, background: 'var(--border)', borderRadius: 2, margin: '12px auto 0' }} />
-        <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '12px 20px 10px', borderBottom: '1px solid var(--border-light)' }}>
+        <div
+          style={{
+            width: 36,
+            height: 4,
+            background: 'var(--border)',
+            borderRadius: 2,
+            margin: '12px auto 0',
+          }}
+        />
+        <p
+          style={{
+            fontSize: 12,
+            fontWeight: 600,
+            color: 'var(--text-muted)',
+            textAlign: 'center',
+            textTransform: 'uppercase',
+            letterSpacing: '0.06em',
+            padding: '12px 20px 10px',
+            borderBottom: '1px solid var(--border-light)',
+          }}
+        >
           Assign Shepherd
         </p>
         {personas.map((p) => {
           const isSel = selected.includes(p.id);
-          const initials = p.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
+          const initials = p.name
+            .split(' ')
+            .map((n) => n[0])
+            .join('')
+            .toUpperCase()
+            .slice(0, 2);
           return (
             <button
               key={p.id}
               onClick={() => onToggle(p.id)}
               style={{
-                width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
                 padding: '12px 20px',
                 background: isSel ? 'var(--sage-light)' : 'none',
-                border: 'none', borderBottom: '1px solid var(--border-light)',
-                cursor: 'pointer', textAlign: 'left' as const,
+                border: 'none',
+                borderBottom: '1px solid var(--border-light)',
+                cursor: 'pointer',
+                textAlign: 'left' as const,
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{ width: 32, height: 32, borderRadius: '50%', background: isSel ? 'var(--sage)' : 'var(--bg)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: isSel ? '#fff' : 'var(--text-muted)', flexShrink: 0 }}>
+                <div
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: '50%',
+                    background: isSel ? 'var(--sage)' : 'var(--bg)',
+                    border: '1px solid var(--border)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: isSel ? '#fff' : 'var(--text-muted)',
+                    flexShrink: 0,
+                  }}
+                >
                   {initials}
                 </div>
                 <div>
-                  <p style={{ fontSize: 14, fontWeight: isSel ? 600 : 400, color: isSel ? 'var(--sage)' : 'var(--text-primary)', margin: 0 }}>{p.name}</p>
-                  <p style={{ fontSize: 11, color: 'var(--text-muted)', margin: 0, textTransform: 'capitalize' }}>{p.role}</p>
+                  <p
+                    style={{
+                      fontSize: 14,
+                      fontWeight: isSel ? 600 : 400,
+                      color: isSel ? 'var(--sage)' : 'var(--text-primary)',
+                      margin: 0,
+                    }}
+                  >
+                    {p.name}
+                  </p>
+                  <p
+                    style={{
+                      fontSize: 11,
+                      color: 'var(--text-muted)',
+                      margin: 0,
+                      textTransform: 'capitalize',
+                    }}
+                  >
+                    {p.role}
+                  </p>
                 </div>
               </div>
               {isSel && <Check size={16} color="var(--sage)" weight="bold" />}
@@ -583,7 +1166,22 @@ function ShepherdPickerSheet({ personas, selected, onToggle, onDone }: {
           );
         })}
         <div style={{ padding: '16px 20px 0' }}>
-          <button onClick={onDone} style={{ width: '100%', height: 44, borderRadius: 12, background: 'var(--sage)', color: '#fff', fontSize: 15, fontWeight: 600, border: 'none', cursor: 'pointer' }}>Done</button>
+          <button
+            onClick={onDone}
+            style={{
+              width: '100%',
+              height: 44,
+              borderRadius: 12,
+              background: 'var(--sage)',
+              color: '#fff',
+              fontSize: 15,
+              fontWeight: 600,
+              border: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            Done
+          </button>
         </div>
       </div>
     </div>

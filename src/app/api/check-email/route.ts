@@ -46,15 +46,12 @@ export async function POST(req: Request) {
     }
 
     // 2. Check auth identity providers for this email
-    const res = await fetch(
-      `${supabaseUrl}/auth/v1/admin/users?page=1&per_page=1000`,
-      {
-        headers: {
-          apikey: serviceKey,
-          Authorization: `Bearer ${serviceKey}`,
-        },
+    const res = await fetch(`${supabaseUrl}/auth/v1/admin/users?page=1&per_page=1000`, {
+      headers: {
+        apikey: serviceKey,
+        Authorization: `Bearer ${serviceKey}`,
       },
-    );
+    });
 
     if (!res.ok) {
       // Auth admin API unavailable — treat as invited (no account yet)
@@ -62,8 +59,7 @@ export async function POST(req: Request) {
     }
 
     const payload = await res.json();
-    const users: { email: string; identities?: { provider: string }[] }[] =
-      payload.users ?? [];
+    const users: { email: string; identities?: { provider: string }[] }[] = payload.users ?? [];
 
     const user = users.find((u) => u.email?.toLowerCase() === email);
 

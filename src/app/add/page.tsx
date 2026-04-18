@@ -11,20 +11,20 @@ export default function AddPage() {
   const router = useRouter();
   const [englishName, setEnglishName] = useState('');
   const [chineseName, setChineseName] = useState('');
-  const [phone,       setPhone]       = useState('');
+  const [phone, setPhone] = useState('');
   const [isFirstTime, setIsFirstTime] = useState(false);
-  const [notes,       setNotes]       = useState('');
-  const [submitted,   setSubmitted]   = useState(false);
+  const [notes, setNotes] = useState('');
+  const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = () => {
     if (!englishName.trim()) return;
     addPerson({
       englishName: englishName.trim(),
       chineseName: chineseName.trim() || undefined,
-      phone:       phone.trim() || undefined,
+      phone: phone.trim() || undefined,
       membershipStatus: 'non-member' as MembershipStatus,
       churchAttendance: (isFirstTime ? 'first-time-visitor' : 'regular') as ChurchAttendance,
-      language:    ['English'],
+      language: ['English'],
       isFirstTimeVisitor: isFirstTime,
     });
     setSubmitted(true);
@@ -49,15 +49,29 @@ export default function AddPage() {
         >
           <Check size={28} color="var(--sage)" weight="bold" />
         </div>
-        <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>Person Added</h2>
-        <p style={{ fontSize: 14, color: 'var(--text-muted)' }}>{englishName} has been added to the directory.</p>
+        <h2
+          style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}
+        >
+          Person Added
+        </h2>
+        <p style={{ fontSize: 14, color: 'var(--text-muted)' }}>
+          {englishName} has been added to the directory.
+        </p>
       </div>
     );
   }
 
   return (
     <div style={{ paddingTop: 24, paddingBottom: 40 }}>
-      <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4, letterSpacing: '-0.02em' }}>
+      <h1
+        style={{
+          fontSize: 22,
+          fontWeight: 700,
+          color: 'var(--text-primary)',
+          marginBottom: 4,
+          letterSpacing: '-0.02em',
+        }}
+      >
         Add New Person
       </h1>
       <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 24 }}>
@@ -122,10 +136,19 @@ export default function AddPage() {
           }}
         >
           <div>
-            <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-primary)', marginBottom: 2 }}>
+            <p
+              style={{
+                fontSize: 14,
+                fontWeight: 500,
+                color: 'var(--text-primary)',
+                marginBottom: 2,
+              }}
+            >
               First-time visitor
             </p>
-            <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>Mark if this is their first visit</p>
+            <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+              Mark if this is their first visit
+            </p>
           </div>
           <button
             onClick={() => setIsFirstTime(!isFirstTime)}
@@ -202,7 +225,15 @@ const inputStyle: React.CSSProperties = {
   outline: 'none',
 };
 
-function FormField({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
+function FormField({
+  label,
+  required,
+  children,
+}: {
+  label: string;
+  required?: boolean;
+  children: React.ReactNode;
+}) {
   return (
     <div>
       <label

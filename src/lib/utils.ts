@@ -1,33 +1,46 @@
+import {
+  differenceInCalendarDays,
+  differenceInCalendarWeeks,
+  differenceInCalendarMonths,
+  isToday,
+  isYesterday,
+  parseISO,
+  compareDesc,
+  compareAsc,
+  format,
+  addDays,
+  isBefore,
+  startOfDay,
+  startOfToday,
+} from 'date-fns';
 import { type Person, type Note, type Todo, type Family, type ChurchAttendance } from './types';
 
 export function getTimeAgo(dateStr: string): string {
-  const now = new Date();
-  const date = new Date(dateStr);
-  const diffMs = now.getTime() - date.getTime();
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-  if (diffDays === 0) return 'Today';
-  if (diffDays === 1) return 'Yesterday';
-  if (diffDays < 7) return `${diffDays} days ago`;
-  if (diffDays < 14) return '1 week ago';
-  if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
-  if (diffDays < 60) return '1 month ago';
-  return `${Math.floor(diffDays / 30)} months ago`;
+  const date = parseISO(dateStr);
+  if (isToday(date)) return 'Today';
+  if (isYesterday(date)) return 'Yesterday';
+  const days = differenceInCalendarDays(new Date(), date);
+  if (days < 7) return `${days} days ago`;
+  const weeks = differenceInCalendarWeeks(new Date(), date);
+  if (weeks === 1) return '1 week ago';
+  if (days < 30) return `${weeks} weeks ago`;
+  const months = differenceInCalendarMonths(new Date(), date);
+  if (months === 1) return '1 month ago';
+  return `${months} months ago`;
 }
 
 export function getDaysAgoNumber(dateStr?: string): number {
   if (!dateStr) return Infinity;
-  const diffMs = Date.now() - new Date(dateStr).getTime();
-  return Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  return differenceInCalendarDays(new Date(), parseISO(dateStr));
 }
 
-export function getDueLabel(dateStr?: string): { label: string; status: 'overdue' | 'due-soon' | 'ok' | 'none' } {
+export function getDueLabel(dateStr?: string): {
+  label: string;
+  status: 'overdue' | 'due-soon' | 'ok' | 'none';
+} {
   if (!dateStr) return { label: 'No follow-up set', status: 'none' };
 
-  const now = new Date();
-  const due = new Date(dateStr);
-  const diffMs = due.getTime() - now.getTime();
-  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+  const diffDays = differenceInCalendarDays(parseISO(dateStr), startOfToday());
 
   if (diffDays < 0) return { label: `Overdue by ${Math.abs(diffDays)} days`, status: 'overdue' };
   if (diffDays === 0) return { label: 'Due today', status: 'due-soon' };
@@ -45,7 +58,7 @@ export function getPriorityScore(person: Person): number {
   if (person.assignedShepherdIds.length === 0) score += 40;
 
   if (person.lastContactDate) {
-    const daysSince = Math.floor((Date.now() - new Date(person.lastContactDate).getTime()) / (1000 * 60 * 60 * 24));
+    const daysSince = differenceInCalendarDays(new Date(), parseISO(person.lastContactDate));
     score += Math.min(daysSince, 50);
   } else {
     score += 60;
@@ -55,7 +68,10 @@ export function getPriorityScore(person: Person): number {
 }
 
 /** Get the most urgent due status across a set of people */
-export function getFamilyUrgency(members: Person[]): { label: string; status: 'overdue' | 'due-soon' | 'ok' | 'none' } {
+export function getFamilyUrgency(members: Person[]): {
+  label: string;
+  status: 'overdue' | 'due-soon' | 'ok' | 'none';
+} {
   type DueResult = { label: string; status: 'overdue' | 'due-soon' | 'ok' | 'none' };
   const rank: Record<DueResult['status'], number> = { overdue: 3, 'due-soon': 2, ok: 1, none: 0 };
   return members.reduce<DueResult>(
@@ -71,7 +87,7 @@ export function getFamilyUrgency(members: Person[]): { label: string; status: 'o
 export function getFamilyLastContact(members: Person[]): string | undefined {
   return members
     .filter((m) => m.lastContactDate)
-    .sort((a, b) => new Date(b.lastContactDate!).getTime() - new Date(a.lastContactDate!).getTime())[0]
+    .sort((a, b) => compareDesc(parseISO(a.lastContactDate!), parseISO(b.lastContactDate!)))[0]
     ?.lastContactDate;
 }
 
@@ -82,26 +98,30 @@ export function getFamilyPriorityScore(members: Person[]): number {
 export function getPersonNotes(personId: string, notes: Note[]): Note[] {
   return notes
     .filter((n) => n.personId === personId)
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    .sort((a, b) => compareDesc(parseISO(a.createdAt), parseISO(b.createdAt)));
 }
 
 export function getFamilyNotes(familyId: string, people: Person[], notes: Note[]): Note[] {
   const family_member_ids = people.filter((p) => p.familyId === familyId).map((p) => p.id);
   return notes
-    .filter((n) => n.familyId === familyId || (n.personId && family_member_ids.includes(n.personId)))
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    .filter(
+      (n) => n.familyId === familyId || (n.personId && family_member_ids.includes(n.personId))
+    )
+    .sort((a, b) => compareDesc(parseISO(a.createdAt), parseISO(b.createdAt)));
 }
 
 export function getFamilyTodos(familyId: string, people: Person[], todos: Todo[]): Todo[] {
   const family_member_ids = people.filter((p) => p.familyId === familyId).map((p) => p.id);
   return todos
-    .filter((t) => t.familyId === familyId || (t.personId && family_member_ids.includes(t.personId)))
+    .filter(
+      (t) => t.familyId === familyId || (t.personId && family_member_ids.includes(t.personId))
+    )
     .sort((a, b) => {
       if (a.completed !== b.completed) return a.completed ? 1 : -1;
-      if (a.dueDate && b.dueDate) return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+      if (a.dueDate && b.dueDate) return compareAsc(parseISO(a.dueDate), parseISO(b.dueDate));
       if (a.dueDate) return -1;
       if (b.dueDate) return 1;
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      return compareDesc(parseISO(a.createdAt), parseISO(b.createdAt));
     });
 }
 
@@ -182,7 +202,6 @@ export function getNoteTypeLabel(type: Note['type']): string {
   return labels[type] || type;
 }
 
-
 export type MapProvider = 'apple' | 'google' | 'waze';
 
 export const MAP_PROVIDER_LABELS: Record<MapProvider, string> = {
@@ -211,7 +230,8 @@ export function formatPhone(raw: string): string {
   if (digits.length === 0) return '';
   if (digits.length <= 3) return `(${digits}`;
   if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
-  if (digits.length <= 10) return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+  if (digits.length <= 10)
+    return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
   // More than 10 digits — keep as-is but formatted for first 10 + remainder
   return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)} ${digits.slice(10)}`;
 }
@@ -222,18 +242,19 @@ export function normalizePhone(phone: string): string {
 }
 
 /** Group notes by month for display */
-export function groupByMonth<T extends { createdAt: string }>(items: T[]): { label: string; items: T[] }[] {
+export function groupByMonth<T extends { createdAt: string }>(
+  items: T[]
+): { label: string; items: T[] }[] {
   const groups: Map<string, T[]> = new Map();
   for (const item of items) {
-    const d = new Date(item.createdAt);
-    const key = `${d.getFullYear()}-${String(d.getMonth()).padStart(2, '0')}`;
+    const key = format(parseISO(item.createdAt), 'yyyy-MM');
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key)!.push(item);
   }
   return Array.from(groups.entries())
     .sort((a, b) => b[0].localeCompare(a[0]))
     .map(([, items]) => ({
-      label: new Date(items[0].createdAt).toLocaleString('default', { month: 'long', year: 'numeric' }),
+      label: format(parseISO(items[0].createdAt), 'MMMM yyyy'),
       items,
     }));
 }
@@ -249,11 +270,14 @@ function toIcsDateOnly(d: Date): string {
 }
 
 /** Returns a Google Calendar "Add event" URL (no OAuth required) */
-export function buildGoogleCalendarUrl(title: string, start: Date, end: Date, allDay = false): string {
+export function buildGoogleCalendarUrl(
+  title: string,
+  start: Date,
+  end: Date,
+  allDay = false
+): string {
   const startStr = allDay ? toIcsDateOnly(start) : toIcsDate(start);
-  const endStr = allDay
-    ? toIcsDateOnly(new Date(start.getTime() + 24 * 60 * 60 * 1000))
-    : toIcsDate(end);
+  const endStr = allDay ? toIcsDateOnly(addDays(start, 1)) : toIcsDate(end);
   const params = new URLSearchParams({
     action: 'TEMPLATE',
     text: title,
@@ -263,12 +287,18 @@ export function buildGoogleCalendarUrl(title: string, start: Date, end: Date, al
 }
 
 /** Returns a .ics (iCalendar) file string for download */
-export function buildIcsContent(title: string, uid: string, start: Date, end: Date, allDay = false): string {
+export function buildIcsContent(
+  title: string,
+  uid: string,
+  start: Date,
+  end: Date,
+  allDay = false
+): string {
   const dtStart = allDay
     ? `DTSTART;VALUE=DATE:${toIcsDateOnly(start)}`
     : `DTSTART:${toIcsDate(start)}`;
   const dtEnd = allDay
-    ? `DTEND;VALUE=DATE:${toIcsDateOnly(new Date(start.getTime() + 24 * 60 * 60 * 1000))}`
+    ? `DTEND;VALUE=DATE:${toIcsDateOnly(addDays(start, 1))}`
     : `DTEND:${toIcsDate(end)}`;
   return [
     'BEGIN:VCALENDAR',
@@ -299,8 +329,7 @@ export function categorizeTodos(todos: Todo[]): {
   const noDueDate: Todo[] = [];
   const completed: Todo[] = [];
 
-  const now = new Date();
-  const todayStr = now.toISOString().slice(0, 10);
+  const todayStart = startOfToday();
 
   for (const t of todos) {
     if (t.completed) {
@@ -310,10 +339,10 @@ export function categorizeTodos(todos: Todo[]): {
     if (!t.dueDate) {
       noDueDate.push(t);
     } else {
-      const dueStr = new Date(t.dueDate).toISOString().slice(0, 10);
-      if (dueStr < todayStr) {
+      const dueDay = startOfDay(parseISO(t.dueDate));
+      if (isBefore(dueDay, todayStart)) {
         overdue.push(t);
-      } else if (dueStr === todayStr) {
+      } else if (isToday(dueDay)) {
         today.push(t);
       } else {
         upcoming.push(t);
@@ -321,11 +350,11 @@ export function categorizeTodos(todos: Todo[]): {
     }
   }
 
-  // Sort overdue by due date ascending (oldest first)
-  overdue.sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime());
-  // Sort upcoming by due date
-  upcoming.sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime());
-  completed.sort((a, b) => new Date(b.completedAt || b.createdAt).getTime() - new Date(a.completedAt || a.createdAt).getTime());
+  overdue.sort((a, b) => compareAsc(parseISO(a.dueDate!), parseISO(b.dueDate!)));
+  upcoming.sort((a, b) => compareAsc(parseISO(a.dueDate!), parseISO(b.dueDate!)));
+  completed.sort((a, b) =>
+    compareDesc(parseISO(a.completedAt ?? a.createdAt), parseISO(b.completedAt ?? b.createdAt))
+  );
 
   return { overdue, today, upcoming, noDueDate, completed };
 }

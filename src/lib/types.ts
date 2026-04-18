@@ -7,13 +7,10 @@ export interface Persona {
   role: Role;
   assignedPeopleIds: string[];
   personId?: string; // links to a Person in data
-  userId?: string;   // Supabase auth user ID
+  userId?: string; // Supabase auth user ID
 }
 
-export type MembershipStatus =
-  | 'member'
-  | 'non-member'
-  | 'membership-track';
+export type MembershipStatus = 'member' | 'non-member' | 'membership-track';
 
 export type ChurchAttendance =
   | 'first-time-visitor'
@@ -26,8 +23,18 @@ export type Gender = 'male' | 'female';
 export type MaritalStatus = 'single' | 'married' | 'widowed' | 'divorced';
 
 export const CHURCH_POSITIONS = [
-  'Elder', 'Deacon', 'Communication Team', 'Safety Team', 'IT Team',
-  'Welcome Team', 'Operation', 'Finance', 'PEP', 'Admin', 'Mission', 'Coffee',
+  'Elder',
+  'Deacon',
+  'Communication Team',
+  'Safety Team',
+  'IT Team',
+  'Welcome Team',
+  'Operation',
+  'Finance',
+  'PEP',
+  'Admin',
+  'Mission',
+  'Coffee',
 ] as const;
 
 export interface Person {
@@ -37,10 +44,10 @@ export interface Person {
   photo?: string;
   gender?: Gender;
   maritalStatus?: MaritalStatus;
-  birthday?: string;       // YYYY-MM-DD
-  baptismDate?: string;    // YYYY-MM-DD
+  birthday?: string; // YYYY-MM-DD
+  baptismDate?: string; // YYYY-MM-DD
   membershipDate?: string; // YYYY-MM-DD (member only)
-  anniversary?: string;    // YYYY-MM-DD (married only)
+  anniversary?: string; // YYYY-MM-DD (married only)
   phone?: string;
   homePhone?: string;
   email?: string;
@@ -71,7 +78,7 @@ export interface Family {
   label: string;
   photo?: string;
   tags: string[];
-  memberIds: string[];  // adult members
+  memberIds: string[]; // adult members
   childCount?: number; // number of children — names are never stored
   primaryContactId?: string;
   createdAt?: string;

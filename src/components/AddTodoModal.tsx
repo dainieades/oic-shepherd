@@ -1,8 +1,18 @@
 'use client';
 
+import { addHours, format } from 'date-fns';
 import { useState, useRef, useEffect } from 'react';
 import { useFloating, autoUpdate, offset, flip, size } from '@floating-ui/react';
-import { CaretRight, Trash, User, CalendarBlank, ArrowsClockwise, UserPlus, PlusCircle, CalendarPlus } from '@phosphor-icons/react';
+import {
+  CaretRight,
+  Trash,
+  User,
+  CalendarBlank,
+  ArrowsClockwise,
+  UserPlus,
+  PlusCircle,
+  CalendarPlus,
+} from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { useToast } from './Toast';
 import { type TodoRepeat, type Todo } from '@/lib/types';
@@ -20,16 +30,20 @@ interface AddTodoModalProps {
 }
 
 const REPEAT_OPTIONS: { value: TodoRepeat; label: string }[] = [
-  { value: 'none',      label: 'Never' },
-  { value: 'daily',     label: 'Every day' },
-  { value: 'weekly',    label: 'Every week' },
-  { value: 'biweekly',  label: 'Every 2 weeks' },
-  { value: 'monthly',   label: 'Every month' },
-  { value: 'yearly',    label: 'Every year' },
+  { value: 'none', label: 'Never' },
+  { value: 'daily', label: 'Every day' },
+  { value: 'weekly', label: 'Every week' },
+  { value: 'biweekly', label: 'Every 2 weeks' },
+  { value: 'monthly', label: 'Every month' },
+  { value: 'yearly', label: 'Every year' },
 ];
 
-
-export default function AddTodoModal({ onClose, prefillFamilyId, prefillPersonId, todo }: AddTodoModalProps) {
+export default function AddTodoModal({
+  onClose,
+  prefillFamilyId,
+  prefillPersonId,
+  todo,
+}: AddTodoModalProps) {
   const { data, addTodo, updateTodo, deleteTodo } = useApp();
   const { showToast } = useToast();
   const isEditing = !!todo;
@@ -43,7 +57,7 @@ export default function AddTodoModal({ onClose, prefillFamilyId, prefillPersonId
   );
   const [dateStr, setDateStr] = useState(() => {
     if (todo?.dueDate) return todo.dueDate.slice(0, 10);
-    return new Date().toISOString().slice(0, 10);
+    return format(new Date(), 'yyyy-MM-dd');
   });
   const [timeStr, setTimeStr] = useState(() => {
     if (todo?.dueDate && todo.dueDate.length >= 16) return todo.dueDate.slice(11, 16);
@@ -109,8 +123,8 @@ export default function AddTodoModal({ onClose, prefillFamilyId, prefillPersonId
   };
 
   function fmtDate() {
-    const d = new Date(`${dateStr  }T12:00:00`);
-    const datePart = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const [y, mo, d] = dateStr.split('-').map(Number);
+    const datePart = format(new Date(y, mo - 1, d), 'MMM d, yyyy');
     if (!includeTime) return datePart;
     const [hStr, mStr] = timeStr.split(':');
     const h = parseInt(hStr);
@@ -121,19 +135,33 @@ export default function AddTodoModal({ onClose, prefillFamilyId, prefillPersonId
 
   const repeatLabel = REPEAT_OPTIONS.find((r) => r.value === repeat)?.label ?? 'Never';
 
-return (
+  return (
     <>
       <div
-        style={{ position: 'fixed', inset: 0, background: 'rgba(30,26,24,0.45)', zIndex: 60, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}
-        onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+        style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(30,26,24,0.45)',
+          zIndex: 60,
+          display: 'flex',
+          alignItems: 'flex-end',
+          justifyContent: 'center',
+        }}
+        onClick={(e) => {
+          if (e.target === e.currentTarget) onClose();
+        }}
       >
         <div
           className="animate-slide-up"
           style={{
-            background: 'var(--surface)', borderRadius: '20px 20px 0 0',
-            width: '100%', maxWidth: 430,
+            background: 'var(--surface)',
+            borderRadius: '20px 20px 0 0',
+            width: '100%',
+            maxWidth: 430,
             height: 'calc(100dvh - 48px)',
-            display: 'flex', flexDirection: 'column', overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
             position: 'relative',
           }}
         >
@@ -142,11 +170,20 @@ return (
             <button
               onClick={() => setShowDeleteConfirm(true)}
               style={{
-                position: 'absolute', bottom: 28, left: 24,
-                width: 44, height: 44, borderRadius: '50%',
-                background: 'var(--red-light)', border: '1.5px solid var(--red-border)',
-                color: 'var(--red)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+                position: 'absolute',
+                bottom: 28,
+                left: 24,
+                width: 44,
+                height: 44,
+                borderRadius: '50%',
+                background: 'var(--red-light)',
+                border: '1.5px solid var(--red-border)',
+                color: 'var(--red)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
               }}
               title="Delete to-do"
             >
@@ -160,7 +197,11 @@ return (
                 data={data}
                 initialFamilyIds={familyIds}
                 initialPersonIds={personIds}
-                onConfirm={(fIds, pIds) => { setFamilyIds(fIds); setPersonIds(pIds); setShowWhoPicker(false); }}
+                onConfirm={(fIds, pIds) => {
+                  setFamilyIds(fIds);
+                  setPersonIds(pIds);
+                  setShowWhoPicker(false);
+                }}
                 onBack={() => setShowWhoPicker(false)}
               />
             </div>
@@ -169,74 +210,158 @@ return (
           {!showWhoPicker && (
             <>
               {/* Header — fixed */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 12px', flexShrink: 0, borderBottom: '1px solid var(--border-light)' }}>
-                <button onClick={onClose} style={{ fontSize: 14, color: 'var(--text-secondary)', background: 'none', border: 'none', cursor: 'pointer' }}>Cancel</button>
-                <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>{isEditing ? 'Edit to-do' : 'Add to-do'}</span>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '14px 20px 12px',
+                  flexShrink: 0,
+                  borderBottom: '1px solid var(--border-light)',
+                }}
+              >
+                <button
+                  onClick={onClose}
+                  style={{
+                    fontSize: 14,
+                    color: 'var(--text-secondary)',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Cancel
+                </button>
+                <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
+                  {isEditing ? 'Edit to-do' : 'Add to-do'}
+                </span>
                 <button
                   onClick={handleSave}
                   disabled={!title.trim()}
-                  style={{ height: 32, padding: '0 14px', borderRadius: 8, background: title.trim() ? 'var(--sage)' : 'var(--border)', color: title.trim() ? '#fff' : 'var(--text-muted)', fontSize: 14, fontWeight: 600, border: 'none', cursor: title.trim() ? 'pointer' : 'default', transition: 'background 0.15s' }}
-                >Save</button>
+                  style={{
+                    height: 32,
+                    padding: '0 14px',
+                    borderRadius: 8,
+                    background: title.trim() ? 'var(--sage)' : 'var(--border)',
+                    color: title.trim() ? '#fff' : 'var(--text-muted)',
+                    fontSize: 14,
+                    fontWeight: 600,
+                    border: 'none',
+                    cursor: title.trim() ? 'pointer' : 'default',
+                    transition: 'background 0.15s',
+                  }}
+                >
+                  Save
+                </button>
               </div>
 
               {/* Scrollable body */}
-              <div style={{ flex: 1, overflowY: 'auto', padding: `16px 20px ${isEditing ? 80 : 16}px`, background: 'var(--bg)', display: 'flex', flexDirection: 'column' }}>
+              <div
+                style={{
+                  flex: 1,
+                  overflowY: 'auto',
+                  padding: `16px 20px ${isEditing ? 80 : 16}px`,
+                  background: 'var(--bg)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
                 {/* Field rows */}
-                <div style={{ background: 'var(--surface)', borderRadius: 'var(--radius)', border: '1px solid var(--border-light)', overflow: 'hidden', padding: '0 16px', flexShrink: 0 }}>
-                <div className="no-last-border" style={{ display: 'flex', flexDirection: 'column' }}>
+                <div
+                  style={{
+                    background: 'var(--surface)',
+                    borderRadius: 'var(--radius)',
+                    border: '1px solid var(--border-light)',
+                    overflow: 'hidden',
+                    padding: '0 16px',
+                    flexShrink: 0,
+                  }}
+                >
+                  <div
+                    className="no-last-border"
+                    style={{ display: 'flex', flexDirection: 'column' }}
+                  >
+                    {/* For */}
+                    <FieldRow
+                      icon={<User size={16} />}
+                      label="For"
+                      value={whoLabel ?? 'Select…'}
+                      valueColor={!whoLabel ? 'var(--text-muted)' : undefined}
+                      onClick={() => setShowWhoPicker(true)}
+                      trailingIcon={<PlusCircle size={22} color="var(--sage)" weight="fill" />}
+                    />
 
-                  {/* For */}
-                  <FieldRow
-                    icon={<User size={16} />}
-                    label="For"
-                    value={whoLabel ?? 'Select…'}
-                    valueColor={!whoLabel ? 'var(--text-muted)' : undefined}
-                    onClick={() => setShowWhoPicker(true)}
-                    trailingIcon={<PlusCircle size={22} color="var(--sage)" weight="fill" />}
-                  />
+                    {/* Date */}
+                    <FieldRow
+                      icon={<CalendarBlank size={16} />}
+                      label="Date"
+                      value={fmtDate()}
+                      onClick={() => setShowDatePicker(true)}
+                    />
 
-                  {/* Date */}
-                  <FieldRow
-                    icon={<CalendarBlank size={16} />}
-                    label="Date"
-                    value={fmtDate()}
-                    onClick={() => setShowDatePicker(true)}
-                  />
+                    {/* Add to Calendar */}
+                    <FieldRow
+                      btnRef={calendarBtnRef}
+                      icon={<CalendarPlus size={16} />}
+                      label="Calendar"
+                      value="Add to calendar"
+                      valueColor="var(--text-muted)"
+                      onClick={() => setShowCalendarPicker(true)}
+                    />
 
-                  {/* Add to Calendar */}
-                  <FieldRow
-                    btnRef={calendarBtnRef}
-                    icon={<CalendarPlus size={16} />}
-                    label="Calendar"
-                    value="Add to calendar"
-                    valueColor="var(--text-muted)"
-                    onClick={() => setShowCalendarPicker(true)}
-                  />
+                    {/* Repeat */}
+                    <FieldRow
+                      btnRef={repeatBtnRef}
+                      icon={<ArrowsClockwise size={16} />}
+                      label="Repeat"
+                      value={repeatLabel}
+                      valueColor={repeat === 'none' ? 'var(--text-muted)' : undefined}
+                      onClick={() => setShowRepeatPicker(true)}
+                    />
 
-                  {/* Repeat */}
-                  <FieldRow
-                    btnRef={repeatBtnRef}
-                    icon={<ArrowsClockwise size={16} />}
-                    label="Repeat"
-                    value={repeatLabel}
-                    valueColor={repeat === 'none' ? 'var(--text-muted)' : undefined}
-                    onClick={() => setShowRepeatPicker(true)}
-                  />
-
-                  {/* Created by — edit mode only */}
-                  {isEditing && todo && (() => {
-                    const creator = data.personas.find((p) => p.id === todo.createdBy);
-                    return (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 10, paddingTop: 12, paddingBottom: 12 }}>
-                        <span style={{ width: 24, display: 'flex', justifyContent: 'center', flexShrink: 0, color: 'var(--text-muted)' }}>
-                          <UserPlus size={16} />
-                        </span>
-                        <span style={{ fontSize: 12, color: 'var(--text-muted)', width: 60, flexShrink: 0 }}>Created by</span>
-                        <span style={{ flex: 1, fontSize: 14, color: 'var(--text-secondary)' }}>{creator?.name ?? 'Unknown'}</span>
-                      </div>
-                    );
-                  })()}
-                </div>
+                    {/* Created by — edit mode only */}
+                    {isEditing &&
+                      todo &&
+                      (() => {
+                        const creator = data.personas.find((p) => p.id === todo.createdBy);
+                        return (
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 10,
+                              paddingTop: 12,
+                              paddingBottom: 12,
+                            }}
+                          >
+                            <span
+                              style={{
+                                width: 24,
+                                display: 'flex',
+                                justifyContent: 'center',
+                                flexShrink: 0,
+                                color: 'var(--text-muted)',
+                              }}
+                            >
+                              <UserPlus size={16} />
+                            </span>
+                            <span
+                              style={{
+                                fontSize: 12,
+                                color: 'var(--text-muted)',
+                                width: 60,
+                                flexShrink: 0,
+                              }}
+                            >
+                              Created by
+                            </span>
+                            <span style={{ flex: 1, fontSize: 14, color: 'var(--text-secondary)' }}>
+                              {creator?.name ?? 'Unknown'}
+                            </span>
+                          </div>
+                        );
+                      })()}
+                  </div>
                 </div>
 
                 {/* Title */}
@@ -246,11 +371,20 @@ return (
                   placeholder="To-dos are upcoming things to act on — a call to make, a visit to plan, or anything you want to follow up on."
                   autoFocus
                   style={{
-                    flex: 1, width: '100%', marginTop: 16,
-                    padding: 12, minHeight: 220,
-                    background: 'var(--surface)', border: '1px solid var(--border-light)',
-                    borderRadius: 10, fontSize: 15, color: 'var(--text-primary)',
-                    resize: 'vertical', outline: 'none', lineHeight: 1.5, boxSizing: 'border-box',
+                    flex: 1,
+                    width: '100%',
+                    marginTop: 16,
+                    padding: 12,
+                    minHeight: 220,
+                    background: 'var(--surface)',
+                    border: '1px solid var(--border-light)',
+                    borderRadius: 10,
+                    fontSize: 15,
+                    color: 'var(--text-primary)',
+                    resize: 'vertical',
+                    outline: 'none',
+                    lineHeight: 1.5,
+                    boxSizing: 'border-box',
                   }}
                 />
               </div>
@@ -264,7 +398,12 @@ return (
           date={dateStr}
           time={timeStr}
           includeTime={includeTime}
-          onConfirm={(d, t, it) => { setDateStr(d); setTimeStr(t); setIncludeTime(it); setShowDatePicker(false); }}
+          onConfirm={(d, t, it) => {
+            setDateStr(d);
+            setTimeStr(t);
+            setIncludeTime(it);
+            setShowDatePicker(false);
+          }}
           onClose={() => setShowDatePicker(false)}
         />
       )}
@@ -282,7 +421,10 @@ return (
         <DeleteConfirmDialog
           label="Delete this to-do?"
           onCancel={() => setShowDeleteConfirm(false)}
-          onConfirm={() => { deleteTodo(todo.id); onClose(); }}
+          onConfirm={() => {
+            deleteTodo(todo.id);
+            onClose();
+          }}
         />
       )}
       {showCalendarPicker && (
@@ -298,15 +440,28 @@ return (
   );
 }
 
-function CalendarPickerMenu({ anchorRef, title, dueDate, allDay, onClose }: { anchorRef: React.RefObject<HTMLButtonElement | null>; title: string; dueDate: string; allDay: boolean; onClose: () => void }) {
+function CalendarPickerMenu({
+  anchorRef,
+  title,
+  dueDate,
+  allDay,
+  onClose,
+}: {
+  anchorRef: React.RefObject<HTMLButtonElement | null>;
+  title: string;
+  dueDate: string;
+  allDay: boolean;
+  onClose: () => void;
+}) {
   const start = new Date(dueDate);
-  const end = new Date(start.getTime() + 60 * 60 * 1000);
+  const end = addHours(start, 1);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       const floating = refs.floating.current;
       if (
-        floating && !floating.contains(e.target as Node) &&
+        floating &&
+        !floating.contains(e.target as Node) &&
         (!anchorRef?.current || !anchorRef.current.contains(e.target as Node))
       ) {
         onClose();
@@ -355,10 +510,17 @@ function CalendarPickerMenu({ anchorRef, title, dueDate, allDay, onClose }: { an
   }, [anchorRef, refs]);
 
   const itemStyle: React.CSSProperties = {
-    width: '100%', display: 'flex', alignItems: 'center', gap: 10,
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    gap: 10,
     padding: '10px 14px',
-    background: 'none', border: 'none', borderBottom: '1px solid var(--border-light)',
-    fontSize: 14, cursor: 'pointer', textAlign: 'left',
+    background: 'none',
+    border: 'none',
+    borderBottom: '1px solid var(--border-light)',
+    fontSize: 14,
+    cursor: 'pointer',
+    textAlign: 'left',
     color: 'var(--text-primary)',
   };
 
@@ -388,8 +550,22 @@ function CalendarPickerMenu({ anchorRef, title, dueDate, allDay, onClose }: { an
   );
 }
 
-function FieldRow({ btnRef, icon, label, value, valueColor, onClick, trailingIcon }: {
-  btnRef?: React.RefObject<HTMLButtonElement | null>; icon: React.ReactNode; label: string; value: string; valueColor?: string; onClick: () => void; trailingIcon?: React.ReactNode;
+function FieldRow({
+  btnRef,
+  icon,
+  label,
+  value,
+  valueColor,
+  onClick,
+  trailingIcon,
+}: {
+  btnRef?: React.RefObject<HTMLButtonElement | null>;
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  valueColor?: string;
+  onClick: () => void;
+  trailingIcon?: React.ReactNode;
 }) {
   return (
     <button
@@ -397,20 +573,43 @@ function FieldRow({ btnRef, icon, label, value, valueColor, onClick, trailingIco
       className="field-row-hover"
       onClick={onClick}
       style={{
-        display: 'flex', alignItems: 'center', gap: 10,
-        paddingTop: 12, paddingBottom: 12,
-        background: 'none', border: 'none', borderBottom: '1px solid var(--border-light)',
-        cursor: 'pointer', textAlign: 'left' as const,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 10,
+        paddingTop: 12,
+        paddingBottom: 12,
+        background: 'none',
+        border: 'none',
+        borderBottom: '1px solid var(--border-light)',
+        cursor: 'pointer',
+        textAlign: 'left' as const,
       }}
     >
-      <span style={{ width: 24, display: 'flex', justifyContent: 'center', flexShrink: 0, color: 'var(--text-muted)' }}>{icon}</span>
-      <span style={{ fontSize: 12, color: 'var(--text-muted)', width: 60, flexShrink: 0 }}>{label}</span>
-      <span style={{
-        fontSize: 14, color: valueColor ?? 'var(--text-primary)', flex: 1,
-        wordBreak: 'break-word',
-      }}>{value}</span>
+      <span
+        style={{
+          width: 24,
+          display: 'flex',
+          justifyContent: 'center',
+          flexShrink: 0,
+          color: 'var(--text-muted)',
+        }}
+      >
+        {icon}
+      </span>
+      <span style={{ fontSize: 12, color: 'var(--text-muted)', width: 60, flexShrink: 0 }}>
+        {label}
+      </span>
+      <span
+        style={{
+          fontSize: 14,
+          color: valueColor ?? 'var(--text-primary)',
+          flex: 1,
+          wordBreak: 'break-word',
+        }}
+      >
+        {value}
+      </span>
       {trailingIcon ?? <CaretRight size={14} color="var(--text-muted)" />}
     </button>
   );
 }
-

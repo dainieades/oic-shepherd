@@ -1,10 +1,22 @@
 'use client';
 
+import { format, parseISO } from 'date-fns';
 import { use, useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useApp } from '@/lib/context';
-import { getTimeAgo, getMembershipLabel, getChurchAttendanceLabel, getPersonNotes, getNoteTypeLabel, groupByMonth, categorizeTodos, getMapUrl, type MapProvider, MAP_PROVIDERS_STORAGE_KEY } from '@/lib/utils';
+import {
+  getTimeAgo,
+  getMembershipLabel,
+  getChurchAttendanceLabel,
+  getPersonNotes,
+  getNoteTypeLabel,
+  groupByMonth,
+  categorizeTodos,
+  getMapUrl,
+  type MapProvider,
+  MAP_PROVIDERS_STORAGE_KEY,
+} from '@/lib/utils';
 import { type Todo, type Note, type AppData, type AppRole } from '@/lib/types';
 import AddLogModal from '@/components/AddLogModal';
 import AddTodoModal from '@/components/AddTodoModal';
@@ -12,12 +24,52 @@ import AddNoticeModal, { URGENCY_STYLE } from '@/components/AddNoticeModal';
 import TodoLogPrompt from '@/components/TodoLogPrompt';
 import EditPersonDrawer from '@/components/EditPersonDrawer';
 import GroupPreviewModal from '@/components/GroupPreviewModal';
-import { Notepad, CheckCircle, Info, Globe, Pulse, GenderIntersex, Cake, Heart, Sparkle, IdentificationCard, CalendarCheck, Drop, Compass, Buildings, Phone, PhoneCall, Envelope, House, HandHeart, UsersFour, PencilSimpleIcon, Bell, CaretLeft, CaretRight, DotsThreeVertical, Camera, Trash, Archive, Check, Clock, ArrowsClockwise, CaretDown, Plus } from '@phosphor-icons/react';
+import {
+  Notepad,
+  CheckCircle,
+  Info,
+  Globe,
+  Pulse,
+  GenderIntersex,
+  Cake,
+  Heart,
+  Sparkle,
+  IdentificationCard,
+  CalendarCheck,
+  Drop,
+  Compass,
+  Buildings,
+  Phone,
+  PhoneCall,
+  Envelope,
+  House,
+  HandHeart,
+  UsersFour,
+  PencilSimpleIcon,
+  Bell,
+  CaretLeft,
+  CaretRight,
+  DotsThreeVertical,
+  Camera,
+  Trash,
+  Archive,
+  Check,
+  Clock,
+  ArrowsClockwise,
+  CaretDown,
+  Plus,
+} from '@phosphor-icons/react';
 import { type Notice } from '@/lib/types';
 
 type Tab = 'logs' | 'todos' | 'notices' | 'info' | 'sheep';
 
-const TAB_LABELS: Record<Tab, string> = { logs: 'Logs', todos: 'To-dos', notices: 'Notices', info: 'Info', sheep: 'Sheep' };
+const TAB_LABELS: Record<Tab, string> = {
+  logs: 'Logs',
+  todos: 'To-dos',
+  notices: 'Notices',
+  info: 'Info',
+  sheep: 'Sheep',
+};
 
 function TabIcon({ tab, active }: { tab: Tab; active: boolean }) {
   const weight = active ? 'fill' : 'regular';
@@ -28,29 +80,40 @@ function TabIcon({ tab, active }: { tab: Tab; active: boolean }) {
   return <Info size={16} weight={weight} />;
 }
 
-
 function fmtDue(iso: string) {
-  return new Date(iso).toLocaleString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+  return format(parseISO(iso), 'M/d/yyyy h:mm a');
 }
 
 const noteTypeColors: Record<string, { bg: string; color: string }> = {
-  'check-in':       { bg: 'var(--sage-light)', color: 'var(--sage)' },
+  'check-in': { bg: 'var(--sage-light)', color: 'var(--sage)' },
   'prayer-request': { bg: 'var(--sage-light)', color: 'var(--sage)' },
-  'event':          { bg: 'var(--sage-light)', color: 'var(--sage)' },
-  'general':        { bg: 'var(--sage-light)', color: 'var(--sage)' },
+  event: { bg: 'var(--sage-light)', color: 'var(--sage)' },
+  general: { bg: 'var(--sage-light)', color: 'var(--sage)' },
 };
 
 export default function PersonPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { data, currentPersona, toggleTodo, canViewNote, updatePerson, deletePerson, assignShepherds } = useApp();
+  const {
+    data,
+    currentPersona,
+    toggleTodo,
+    canViewNote,
+    updatePerson,
+    deletePerson,
+    assignShepherds,
+  } = useApp();
   // Compute permission early so we can pick the correct initial tab
   const _personCheck = data.people.find((p) => p.id === id);
   const _canManageCheck = _personCheck
-    ? (currentPersona.role === 'admin' || currentPersona.personId === _personCheck.id || currentPersona.assignedPeopleIds.includes(_personCheck.id))
+    ? currentPersona.role === 'admin' ||
+      currentPersona.personId === _personCheck.id ||
+      currentPersona.assignedPeopleIds.includes(_personCheck.id)
     : true;
-  const initialTab: Tab = _canManageCheck ? ((searchParams.get('tab') as Tab | null) ?? 'logs') : 'info';
+  const initialTab: Tab = _canManageCheck
+    ? ((searchParams.get('tab') as Tab | null) ?? 'logs')
+    : 'info';
   const [tab, setTabState] = useState<Tab>(initialTab);
 
   const setTab = (t: Tab) => {
@@ -100,7 +163,11 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
 
   const person = data.people.find((p) => p.id === id);
   if (!person) {
-    return <div style={{ paddingTop: 64, textAlign: 'center', color: 'var(--text-muted)' }}>Person not found</div>;
+    return (
+      <div style={{ paddingTop: 64, textAlign: 'center', color: 'var(--text-muted)' }}>
+        Person not found
+      </div>
+    );
   }
 
   // Permission: can manage this person if admin, or they are in my assigned people, or it's myself
@@ -113,23 +180,28 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
   // Any shepherd or admin can edit info (canManage is stricter — only for tabs/logs)
   const canEdit = currentPersona.role === 'admin' || currentPersona.role === 'shepherd';
 
-  const family    = person.familyId ? data.families.find((f) => f.id === person.familyId) : null;
-  const groups    = data.groups.filter((g) => person.groupIds.includes(g.id));
+  const family = person.familyId ? data.families.find((f) => f.id === person.familyId) : null;
+  const groups = data.groups.filter((g) => person.groupIds.includes(g.id));
   const personaPersonIds = new Set(data.personas.map((p) => p.personId).filter(Boolean));
   const shepherds: { id: string; name: string; personId?: string }[] = [
     ...data.personas.filter((p) => person.assignedShepherdIds.includes(p.id)),
     ...data.people
-      .filter((p) => p.isShepherd && !personaPersonIds.has(p.id) && person.assignedShepherdIds.includes(p.id))
+      .filter(
+        (p) =>
+          p.isShepherd && !personaPersonIds.has(p.id) && person.assignedShepherdIds.includes(p.id)
+      )
       .map((p) => ({ id: p.id, name: p.englishName, personId: p.id })),
   ];
-  const notes     = getPersonNotes(person.id, data.notes).filter((n) => canViewNote(n));
-  const todos     = data.todos.filter((t) => t.personId === person.id);
-  const notices   = (data.notices ?? []).filter((n) => n.personId === person.id);
+  const notes = getPersonNotes(person.id, data.notes).filter((n) => canViewNote(n));
+  const todos = data.todos.filter((t) => t.personId === person.id);
+  const notices = (data.notices ?? []).filter((n) => n.personId === person.id);
   const categorized = categorizeTodos(todos);
   const incompleteTodosCount = todos.filter((t) => !t.completed).length;
 
   // Shepherd → Sheep relationship
-  const shepherdPersona = person.isShepherd ? data.personas.find((p) => p.personId === person.id) : null;
+  const shepherdPersona = person.isShepherd
+    ? data.personas.find((p) => p.personId === person.id)
+    : null;
   // For isShepherd people without a persona, their shepherd ID is their own person ID
   const shepherdId = shepherdPersona?.id ?? (person.isShepherd ? person.id : null);
   const sheep = shepherdId
@@ -141,16 +213,23 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
 
   // Build the visible tabs — non-managers see Info + Notices (if shepherd/admin); managers see all
   const visibleTabs: Tab[] = !canManage
-    ? (canSeeNotices ? ['notices', 'info'] : ['info'])
+    ? canSeeNotices
+      ? ['notices', 'info']
+      : ['info']
     : person.isShepherd
-    ? ['logs', 'todos', 'sheep', 'notices', 'info']
-    : ['logs', 'todos', 'notices', 'info'];
+      ? ['logs', 'todos', 'sheep', 'notices', 'info']
+      : ['logs', 'todos', 'notices', 'info'];
 
   // If the active tab isn't in the visible set (e.g. persona switched), clamp to info
   const activeTab = visibleTabs.includes(tab) ? tab : 'info';
 
   const firstName = person.englishName.split(' ')[0];
-  const initials = person.englishName.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase();
+  const initials = person.englishName
+    .split(' ')
+    .map((n) => n[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
 
   const handlePhotoFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -174,7 +253,9 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
   };
 
   const handleArchive = () => {
-    updatePerson(person.id, { churchAttendance: person.churchAttendance === 'archived' ? 'regular' : 'archived' });
+    updatePerson(person.id, {
+      churchAttendance: person.churchAttendance === 'archived' ? 'regular' : 'archived',
+    });
     setConfirmAction(null);
     if (person.churchAttendance !== 'archived') router.back();
   };
@@ -187,23 +268,50 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
 
   return (
     <div style={{ paddingBottom: 32 }}>
-
       {/* ── Nav bar ── */}
-      <div style={{
-        position: 'sticky', top: 0, zIndex: 40,
-        background: 'var(--bg)',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        height: 54,
-      }}>
+      <div
+        style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 40,
+          background: 'var(--bg)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          height: 54,
+        }}
+      >
         <button
           onClick={() => router.back()}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 13, color: 'var(--sage)', background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0 }}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 4,
+            fontSize: 13,
+            color: 'var(--sage)',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            flexShrink: 0,
+          }}
         >
           <CaretLeft size={16} />
           Back
         </button>
 
-        <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)', flex: 1, textAlign: 'center', padding: '0 8px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <span
+          style={{
+            fontSize: 14,
+            fontWeight: 500,
+            color: 'var(--text-secondary)',
+            flex: 1,
+            textAlign: 'center',
+            padding: '0 8px',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}
+        >
           {firstName}
         </span>
 
@@ -211,7 +319,21 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
           {activeTab === 'sheep' ? (
             <button
               onClick={() => setShowSheepPicker(true)}
-              style={{ height: scrolled ? 30 : 36, padding: scrolled ? '0 10px' : '0 12px', borderRadius: 8, background: 'var(--sage)', color: '#fff', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5, fontSize: scrolled ? 13 : 14, fontWeight: 600, whiteSpace: 'nowrap' }}
+              style={{
+                height: scrolled ? 30 : 36,
+                padding: scrolled ? '0 10px' : '0 12px',
+                borderRadius: 8,
+                background: 'var(--sage)',
+                color: '#fff',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 5,
+                fontSize: scrolled ? 13 : 14,
+                fontWeight: 600,
+                whiteSpace: 'nowrap',
+              }}
             >
               <PencilSimpleIcon size={scrolled ? 13 : 15} weight="bold" />
               Sheep
@@ -220,7 +342,21 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
             canEdit && (
               <button
                 onClick={() => setShowEditPerson(true)}
-                style={{ height: scrolled ? 30 : 36, padding: scrolled ? '0 10px' : '0 12px', borderRadius: 8, background: 'var(--sage)', color: '#fff', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5, fontSize: scrolled ? 13 : 14, fontWeight: 600, whiteSpace: 'nowrap' }}
+                style={{
+                  height: scrolled ? 30 : 36,
+                  padding: scrolled ? '0 10px' : '0 12px',
+                  borderRadius: 8,
+                  background: 'var(--sage)',
+                  color: '#fff',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 5,
+                  fontSize: scrolled ? 13 : 14,
+                  fontWeight: 600,
+                  whiteSpace: 'nowrap',
+                }}
               >
                 <PencilSimpleIcon size={scrolled ? 13 : 15} weight="bold" />
                 Info
@@ -230,17 +366,49 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
             canSeeNotices && (
               <button
                 onClick={() => setShowAddNotice(true)}
-                style={{ height: scrolled ? 30 : 36, padding: scrolled ? '0 12px' : '0 14px', borderRadius: 8, background: 'var(--sage)', color: '#fff', fontSize: scrolled ? 13 : 14, fontWeight: 600, border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                style={{
+                  height: scrolled ? 30 : 36,
+                  padding: scrolled ? '0 12px' : '0 14px',
+                  borderRadius: 8,
+                  background: 'var(--sage)',
+                  color: '#fff',
+                  fontSize: scrolled ? 13 : 14,
+                  fontWeight: 600,
+                  border: 'none',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 4,
+                }}
               >
-                + Notice
+                <Plus size={14} weight="bold" />
+                Notice
               </button>
             )
           ) : (
             <button
-              onClick={activeTab === 'logs' ? () => setShowAddLog(true) : () => setShowAddTodo(true)}
-              style={{ height: scrolled ? 30 : 36, padding: scrolled ? '0 12px' : '0 14px', borderRadius: 8, background: 'var(--sage)', color: '#fff', fontSize: scrolled ? 13 : 14, fontWeight: 600, border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}
+              onClick={
+                activeTab === 'logs' ? () => setShowAddLog(true) : () => setShowAddTodo(true)
+              }
+              style={{
+                height: scrolled ? 30 : 36,
+                padding: scrolled ? '0 12px' : '0 14px',
+                borderRadius: 8,
+                background: 'var(--sage)',
+                color: '#fff',
+                fontSize: scrolled ? 13 : 14,
+                fontWeight: 600,
+                border: 'none',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 4,
+              }}
             >
-              {activeTab === 'logs' ? '+ Log' : '+ To-do'}
+              <Plus size={14} weight="bold" />
+              {activeTab === 'logs' ? 'Log' : 'To-do'}
             </button>
           )}
 
@@ -248,36 +416,102 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
             <div ref={kebabRef} style={{ position: 'relative' }}>
               <button
                 onClick={() => setShowKebab((v) => !v)}
-                style={{ width: scrolled ? 30 : 36, height: scrolled ? 30 : 36, borderRadius: '50%', background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                style={{
+                  width: scrolled ? 30 : 36,
+                  height: scrolled ? 30 : 36,
+                  borderRadius: '50%',
+                  background: 'var(--surface)',
+                  border: '1px solid var(--border)',
+                  color: 'var(--text-muted)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                }}
               >
                 <DotsThreeVertical size={16} />
               </button>
               {showKebab && (
-                <div style={{
-                  position: 'absolute', top: 'calc(100% + 6px)', right: 0, zIndex: 50,
-                  background: 'var(--surface)', border: '1px solid var(--border)',
-                  borderRadius: 12, boxShadow: '0 8px 28px rgba(0,0,0,0.12)',
-                  minWidth: 180, overflow: 'hidden',
-                }}>
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 'calc(100% + 6px)',
+                    right: 0,
+                    zIndex: 50,
+                    background: 'var(--surface)',
+                    border: '1px solid var(--border)',
+                    borderRadius: 12,
+                    boxShadow: '0 8px 28px rgba(0,0,0,0.12)',
+                    minWidth: 180,
+                    overflow: 'hidden',
+                  }}
+                >
                   {activeTab !== 'info' && (
                     <button
-                      onClick={() => { setShowKebab(false); setShowEditPerson(true); }}
-                      style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '13px 16px', background: 'none', border: 'none', borderBottom: '1px solid var(--border-light)', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)', textAlign: 'left' }}
+                      onClick={() => {
+                        setShowKebab(false);
+                        setShowEditPerson(true);
+                      }}
+                      style={{
+                        width: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 10,
+                        padding: '13px 16px',
+                        background: 'none',
+                        border: 'none',
+                        borderBottom: '1px solid var(--border-light)',
+                        cursor: 'pointer',
+                        fontSize: 14,
+                        color: 'var(--text-primary)',
+                        textAlign: 'left',
+                      }}
                     >
                       <PencilSimpleIcon size={16} />
                       Edit info
                     </button>
                   )}
                   <button
-                    onClick={() => { setShowKebab(false); setConfirmAction('archive'); }}
-                    style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '13px 16px', background: 'none', border: 'none', borderBottom: '1px solid var(--border-light)', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)', textAlign: 'left' }}
+                    onClick={() => {
+                      setShowKebab(false);
+                      setConfirmAction('archive');
+                    }}
+                    style={{
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 10,
+                      padding: '13px 16px',
+                      background: 'none',
+                      border: 'none',
+                      borderBottom: '1px solid var(--border-light)',
+                      cursor: 'pointer',
+                      fontSize: 14,
+                      color: 'var(--text-primary)',
+                      textAlign: 'left',
+                    }}
                   >
                     <Archive size={16} />
                     {person.churchAttendance === 'archived' ? 'Unarchive' : 'Archive'}
                   </button>
                   <button
-                    onClick={() => { setShowKebab(false); setConfirmAction('delete'); }}
-                    style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '13px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--red)', textAlign: 'left' }}
+                    onClick={() => {
+                      setShowKebab(false);
+                      setConfirmAction('delete');
+                    }}
+                    style={{
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 10,
+                      padding: '13px 16px',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: 14,
+                      color: 'var(--red)',
+                      textAlign: 'left',
+                    }}
                   >
                     <Trash size={16} />
                     Delete
@@ -291,45 +525,118 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
 
       {/* ── Large title — scrolls away ── */}
       <div style={{ padding: '28px 0 20px', display: 'flex', alignItems: 'center', gap: 16 }}>
-
         {/* Avatar */}
         <button
           onClick={() => setShowPhotoMenu(true)}
-          style={{ flexShrink: 0, width: 72, height: 72, borderRadius: '50%', padding: 0, border: 'none', cursor: 'pointer', position: 'relative', background: 'none' }}
+          style={{
+            flexShrink: 0,
+            width: 72,
+            height: 72,
+            borderRadius: '50%',
+            padding: 0,
+            border: 'none',
+            cursor: 'pointer',
+            position: 'relative',
+            background: 'none',
+          }}
         >
           {person.photo ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={person.photo} alt={person.englishName} style={{ width: 72, height: 72, borderRadius: '50%', objectFit: 'cover', display: 'block' }} />
+            <img
+              src={person.photo}
+              alt={person.englishName}
+              style={{
+                width: 72,
+                height: 72,
+                borderRadius: '50%',
+                objectFit: 'cover',
+                display: 'block',
+              }}
+            />
           ) : (
-            <div style={{
-              width: 72, height: 72, borderRadius: '50%',
-              background: 'var(--sage-light)', border: '2px dashed var(--sage)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 22, fontWeight: 700, color: 'var(--sage)',
-            }}>
+            <div
+              style={{
+                width: 72,
+                height: 72,
+                borderRadius: '50%',
+                background: 'var(--sage-light)',
+                border: '2px dashed var(--sage)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 22,
+                fontWeight: 700,
+                color: 'var(--sage)',
+              }}
+            >
               {initials}
             </div>
           )}
           {/* Camera badge */}
-          <div style={{
-            position: 'absolute', bottom: 0, right: 0,
-            width: 22, height: 22, borderRadius: '50%',
-            background: 'var(--sage)', border: '2px solid var(--bg)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
+          <div
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              right: 0,
+              width: 22,
+              height: 22,
+              borderRadius: '50%',
+              background: 'var(--sage)',
+              border: '2px solid var(--bg)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
             <Camera size={11} color="#fff" weight="fill" />
           </div>
         </button>
 
         {/* Name + meta */}
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 7, marginBottom: 5 }}>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 7, minWidth: 0, overflow: 'hidden' }}>
-              <h1 style={{ fontSize: 26, fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1.15, letterSpacing: '-0.02em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 7,
+              marginBottom: 5,
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'baseline',
+                gap: 7,
+                minWidth: 0,
+                overflow: 'hidden',
+              }}
+            >
+              <h1
+                style={{
+                  fontSize: 26,
+                  fontWeight: 800,
+                  color: 'var(--text-primary)',
+                  lineHeight: 1.15,
+                  letterSpacing: '-0.02em',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
                 {person.englishName}
               </h1>
               {person.chineseName && (
-                <span style={{ fontSize: 14, fontWeight: 400, color: 'var(--text-muted)', flexShrink: 0 }}>{person.chineseName}</span>
+                <span
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 400,
+                    color: 'var(--text-muted)',
+                    flexShrink: 0,
+                  }}
+                >
+                  {person.chineseName}
+                </span>
               )}
             </div>
           </div>
@@ -339,12 +646,23 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
             </span>
             {groups.map((g) => (
               <>
-                <span key={`dot-${g.id}`} style={{ fontSize: 13, color: 'var(--text-muted)' }}>·</span>
-                <button key={g.id} onClick={() => setPreviewGroupId(g.id)} style={{
-                  fontSize: 11, padding: '2px 7px', borderRadius: '999px',
-                  background: 'var(--blue-light)', color: 'var(--blue)', fontWeight: 600,
-                  border: 'none', cursor: 'pointer',
-                }}>
+                <span key={`dot-${g.id}`} style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+                  ·
+                </span>
+                <button
+                  key={g.id}
+                  onClick={() => setPreviewGroupId(g.id)}
+                  style={{
+                    fontSize: 11,
+                    padding: '2px 7px',
+                    borderRadius: '999px',
+                    background: 'var(--blue-light)',
+                    color: 'var(--blue)',
+                    fontWeight: 600,
+                    border: 'none',
+                    cursor: 'pointer',
+                  }}
+                >
                   {g.name}
                 </button>
               </>
@@ -354,52 +672,122 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
       </div>
 
       {/* Hidden file input */}
-      <input ref={fileInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handlePhotoFile} />
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        style={{ display: 'none' }}
+        onChange={handlePhotoFile}
+      />
 
       {/* ── Tabs — sticky below nav bar ── */}
-      {visibleTabs.length > 1 && <div style={{
-        position: 'sticky', top: 54, zIndex: 39,
-        background: 'var(--bg)',
-        display: 'flex', borderBottom: '2px solid var(--border-light)', marginBottom: 20,
-      }}>
-        {visibleTabs.map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t as Tab)}
-            style={{
-              flex: 1, padding: '10px 0', fontSize: 13, fontWeight: activeTab === t ? 700 : 400,
-              color: activeTab === t ? 'var(--sage)' : 'var(--text-muted)',
-              background: 'none', border: 'none', cursor: 'pointer',
-              borderBottom: activeTab === t ? '2px solid var(--sage)' : '2px solid transparent',
-              marginBottom: -2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
-            }}
-          >
-            <TabIcon tab={t as Tab} active={activeTab === t} />
-            {TAB_LABELS[t as Tab]}
-            {t === 'todos' && incompleteTodosCount > 0 && (
-              <span style={{ fontSize: 11, fontWeight: 600, background: 'var(--sage)', color: 'white', borderRadius: 10, padding: '1px 6px', lineHeight: 1.5 }}>
-                {incompleteTodosCount}
-              </span>
-            )}
-            {t === 'notices' && notices.length > 0 && (
-              <span style={{ fontSize: 11, fontWeight: 600, background: 'var(--red)', color: 'white', borderRadius: 10, padding: '1px 6px', lineHeight: 1.5 }}>
-                {notices.length}
-              </span>
-            )}
-          </button>
-        ))}
-      </div>}
+      {visibleTabs.length > 1 && (
+        <div
+          style={{
+            position: 'sticky',
+            top: 54,
+            zIndex: 39,
+            background: 'var(--bg)',
+            display: 'flex',
+            borderBottom: '2px solid var(--border-light)',
+            marginBottom: 20,
+          }}
+        >
+          {visibleTabs.map((t) => (
+            <button
+              key={t}
+              onClick={() => setTab(t as Tab)}
+              style={{
+                flex: 1,
+                padding: '10px 0',
+                fontSize: 13,
+                fontWeight: activeTab === t ? 700 : 400,
+                color: activeTab === t ? 'var(--sage)' : 'var(--text-muted)',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                borderBottom: activeTab === t ? '2px solid var(--sage)' : '2px solid transparent',
+                marginBottom: -2,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 5,
+              }}
+            >
+              <TabIcon tab={t as Tab} active={activeTab === t} />
+              {TAB_LABELS[t as Tab]}
+              {t === 'todos' && incompleteTodosCount > 0 && (
+                <span
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 600,
+                    background: 'var(--sage)',
+                    color: 'white',
+                    borderRadius: 10,
+                    padding: '1px 6px',
+                    lineHeight: 1.5,
+                  }}
+                >
+                  {incompleteTodosCount}
+                </span>
+              )}
+              {t === 'notices' && notices.length > 0 && (
+                <span
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 600,
+                    background: 'var(--red)',
+                    color: 'white',
+                    borderRadius: 10,
+                    padding: '1px 6px',
+                    lineHeight: 1.5,
+                  }}
+                >
+                  {notices.length}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Logs tab */}
       {activeTab === 'logs' && (
         <div>
           {notes.length === 0 && (
             <div style={{ textAlign: 'center', padding: '32px 20px' }}>
-              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>No logs yet</p>
-              <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.6, maxWidth: 240, margin: '0 auto' }}>
-                Logs capture past interactions — a conversation, a check-in, a prayer request, or a moment you shared together.
+              <p
+                style={{
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: 'var(--text-secondary)',
+                  marginBottom: 6,
+                }}
+              >
+                No logs yet
               </p>
-              <p style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.5, maxWidth: 240, margin: '10px auto 0', fontWeight: 600 }}>
+              <p
+                style={{
+                  fontSize: 13,
+                  color: 'var(--text-muted)',
+                  lineHeight: 1.6,
+                  maxWidth: 240,
+                  margin: '0 auto',
+                }}
+              >
+                Logs capture past interactions — a conversation, a check-in, a prayer request, or a
+                moment you shared together.
+              </p>
+              <p
+                style={{
+                  fontSize: 12,
+                  color: 'var(--text-muted)',
+                  lineHeight: 1.5,
+                  maxWidth: 240,
+                  margin: '10px auto 0',
+                  fontWeight: 600,
+                }}
+              >
                 Only assigned shepherds and pastors can see these.
               </p>
             </div>
@@ -409,21 +797,81 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
               const typeStyle = noteTypeColors[note.type] || noteTypeColors.general;
               const creator = data.personas.find((p) => p.id === note.createdBy);
               return (
-                <button key={note.id} onClick={() => setEditingNote(note)} className="row-card-hover" style={{ textAlign: 'left', cursor: 'pointer', border: 'none', paddingTop: 10, paddingBottom: 10, borderBottom: '1px solid var(--border-light)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                <button
+                  key={note.id}
+                  onClick={() => setEditingNote(note)}
+                  className="row-card-hover"
+                  style={{
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                    border: 'none',
+                    paddingTop: 10,
+                    paddingBottom: 10,
+                    borderBottom: '1px solid var(--border-light)',
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      marginBottom: 4,
+                    }}
+                  >
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: '999px', background: typeStyle.bg, color: typeStyle.color }}>{getNoteTypeLabel(note.type).toUpperCase()}</span>
+                      <span
+                        style={{
+                          fontSize: 10,
+                          fontWeight: 600,
+                          padding: '2px 7px',
+                          borderRadius: '999px',
+                          background: typeStyle.bg,
+                          color: typeStyle.color,
+                        }}
+                      >
+                        {getNoteTypeLabel(note.type).toUpperCase()}
+                      </span>
                     </div>
-                    <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{getTimeAgo(note.createdAt)}</span>
+                    <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+                      {getTimeAgo(note.createdAt)}
+                    </span>
                   </div>
-                  {note.content && <p style={{ fontSize: 13, color: 'var(--text-primary)', lineHeight: 1.5, marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>{note.content}</p>}
-                  <p style={{ fontSize: 11, color: 'var(--text-muted)' }}>by {creator?.name ?? 'Unknown'}</p>
+                  {note.content && (
+                    <p
+                      style={{
+                        fontSize: 13,
+                        color: 'var(--text-primary)',
+                        lineHeight: 1.5,
+                        marginBottom: 4,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                      }}
+                    >
+                      {note.content}
+                    </p>
+                  )}
+                  <p style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+                    by {creator?.name ?? 'Unknown'}
+                  </p>
                 </button>
               );
             });
             return (
               <LogSection key={group.label} label={group.label} count={group.items.length}>
-                <div className="no-last-border" style={{ background: 'var(--surface)', borderRadius: 'var(--radius)', overflow: 'hidden', padding: 0 }}>{rows}</div>
+                <div
+                  className="no-last-border"
+                  style={{
+                    background: 'var(--surface)',
+                    borderRadius: 'var(--radius)',
+                    overflow: 'hidden',
+                    padding: 0,
+                  }}
+                >
+                  {rows}
+                </div>
               </LogSection>
             );
           })}
@@ -433,17 +881,77 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
       {/* Todos tab */}
       {activeTab === 'todos' && (
         <div>
-          {categorized.today.length > 0 && <TodoSection label="Today" todos={categorized.today} onToggle={handleTodoToggle} onEdit={setEditingTodo} data={data} />}
-          {categorized.upcoming.length > 0 && <TodoSection label="Upcoming" todos={categorized.upcoming} onToggle={handleTodoToggle} onEdit={setEditingTodo} data={data} />}
-          {categorized.noDueDate.length > 0 && <TodoSection label="No due date" todos={categorized.noDueDate} onToggle={handleTodoToggle} onEdit={setEditingTodo} data={data} />}
-          {categorized.completed.length > 0 && <TodoSection label="Completed" todos={categorized.completed} onToggle={handleTodoToggle} onEdit={setEditingTodo} data={data} defaultOpen={false} />}
+          {categorized.today.length > 0 && (
+            <TodoSection
+              label="Today"
+              todos={categorized.today}
+              onToggle={handleTodoToggle}
+              onEdit={setEditingTodo}
+              data={data}
+            />
+          )}
+          {categorized.upcoming.length > 0 && (
+            <TodoSection
+              label="Upcoming"
+              todos={categorized.upcoming}
+              onToggle={handleTodoToggle}
+              onEdit={setEditingTodo}
+              data={data}
+            />
+          )}
+          {categorized.noDueDate.length > 0 && (
+            <TodoSection
+              label="No due date"
+              todos={categorized.noDueDate}
+              onToggle={handleTodoToggle}
+              onEdit={setEditingTodo}
+              data={data}
+            />
+          )}
+          {categorized.completed.length > 0 && (
+            <TodoSection
+              label="Completed"
+              todos={categorized.completed}
+              onToggle={handleTodoToggle}
+              onEdit={setEditingTodo}
+              data={data}
+              defaultOpen={false}
+            />
+          )}
           {todos.length === 0 && (
             <div style={{ textAlign: 'center', padding: '32px 20px' }}>
-              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>No to-dos yet</p>
-              <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.6, maxWidth: 240, margin: '0 auto' }}>
-                To-dos are upcoming things to act on — a call to make, a visit to plan, or anything you want to follow up on.
+              <p
+                style={{
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: 'var(--text-secondary)',
+                  marginBottom: 6,
+                }}
+              >
+                No to-dos yet
               </p>
-              <p style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.5, maxWidth: 240, margin: '10px auto 0', fontWeight: 600 }}>
+              <p
+                style={{
+                  fontSize: 13,
+                  color: 'var(--text-muted)',
+                  lineHeight: 1.6,
+                  maxWidth: 240,
+                  margin: '0 auto',
+                }}
+              >
+                To-dos are upcoming things to act on — a call to make, a visit to plan, or anything
+                you want to follow up on.
+              </p>
+              <p
+                style={{
+                  fontSize: 12,
+                  color: 'var(--text-muted)',
+                  lineHeight: 1.5,
+                  maxWidth: 240,
+                  margin: '10px auto 0',
+                  fontWeight: 600,
+                }}
+              >
                 Only assigned shepherds and pastors can see these.
               </p>
             </div>
@@ -456,9 +964,27 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
         <div>
           {notices.length === 0 && (
             <div style={{ textAlign: 'center', padding: '32px 20px' }}>
-              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>No notices yet</p>
-              <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.6, maxWidth: 260, margin: '0 auto' }}>
-                Notices are things worth flagging for your shepherds or pastor — a health condition, a difficult season, or anything that calls for collective awareness.
+              <p
+                style={{
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: 'var(--text-secondary)',
+                  marginBottom: 6,
+                }}
+              >
+                No notices yet
+              </p>
+              <p
+                style={{
+                  fontSize: 13,
+                  color: 'var(--text-muted)',
+                  lineHeight: 1.6,
+                  maxWidth: 260,
+                  margin: '0 auto',
+                }}
+              >
+                Notices are things worth flagging for your shepherds or pastor — a health condition,
+                a difficult season, or anything that calls for collective awareness.
               </p>
             </div>
           )}
@@ -473,7 +999,9 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                     key={notice.id}
                     notice={notice}
                     personas={data.personas}
-                    onClick={() => { if (canSeeNotices) setEditingNotice(notice); }}
+                    onClick={() => {
+                      if (canSeeNotices) setEditingNotice(notice);
+                    }}
                   />
                 ));
               })}
@@ -486,32 +1014,105 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
       {activeTab === 'sheep' && person.isShepherd && (
         <div>
           {sheep.length === 0 && (
-            <p style={{ fontSize: 13, color: 'var(--text-muted)', fontStyle: 'italic', paddingTop: 24, textAlign: 'center' }}>No sheep assigned yet.</p>
+            <p
+              style={{
+                fontSize: 13,
+                color: 'var(--text-muted)',
+                fontStyle: 'italic',
+                paddingTop: 24,
+                textAlign: 'center',
+              }}
+            >
+              No sheep assigned yet.
+            </p>
           )}
           {sheep.length > 0 && (
-            <div className="no-last-border" style={{ background: 'var(--surface)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
+            <div
+              className="no-last-border"
+              style={{
+                background: 'var(--surface)',
+                borderRadius: 'var(--radius)',
+                overflow: 'hidden',
+              }}
+            >
               {sheep.map((s) => {
                 const sFamily = s.familyId ? data.families.find((f) => f.id === s.familyId) : null;
-                const sInitials = s.englishName.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase();
+                const sInitials = s.englishName
+                  .split(' ')
+                  .map((n) => n[0])
+                  .slice(0, 2)
+                  .join('')
+                  .toUpperCase();
                 return (
-                  <Link key={s.id} href={`/person/${s.id}`} className="row-card-hover" style={{ display: 'flex', alignItems: 'center', gap: 12, paddingTop: 10, paddingBottom: 10, borderBottom: '1px solid var(--border-light)', textDecoration: 'none' }}>
+                  <Link
+                    key={s.id}
+                    href={`/person/${s.id}`}
+                    className="row-card-hover"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 12,
+                      paddingTop: 10,
+                      paddingBottom: 10,
+                      borderBottom: '1px solid var(--border-light)',
+                      textDecoration: 'none',
+                    }}
+                  >
                     {s.photo ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={s.photo} alt={s.englishName} style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                      <img
+                        src={s.photo}
+                        alt={s.englishName}
+                        style={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: '50%',
+                          objectFit: 'cover',
+                          flexShrink: 0,
+                        }}
+                      />
                     ) : (
-                      <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--sage-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: 'var(--sage)', flexShrink: 0 }}>
+                      <div
+                        style={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: '50%',
+                          background: 'var(--sage-light)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: 13,
+                          fontWeight: 700,
+                          color: 'var(--sage)',
+                          flexShrink: 0,
+                        }}
+                      >
                         {sInitials}
                       </div>
                     )}
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
-                        <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>{s.englishName}</span>
-                        {s.chineseName && <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{s.chineseName}</span>}
+                        <span
+                          style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}
+                        >
+                          {s.englishName}
+                        </span>
+                        {s.chineseName && (
+                          <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+                            {s.chineseName}
+                          </span>
+                        )}
                       </div>
                       <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
                         {getMembershipLabel(s.membershipStatus)}
                         {sFamily && <span> · {sFamily.label}</span>}
-                        {s.lastContactDate && <span> · Logged {new Date(s.lastContactDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>}
+                        {s.lastContactDate && (
+                          <span>
+                            {' '}
+                            · Logged{' '}
+                            {format(parseISO(s.lastContactDate), 'MMM d')}
+                          </span>
+                        )}
                       </div>
                     </div>
                     <CaretRight size={14} color="var(--text-muted)" />
@@ -526,11 +1127,15 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
       {/* Info tab */}
       {activeTab === 'info' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-
           {/* ACCESS */}
           {(() => {
             const role = (person.appRole ?? 'no-access') as AppRole;
-            const roleLabel: Record<AppRole, string> = { admin: 'Admin', shepherd: 'Shepherd', 'welcome-team': 'Welcome Team', 'no-access': 'No Access' };
+            const roleLabel: Record<AppRole, string> = {
+              admin: 'Admin',
+              shepherd: 'Shepherd',
+              'welcome-team': 'Welcome Team',
+              'no-access': 'No Access',
+            };
             const roleColor: Record<AppRole, { bg: string; color: string }> = {
               admin: { bg: '#EDE9FE', color: '#6D28D9' },
               shepherd: { bg: 'var(--sage-light)', color: 'var(--sage)' },
@@ -539,110 +1144,327 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
             };
             return (
               <InfoSection title="Access">
-                <InfoRow icon={<IdentificationCard size={15} />} label="App Role" value={
-                  <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: '999px', background: roleColor[role].bg, color: roleColor[role].color }}>
-                    {roleLabel[role]}
-                  </span>
-                } />
+                <InfoRow
+                  icon={<IdentificationCard size={15} />}
+                  label="App Role"
+                  value={
+                    <span
+                      style={{
+                        fontSize: 11,
+                        fontWeight: 600,
+                        padding: '3px 10px',
+                        borderRadius: '999px',
+                        background: roleColor[role].bg,
+                        color: roleColor[role].color,
+                      }}
+                    >
+                      {roleLabel[role]}
+                    </span>
+                  }
+                />
               </InfoSection>
             );
           })()}
 
           {/* PERSONAL */}
-          {(person.gender || person.birthday || person.maritalStatus || (person.language && person.language.length > 0)) && (
+          {(person.gender ||
+            person.birthday ||
+            person.maritalStatus ||
+            (person.language && person.language.length > 0)) && (
             <InfoSection title="Personal">
               {person.language && person.language.length > 0 && (
-                <InfoRow icon={<Globe size={15} />} label="Language" value={
-                  <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-                    {person.language.map((l) => (
-                      <span key={l} style={{ fontSize: 11, padding: '3px 9px', borderRadius: '999px', background: 'var(--blue-light)', color: 'var(--blue)', fontWeight: 500 }}>{l}</span>
-                    ))}
-                  </div>
-                } />
+                <InfoRow
+                  icon={<Globe size={15} />}
+                  label="Language"
+                  value={
+                    <div
+                      style={{
+                        display: 'flex',
+                        gap: 5,
+                        flexWrap: 'wrap',
+                        justifyContent: 'flex-end',
+                      }}
+                    >
+                      {person.language.map((l) => (
+                        <span
+                          key={l}
+                          style={{
+                            fontSize: 11,
+                            padding: '3px 9px',
+                            borderRadius: '999px',
+                            background: 'var(--blue-light)',
+                            color: 'var(--blue)',
+                            fontWeight: 500,
+                          }}
+                        >
+                          {l}
+                        </span>
+                      ))}
+                    </div>
+                  }
+                />
               )}
-              {person.gender && <InfoRow icon={<GenderIntersex size={15} />} label="Gender" value={person.gender.charAt(0).toUpperCase() + person.gender.slice(1)} />}
-              {person.birthday && <InfoRow icon={<Cake size={15} />} label="Birthday" value={fmtShortDate(person.birthday)} />}
-              {person.maritalStatus && <InfoRow icon={<Heart size={15} />} label="Marital Status" value={person.maritalStatus.charAt(0).toUpperCase() + person.maritalStatus.slice(1)} />}
-              {person.maritalStatus === 'married' && person.anniversary && <InfoRow icon={<Sparkle size={15} />} label="Anniversary" value={fmtShortDate(person.anniversary)} />}
+              {person.gender && (
+                <InfoRow
+                  icon={<GenderIntersex size={15} />}
+                  label="Gender"
+                  value={person.gender.charAt(0).toUpperCase() + person.gender.slice(1)}
+                />
+              )}
+              {person.birthday && (
+                <InfoRow
+                  icon={<Cake size={15} />}
+                  label="Birthday"
+                  value={fmtShortDate(person.birthday)}
+                />
+              )}
+              {person.maritalStatus && (
+                <InfoRow
+                  icon={<Heart size={15} />}
+                  label="Marital Status"
+                  value={
+                    person.maritalStatus.charAt(0).toUpperCase() + person.maritalStatus.slice(1)
+                  }
+                />
+              )}
+              {person.maritalStatus === 'married' && person.anniversary && (
+                <InfoRow
+                  icon={<Sparkle size={15} />}
+                  label="Anniversary"
+                  value={fmtShortDate(person.anniversary)}
+                />
+              )}
             </InfoSection>
           )}
 
           {/* CHURCH */}
           <InfoSection title="Church">
-            <InfoRow icon={<IdentificationCard size={15} />} label="Status" value={
-              <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: '999px', background: 'var(--sage-light)', color: 'var(--sage)' }}>
-                {getMembershipLabel(person.membershipStatus)}
-              </span>
-            } />
-            <InfoRow icon={<Pulse size={15} />} label="Attendance" value={
-              <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: '999px', background: 'var(--blue-light)', color: 'var(--blue)' }}>
-                {getChurchAttendanceLabel(person.churchAttendance)}
-              </span>
-            } />
+            <InfoRow
+              icon={<IdentificationCard size={15} />}
+              label="Status"
+              value={
+                <span
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 600,
+                    padding: '3px 10px',
+                    borderRadius: '999px',
+                    background: 'var(--sage-light)',
+                    color: 'var(--sage)',
+                  }}
+                >
+                  {getMembershipLabel(person.membershipStatus)}
+                </span>
+              }
+            />
+            <InfoRow
+              icon={<Pulse size={15} />}
+              label="Attendance"
+              value={
+                <span
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 600,
+                    padding: '3px 10px',
+                    borderRadius: '999px',
+                    background: 'var(--blue-light)',
+                    color: 'var(--blue)',
+                  }}
+                >
+                  {getChurchAttendanceLabel(person.churchAttendance)}
+                </span>
+              }
+            />
             {person.membershipStatus === 'member' && person.membershipDate && (
-              <InfoRow icon={<CalendarCheck size={15} />} label="Member Since" value={fmtShortDate(person.membershipDate)} />
+              <InfoRow
+                icon={<CalendarCheck size={15} />}
+                label="Member Since"
+                value={fmtShortDate(person.membershipDate)}
+              />
             )}
-            {person.baptismDate && <InfoRow icon={<Drop size={15} />} label="Baptism Date" value={fmtShortDate(person.baptismDate)} />}
+            {person.baptismDate && (
+              <InfoRow
+                icon={<Drop size={15} />}
+                label="Baptism Date"
+                value={fmtShortDate(person.baptismDate)}
+              />
+            )}
             {shepherds.length > 0 && (
-              <InfoRow icon={<HandHeart size={15} />} label="Shepherd by" value={
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-end' }}>
-                  {shepherds.map((s) => {
-                    const sp = s.personId ? data.people.find((p) => p.id === s.personId) : null;
-                    const initials = s.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
-                    const inner = (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        {sp?.photo ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={sp.photo} alt={s.name} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
-                        ) : (
-                          <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--sage-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: 'var(--sage)', flexShrink: 0 }}>
-                            {initials}
-                          </div>
-                        )}
-                        <span style={{ fontSize: 13, fontWeight: 500, color: sp ? 'var(--blue)' : 'var(--text-primary)' }}>{s.name}</span>
-                        {sp && <CaretRight size={11} color="var(--blue)" />}
-                      </div>
-                    );
-                    return sp ? (
-                      <Link key={s.id} href={`/person/${sp.id}`} style={{ textDecoration: 'none' }}>{inner}</Link>
-                    ) : (
-                      <div key={s.id}>{inner}</div>
-                    );
-                  })}
-                </div>
-              } />
+              <InfoRow
+                icon={<HandHeart size={15} />}
+                label="Shepherd by"
+                value={
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 6,
+                      alignItems: 'flex-end',
+                    }}
+                  >
+                    {shepherds.map((s) => {
+                      const sp = s.personId ? data.people.find((p) => p.id === s.personId) : null;
+                      const initials = s.name
+                        .split(' ')
+                        .map((n) => n[0])
+                        .join('')
+                        .toUpperCase()
+                        .slice(0, 2);
+                      const inner = (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          {sp?.photo ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={sp.photo}
+                              alt={s.name}
+                              style={{
+                                width: 24,
+                                height: 24,
+                                borderRadius: '50%',
+                                objectFit: 'cover',
+                                flexShrink: 0,
+                              }}
+                            />
+                          ) : (
+                            <div
+                              style={{
+                                width: 24,
+                                height: 24,
+                                borderRadius: '50%',
+                                background: 'var(--sage-light)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: 9,
+                                fontWeight: 700,
+                                color: 'var(--sage)',
+                                flexShrink: 0,
+                              }}
+                            >
+                              {initials}
+                            </div>
+                          )}
+                          <span
+                            style={{
+                              fontSize: 13,
+                              fontWeight: 500,
+                              color: sp ? 'var(--blue)' : 'var(--text-primary)',
+                            }}
+                          >
+                            {s.name}
+                          </span>
+                          {sp && <CaretRight size={11} color="var(--blue)" />}
+                        </div>
+                      );
+                      return sp ? (
+                        <Link
+                          key={s.id}
+                          href={`/person/${sp.id}`}
+                          style={{ textDecoration: 'none' }}
+                        >
+                          {inner}
+                        </Link>
+                      ) : (
+                        <div key={s.id}>{inner}</div>
+                      );
+                    })}
+                  </div>
+                }
+              />
             )}
-            {person.isShepherd && <InfoRow icon={<Compass size={15} />} label="Is Shepherd?" value="Yes" />}
-            {person.isBeingDiscipled && <InfoRow icon={<Compass size={15} />} label="Being discipled?" value="Yes" />}
+            {person.isShepherd && (
+              <InfoRow icon={<Compass size={15} />} label="Is Shepherd?" value="Yes" />
+            )}
+            {person.isBeingDiscipled && (
+              <InfoRow icon={<Compass size={15} />} label="Being discipled?" value="Yes" />
+            )}
             {person.churchPositions && person.churchPositions.length > 0 && (
-              <InfoRow icon={<Buildings size={15} />} label="Position" value={
-                <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-                  {person.churchPositions.map((pos) => (
-                    <span key={pos} style={{ fontSize: 11, padding: '3px 9px', borderRadius: '999px', background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-secondary)', fontWeight: 500 }}>
-                      {pos}
-                    </span>
-                  ))}
-                </div>
-              } />
+              <InfoRow
+                icon={<Buildings size={15} />}
+                label="Position"
+                value={
+                  <div
+                    style={{
+                      display: 'flex',
+                      gap: 5,
+                      flexWrap: 'wrap',
+                      justifyContent: 'flex-end',
+                    }}
+                  >
+                    {person.churchPositions.map((pos) => (
+                      <span
+                        key={pos}
+                        style={{
+                          fontSize: 11,
+                          padding: '3px 9px',
+                          borderRadius: '999px',
+                          background: 'var(--surface)',
+                          border: '1px solid var(--border)',
+                          color: 'var(--text-secondary)',
+                          fontWeight: 500,
+                        }}
+                      >
+                        {pos}
+                      </span>
+                    ))}
+                  </div>
+                }
+              />
             )}
             {groups.length > 0 && (
-              <InfoRow icon={<UsersFour size={15} />} label="Group" value={
-                <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-                  {groups.map((g) => (
-                    <button key={g.id} onClick={() => setPreviewGroupId(g.id)} style={{ fontSize: 11, padding: '3px 9px', borderRadius: '999px', background: 'var(--blue-light)', color: 'var(--blue)', fontWeight: 500, border: 'none', cursor: 'pointer' }}>
-                      {g.name}
-                    </button>
-                  ))}
-                </div>
-              } />
+              <InfoRow
+                icon={<UsersFour size={15} />}
+                label="Group"
+                value={
+                  <div
+                    style={{
+                      display: 'flex',
+                      gap: 5,
+                      flexWrap: 'wrap',
+                      justifyContent: 'flex-end',
+                    }}
+                  >
+                    {groups.map((g) => (
+                      <button
+                        key={g.id}
+                        onClick={() => setPreviewGroupId(g.id)}
+                        style={{
+                          fontSize: 11,
+                          padding: '3px 9px',
+                          borderRadius: '999px',
+                          background: 'var(--blue-light)',
+                          color: 'var(--blue)',
+                          fontWeight: 500,
+                          border: 'none',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {g.name}
+                      </button>
+                    ))}
+                  </div>
+                }
+              />
             )}
             {family && (
-              <InfoRow label="Family" value={
-                <Link href={`/family/${family.id}`} style={{ color: 'var(--blue)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                  {family.label}
-                  <CaretRight size={13} />
-                </Link>
-              } />
+              <InfoRow
+                label="Family"
+                value={
+                  <Link
+                    href={`/family/${family.id}`}
+                    style={{
+                      color: 'var(--blue)',
+                      textDecoration: 'none',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 4,
+                    }}
+                  >
+                    {family.label}
+                    <CaretRight size={13} />
+                  </Link>
+                }
+              />
             )}
           </InfoSection>
 
@@ -650,52 +1472,122 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
           {(person.phone || person.homePhone || person.email || person.homeAddress) && (
             <InfoSection title="Contact">
               {person.phone && (
-                <InfoRow icon={<Phone size={15} />} label="Phone" value={<a href={`tel:${person.phone}`} style={{ color: 'var(--blue)', textDecoration: 'none' }}>{person.phone}</a>} />
+                <InfoRow
+                  icon={<Phone size={15} />}
+                  label="Phone"
+                  value={
+                    <a
+                      href={`tel:${person.phone}`}
+                      style={{ color: 'var(--blue)', textDecoration: 'none' }}
+                    >
+                      {person.phone}
+                    </a>
+                  }
+                />
               )}
               {person.homePhone && (
-                <InfoRow icon={<PhoneCall size={15} />} label="Home Phone" value={<a href={`tel:${person.homePhone}`} style={{ color: 'var(--blue)', textDecoration: 'none' }}>{person.homePhone}</a>} />
+                <InfoRow
+                  icon={<PhoneCall size={15} />}
+                  label="Home Phone"
+                  value={
+                    <a
+                      href={`tel:${person.homePhone}`}
+                      style={{ color: 'var(--blue)', textDecoration: 'none' }}
+                    >
+                      {person.homePhone}
+                    </a>
+                  }
+                />
               )}
               {person.email && (
-                <InfoRow icon={<Envelope size={15} />} label="Email" value={<a href={`mailto:${person.email}`} style={{ color: 'var(--blue)', textDecoration: 'none' }}>{person.email}</a>} />
+                <InfoRow
+                  icon={<Envelope size={15} />}
+                  label="Email"
+                  value={
+                    <a
+                      href={`mailto:${person.email}`}
+                      style={{ color: 'var(--blue)', textDecoration: 'none' }}
+                    >
+                      {person.email}
+                    </a>
+                  }
+                />
               )}
               {person.homeAddress && (
-                <InfoRow icon={<House size={15} />} label="Address" value={
-                  <a
-                    href={getMapUrl(person.homeAddress, mapProvider)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ color: 'var(--blue)', textDecoration: 'none', textAlign: 'right', lineHeight: 1.5, display: 'block', whiteSpace: 'pre-wrap' }}
-                  >{person.homeAddress}</a>
-                } />
+                <InfoRow
+                  icon={<House size={15} />}
+                  label="Address"
+                  value={
+                    <a
+                      href={getMapUrl(person.homeAddress, mapProvider)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        color: 'var(--blue)',
+                        textDecoration: 'none',
+                        textAlign: 'right',
+                        lineHeight: 1.5,
+                        display: 'block',
+                        whiteSpace: 'pre-wrap',
+                      }}
+                    >
+                      {person.homeAddress}
+                    </a>
+                  }
+                />
               )}
             </InfoSection>
           )}
 
           {/* META */}
           <InfoSection title="Record info">
-            <InfoRow label="Last logged" value={person.lastContactDate ? new Date(person.lastContactDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Never'} muted />
+            <InfoRow
+              label="Last logged"
+              value={
+                person.lastContactDate
+                  ? format(parseISO(person.lastContactDate), 'MMM d, yyyy')
+                  : 'Never'
+              }
+              muted
+            />
             <InfoRow label="Added" value={fmtShortDate(person.createdAt)} muted />
-            {person.createdBy && (() => { const creator = data.personas.find((p) => p.id === person.createdBy); return creator ? <InfoRow label="Created by" value={creator.name} muted /> : null; })()}
+            {person.createdBy &&
+              (() => {
+                const creator = data.personas.find((p) => p.id === person.createdBy);
+                return creator ? <InfoRow label="Created by" value={creator.name} muted /> : null;
+              })()}
           </InfoSection>
-
         </div>
       )}
 
       {showAddLog && (
         <AddLogModal
-          onClose={() => { setShowAddLog(false); setPendingLogTodo(null); }}
+          onClose={() => {
+            setShowAddLog(false);
+            setPendingLogTodo(null);
+          }}
           prefillPersonId={person.id}
           prefillContent={pendingLogTodo?.title}
           prefillType="check-in"
         />
       )}
-      {showAddTodo && <AddTodoModal onClose={() => setShowAddTodo(false)} prefillPersonId={person.id} />}
+      {showAddTodo && (
+        <AddTodoModal onClose={() => setShowAddTodo(false)} prefillPersonId={person.id} />
+      )}
       {editingNote && <AddLogModal onClose={() => setEditingNote(null)} note={editingNote} />}
       {editingTodo && <AddTodoModal onClose={() => setEditingTodo(null)} todo={editingTodo} />}
-      {showAddNotice && <AddNoticeModal onClose={() => setShowAddNotice(false)} prefillPersonId={person.id} />}
-      {editingNotice && <AddNoticeModal onClose={() => setEditingNotice(null)} notice={editingNotice} />}
-      {showEditPerson && <EditPersonDrawer person={person} onClose={() => setShowEditPerson(false)} />}
-      {previewGroupId && <GroupPreviewModal groupId={previewGroupId} onClose={() => setPreviewGroupId(null)} />}
+      {showAddNotice && (
+        <AddNoticeModal onClose={() => setShowAddNotice(false)} prefillPersonId={person.id} />
+      )}
+      {editingNotice && (
+        <AddNoticeModal onClose={() => setEditingNotice(null)} notice={editingNotice} />
+      )}
+      {showEditPerson && (
+        <EditPersonDrawer person={person} onClose={() => setShowEditPerson(false)} />
+      )}
+      {previewGroupId && (
+        <GroupPreviewModal groupId={previewGroupId} onClose={() => setPreviewGroupId(null)} />
+      )}
 
       {/* Edit sheep picker */}
       {showSheepPicker && shepherdId && (
@@ -708,7 +1600,10 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
             const target = data.people.find((p) => p.id === personId);
             if (!target) return;
             if (isCurrentSheep) {
-              assignShepherds(personId, target.assignedShepherdIds.filter((sid) => sid !== shepherdId));
+              assignShepherds(
+                personId,
+                target.assignedShepherdIds.filter((sid) => sid !== shepherdId)
+              );
             } else {
               assignShepherds(personId, [...target.assignedShepherdIds, shepherdId]);
             }
@@ -720,25 +1615,83 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
       {/* Photo action menu */}
       {showPhotoMenu && (
         <div
-          style={{ position: 'fixed', inset: 0, background: 'rgba(30,26,24,0.45)', zIndex: 60, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(30,26,24,0.45)',
+            zIndex: 60,
+            display: 'flex',
+            alignItems: 'flex-end',
+            justifyContent: 'center',
+          }}
           onClick={() => setShowPhotoMenu(false)}
         >
           <div
             className="animate-slide-up"
-            style={{ background: 'var(--surface)', borderRadius: '20px 20px 0 0', width: '100%', maxWidth: 430, padding: '0 20px 36px', overflow: 'hidden' }}
+            style={{
+              background: 'var(--surface)',
+              borderRadius: '20px 20px 0 0',
+              width: '100%',
+              maxWidth: 430,
+              padding: '0 20px 36px',
+              overflow: 'hidden',
+            }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div style={{ width: 36, height: 4, background: 'var(--border)', borderRadius: 2, margin: '14px auto 20px' }} />
-            <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'center', marginBottom: 16 }}>
+            <div
+              style={{
+                width: 36,
+                height: 4,
+                background: 'var(--border)',
+                borderRadius: 2,
+                margin: '14px auto 20px',
+              }}
+            />
+            <p
+              style={{
+                fontSize: 12,
+                fontWeight: 600,
+                color: 'var(--text-muted)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+                textAlign: 'center',
+                marginBottom: 16,
+              }}
+            >
               Profile Photo
             </p>
 
             {/* Choose / replace photo */}
             <button
-              onClick={() => { setShowPhotoMenu(false); fileInputRef.current?.click(); }}
-              style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 14, padding: '14px 4px', background: 'none', border: 'none', borderBottom: '1px solid var(--border-light)', cursor: 'pointer', textAlign: 'left' }}
+              onClick={() => {
+                setShowPhotoMenu(false);
+                fileInputRef.current?.click();
+              }}
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 14,
+                padding: '14px 4px',
+                background: 'none',
+                border: 'none',
+                borderBottom: '1px solid var(--border-light)',
+                cursor: 'pointer',
+                textAlign: 'left',
+              }}
             >
-              <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--sage-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <div
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: '50%',
+                  background: 'var(--sage-light)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+              >
                 <Camera size={18} color="var(--sage)" />
               </div>
               <span style={{ fontSize: 16, color: 'var(--text-primary)', fontWeight: 500 }}>
@@ -749,13 +1702,39 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
             {/* Remove photo — only shown if one exists */}
             {person.photo && (
               <button
-                onClick={() => { updatePerson(person.id, { photo: undefined }); setShowPhotoMenu(false); }}
-                style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 14, padding: '14px 4px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+                onClick={() => {
+                  updatePerson(person.id, { photo: undefined });
+                  setShowPhotoMenu(false);
+                }}
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 14,
+                  padding: '14px 4px',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
               >
-                <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#FEF2F2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <div
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: '50%',
+                    background: '#FEF2F2',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}
+                >
                   <Trash size={18} color="var(--red)" />
                 </div>
-                <span style={{ fontSize: 16, color: 'var(--red)', fontWeight: 500 }}>Remove photo</span>
+                <span style={{ fontSize: 16, color: 'var(--red)', fontWeight: 500 }}>
+                  Remove photo
+                </span>
               </button>
             )}
           </div>
@@ -764,7 +1743,11 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
       {todoLogPrompt && (
         <TodoLogPrompt
           todo={todoLogPrompt}
-          onAddLog={() => { setPendingLogTodo(todoLogPrompt); setTodoLogPrompt(null); setShowAddLog(true); }}
+          onAddLog={() => {
+            setPendingLogTodo(todoLogPrompt);
+            setTodoLogPrompt(null);
+            setShowAddLog(true);
+          }}
           onSkip={() => setTodoLogPrompt(null)}
         />
       )}
@@ -772,55 +1755,151 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
       {/* ── Archive / Delete confirmation sheet ── */}
       {confirmAction && (
         <div
-          style={{ position: 'fixed', inset: 0, background: 'rgba(30,26,24,0.5)', zIndex: 70, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(30,26,24,0.5)',
+            zIndex: 70,
+            display: 'flex',
+            alignItems: 'flex-end',
+            justifyContent: 'center',
+          }}
           onClick={() => setConfirmAction(null)}
         >
           <div
             className="animate-slide-up"
-            style={{ background: 'var(--surface)', borderRadius: '20px 20px 0 0', width: '100%', maxWidth: 430, padding: '0 20px 36px', overflow: 'hidden' }}
+            style={{
+              background: 'var(--surface)',
+              borderRadius: '20px 20px 0 0',
+              width: '100%',
+              maxWidth: 430,
+              padding: '0 20px 36px',
+              overflow: 'hidden',
+            }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div style={{ width: 36, height: 4, background: 'var(--border)', borderRadius: 2, margin: '14px auto 20px' }} />
+            <div
+              style={{
+                width: 36,
+                height: 4,
+                background: 'var(--border)',
+                borderRadius: 2,
+                margin: '14px auto 20px',
+              }}
+            />
             {confirmAction === 'archive' ? (
               <>
-                <p style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)', textAlign: 'center', marginBottom: 6 }}>
+                <p
+                  style={{
+                    fontSize: 17,
+                    fontWeight: 700,
+                    color: 'var(--text-primary)',
+                    textAlign: 'center',
+                    marginBottom: 6,
+                  }}
+                >
                   {person.churchAttendance === 'archived' ? 'Unarchive' : 'Archive'} {firstName}?
                 </p>
-                <p style={{ fontSize: 13, color: 'var(--text-muted)', textAlign: 'center', marginBottom: 24 }}>
+                <p
+                  style={{
+                    fontSize: 13,
+                    color: 'var(--text-muted)',
+                    textAlign: 'center',
+                    marginBottom: 24,
+                  }}
+                >
                   {person.churchAttendance === 'archived'
                     ? 'They will be visible in the directory again.'
                     : 'They will be hidden from the main directory but their history will be preserved.'}
                 </p>
                 <button
                   onClick={handleArchive}
-                  style={{ width: '100%', height: 50, borderRadius: 14, background: 'var(--sage)', color: '#fff', fontSize: 16, fontWeight: 600, border: 'none', cursor: 'pointer', marginBottom: 10 }}
+                  style={{
+                    width: '100%',
+                    height: 50,
+                    borderRadius: 14,
+                    background: 'var(--sage)',
+                    color: '#fff',
+                    fontSize: 16,
+                    fontWeight: 600,
+                    border: 'none',
+                    cursor: 'pointer',
+                    marginBottom: 10,
+                  }}
                 >
                   {person.churchAttendance === 'archived' ? 'Unarchive' : 'Archive'}
                 </button>
                 <button
                   onClick={() => setConfirmAction(null)}
-                  style={{ width: '100%', height: 50, borderRadius: 14, background: 'var(--bg)', color: 'var(--text-secondary)', fontSize: 16, fontWeight: 500, border: 'none', cursor: 'pointer' }}
+                  style={{
+                    width: '100%',
+                    height: 50,
+                    borderRadius: 14,
+                    background: 'var(--bg)',
+                    color: 'var(--text-secondary)',
+                    fontSize: 16,
+                    fontWeight: 500,
+                    border: 'none',
+                    cursor: 'pointer',
+                  }}
                 >
                   Cancel
                 </button>
               </>
             ) : (
               <>
-                <p style={{ fontSize: 17, fontWeight: 700, color: 'var(--red)', textAlign: 'center', marginBottom: 6 }}>
+                <p
+                  style={{
+                    fontSize: 17,
+                    fontWeight: 700,
+                    color: 'var(--red)',
+                    textAlign: 'center',
+                    marginBottom: 6,
+                  }}
+                >
                   Delete {firstName}?
                 </p>
-                <p style={{ fontSize: 13, color: 'var(--text-muted)', textAlign: 'center', marginBottom: 24 }}>
-                  This will permanently remove {firstName} and all their logs and to-dos. This cannot be undone.
+                <p
+                  style={{
+                    fontSize: 13,
+                    color: 'var(--text-muted)',
+                    textAlign: 'center',
+                    marginBottom: 24,
+                  }}
+                >
+                  This will permanently remove {firstName} and all their logs and to-dos. This
+                  cannot be undone.
                 </p>
                 <button
                   onClick={handleDelete}
-                  style={{ width: '100%', height: 50, borderRadius: 14, background: 'var(--red)', color: '#fff', fontSize: 16, fontWeight: 600, border: 'none', cursor: 'pointer', marginBottom: 10 }}
+                  style={{
+                    width: '100%',
+                    height: 50,
+                    borderRadius: 14,
+                    background: 'var(--red)',
+                    color: '#fff',
+                    fontSize: 16,
+                    fontWeight: 600,
+                    border: 'none',
+                    cursor: 'pointer',
+                    marginBottom: 10,
+                  }}
                 >
                   Delete permanently
                 </button>
                 <button
                   onClick={() => setConfirmAction(null)}
-                  style={{ width: '100%', height: 50, borderRadius: 14, background: 'var(--bg)', color: 'var(--text-secondary)', fontSize: 16, fontWeight: 500, border: 'none', cursor: 'pointer' }}
+                  style={{
+                    width: '100%',
+                    height: 50,
+                    borderRadius: 14,
+                    background: 'var(--bg)',
+                    color: 'var(--text-secondary)',
+                    fontSize: 16,
+                    fontWeight: 500,
+                    border: 'none',
+                    cursor: 'pointer',
+                  }}
                 >
                   Cancel
                 </button>
@@ -833,8 +1912,20 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
   );
 }
 
-function TodoSection({ label, todos, onToggle, onEdit, data, defaultOpen = true }: {
-  label: string; todos: Todo[]; onToggle: (id: string) => void; onEdit: (todo: Todo) => void; data: AppData; defaultOpen?: boolean;
+function TodoSection({
+  label,
+  todos,
+  onToggle,
+  onEdit,
+  data,
+  defaultOpen = true,
+}: {
+  label: string;
+  todos: Todo[];
+  onToggle: (id: string) => void;
+  onEdit: (todo: Todo) => void;
+  data: AppData;
+  defaultOpen?: boolean;
 }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
@@ -842,52 +1933,127 @@ function TodoSection({ label, todos, onToggle, onEdit, data, defaultOpen = true 
       <button
         onClick={() => setOpen(!open)}
         style={{
-          display: 'flex', alignItems: 'center', gap: 6,
-          padding: '4px 0', marginBottom: open ? 8 : 0,
-          background: 'none', border: 'none', cursor: 'pointer',
-          fontSize: 10, fontWeight: 600, color: 'var(--text-muted)',
-          textTransform: 'uppercase', letterSpacing: '0.06em',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+          padding: '4px 0',
+          marginBottom: open ? 8 : 0,
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          fontSize: 10,
+          fontWeight: 600,
+          color: 'var(--text-muted)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.06em',
         }}
       >
         {label} · {todos.length}
-        <CaretDown size={10} style={{ transition: 'transform 0.2s', transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+        <CaretDown
+          size={10}
+          style={{
+            transition: 'transform 0.2s',
+            transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
+          }}
+        />
       </button>
       {open && (
-        <div className="no-last-border" style={{ background: 'var(--surface)', borderRadius: 'var(--radius)', overflow: 'hidden', padding: 0 }}>
+        <div
+          className="no-last-border"
+          style={{
+            background: 'var(--surface)',
+            borderRadius: 'var(--radius)',
+            overflow: 'hidden',
+            padding: 0,
+          }}
+        >
           {todos.map((t) => {
             const person = t.personId ? data.people.find((p) => p.id === t.personId) : null;
             const family = t.familyId ? data.families.find((f) => f.id === t.familyId) : null;
             const tag = family?.label || person?.englishName || '';
             const hasRepeat = t.repeat && t.repeat !== 'none';
             return (
-              <div key={t.id} className="row-card-hover" style={{ display: 'flex', alignItems: 'flex-start', gap: 10, paddingTop: 10, paddingBottom: 10, borderBottom: '1px solid var(--border-light)' }}>
+              <div
+                key={t.id}
+                className="row-card-hover"
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: 10,
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                  borderBottom: '1px solid var(--border-light)',
+                }}
+              >
                 <button
                   onClick={() => onToggle(t.id)}
                   style={{
-                    width: 20, height: 20, borderRadius: '50%', flexShrink: 0, marginTop: 2,
+                    width: 20,
+                    height: 20,
+                    borderRadius: '50%',
+                    flexShrink: 0,
+                    marginTop: 2,
                     border: t.completed ? 'none' : '2px solid var(--border)',
                     background: t.completed ? 'var(--sage)' : 'transparent',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
                   }}
                 >
                   {t.completed && <Check size={11} color="#fff" weight="bold" />}
                 </button>
-                <button onClick={() => onEdit(t)} style={{ flex: 1, minWidth: 0, background: 'none', border: 'none', textAlign: 'left', cursor: 'pointer', padding: 0 }}>
-                  <p style={{ fontSize: 14, color: t.completed ? 'var(--text-muted)' : 'var(--text-primary)', lineHeight: 1.4, marginBottom: 4, textDecoration: t.completed ? 'line-through' : 'none' }}>
+                <button
+                  onClick={() => onEdit(t)}
+                  style={{
+                    flex: 1,
+                    minWidth: 0,
+                    background: 'none',
+                    border: 'none',
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                    padding: 0,
+                  }}
+                >
+                  <p
+                    style={{
+                      fontSize: 14,
+                      color: t.completed ? 'var(--text-muted)' : 'var(--text-primary)',
+                      lineHeight: 1.4,
+                      marginBottom: 4,
+                      textDecoration: t.completed ? 'line-through' : 'none',
+                    }}
+                  >
                     {t.title}
                   </p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     {t.dueDate && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--text-muted)' }}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 4,
+                          color: 'var(--text-muted)',
+                        }}
+                      >
                         <Clock size={12} />
-                        <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{fmtDue(t.dueDate)}</span>
+                        <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+                          {fmtDue(t.dueDate)}
+                        </span>
                       </div>
                     )}
-                    {hasRepeat && (
-                      <ArrowsClockwise size={12} color="var(--text-muted)" />
-                    )}
+                    {hasRepeat && <ArrowsClockwise size={12} color="var(--text-muted)" />}
                     {tag && (
-                      <span style={{ fontSize: 10, color: 'var(--blue)', padding: '1px 6px', borderRadius: '999px', background: 'var(--blue-light)', fontWeight: 500 }}>
+                      <span
+                        style={{
+                          fontSize: 10,
+                          color: 'var(--blue)',
+                          padding: '1px 6px',
+                          borderRadius: '999px',
+                          background: 'var(--blue-light)',
+                          fontWeight: 500,
+                        }}
+                      >
                         {tag}
                       </span>
                     )}
@@ -902,27 +2068,74 @@ function TodoSection({ label, todos, onToggle, onEdit, data, defaultOpen = true 
   );
 }
 
-function InfoRow({ icon, label, value, muted }: { icon?: React.ReactNode; label: string; value: React.ReactNode; muted?: boolean }) {
+function InfoRow({
+  icon,
+  label,
+  value,
+  muted,
+}: {
+  icon?: React.ReactNode;
+  label: string;
+  value: React.ReactNode;
+  muted?: boolean;
+}) {
   return (
-    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', padding: '11px 16px', borderBottom: '1px solid var(--border-light)', gap: 12 }}>
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'space-between',
+        padding: '11px 16px',
+        borderBottom: '1px solid var(--border-light)',
+        gap: 12,
+      }}
+    >
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, paddingTop: 1 }}>
-        {icon && <span style={{ color: 'var(--text-muted)', display: 'flex', flexShrink: 0 }}>{icon}</span>}
+        {icon && (
+          <span style={{ color: 'var(--text-muted)', display: 'flex', flexShrink: 0 }}>{icon}</span>
+        )}
         <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>{label}</span>
       </div>
-      <span style={{ fontSize: 13, color: muted ? 'var(--text-muted)' : 'var(--text-primary)', fontWeight: muted ? 400 : 500, textAlign: 'right', lineHeight: 1.5 }}>{value}</span>
+      <span
+        style={{
+          fontSize: 13,
+          color: muted ? 'var(--text-muted)' : 'var(--text-primary)',
+          fontWeight: muted ? 400 : 500,
+          textAlign: 'right',
+          lineHeight: 1.5,
+        }}
+      >
+        {value}
+      </span>
     </div>
   );
 }
 
-const URGENCY_LABEL: Record<string, string> = { urgent: 'Urgent', moderate: 'Moderate', ongoing: 'Ongoing' };
-const CATEGORY_LABEL: Record<string, string> = { 'physical-need': 'Physical Need', 'spiritual-need': 'Spiritual Need', other: 'Other' };
+const URGENCY_LABEL: Record<string, string> = {
+  urgent: 'Urgent',
+  moderate: 'Moderate',
+  ongoing: 'Ongoing',
+};
+const CATEGORY_LABEL: Record<string, string> = {
+  'physical-need': 'Physical Need',
+  'spiritual-need': 'Spiritual Need',
+  other: 'Other',
+};
 const CATEGORY_STYLE: Record<string, { bg: string; color: string }> = {
   'physical-need': { bg: 'var(--blue-light)', color: 'var(--blue)' },
   'spiritual-need': { bg: 'var(--sage-light)', color: 'var(--sage)' },
-  'other':          { bg: 'var(--border-light)', color: 'var(--text-muted)' },
+  other: { bg: 'var(--border-light)', color: 'var(--text-muted)' },
 };
 
-function NoticeCard({ notice, personas, onClick }: { notice: Notice; personas: import('@/lib/types').Persona[]; onClick: () => void }) {
+function NoticeCard({
+  notice,
+  personas,
+  onClick,
+}: {
+  notice: Notice;
+  personas: import('@/lib/types').Persona[];
+  onClick: () => void;
+}) {
   const style = URGENCY_STYLE[notice.urgency as import('@/lib/types').NoticeUrgency];
   const creator = personas.find((p) => p.id === notice.createdBy);
   return (
@@ -930,63 +2143,136 @@ function NoticeCard({ notice, personas, onClick }: { notice: Notice; personas: i
       onClick={onClick}
       className="row-card-hover"
       style={{
-        textAlign: 'left', cursor: 'pointer', border: '1px solid var(--border-light)',
-        borderRadius: 12, padding: '12px 14px',
-        background: style.bg, width: '100%',
-        display: 'flex', flexDirection: 'column', gap: 6,
+        textAlign: 'left',
+        cursor: 'pointer',
+        border: '1px solid var(--border-light)',
+        borderRadius: 12,
+        padding: '12px 14px',
+        background: style.bg,
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 6,
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-        <span style={{ fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: '999px', background: style.color, color: '#fff', letterSpacing: '0.03em' }}>
+        <span
+          style={{
+            fontSize: 11,
+            fontWeight: 700,
+            padding: '2px 8px',
+            borderRadius: '999px',
+            background: style.color,
+            color: '#fff',
+            letterSpacing: '0.03em',
+          }}
+        >
           {URGENCY_LABEL[notice.urgency]}
         </span>
-        <span style={{ fontSize: 11, fontWeight: 500, padding: '2px 8px', borderRadius: '999px', background: CATEGORY_STYLE[notice.category]?.bg, color: CATEGORY_STYLE[notice.category]?.color }}>
+        <span
+          style={{
+            fontSize: 11,
+            fontWeight: 500,
+            padding: '2px 8px',
+            borderRadius: '999px',
+            background: CATEGORY_STYLE[notice.category]?.bg,
+            color: CATEGORY_STYLE[notice.category]?.color,
+          }}
+        >
           {CATEGORY_LABEL[notice.category]}
         </span>
       </div>
-      <p style={{ fontSize: 14, color: 'var(--text-primary)', lineHeight: 1.5, margin: 0 }}>{notice.content}</p>
-      <p style={{ fontSize: 11, color: 'var(--text-muted)', margin: 0 }}>Added by {creator?.name ?? 'Unknown'} · {getTimeAgo(notice.createdAt)}</p>
+      <p style={{ fontSize: 14, color: 'var(--text-primary)', lineHeight: 1.5, margin: 0 }}>
+        {notice.content}
+      </p>
+      <p style={{ fontSize: 11, color: 'var(--text-muted)', margin: 0 }}>
+        Added by {creator?.name ?? 'Unknown'} · {getTimeAgo(notice.createdAt)}
+      </p>
     </button>
   );
 }
 
-function LogSection({ label, count, children }: { label: string; count: number; children: React.ReactNode }) {
+function LogSection({
+  label,
+  count,
+  children,
+}: {
+  label: string;
+  count: number;
+  children: React.ReactNode;
+}) {
   const [open, setOpen] = useState(true);
   return (
     <div style={{ marginBottom: 16 }}>
       <button
         onClick={() => setOpen(!open)}
         style={{
-          display: 'flex', alignItems: 'center', gap: 6,
-          padding: '4px 0', marginBottom: open ? 8 : 0,
-          background: 'none', border: 'none', cursor: 'pointer',
-          fontSize: 10, fontWeight: 600, color: 'var(--text-muted)',
-          textTransform: 'uppercase', letterSpacing: '0.06em',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+          padding: '4px 0',
+          marginBottom: open ? 8 : 0,
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          fontSize: 10,
+          fontWeight: 600,
+          color: 'var(--text-muted)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.06em',
         }}
       >
         {label} · {count}
-        <CaretDown size={10} style={{ transition: 'transform 0.2s', transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+        <CaretDown
+          size={10}
+          style={{
+            transition: 'transform 0.2s',
+            transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
+          }}
+        />
       </button>
       {open && children}
     </div>
   );
 }
 
-function InfoSection({ title, children, muted: _muted }: { title: string; children: React.ReactNode; muted?: boolean }) {
+function InfoSection({
+  title,
+  children,
+  muted: _muted,
+}: {
+  title: string;
+  children: React.ReactNode;
+  muted?: boolean;
+}) {
   return (
     <div>
-      <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>{title}</p>
-      <div className="no-last-border" style={{ background: 'var(--surface)', borderRadius: 14, overflow: 'hidden', padding: 0 }}>{children}</div>
+      <p
+        style={{
+          fontSize: 10,
+          fontWeight: 600,
+          color: 'var(--text-muted)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.06em',
+          marginBottom: 8,
+        }}
+      >
+        {title}
+      </p>
+      <div
+        className="no-last-border"
+        style={{ background: 'var(--surface)', borderRadius: 14, overflow: 'hidden', padding: 0 }}
+      >
+        {children}
+      </div>
     </div>
   );
 }
 
 function fmtShortDate(iso: string) {
-  // Handles both YYYY-MM-DD and full ISO datetime strings
   const dateStr = iso.includes('T') ? iso.split('T')[0] : iso;
   const [year, month, day] = dateStr.split('-').map(Number);
-  const d = new Date(year, month - 1, day);
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  return format(new Date(year, month - 1, day), 'MMM d, yyyy');
 }
 
 const sheepPickerPalette = [
@@ -996,7 +2282,14 @@ const sheepPickerPalette = [
   { bg: '#F0EBF5', color: '#7A6A8C' },
 ];
 
-function SheepPickerModal({ data, shepherdPersonaId: _shepherdPersonaId, currentSheepIds, excludePersonId, onToggle, onClose }: {
+function SheepPickerModal({
+  data,
+  shepherdPersonaId: _shepherdPersonaId,
+  currentSheepIds,
+  excludePersonId,
+  onToggle,
+  onClose,
+}: {
   data: AppData;
   shepherdPersonaId: string;
   currentSheepIds: string[];
@@ -1007,9 +2300,12 @@ function SheepPickerModal({ data, shepherdPersonaId: _shepherdPersonaId, current
   const [search, setSearch] = useState('');
   const q = search.toLowerCase();
 
-  const people = data.people.filter((p) =>
-    p.id !== excludePersonId &&
-    (q === '' || p.englishName.toLowerCase().includes(q) || (p.chineseName && p.chineseName.toLowerCase().includes(q)))
+  const people = data.people.filter(
+    (p) =>
+      p.id !== excludePersonId &&
+      (q === '' ||
+        p.englishName.toLowerCase().includes(q) ||
+        (p.chineseName && p.chineseName.toLowerCase().includes(q)))
   );
 
   // Sort: current sheep first, then the rest alphabetically
@@ -1020,26 +2316,83 @@ function SheepPickerModal({ data, shepherdPersonaId: _shepherdPersonaId, current
 
   return (
     <div
-      style={{ position: 'fixed', inset: 0, background: 'rgba(30,26,24,0.45)', zIndex: 60, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}
-      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        background: 'rgba(30,26,24,0.45)',
+        zIndex: 60,
+        display: 'flex',
+        alignItems: 'flex-end',
+        justifyContent: 'center',
+      }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
     >
       <div
         className="animate-slide-up"
         style={{
-          background: 'var(--surface)', borderRadius: '20px 20px 0 0',
-          width: '100%', maxWidth: 430,
+          background: 'var(--surface)',
+          borderRadius: '20px 20px 0 0',
+          width: '100%',
+          maxWidth: 430,
           height: 'calc(100dvh - 48px)',
-          display: 'flex', flexDirection: 'column', overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
         }}
       >
         {/* Drag handle */}
-        <div style={{ width: 36, height: 4, background: 'var(--border)', borderRadius: 2, margin: '14px auto 0', flexShrink: 0 }} />
+        <div
+          style={{
+            width: 36,
+            height: 4,
+            background: 'var(--border)',
+            borderRadius: 2,
+            margin: '14px auto 0',
+            flexShrink: 0,
+          }}
+        />
 
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 12px', flexShrink: 0, borderBottom: '1px solid var(--border-light)' }}>
-          <button onClick={onClose} style={{ fontSize: 14, color: 'var(--text-secondary)', background: 'none', border: 'none', cursor: 'pointer' }}>Cancel</button>
-          <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>Edit Sheep</span>
-          <button onClick={onClose} style={{ fontSize: 14, fontWeight: 600, color: 'var(--sage)', background: 'none', border: 'none', cursor: 'pointer' }}>Done</button>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '14px 20px 12px',
+            flexShrink: 0,
+            borderBottom: '1px solid var(--border-light)',
+          }}
+        >
+          <button
+            onClick={onClose}
+            style={{
+              fontSize: 14,
+              color: 'var(--text-secondary)',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            Cancel
+          </button>
+          <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
+            Edit Sheep
+          </span>
+          <button
+            onClick={onClose}
+            style={{
+              fontSize: 14,
+              fontWeight: 600,
+              color: 'var(--sage)',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            Done
+          </button>
         </div>
 
         {/* Search */}
@@ -1051,10 +2404,15 @@ function SheepPickerModal({ data, shepherdPersonaId: _shepherdPersonaId, current
             placeholder="Search people…"
             autoFocus
             style={{
-              width: '100%', padding: '10px 14px',
-              background: 'var(--bg)', border: '1px solid var(--border)',
-              borderRadius: 10, fontSize: 14, color: 'var(--text-primary)',
-              outline: 'none', boxSizing: 'border-box',
+              width: '100%',
+              padding: '10px 14px',
+              background: 'var(--bg)',
+              border: '1px solid var(--border)',
+              borderRadius: 10,
+              fontSize: 14,
+              color: 'var(--text-primary)',
+              outline: 'none',
+              boxSizing: 'border-box',
             }}
           />
         </div>
@@ -1062,39 +2420,99 @@ function SheepPickerModal({ data, shepherdPersonaId: _shepherdPersonaId, current
         {/* List */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '0 20px 40px' }}>
           {sorted.length === 0 && (
-            <p style={{ fontSize: 13, color: 'var(--text-muted)', fontStyle: 'italic', paddingTop: 24, textAlign: 'center' }}>No matching people.</p>
+            <p
+              style={{
+                fontSize: 13,
+                color: 'var(--text-muted)',
+                fontStyle: 'italic',
+                paddingTop: 24,
+                textAlign: 'center',
+              }}
+            >
+              No matching people.
+            </p>
           )}
           {sorted.map((p) => {
             const isSheep = currentSheepIds.includes(p.id);
-            const initials = p.englishName.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase();
-            const palette = sheepPickerPalette[p.englishName.charCodeAt(0) % sheepPickerPalette.length];
+            const initials = p.englishName
+              .split(' ')
+              .map((n) => n[0])
+              .slice(0, 2)
+              .join('')
+              .toUpperCase();
+            const palette =
+              sheepPickerPalette[p.englishName.charCodeAt(0) % sheepPickerPalette.length];
             return (
               <button
                 key={p.id}
                 className="picker-row"
                 onClick={() => onToggle(p.id, isSheep)}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: 12,
-                  width: '100%', padding: '10px 8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
+                  width: '100%',
+                  padding: '10px 8px',
                   background: isSheep ? 'var(--sage-light)' : 'none',
-                  border: 'none', cursor: 'pointer', textAlign: 'left',
-                  borderRadius: 10, marginBottom: 2,
+                  border: 'none',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  borderRadius: 10,
+                  marginBottom: 2,
                 }}
               >
                 {p.photo ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={p.photo} alt={p.englishName} style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                  <img
+                    src={p.photo}
+                    alt={p.englishName}
+                    style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: '50%',
+                      objectFit: 'cover',
+                      flexShrink: 0,
+                    }}
+                  />
                 ) : (
-                  <div style={{ width: 36, height: 36, borderRadius: '50%', background: isSheep ? 'var(--sage)' : palette.bg, color: isSheep ? '#fff' : palette.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, flexShrink: 0 }}>
+                  <div
+                    style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: '50%',
+                      background: isSheep ? 'var(--sage)' : palette.bg,
+                      color: isSheep ? '#fff' : palette.color,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 12,
+                      fontWeight: 700,
+                      flexShrink: 0,
+                    }}
+                  >
                     {initials}
                   </div>
                 )}
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
-                    <span style={{ fontSize: 14, fontWeight: isSheep ? 600 : 500, color: isSheep ? 'var(--sage)' : 'var(--text-primary)' }}>{p.englishName}</span>
-                    {p.chineseName && <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{p.chineseName}</span>}
+                    <span
+                      style={{
+                        fontSize: 14,
+                        fontWeight: isSheep ? 600 : 500,
+                        color: isSheep ? 'var(--sage)' : 'var(--text-primary)',
+                      }}
+                    >
+                      {p.englishName}
+                    </span>
+                    {p.chineseName && (
+                      <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+                        {p.chineseName}
+                      </span>
+                    )}
                   </div>
-                  <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{getMembershipLabel(p.membershipStatus)}</span>
+                  <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+                    {getMembershipLabel(p.membershipStatus)}
+                  </span>
                 </div>
                 {isSheep ? (
                   <Check size={16} color="var(--sage)" weight="bold" />

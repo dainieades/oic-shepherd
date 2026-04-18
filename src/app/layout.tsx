@@ -25,9 +25,7 @@ export const viewport: Viewport = {
   maximumScale: 1,
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={lora.variable}>
       <body style={{ background: 'var(--bg)', color: 'var(--text-primary)' }}>
@@ -35,9 +33,7 @@ export default function RootLayout({
           <ToastProvider>
             <AuthSync />
             <AccessGate />
-            <main className="max-w-[430px] mx-auto w-full pb-20 px-4 min-h-screen">
-              {children}
-            </main>
+            <main className="mx-auto min-h-screen w-full max-w-[430px] px-4 pb-20">{children}</main>
             <BottomNav />
           </ToastProvider>
         </AppProvider>

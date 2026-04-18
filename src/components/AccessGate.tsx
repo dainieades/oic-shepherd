@@ -18,41 +18,72 @@ export default function AccessGate() {
   }
 
   return (
-    <div style={{
-      position: 'fixed', inset: 0, zIndex: 200,
-      background: 'var(--bg)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      padding: '24px 16px',
-    }}>
-      <div style={{
-        width: '100%', maxWidth: 360,
-        background: 'var(--surface)', borderRadius: 20,
-        border: '1px solid var(--border)',
-        padding: '40px 28px 32px',
-        boxShadow: 'var(--shadow-elevated)',
-        textAlign: 'center',
-      }}>
-        <div style={{
-          width: 64, height: 64, borderRadius: '50%',
-          background: 'var(--border-light)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          margin: '0 auto 20px',
-        }}>
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 200,
+        background: 'var(--bg)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '24px 16px',
+      }}
+    >
+      <div
+        style={{
+          width: '100%',
+          maxWidth: 360,
+          background: 'var(--surface)',
+          borderRadius: 20,
+          border: '1px solid var(--border)',
+          padding: '40px 28px 32px',
+          boxShadow: 'var(--shadow-elevated)',
+          textAlign: 'center',
+        }}
+      >
+        <div
+          style={{
+            width: 64,
+            height: 64,
+            borderRadius: '50%',
+            background: 'var(--border-light)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 20px',
+          }}
+        >
           <Lock size={28} color="var(--text-muted)" weight="bold" />
         </div>
-        <h2 className="font-display" style={{ fontSize: 22, fontWeight: 700, marginBottom: 10, color: 'var(--text-primary)' }}>
+        <h2
+          className="font-display"
+          style={{ fontSize: 22, fontWeight: 700, marginBottom: 10, color: 'var(--text-primary)' }}
+        >
           Access Restricted
         </h2>
-        <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 28 }}>
+        <p
+          style={{
+            fontSize: 15,
+            color: 'var(--text-secondary)',
+            lineHeight: 1.6,
+            marginBottom: 28,
+          }}
+        >
           This app is for OIC church members only. Contact your pastor to request access.
         </p>
         <button
           onClick={handleBack}
           style={{
-            width: '100%', padding: '13px 20px',
-            borderRadius: 12, border: 'none',
-            background: 'var(--sage)', color: '#fff',
-            fontSize: 15, fontWeight: 600, cursor: 'pointer',
+            width: '100%',
+            padding: '13px 20px',
+            borderRadius: 12,
+            border: 'none',
+            background: 'var(--sage)',
+            color: '#fff',
+            fontSize: 15,
+            fontWeight: 600,
+            cursor: 'pointer',
           }}
         >
           Back to Sign In

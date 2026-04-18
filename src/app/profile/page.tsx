@@ -4,14 +4,14 @@ import { useApp } from '@/lib/context';
 import { CaretRight } from '@phosphor-icons/react';
 
 const roleLabel: Record<string, string> = {
-  admin:          'Admin · Pastor',
-  shepherd:       'Shepherd',
+  admin: 'Admin · Pastor',
+  shepherd: 'Shepherd',
   'welcome-team': 'Welcome Team',
 };
 
 const roleColor: Record<string, { bg: string; color: string }> = {
-  admin:          { bg: '#FDF3E3', color: '#C9912B' },
-  shepherd:       { bg: 'var(--sage-light)', color: 'var(--sage)' },
+  admin: { bg: '#FDF3E3', color: '#C9912B' },
+  shepherd: { bg: 'var(--sage-light)', color: 'var(--sage)' },
   'welcome-team': { bg: 'var(--blue-light)', color: 'var(--blue)' },
 };
 
@@ -40,13 +40,20 @@ export default function ProfilePage() {
     .toUpperCase()
     .slice(0, 2);
 
-  const assignedCount = currentPersona.role === 'admin'
-    ? data.people.length
-    : currentPersona.assignedPeopleIds.length;
+  const assignedCount =
+    currentPersona.role === 'admin' ? data.people.length : currentPersona.assignedPeopleIds.length;
 
   return (
     <div style={{ paddingTop: 24, paddingBottom: 40 }}>
-      <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 20, letterSpacing: '-0.02em' }}>
+      <h1
+        style={{
+          fontSize: 22,
+          fontWeight: 700,
+          color: 'var(--text-primary)',
+          marginBottom: 20,
+          letterSpacing: '-0.02em',
+        }}
+      >
         Profile
       </h1>
 
@@ -80,7 +87,14 @@ export default function ProfilePage() {
             {initials}
           </div>
           <div>
-            <p style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>
+            <p
+              style={{
+                fontSize: 17,
+                fontWeight: 700,
+                color: 'var(--text-primary)',
+                marginBottom: 4,
+              }}
+            >
               {currentPersona.name}
             </p>
             <span
@@ -111,14 +125,27 @@ export default function ProfilePage() {
           }}
         >
           <StatCell label="Assigned" value={String(assignedCount)} />
-          <StatCell label="Role" value={currentPersona.role === 'welcome-team' ? 'Welcome' : currentPersona.role.charAt(0).toUpperCase() + currentPersona.role.slice(1)} />
+          <StatCell
+            label="Role"
+            value={
+              currentPersona.role === 'welcome-team'
+                ? 'Welcome'
+                : currentPersona.role.charAt(0).toUpperCase() + currentPersona.role.slice(1)
+            }
+          />
         </div>
       </div>
 
       {/* ── Settings ─────────────────────────────── */}
       <Card label="Settings" style={{ marginBottom: 14 }}>
         {settingRows.map((row, i) => (
-          <SettingRow key={row.label} label={row.label} value={row.value} active={row.active} showDivider={i > 0} />
+          <SettingRow
+            key={row.label}
+            label={row.label}
+            value={row.value}
+            active={row.active}
+            showDivider={i > 0}
+          />
         ))}
       </Card>
 
@@ -134,15 +161,35 @@ export default function ProfilePage() {
             marginBottom: 14,
           }}
         >
-          <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--amber)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 12 }}>
+          <p
+            style={{
+              fontSize: 10,
+              fontWeight: 600,
+              color: 'var(--amber)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.07em',
+              marginBottom: 12,
+            }}
+          >
             Admin
           </p>
           {adminRows.map((row, i) => (
             <div key={row.label}>
-              {i > 0 && <div style={{ height: 1, background: 'rgba(200,170,100,0.2)', margin: '2px 0' }} />}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '9px 0' }}>
+              {i > 0 && (
+                <div style={{ height: 1, background: 'rgba(200,170,100,0.2)', margin: '2px 0' }} />
+              )}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '9px 0',
+                }}
+              >
                 <div>
-                  <p style={{ fontSize: 14, color: 'var(--text-primary)', fontWeight: 500 }}>{row.label}</p>
+                  <p style={{ fontSize: 14, color: 'var(--text-primary)', fontWeight: 500 }}>
+                    {row.label}
+                  </p>
                   <p style={{ fontSize: 11, color: 'var(--text-muted)' }}>{row.value}</p>
                 </div>
                 <CaretRight size={16} color="var(--amber)" />
@@ -155,7 +202,10 @@ export default function ProfilePage() {
       {/* Reset */}
       <div style={{ textAlign: 'center', marginTop: 24 }}>
         <button
-          onClick={() => { localStorage.clear(); window.location.reload(); }}
+          onClick={() => {
+            localStorage.clear();
+            window.location.reload();
+          }}
           style={{
             fontSize: 12,
             color: 'var(--text-muted)',
@@ -175,13 +225,31 @@ export default function ProfilePage() {
 function StatCell({ label, value }: { label: string; value: string }) {
   return (
     <div style={{ background: 'var(--bg)', padding: '12px 16px' }}>
-      <p style={{ fontSize: 10, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 2 }}>{label}</p>
+      <p
+        style={{
+          fontSize: 10,
+          color: 'var(--text-muted)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.05em',
+          marginBottom: 2,
+        }}
+      >
+        {label}
+      </p>
       <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>{value}</p>
     </div>
   );
 }
 
-function Card({ label, children, style }: { label: string; children: React.ReactNode; style?: React.CSSProperties }) {
+function Card({
+  label,
+  children,
+  style,
+}: {
+  label: string;
+  children: React.ReactNode;
+  style?: React.CSSProperties;
+}) {
   return (
     <div
       style={{
@@ -193,7 +261,16 @@ function Card({ label, children, style }: { label: string; children: React.React
         ...style,
       }}
     >
-      <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 12 }}>
+      <p
+        style={{
+          fontSize: 10,
+          fontWeight: 600,
+          color: 'var(--text-muted)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.07em',
+          marginBottom: 12,
+        }}
+      >
         {label}
       </p>
       {children}
@@ -201,10 +278,22 @@ function Card({ label, children, style }: { label: string; children: React.React
   );
 }
 
-function SettingRow({ label, value, active, showDivider }: { label: string; value: string; active: boolean; showDivider: boolean }) {
+function SettingRow({
+  label,
+  value,
+  active,
+  showDivider,
+}: {
+  label: string;
+  value: string;
+  active: boolean;
+  showDivider: boolean;
+}) {
   return (
     <>
-      {showDivider && <div style={{ height: 1, background: 'var(--border-light)', margin: '2px 0' }} />}
+      {showDivider && (
+        <div style={{ height: 1, background: 'var(--border-light)', margin: '2px 0' }} />
+      )}
       <div
         style={{
           display: 'flex',

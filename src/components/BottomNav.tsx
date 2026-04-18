@@ -11,24 +11,28 @@ export default function BottomNav() {
   const isWelcome = currentPersona.role === 'welcome-team';
 
   // Hide on detail pages and sign-in
-  const isDetail = /^\/(person|family|groups)\/[^/]+/.test(pathname) || pathname === '/settings/profile' || pathname === '/signin' || pathname === '/signup';
+  const isDetail =
+    /^\/(person|family|groups)\/[^/]+/.test(pathname) ||
+    pathname === '/settings/profile' ||
+    pathname === '/signin' ||
+    pathname === '/signup';
   if (isDetail) return null;
 
-  const isPeople   = pathname === '/' || pathname === '/people';
-  const isLogs     = pathname === '/logs';
-  const isTodos    = pathname === '/todos';
-  const isGroups   = pathname === '/groups';
+  const isPeople = pathname === '/' || pathname === '/people';
+  const isLogs = pathname === '/logs';
+  const isTodos = pathname === '/todos';
+  const isGroups = pathname === '/groups';
   const isSettings = pathname === '/settings';
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-40"
+      className="fixed right-0 bottom-0 left-0 z-40"
       style={{
         background: 'var(--surface)',
         borderTop: '1px solid var(--border-light)',
       }}
     >
-      <div className="max-w-[430px] mx-auto flex items-end justify-around h-14 px-2">
+      <div className="mx-auto flex h-14 max-w-[430px] items-end justify-around px-2">
         <NavTab href="/" label="People" active={isPeople}>
           <UserList size={24} weight={isPeople ? 'fill' : 'regular'} />
         </NavTab>
@@ -57,13 +61,21 @@ export default function BottomNav() {
   );
 }
 
-function NavTab({ href, label, active, children }: {
-  href: string; label: string; active: boolean; children: React.ReactNode;
+function NavTab({
+  href,
+  label,
+  active,
+  children,
+}: {
+  href: string;
+  label: string;
+  active: boolean;
+  children: React.ReactNode;
 }) {
   return (
     <Link
       href={href}
-      className="nav-tab flex flex-col items-center justify-end gap-0.5 pb-1.5 w-16"
+      className="nav-tab flex w-16 flex-col items-center justify-end gap-0.5 pb-1.5"
       style={{ color: active ? 'var(--sage)' : 'var(--text-muted)', textDecoration: 'none' }}
     >
       {children}
