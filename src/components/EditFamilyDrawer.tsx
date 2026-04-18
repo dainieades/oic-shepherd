@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useApp } from '@/lib/context';
+import { useToast } from './Toast';
 import { Family, Person, Group } from '@/lib/types';
 import { CaretRight, User, UsersFour, Plus, House, HandHeart } from '@phosphor-icons/react';
 import PickerMenu from './PickerMenu';
@@ -20,6 +21,7 @@ const avatarPalette = [
 
 export default function EditFamilyDrawer({ family, onClose }: Props) {
   const { data, updateFamily, updateFamilyMembers, assignGroupsToFamily, assignShepherdsToFamily } = useApp();
+  const { showToast } = useToast();
 
   // Compute initial state from members
   const initialMembers = data.people.filter((p) => family.memberIds.includes(p.id));
@@ -58,6 +60,7 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
     updateFamilyMembers(family.id, memberIds);
     assignGroupsToFamily(family.id, groupIds);
     assignShepherdsToFamily(family.id, shepherdIds);
+    showToast('Family updated');
     onClose();
   };
 

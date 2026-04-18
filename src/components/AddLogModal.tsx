@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { CheckCircle, HandsPraying, CalendarBlank, NotePencil, CaretRight, Trash, User, UserPlus, PlusCircle } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
+import { useToast } from './Toast';
 import { NoteType, Note } from '@/lib/types';
 import PersonFamilyPicker from './PersonFamilyPicker';
 import PickerMenu from './PickerMenu';
@@ -37,6 +38,7 @@ function fmtLogDate(dateStr: string, timeStr: string, includeTime: boolean) {
 
 export default function AddLogModal({ onClose, prefillFamilyId, prefillPersonId, prefillContent, prefillType, note }: AddLogModalProps) {
   const { data, addNote, updateNote, deleteNote } = useApp();
+  const { showToast } = useToast();
   const isEditing = !!note;
 
   const [type, setType] = useState<NoteType>(note?.type ?? prefillType ?? 'check-in');
@@ -93,6 +95,7 @@ export default function AddLogModal({ onClose, prefillFamilyId, prefillPersonId,
         personId: personIds[0],
         createdAt,
       });
+      showToast('Log updated');
     } else {
       if (familyIds.length === 0 && personIds.length === 0) return;
       for (const familyId of familyIds) {
@@ -101,6 +104,7 @@ export default function AddLogModal({ onClose, prefillFamilyId, prefillPersonId,
       for (const personId of personIds) {
         addNote({ type, personId, content: content || undefined, visibility: 'public', createdAt });
       }
+      showToast('Log saved');
     }
     onClose();
   };

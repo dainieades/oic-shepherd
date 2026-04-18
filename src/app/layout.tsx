@@ -6,6 +6,7 @@ import BottomNav from '@/components/BottomNav';
 
 import AuthSync from '@/components/AuthSync';
 import AccessGate from '@/components/AccessGate';
+import { ToastProvider } from '@/components/Toast';
 
 const lora = Lora({
   subsets: ['latin'],
@@ -31,12 +32,14 @@ export default function RootLayout({
     <html lang="en" className={lora.variable}>
       <body style={{ background: 'var(--bg)', color: 'var(--text-primary)' }}>
         <AppProvider>
-          <AuthSync />
-          <AccessGate />
-          <main className="max-w-[430px] mx-auto w-full pb-20 px-4 min-h-screen">
-            {children}
-          </main>
-          <BottomNav />
+          <ToastProvider>
+            <AuthSync />
+            <AccessGate />
+            <main className="max-w-[430px] mx-auto w-full pb-20 px-4 min-h-screen">
+              {children}
+            </main>
+            <BottomNav />
+          </ToastProvider>
         </AppProvider>
       </body>
     </html>

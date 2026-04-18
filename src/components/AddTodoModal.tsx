@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { CaretRight, Trash, User, CalendarBlank, ArrowsClockwise, Bell, UserPlus, PlusCircle, CalendarPlus } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
+import { useToast } from './Toast';
 import { TodoRepeat, TodoAlert, Todo } from '@/lib/types';
 import PersonFamilyPicker from './PersonFamilyPicker';
 import PickerMenu from './PickerMenu';
@@ -39,6 +40,7 @@ const ALERT_OPTIONS: { value: TodoAlert; label: string }[] = [
 
 export default function AddTodoModal({ onClose, prefillFamilyId, prefillPersonId, todo }: AddTodoModalProps) {
   const { data, addTodo, updateTodo, deleteTodo } = useApp();
+  const { showToast } = useToast();
   const isEditing = !!todo;
 
   const [title, setTitle] = useState(todo?.title ?? '');
@@ -102,6 +104,7 @@ export default function AddTodoModal({ onClose, prefillFamilyId, prefillPersonId
     };
     if (isEditing && todo) {
       updateTodo(todo.id, { ...base, familyId: familyIds[0], personId: personIds[0] });
+      showToast('Task updated');
     } else {
       if (familyIds.length === 0 && personIds.length === 0) {
         addTodo(base);
@@ -109,6 +112,7 @@ export default function AddTodoModal({ onClose, prefillFamilyId, prefillPersonId
         for (const familyId of familyIds) addTodo({ ...base, familyId });
         for (const personId of personIds) addTodo({ ...base, personId });
       }
+      showToast('Task added');
     }
     onClose();
   };

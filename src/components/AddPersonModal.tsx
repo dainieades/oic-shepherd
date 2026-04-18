@@ -7,6 +7,7 @@ import {
   Phone, PhoneCall, Envelope, House, FirstAid, CaretRight, HandHeart, UsersFour,
 } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
+import { useToast } from './Toast';
 import { formatPhone } from '@/lib/utils';
 import { MembershipStatus, ChurchAttendance, Gender, MaritalStatus, CHURCH_POSITIONS } from '@/lib/types';
 import PickerMenu from './PickerMenu';
@@ -50,6 +51,7 @@ function fmtDate(iso: string) {
 
 export default function AddPersonModal({ onClose }: AddPersonModalProps) {
   const { data, addPerson, assignGroupsToPerson, assignShepherds } = useApp();
+  const { showToast } = useToast();
 
   // Basic
   const [firstName, setFirstName] = useState('');
@@ -154,6 +156,7 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
     });
     if (groupIds.length > 0) assignGroupsToPerson(newId, groupIds);
     if (shepherdIds.length > 0) assignShepherds(newId, shepherdIds);
+    showToast('Person added');
     setSubmitted(true);
     setTimeout(() => onClose(), 1600);
   };

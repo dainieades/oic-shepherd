@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { FirstAid, HandsPraying, DotsThree, CaretRight, Trash, UserPlus, PlusCircle, Warning, Minus, ArrowDown, User } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
+import { useToast } from './Toast';
 import { Notice, NoticeCategory, NoticeUrgency } from '@/lib/types';
 import PersonFamilyPicker from './PersonFamilyPicker';
 import PickerMenu from './PickerMenu';
@@ -35,6 +36,7 @@ export const URGENCY_STYLE: Record<NoticeUrgency, { bg: string; color: string; b
 
 export default function AddNoticeModal({ onClose, prefillPersonId, prefillFamilyId, notice }: AddNoticeModalProps) {
   const { data, addNotice, updateNotice, deleteNotice } = useApp();
+  const { showToast } = useToast();
   const isEditing = !!notice;
 
   const [category, setCategory] = useState<NoticeCategory>(notice?.category ?? 'physical-need');
@@ -82,6 +84,7 @@ export default function AddNoticeModal({ onClose, prefillPersonId, prefillFamily
         familyId: familyIds[0],
         personId: personIds[0],
       });
+      showToast('Notice updated');
     } else {
       for (const familyId of familyIds) {
         addNotice({ category, urgency, content: content.trim(), familyId });
@@ -89,6 +92,7 @@ export default function AddNoticeModal({ onClose, prefillPersonId, prefillFamily
       for (const personId of personIds) {
         addNotice({ category, urgency, content: content.trim(), personId });
       }
+      showToast('Notice added');
     }
     onClose();
   };

@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '@/lib/context';
+import { useToast } from './Toast';
 import { formatPhone } from '@/lib/utils';
 import { Person, MembershipStatus, ChurchAttendance, Language, Gender, MaritalStatus, CHURCH_POSITIONS, AppRole } from '@/lib/types';
 import {
@@ -60,6 +61,7 @@ function fmtDate(iso: string) {
 
 export default function EditPersonDrawer({ person, onClose }: Props) {
   const { data, currentPersona, updatePerson, assignShepherds, assignGroupsToPerson } = useApp();
+  const { showToast } = useToast();
 
   // Basic — split existing englishName into first / last
   const _nameParts = person.englishName.trim().split(/\s+/);
@@ -92,10 +94,6 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
   const [email, setEmail]           = useState(person.email ?? '');
   const [homeAddress, setHomeAddress] = useState(person.homeAddress ?? '');
 
-  // Notes
-  const [spiritualNeeds, setSpiritualNeeds] = useState(person.spiritualNeeds ?? '');
-  const [physicalNeeds, setPhysicalNeeds]   = useState(person.physicalNeeds ?? '');
-
   // Text input refs (for click-to-focus)
   const firstNameRef = useRef<HTMLInputElement>(null);
   const lastNameRef  = useRef<HTMLInputElement>(null);
@@ -104,9 +102,6 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
   const homePhoneRef = useRef<HTMLInputElement>(null);
   const emailRef     = useRef<HTMLInputElement>(null);
   const addressRef   = useRef<HTMLTextAreaElement>(null);
-  const spiritualRef = useRef<HTMLTextAreaElement>(null);
-  const physicalRef  = useRef<HTMLTextAreaElement>(null);
-
   // Hidden date input refs
   const birthdayRef      = useRef<HTMLInputElement>(null);
   const anniversaryRef   = useRef<HTMLInputElement>(null);
@@ -136,6 +131,7 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
     if (!firstName.trim()) return;
     assignGroupsToPerson(person.id, groupIds);
     assignShepherds(person.id, shepherdIds);
+    showToast('Changes saved');
     updatePerson(person.id, {
       englishName: fullName,
       chineseName: chineseName.trim() || undefined,
@@ -156,8 +152,7 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
       homePhone: homePhone.trim() || undefined,
       email: email.trim() || undefined,
       homeAddress: homeAddress.trim() || undefined,
-      spiritualNeeds: spiritualNeeds.trim() || undefined,
-      physicalNeeds: physicalNeeds.trim() || undefined,
+
     });
     onClose();
   };
@@ -374,22 +369,6 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
                 <span style={{ paddingTop: 2 }}><House size={16} color="var(--text-muted)" /></span>
                 <span style={{ ...labelStyle, paddingTop: 2 }}>Address</span>
                 <textarea ref={addressRef} value={homeAddress} onChange={(e) => setHomeAddress(e.target.value)} placeholder="123 Main St, City, State ZIP" rows={2} style={{ ...inputInlineStyle, resize: 'vertical', lineHeight: 1.5 }} />
-              </div>
-            </DrawerSection>
-
-            {/* ── NOTES ── */}
-            <DrawerSection label="Notes">
-              <div className="field-row-hover" style={{ ...textRowStyle, alignItems: 'flex-start' }} onClick={() => spiritualRef.current?.focus()}>
-                <span style={spacerStyle} />
-                <span style={{ paddingTop: 2 }}><Church size={16} color="var(--text-muted)" /></span>
-                <span style={{ ...labelStyle, paddingTop: 2 }}>Spiritual</span>
-                <textarea ref={spiritualRef} value={spiritualNeeds} onChange={(e) => setSpiritualNeeds(e.target.value)} placeholder="Spiritual needs" rows={3} style={{ ...inputInlineStyle, resize: 'vertical', lineHeight: 1.5 }} />
-              </div>
-              <div className="field-row-hover" style={{ ...textRowStyle, alignItems: 'flex-start' }} onClick={() => physicalRef.current?.focus()}>
-                <span style={spacerStyle} />
-                <span style={{ paddingTop: 2 }}><FirstAid size={16} color="var(--text-muted)" /></span>
-                <span style={{ ...labelStyle, paddingTop: 2 }}>Physical</span>
-                <textarea ref={physicalRef} value={physicalNeeds} onChange={(e) => setPhysicalNeeds(e.target.value)} placeholder="Physical needs" rows={3} style={{ ...inputInlineStyle, resize: 'vertical', lineHeight: 1.5 }} />
               </div>
             </DrawerSection>
 
