@@ -102,6 +102,12 @@ Persona switching (`setCurrentPersona`) affects which people and data are visibl
 - No test framework is configured — rely on TypeScript for correctness; run `npx tsc --noEmit` to type-check
 - **Icons only — never text symbols** — use `<Plus weight="bold" />` for add buttons, never a literal `+` character or semantic variants like `UserPlus`; never invent SVG icons
 
+### React import style
+
+- **Always use the default React import** — `import React from 'react'` — never destructure named exports directly.
+- Use the `React.` namespace for all hooks and types: `React.useState`, `React.useEffect`, `React.ReactNode`, `React.memo`, etc.
+- Exception: third-party React packages (e.g. `@phosphor-icons/react`) still use named imports as normal.
+
 ### Type discipline
 
 - **Run `npx tsc --noEmit` after every non-trivial change** — the project must stay error-free.
