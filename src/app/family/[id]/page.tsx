@@ -39,6 +39,7 @@ import AddTodoModal from '@/components/AddTodoModal';
 import TodoLogPrompt from '@/components/TodoLogPrompt';
 import EditFamilyDrawer from '@/components/EditFamilyDrawer';
 import GroupPreviewModal from '@/components/GroupPreviewModal';
+import { SHEPHERD_AVATAR_PALETTE } from '@/lib/constants';
 
 type Tab = 'logs' | 'todos' | 'info';
 
@@ -54,13 +55,6 @@ function TabIcon({ tab, active }: { tab: Tab; active: boolean }) {
 function fmtDue(iso: string) {
   return format(parseISO(iso), 'M/d/yyyy h:mm a');
 }
-
-const avatarPalette = [
-  { bg: '#EAF2EE', color: '#5B8A72' },
-  { bg: '#EBF1F7', color: '#6B8EAE' },
-  { bg: '#F5F0EB', color: '#8C7055' },
-  { bg: '#F0EBF5', color: '#7A6A8C' },
-];
 
 const noteTypeColors: Record<string, { bg: string; color: string }> = {
   'check-in': { bg: 'var(--sage-light)', color: 'var(--sage)' },
@@ -694,7 +688,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
               }}
             >
               {members.map((m, i) => {
-                const palette = avatarPalette[i % avatarPalette.length];
+                const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
                 const inits = m.englishName
                   .split(' ')
                   .map((n) => n[0])

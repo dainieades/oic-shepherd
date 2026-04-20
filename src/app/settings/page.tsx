@@ -20,6 +20,7 @@ import { useApp } from '@/lib/context';
 import { createClient } from '@/utils/supabase/client';
 import type { User } from '@supabase/supabase-js';
 import { type MapProvider, MAP_PROVIDER_LABELS, MAP_PROVIDERS_STORAGE_KEY } from '@/lib/utils';
+import { BACKDROP_COLOR } from '@/lib/constants';
 
 type PasswordStatus =
   | { type: 'idle' }
@@ -408,7 +409,7 @@ export default function SettingsPage() {
             position: 'fixed',
             inset: 0,
             zIndex: 80,
-            background: 'rgba(30,26,24,0.45)',
+            background: BACKDROP_COLOR,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -496,7 +497,7 @@ export default function SettingsPage() {
             position: 'fixed',
             inset: 0,
             zIndex: 80,
-            background: 'rgba(30,26,24,0.45)',
+            background: BACKDROP_COLOR,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -694,7 +695,7 @@ export default function SettingsPage() {
             position: 'fixed',
             inset: 0,
             zIndex: 80,
-            background: 'rgba(30,26,24,0.45)',
+            background: BACKDROP_COLOR,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

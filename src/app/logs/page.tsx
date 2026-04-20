@@ -7,6 +7,7 @@ import { type Note } from '@/lib/types';
 import { getTimeAgo, getNoteTypeLabel, groupByMonth } from '@/lib/utils';
 import { MagnifyingGlass, Funnel, X, Check, CaretDown, Plus } from '@phosphor-icons/react';
 import AddLogModal from '@/components/AddLogModal';
+import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS } from '@/lib/constants';
 
 const noteTypeColors: Record<string, { bg: string; color: string }> = {
   'check-in': { bg: 'var(--sage-light)', color: 'var(--sage)' },
@@ -551,7 +552,7 @@ export default function LogsPage() {
           style={{
             position: 'fixed',
             inset: 0,
-            background: 'rgba(30,26,24,0.45)',
+            background: BACKDROP_COLOR,
             zIndex: 50,
             display: 'flex',
             alignItems: 'flex-end',
@@ -565,9 +566,9 @@ export default function LogsPage() {
             className="animate-slide-up"
             style={{
               background: 'var(--surface)',
-              borderRadius: '20px 20px 0 0',
+              borderRadius: SHEET_BORDER_RADIUS,
               width: '100%',
-              maxWidth: 430,
+              maxWidth: SHEET_MAX_WIDTH,
               maxHeight: 'calc(100dvh - 80px)',
               display: 'flex',
               flexDirection: 'column',

@@ -37,17 +37,17 @@ _Last audited: 2026-04-19_
 
 ---
 
-## P4 — Magic Numbers and Hardcoded Colors
+## ~~P4 — Magic Numbers and Hardcoded Colors~~ ✅ Done 2026-04-20
 **Score: (3+2)×(6-1) = 25**
 
-Values that appear without named constants:
-- `14` (default follow-up frequency days) — 10+ locations across `context.tsx` and `data.ts`
-- `430` (modal max-width px) — 5 modals
-- `'rgba(30,26,24,0.45)'` (backdrop) — 7 instances with slight variations (0.35, 0.45, 0.55) causing visual inconsistency
-- `borderRadius: '20px 20px 0 0'` — 5 modals
-- Hex color pairs for avatars (`#E8F0FE / #4A6FA5`, etc.) defined separately in `AddFamilyModal.tsx` and `AddPersonModal.tsx` — should be in `globals.css` tokens
+~~Values that appear without named constants:~~
+- ~~`14` (default follow-up frequency days) — 10+ locations across `context.tsx` and `data.ts`~~
+- ~~`430` (modal max-width px) — 5 modals~~
+- ~~`'rgba(30,26,24,0.45)'` (backdrop) — 7 instances with slight variations (0.35, 0.45, 0.55) causing visual inconsistency~~
+- ~~`borderRadius: '20px 20px 0 0'` — 5 modals~~
+- ~~Hex color pairs for avatars (`#E8F0FE / #4A6FA5`, etc.) defined separately in `AddFamilyModal.tsx` and `AddPersonModal.tsx` — should be in `globals.css` tokens~~
 
-**Remediation:** Extract to named constants or CSS custom properties. Effort: Low (< 1 day).
+**What was done:** Created `src/lib/constants.ts` with `DEFAULT_FOLLOW_UP_DAYS`, `SHEET_MAX_WIDTH`, `SHEET_BORDER_RADIUS`, `BACKDROP_COLOR`, `MEMBER_AVATAR_PALETTE`, and `SHEPHERD_AVATAR_PALETTE`. Added `--backdrop` and all avatar palette CSS custom properties to `globals.css`. Updated 25+ files across `src/components/` and `src/app/` to use shared constants. Standardised all backdrop opacity variants to a single `var(--backdrop)`. Removed 8 duplicate local palette definitions.
 
 ---
 
@@ -69,12 +69,12 @@ Values that appear without named constants:
 
 ---
 
-## P7 — Missing Explicit Return Types on Context Mutations
+## ~~P7 — Missing Explicit Return Types on Context Mutations~~ ✅ Done 2026-04-20
 **Score: (2+1)×(6-1) = 15**
 
-Most mutations in `src/lib/context.tsx` rely on inferred return types. Callers don't get IDE autocomplete on results, and future changes to return shapes won't be caught by TypeScript until use sites break.
+~~Most mutations in `src/lib/context.tsx` rely on inferred return types. Callers don't get IDE autocomplete on results, and future changes to return shapes won't be caught by TypeScript until use sites break.~~
 
-**Remediation:** Add explicit `Promise<void>` or `Promise<Person>` annotations. Effort: Low.
+**What was done:** Added explicit `: Promise<void>` annotations to all 23 async mutation callbacks in `context.tsx`. `addPerson` already had `: Promise<string>` — left unchanged.
 
 ---
 
@@ -92,8 +92,8 @@ The migrations in `supabase/migrations/` contain raw SQL with inline comments, b
 **Sprint 1 — Quick wins (run alongside feature work)**
 - [x] Extract shared `<BottomSheet>` + `<ModalHeader>` components (eliminates ~200 LOC of duplication) ✅ 2026-04-20
 - [x] Consolidate `fmtDate` / `whoLabel` into `src/lib/utils.ts` ✅ 2026-04-20
-- [ ] Replace magic numbers with named constants; move colors to CSS tokens
-- [ ] Add explicit return types to context mutations
+- [x] Replace magic numbers with named constants; move colors to CSS tokens ✅ 2026-04-20
+- [x] Add explicit return types to context mutations ✅ 2026-04-20
 
 **Sprint 2 — Reliability**
 - [x] Add try/catch + toast rollback to all context mutations ✅ 2026-04-20

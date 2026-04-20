@@ -28,6 +28,7 @@ import {
 import PersonFamilyPicker from './PersonFamilyPicker';
 import PickerMenu from './PickerMenu';
 import { DeleteConfirmDialog } from './AddLogModal';
+import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS } from '@/lib/constants';
 
 interface AddNoticeModalProps {
   onClose: () => void;
@@ -168,7 +169,7 @@ export default function AddNoticeModal({
         style={{
           position: 'fixed',
           inset: 0,
-          background: 'rgba(30,26,24,0.45)',
+          background: BACKDROP_COLOR,
           zIndex: 60,
           display: 'flex',
           alignItems: 'flex-end',
@@ -182,9 +183,9 @@ export default function AddNoticeModal({
           className="animate-slide-up"
           style={{
             background: 'var(--surface)',
-            borderRadius: '20px 20px 0 0',
+            borderRadius: SHEET_BORDER_RADIUS,
             width: '100%',
-            maxWidth: 430,
+            maxWidth: SHEET_MAX_WIDTH,
             height: 'calc(100dvh - 48px)',
             display: 'flex',
             flexDirection: 'column',

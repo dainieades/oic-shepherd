@@ -60,6 +60,7 @@ import {
   Plus,
 } from '@phosphor-icons/react';
 import { type Notice } from '@/lib/types';
+import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, SHEPHERD_AVATAR_PALETTE } from '@/lib/constants';
 
 type Tab = 'logs' | 'todos' | 'notices' | 'info' | 'sheep';
 
@@ -1618,7 +1619,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
           style={{
             position: 'fixed',
             inset: 0,
-            background: 'rgba(30,26,24,0.45)',
+            background: BACKDROP_COLOR,
             zIndex: 60,
             display: 'flex',
             alignItems: 'flex-end',
@@ -1630,9 +1631,9 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
             className="animate-slide-up"
             style={{
               background: 'var(--surface)',
-              borderRadius: '20px 20px 0 0',
+              borderRadius: SHEET_BORDER_RADIUS,
               width: '100%',
-              maxWidth: 430,
+              maxWidth: SHEET_MAX_WIDTH,
               padding: '0 20px 36px',
               overflow: 'hidden',
             }}
@@ -1758,7 +1759,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
           style={{
             position: 'fixed',
             inset: 0,
-            background: 'rgba(30,26,24,0.5)',
+            background: BACKDROP_COLOR,
             zIndex: 70,
             display: 'flex',
             alignItems: 'flex-end',
@@ -1770,9 +1771,9 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
             className="animate-slide-up"
             style={{
               background: 'var(--surface)',
-              borderRadius: '20px 20px 0 0',
+              borderRadius: SHEET_BORDER_RADIUS,
               width: '100%',
-              maxWidth: 430,
+              maxWidth: SHEET_MAX_WIDTH,
               padding: '0 20px 36px',
               overflow: 'hidden',
             }}
@@ -2275,13 +2276,6 @@ function fmtShortDate(iso: string) {
   return format(new Date(year, month - 1, day), 'MMM d, yyyy');
 }
 
-const sheepPickerPalette = [
-  { bg: '#EAF2EE', color: '#5B8A72' },
-  { bg: '#EBF1F7', color: '#6B8EAE' },
-  { bg: '#F5F0EB', color: '#8C7055' },
-  { bg: '#F0EBF5', color: '#7A6A8C' },
-];
-
 function SheepPickerModal({
   data,
   shepherdPersonaId: _shepherdPersonaId,
@@ -2319,7 +2313,7 @@ function SheepPickerModal({
       style={{
         position: 'fixed',
         inset: 0,
-        background: 'rgba(30,26,24,0.45)',
+        background: BACKDROP_COLOR,
         zIndex: 60,
         display: 'flex',
         alignItems: 'flex-end',
@@ -2333,9 +2327,9 @@ function SheepPickerModal({
         className="animate-slide-up"
         style={{
           background: 'var(--surface)',
-          borderRadius: '20px 20px 0 0',
+          borderRadius: SHEET_BORDER_RADIUS,
           width: '100%',
-          maxWidth: 430,
+          maxWidth: SHEET_MAX_WIDTH,
           height: 'calc(100dvh - 48px)',
           display: 'flex',
           flexDirection: 'column',
@@ -2441,7 +2435,7 @@ function SheepPickerModal({
               .join('')
               .toUpperCase();
             const palette =
-              sheepPickerPalette[p.englishName.charCodeAt(0) % sheepPickerPalette.length];
+              SHEPHERD_AVATAR_PALETTE[p.englishName.charCodeAt(0) % SHEPHERD_AVATAR_PALETTE.length];
             return (
               <button
                 key={p.id}

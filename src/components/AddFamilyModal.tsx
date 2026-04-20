@@ -4,19 +4,12 @@ import React from 'react';
 import { MagnifyingGlass, CheckCircle, Check } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { BottomSheet, ModalHeader } from './BottomSheet';
+import { MEMBER_AVATAR_PALETTE } from '@/lib/constants';
 
 interface AddFamilyModalProps {
   onClose: () => void;
 }
 
-const memberAvatarPalette = [
-  { bg: '#E8F0FE', color: '#4A6FA5' },
-  { bg: '#FDE8F0', color: '#A54A6F' },
-  { bg: '#E8FEF0', color: '#4AA56F' },
-  { bg: '#FEF3E8', color: '#A5794A' },
-  { bg: '#F0E8FE', color: '#7A4AA5' },
-  { bg: '#E8FEFE', color: '#4A9FA5' },
-];
 
 function suggestFamilyName(
   memberIds: string[],
@@ -160,7 +153,7 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
                   .join('')
                   .toUpperCase();
                 const palette =
-                  memberAvatarPalette[p.englishName.charCodeAt(0) % memberAvatarPalette.length];
+                  MEMBER_AVATAR_PALETTE[p.englishName.charCodeAt(0) % MEMBER_AVATAR_PALETTE.length];
                 return (
                   <button
                     key={p.id}
@@ -282,7 +275,7 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
                       .join('')
                       .toUpperCase();
                     const palette =
-                      memberAvatarPalette[p.englishName.charCodeAt(0) % memberAvatarPalette.length];
+                      MEMBER_AVATAR_PALETTE[p.englishName.charCodeAt(0) % MEMBER_AVATAR_PALETTE.length];
                     return (
                       <div
                         key={p.id}

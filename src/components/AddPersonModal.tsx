@@ -39,6 +39,7 @@ import {
   CHURCH_POSITIONS,
 } from '@/lib/types';
 import PickerMenu from './PickerMenu';
+import { SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, SHEPHERD_AVATAR_PALETTE } from '@/lib/constants';
 
 interface AddPersonModalProps {
   onClose: () => void;
@@ -959,13 +960,6 @@ function DateRow({
   );
 }
 
-const shepherdAvatarPalette = [
-  { bg: '#EAF2EE', color: '#5B8A72' },
-  { bg: '#EBF1F7', color: '#6B8EAE' },
-  { bg: '#F5F0EB', color: '#8C7055' },
-  { bg: '#F0EBF5', color: '#7A6A8C' },
-];
-
 function GroupPickerSheet({
   groups,
   currentIds,
@@ -1005,9 +999,9 @@ function GroupPickerSheet({
         className="animate-slide-up"
         style={{
           background: 'var(--surface)',
-          borderRadius: '20px 20px 0 0',
+          borderRadius: SHEET_BORDER_RADIUS,
           width: '100%',
-          maxWidth: 430,
+          maxWidth: SHEET_MAX_WIDTH,
           height: 'calc(100dvh - 48px)',
           display: 'flex',
           flexDirection: 'column',
@@ -1225,9 +1219,9 @@ function ShepherdPickerSheet({
         className="animate-slide-up"
         style={{
           background: 'var(--surface)',
-          borderRadius: '20px 20px 0 0',
+          borderRadius: SHEET_BORDER_RADIUS,
           width: '100%',
-          maxWidth: 430,
+          maxWidth: SHEET_MAX_WIDTH,
           height: 'calc(100dvh - 48px)',
           display: 'flex',
           flexDirection: 'column',
@@ -1339,7 +1333,7 @@ function ShepherdPickerSheet({
         <div style={{ flex: 1, overflowY: 'auto' }}>
           {filtered.map((entry, i) => {
             const isSel = selectedIds.includes(entry.id);
-            const palette = shepherdAvatarPalette[i % shepherdAvatarPalette.length];
+            const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
             const initials = entry.name
               .split(' ')
               .map((n) => n[0])
@@ -1478,9 +1472,9 @@ function PositionPickerSheet({
         className="animate-slide-up"
         style={{
           background: 'var(--surface)',
-          borderRadius: '20px 20px 0 0',
+          borderRadius: SHEET_BORDER_RADIUS,
           width: '100%',
-          maxWidth: 430,
+          maxWidth: SHEET_MAX_WIDTH,
           height: 'calc(100dvh - 48px)',
           display: 'flex',
           flexDirection: 'column',

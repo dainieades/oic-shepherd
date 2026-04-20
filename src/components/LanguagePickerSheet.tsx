@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { MagnifyingGlass, Check } from '@phosphor-icons/react';
+import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS } from '@/lib/constants';
 
 const PRIORITY_LANGUAGES = ['English', 'Mandarin Chinese', 'Cantonese', 'Spanish'];
 
@@ -90,7 +91,7 @@ export default function LanguagePickerSheet({ currentLanguages, onConfirm, onBac
         position: 'fixed',
         inset: 0,
         zIndex: 70,
-        background: 'rgba(30,26,24,0.45)',
+        background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',
         justifyContent: 'center',
@@ -100,9 +101,9 @@ export default function LanguagePickerSheet({ currentLanguages, onConfirm, onBac
         className="animate-slide-up"
         style={{
           background: 'var(--surface)',
-          borderRadius: '20px 20px 0 0',
+          borderRadius: SHEET_BORDER_RADIUS,
           width: '100%',
-          maxWidth: 430,
+          maxWidth: SHEET_MAX_WIDTH,
           height: 'calc(100dvh - 48px)',
           display: 'flex',
           flexDirection: 'column',

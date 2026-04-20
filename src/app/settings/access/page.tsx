@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, Plus, Trash, EnvelopeSimple } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { createClient } from '@/utils/supabase/client';
+import { BACKDROP_COLOR } from '@/lib/constants';
 
 type ApprovedEmail = { email: string; label: string | null; created_at: string };
 
@@ -355,7 +356,7 @@ export default function AccessManagementPage() {
             position: 'fixed',
             inset: 0,
             zIndex: 80,
-            background: 'rgba(30,26,24,0.45)',
+            background: BACKDROP_COLOR,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

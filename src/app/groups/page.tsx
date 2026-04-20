@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useApp } from '@/lib/context';
 import { Crown, HandHeart, Plus } from '@phosphor-icons/react';
+import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS } from '@/lib/constants';
 
 export default function GroupsPage() {
   const { data, currentPersona, addGroup } = useApp();
@@ -225,8 +226,8 @@ export default function GroupsPage() {
                       fontWeight: 500,
                       padding: '2px 8px',
                       borderRadius: '999px',
-                      background: '#EAF2EE',
-                      color: '#5B8A72',
+                      background: 'var(--avatar-s1-bg)',
+                      color: 'var(--avatar-s1-text)',
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: 4,
@@ -280,7 +281,7 @@ export default function GroupsPage() {
             style={{
               position: 'relative',
               background: 'var(--surface)',
-              borderRadius: '20px 20px 0 0',
+              borderRadius: SHEET_BORDER_RADIUS,
               padding: '20px 20px 40px',
               zIndex: 1,
             }}

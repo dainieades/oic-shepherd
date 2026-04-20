@@ -11,6 +11,7 @@ import {
 } from '@phosphor-icons/react';
 import { createClient } from '@/utils/supabase/client';
 import { useApp } from '@/lib/context';
+import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS } from '@/lib/constants';
 
 type InviteRole = 'shepherd' | 'welcome-team' | 'admin';
 
@@ -102,7 +103,7 @@ export default function InviteSheet({
       style={{
         position: 'fixed',
         inset: 0,
-        background: 'rgba(30,26,24,0.45)',
+        background: BACKDROP_COLOR,
         zIndex: 70,
         display: 'flex',
         alignItems: 'flex-end',
@@ -116,9 +117,9 @@ export default function InviteSheet({
         className="animate-slide-up"
         style={{
           background: 'var(--surface)',
-          borderRadius: '20px 20px 0 0',
+          borderRadius: SHEET_BORDER_RADIUS,
           width: '100%',
-          maxWidth: 430,
+          maxWidth: SHEET_MAX_WIDTH,
           paddingBottom: 'env(safe-area-inset-bottom, 24px)',
         }}
       >

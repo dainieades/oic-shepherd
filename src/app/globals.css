@@ -54,6 +54,22 @@
 
   --shadow-card: 0 1px 4px rgba(31, 37, 51, 0.07), 0 1px 2px rgba(31, 37, 51, 0.04);
   --shadow-elevated: 0 4px 16px rgba(31, 37, 51, 0.11), 0 1px 4px rgba(31, 37, 51, 0.06);
+
+  /* ── Sheet / Modal ── */
+  --backdrop: rgba(30,26,24,0.45);
+
+  /* ── Avatar palettes ── */
+  --avatar-m1-bg: #e8f0fe; --avatar-m1-text: #4a6fa5;
+  --avatar-m2-bg: #fde8f0; --avatar-m2-text: #a54a6f;
+  --avatar-m3-bg: #e8fef0; --avatar-m3-text: #4aa56f;
+  --avatar-m4-bg: #fef3e8; --avatar-m4-text: #a5794a;
+  --avatar-m5-bg: #f0e8fe; --avatar-m5-text: #7a4aa5;
+  --avatar-m6-bg: #e8fefe; --avatar-m6-text: #4a9fa5;
+
+  --avatar-s1-bg: #eaf2ee; --avatar-s1-text: #5b8a72;
+  --avatar-s2-bg: #ebf1f7; --avatar-s2-text: #6b8eae;
+  --avatar-s3-bg: #f5f0eb; --avatar-s3-text: #8c7055;
+  --avatar-s4-bg: #f0ebf5; --avatar-s4-text: #7a6a8c;
 }
 
 /* ── Base ──────────────────────────────────────── */

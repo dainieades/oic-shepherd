@@ -42,6 +42,7 @@ import {
 import PickerMenu from '@/components/PickerMenu';
 import AppRolePickerSheet from '@/components/AppRolePickerSheet';
 import LanguagePickerSheet from '@/components/LanguagePickerSheet';
+import { BACKDROP_COLOR, SHEET_MAX_WIDTH } from '@/lib/constants';
 
 const MEMBERSHIP_OPTIONS: { value: MembershipStatus; label: string }[] = [
   { value: 'member', label: 'Member' },
@@ -248,7 +249,7 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
       >
         <div
           style={{
-            maxWidth: 430,
+            maxWidth: SHEET_MAX_WIDTH,
             margin: '0 auto',
             height: '100%',
             display: 'flex',
@@ -1091,7 +1092,7 @@ function GroupPickerSheet({
         position: 'fixed',
         inset: 0,
         zIndex: 70,
-        background: 'rgba(30,26,24,0.35)',
+        background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',
         justifyContent: 'center',
@@ -1105,7 +1106,7 @@ function GroupPickerSheet({
           background: 'var(--surface)',
           borderRadius: '16px 16px 0 0',
           width: '100%',
-          maxWidth: 430,
+          maxWidth: SHEET_MAX_WIDTH,
           maxHeight: '60dvh',
           display: 'flex',
           flexDirection: 'column',
@@ -1212,7 +1213,7 @@ function ShepherdPickerSheet({
         position: 'fixed',
         inset: 0,
         zIndex: 70,
-        background: 'rgba(30,26,24,0.35)',
+        background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',
         justifyContent: 'center',
@@ -1226,7 +1227,7 @@ function ShepherdPickerSheet({
           background: 'var(--surface)',
           borderRadius: '16px 16px 0 0',
           width: '100%',
-          maxWidth: 430,
+          maxWidth: SHEET_MAX_WIDTH,
           paddingBottom: 'env(safe-area-inset-bottom, 24px)',
           overflow: 'hidden',
         }}
@@ -1363,7 +1364,7 @@ function PositionPickerSheet({
         position: 'fixed',
         inset: 0,
         zIndex: 70,
-        background: 'rgba(30,26,24,0.35)',
+        background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',
         justifyContent: 'center',
@@ -1377,7 +1378,7 @@ function PositionPickerSheet({
           background: 'var(--surface)',
           borderRadius: '16px 16px 0 0',
           width: '100%',
-          maxWidth: 430,
+          maxWidth: SHEET_MAX_WIDTH,
           paddingBottom: 'env(safe-area-inset-bottom, 24px)',
           overflow: 'hidden',
         }}

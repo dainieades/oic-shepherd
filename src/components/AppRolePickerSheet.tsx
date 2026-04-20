@@ -3,6 +3,7 @@
 import React from 'react';
 import { type AppRole } from '@/lib/types';
 import { Warning, Check } from '@phosphor-icons/react';
+import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS } from '@/lib/constants';
 
 const ROLE_OPTIONS: { value: AppRole; label: string; description: string }[] = [
   {
@@ -47,7 +48,7 @@ export default function AppRolePickerSheet({
         position: 'fixed',
         inset: 0,
         zIndex: 70,
-        background: 'rgba(30,26,24,0.35)',
+        background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',
         justifyContent: 'center',
@@ -59,9 +60,9 @@ export default function AppRolePickerSheet({
       <div
         style={{
           background: 'var(--surface)',
-          borderRadius: '16px 16px 0 0',
+          borderRadius: SHEET_BORDER_RADIUS,
           width: '100%',
-          maxWidth: 430,
+          maxWidth: SHEET_MAX_WIDTH,
           paddingBottom: 'env(safe-area-inset-bottom, 24px)',
         }}
       >

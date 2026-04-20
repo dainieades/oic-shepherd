@@ -3,13 +3,7 @@
 import Link from 'next/link';
 import { useApp } from '@/lib/context';
 import { getMembershipLabel } from '@/lib/utils';
-
-const avatarPalette = [
-  { bg: '#EAF2EE', color: '#5B8A72' },
-  { bg: '#EBF1F7', color: '#6B8EAE' },
-  { bg: '#F5F0EB', color: '#8C7055' },
-  { bg: '#F0EBF5', color: '#7A6A8C' },
-];
+import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, SHEPHERD_AVATAR_PALETTE } from '@/lib/constants';
 
 interface Props {
   groupId: string;
@@ -38,7 +32,7 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
         position: 'fixed',
         inset: 0,
         zIndex: 60,
-        background: 'rgba(30,26,24,0.45)',
+        background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',
         justifyContent: 'center',
@@ -51,9 +45,9 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
         className="animate-slide-up"
         style={{
           background: 'var(--surface)',
-          borderRadius: '20px 20px 0 0',
+          borderRadius: SHEET_BORDER_RADIUS,
           width: '100%',
-          maxWidth: 430,
+          maxWidth: SHEET_MAX_WIDTH,
           maxHeight: 'calc(100dvh - 80px)',
           display: 'flex',
           flexDirection: 'column',
@@ -179,8 +173,8 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
                   fontWeight: 500,
                   padding: '3px 10px',
                   borderRadius: '999px',
-                  background: '#EAF2EE',
-                  color: '#5B8A72',
+                  background: 'var(--avatar-s1-bg)',
+                  color: 'var(--avatar-s1-text)',
                 }}
               >
                 {group.shepherdIds.length}{' '}
@@ -228,7 +222,7 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
                 }}
               >
                 {leaders.map((leader, i) => {
-                  const palette = avatarPalette[i % avatarPalette.length];
+                  const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
                   const initials = leader.englishName
                     .split(' ')
                     .map((n) => n[0])
@@ -290,8 +284,8 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
                                 fontWeight: 600,
                                 padding: '1px 6px',
                                 borderRadius: '999px',
-                                background: '#EAF2EE',
-                                color: '#5B8A72',
+                                background: 'var(--avatar-s1-bg)',
+                                color: 'var(--avatar-s1-text)',
                               }}
                             >
                               Shepherd
@@ -356,8 +350,8 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
                           width: 36,
                           height: 36,
                           borderRadius: '50%',
-                          background: '#EAF2EE',
-                          color: '#5B8A72',
+                          background: 'var(--avatar-s1-bg)',
+                          color: 'var(--avatar-s1-text)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -415,7 +409,7 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
                 }}
               >
                 {members.map((m, i) => {
-                  const palette = avatarPalette[i % avatarPalette.length];
+                  const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
                   const initials = m.englishName
                     .split(' ')
                     .map((n) => n[0])

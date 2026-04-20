@@ -3,6 +3,7 @@
 import React from 'react';
 import { type AppData } from '@/lib/types';
 import { CaretLeft, MagnifyingGlass, Check } from '@phosphor-icons/react';
+import { SHEPHERD_AVATAR_PALETTE } from '@/lib/constants';
 
 interface PersonFamilyPickerProps {
   data: AppData;
@@ -12,12 +13,6 @@ interface PersonFamilyPickerProps {
   onBack: () => void;
 }
 
-const avatarPalette = [
-  { bg: '#EAF2EE', color: '#5B8A72' },
-  { bg: '#EBF1F7', color: '#6B8EAE' },
-  { bg: '#F5F0EB', color: '#8C7055' },
-  { bg: '#F0EBF5', color: '#7A6A8C' },
-];
 
 export default function PersonFamilyPicker({
   data,
@@ -181,7 +176,7 @@ export default function PersonFamilyPicker({
             </p>
             {families.map((f, fi) => {
               const members = data.people.filter((p) => f.memberIds.includes(p.id));
-              const palette = avatarPalette[fi % avatarPalette.length];
+              const palette = SHEPHERD_AVATAR_PALETTE[fi % SHEPHERD_AVATAR_PALETTE.length];
               const initials = f.label
                 .split(' ')
                 .map((w) => w[0])
@@ -273,7 +268,7 @@ export default function PersonFamilyPicker({
               Individuals
             </p>
             {individuals.map((p, pi) => {
-              const palette = avatarPalette[pi % avatarPalette.length];
+              const palette = SHEPHERD_AVATAR_PALETTE[pi % SHEPHERD_AVATAR_PALETTE.length];
               const initials = p.englishName
                 .split(' ')
                 .map((n) => n[0])

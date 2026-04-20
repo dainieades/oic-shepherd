@@ -30,6 +30,7 @@ import {
   House,
   Check,
 } from '@phosphor-icons/react';
+import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, SHEPHERD_AVATAR_PALETTE } from '@/lib/constants';
 const AddPersonModal = React.lazy(() => import('@/components/AddPersonModal'));
 const AddFamilyModal = React.lazy(() => import('@/components/AddFamilyModal'));
 const InviteSheet = React.lazy(() => import('@/components/InviteSheet'));
@@ -868,7 +869,7 @@ export default function PeoplePage() {
           style={{
             position: 'fixed',
             inset: 0,
-            background: 'rgba(30,26,24,0.45)',
+            background: BACKDROP_COLOR,
             zIndex: 60,
             display: 'flex',
             alignItems: 'flex-end',
@@ -882,9 +883,9 @@ export default function PeoplePage() {
             className="animate-slide-up"
             style={{
               background: 'var(--surface)',
-              borderRadius: '20px 20px 0 0',
+              borderRadius: SHEET_BORDER_RADIUS,
               width: '100%',
-              maxWidth: 430,
+              maxWidth: SHEET_MAX_WIDTH,
               paddingBottom: 'env(safe-area-inset-bottom, 24px)',
             }}
           >
@@ -1071,7 +1072,7 @@ export default function PeoplePage() {
           style={{
             position: 'fixed',
             inset: 0,
-            background: 'rgba(30,26,24,0.45)',
+            background: BACKDROP_COLOR,
             zIndex: 50,
             display: 'flex',
             alignItems: 'flex-end',
@@ -1085,9 +1086,9 @@ export default function PeoplePage() {
             className="animate-slide-up"
             style={{
               background: 'var(--surface)',
-              borderRadius: '20px 20px 0 0',
+              borderRadius: SHEET_BORDER_RADIUS,
               width: '100%',
-              maxWidth: 430,
+              maxWidth: SHEET_MAX_WIDTH,
               height: 'calc(100dvh - 48px)',
               display: 'flex',
               flexDirection: 'column',
@@ -1702,13 +1703,6 @@ function LogStatusTag({
   );
 }
 
-const avatarPalette = [
-  { bg: '#EAF2EE', color: '#5B8A72' },
-  { bg: '#EBF1F7', color: '#6B8EAE' },
-  { bg: '#F5F0EB', color: '#8C7055' },
-  { bg: '#F0EBF5', color: '#7A6A8C' },
-];
-
 const FamilyRow = React.memo(function FamilyRow({
   family,
   members,
@@ -1840,7 +1834,7 @@ const IndividualRow = React.memo(function IndividualRow({
   lastNoteTs: number | null;
   group: Group | null;
 }) {
-  const palette = avatarPalette[person.englishName.charCodeAt(0) % avatarPalette.length];
+  const palette = SHEPHERD_AVATAR_PALETTE[person.englishName.charCodeAt(0) % SHEPHERD_AVATAR_PALETTE.length];
   const initials = person.englishName
     .split(' ')
     .map((n) => n[0])

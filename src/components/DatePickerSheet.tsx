@@ -3,6 +3,7 @@
 import { format, getDaysInMonth, getDay, parseISO, isValid } from 'date-fns';
 import React from 'react';
 import { CaretLeft, CaretRight } from '@phosphor-icons/react';
+import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS } from '@/lib/constants';
 
 const MONTH_NAMES = [
   'January',
@@ -294,7 +295,7 @@ export default function DatePickerSheet({
   return (
     <>
       <div
-        style={{ position: 'fixed', inset: 0, background: 'rgba(30,26,24,0.45)', zIndex: 70 }}
+        style={{ position: 'fixed', inset: 0, background: BACKDROP_COLOR, zIndex: 70 }}
         onClick={onClose}
       />
       <div
@@ -312,9 +313,9 @@ export default function DatePickerSheet({
           className="animate-slide-up"
           style={{
             width: '100%',
-            maxWidth: 430,
+            maxWidth: SHEET_MAX_WIDTH,
             background: 'var(--surface)',
-            borderRadius: '20px 20px 0 0',
+            borderRadius: SHEET_BORDER_RADIUS,
             display: 'flex',
             flexDirection: 'column',
             height: 'calc(100dvh - 48px)',

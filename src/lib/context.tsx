@@ -65,6 +65,7 @@ import { initialData } from './data';
 import { generateId } from './utils';
 import { createClient } from '@/utils/supabase/client';
 import { useToast } from '@/components/Toast';
+import { DEFAULT_FOLLOW_UP_DAYS } from '@/lib/constants';
 
 interface AppContextType {
   data: AppData;
@@ -215,7 +216,7 @@ function mapPerson(
       return [legacyMap[raw] ?? 'English'];
     })(),
     familyId: r.family_id ?? undefined,
-    followUpFrequencyDays: r.follow_up_frequency_days ?? 14,
+    followUpFrequencyDays: r.follow_up_frequency_days ?? DEFAULT_FOLLOW_UP_DAYS,
     lastContactDate: r.last_contact_date ?? undefined,
     nextFollowUpDate: r.next_follow_up_date ?? undefined,
     isFirstTimeVisitor: r.is_first_time_visitor ?? undefined,
@@ -597,7 +598,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // ── Notes ─────────────────────────────────────────────────────────────
   const addNote = useCallback(
-    async (noteData: Omit<Note, 'id' | 'createdBy'> & { createdAt?: string }) => {
+    async (noteData: Omit<Note, 'id' | 'createdBy'> & { createdAt?: string }): Promise<void> => {
       const note: Note = {
         ...noteData,
         id: generateId(),
@@ -668,7 +669,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           ).data;
           if (person) {
             const days =
-              (person as { follow_up_frequency_days: number }).follow_up_frequency_days ?? 14;
+              (person as { follow_up_frequency_days: number }).follow_up_frequency_days ?? DEFAULT_FOLLOW_UP_DAYS;
             const now = new Date();
             await supabase
               .from('people')
@@ -693,7 +694,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       updates: Partial<
         Pick<Note, 'type' | 'content' | 'familyId' | 'personId' | 'visibility' | 'createdAt'>
       >
-    ) => {
+    ): Promise<void> => {
       let snapshot: AppData | undefined;
       setData((prev) => {
         snapshot = prev;
@@ -717,7 +718,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     []
   );
 
-  const deleteNote = useCallback(async (noteId: string) => {
+  const deleteNote = useCallback(async (noteId: string): Promise<void> => {
     let snapshot: AppData | undefined;
     setData((prev) => { snapshot = prev; return { ...prev, notes: prev.notes.filter((n) => n.id !== noteId) }; });
     const supabase = createClient();
@@ -731,7 +732,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // ── Todos ─────────────────────────────────────────────────────────────
   const addTodo = useCallback(
-    async (todoData: Omit<Todo, 'id' | 'createdAt' | 'createdBy' | 'completed'>) => {
+    async (todoData: Omit<Todo, 'id' | 'createdAt' | 'createdBy' | 'completed'>): Promise<void> => {
       const todo: Todo = {
         ...todoData,
         id: generateId(),
@@ -766,7 +767,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     async (
       todoId: string,
       updates: Partial<Pick<Todo, 'title' | 'dueDate' | 'repeat' | 'familyId' | 'personId'>>
-    ) => {
+    ): Promise<void> => {
       let snapshot: AppData | undefined;
       setData((prev) => {
         snapshot = prev;
@@ -789,7 +790,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     []
   );
 
-  const deleteTodo = useCallback(async (todoId: string) => {
+  const deleteTodo = useCallback(async (todoId: string): Promise<void> => {
     let snapshot: AppData | undefined;
     setData((prev) => { snapshot = prev; return { ...prev, todos: prev.todos.filter((t) => t.id !== todoId) }; });
     const supabase = createClient();
@@ -801,7 +802,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const toggleTodo = useCallback(async (todoId: string) => {
+  const toggleTodo = useCallback(async (todoId: string): Promise<void> => {
     let newCompleted = false;
     let completedAt: string | undefined;
     let snapshot: AppData | undefined;
@@ -847,7 +848,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         id: generateId(),
         assignedShepherdIds: [],
         groupIds: [],
-        followUpFrequencyDays: 14,
+        followUpFrequencyDays: DEFAULT_FOLLOW_UP_DAYS,
         createdAt: new Date().toISOString(),
         createdBy: currentPersona.id,
       };
@@ -878,7 +879,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           church_attendance: person.churchAttendance,
           language: person.language,
           family_id: person.familyId ?? null,
-          follow_up_frequency_days: 14,
+          follow_up_frequency_days: DEFAULT_FOLLOW_UP_DAYS,
           created_at: person.createdAt,
           created_by: person.createdBy ?? null,
         });
@@ -923,7 +924,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           | 'appRole'
         >
       >
-    ) => {
+    ): Promise<void> => {
       let snapshot: AppData | undefined;
       setData((prev) => {
         snapshot = prev;
@@ -969,7 +970,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     []
   );
 
-  const deletePerson = useCallback(async (personId: string) => {
+  const deletePerson = useCallback(async (personId: string): Promise<void> => {
     let snapshot: AppData | undefined;
     setData((prev) => {
       snapshot = prev;
@@ -997,7 +998,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const assignShepherds = useCallback(async (personId: string, shepherdIds: string[]) => {
+  const assignShepherds = useCallback(async (personId: string, shepherdIds: string[]): Promise<void> => {
     let snapshot: AppData | undefined;
     setData((prev) => {
       snapshot = prev;
@@ -1023,7 +1024,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // ── Families ──────────────────────────────────────────────────────────
-  const addFamily = useCallback(async (label: string, memberIds: string[]) => {
+  const addFamily = useCallback(async (label: string, memberIds: string[]): Promise<void> => {
     const familyId = generateId();
     const family: Family = { id: familyId, label, tags: [], memberIds };
     let snapshot: AppData | undefined;
@@ -1056,7 +1057,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     async (
       familyId: string,
       updates: Partial<Pick<Family, 'label' | 'photo' | 'primaryContactId' | 'childCount'>>
-    ) => {
+    ): Promise<void> => {
       let snapshot: AppData | undefined;
       setData((prev) => {
         snapshot = prev;
@@ -1079,7 +1080,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     []
   );
 
-  const updateFamilyMembers = useCallback(async (familyId: string, newMemberIds: string[]) => {
+  const updateFamilyMembers = useCallback(async (familyId: string, newMemberIds: string[]): Promise<void> => {
     let snapshot: AppData | undefined;
     setData((prev) => {
       snapshot = prev;
@@ -1118,7 +1119,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const addGroup = useCallback(async (name: string, description?: string) => {
+  const addGroup = useCallback(async (name: string, description?: string): Promise<void> => {
     const group = {
       id: generateId(),
       name,
@@ -1145,7 +1146,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       updates: Partial<
         Pick<import('./types').Group, 'name' | 'description' | 'leaderIds' | 'shepherdIds'>
       >
-    ) => {
+    ): Promise<void> => {
       // Side-channel to capture computed values for DB ops after setData
       let eligibleMemberIds: string[] = [];
       let newShepherdPersonaIds: string[] = [];
@@ -1211,7 +1212,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     []
   );
 
-  const updateGroupMembers = useCallback(async (groupId: string, memberIds: string[]) => {
+  const updateGroupMembers = useCallback(async (groupId: string, memberIds: string[]): Promise<void> => {
     let snapshot: AppData | undefined;
     setData((prev) => {
       snapshot = prev;
@@ -1238,7 +1239,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const assignGroupsToPerson = useCallback(async (personId: string, groupIds: string[]) => {
+  const assignGroupsToPerson = useCallback(async (personId: string, groupIds: string[]): Promise<void> => {
     let snapshot: AppData | undefined;
     setData((prev) => {
       snapshot = prev;
@@ -1266,7 +1267,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const assignGroupsToFamily = useCallback(async (familyId: string, groupIds: string[]) => {
+  const assignGroupsToFamily = useCallback(async (familyId: string, groupIds: string[]): Promise<void> => {
     let snapshot: AppData | undefined;
     setData((prev) => {
       snapshot = prev;
@@ -1309,7 +1310,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const assignShepherdsToFamily = useCallback(async (familyId: string, shepherdIds: string[]) => {
+  const assignShepherdsToFamily = useCallback(async (familyId: string, shepherdIds: string[]): Promise<void> => {
     let snapshot: AppData | undefined;
     setData((prev) => {
       snapshot = prev;
@@ -1343,7 +1344,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const setFollowUpFrequency = useCallback(async (personId: string, days: number) => {
+  const setFollowUpFrequency = useCallback(async (personId: string, days: number): Promise<void> => {
     let nextFollowUpDate: string | undefined;
     let snapshot: AppData | undefined;
     setData((prev) => {
@@ -1377,7 +1378,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // ── Notices ───────────────────────────────────────────────────────────
   const addNotice = useCallback(
-    async (noticeData: Omit<Notice, 'id' | 'createdBy' | 'createdAt'>) => {
+    async (noticeData: Omit<Notice, 'id' | 'createdBy' | 'createdAt'>): Promise<void> => {
       const notice: Notice = {
         ...noticeData,
         id: generateId(),
@@ -1413,7 +1414,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       updates: Partial<
         Pick<Notice, 'category' | 'urgency' | 'privacy' | 'content' | 'personId' | 'familyId'>
       >
-    ) => {
+    ): Promise<void> => {
       let snapshot: AppData | undefined;
       setData((prev) => {
         snapshot = prev;
@@ -1437,7 +1438,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     []
   );
 
-  const deleteNotice = useCallback(async (noticeId: string) => {
+  const deleteNotice = useCallback(async (noticeId: string): Promise<void> => {
     let snapshot: AppData | undefined;
     setData((prev) => { snapshot = prev; return { ...prev, notices: prev.notices.filter((n) => n.id !== noticeId) }; });
     const supabase = createClient();

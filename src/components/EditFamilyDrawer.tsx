@@ -17,18 +17,12 @@ import {
   Check,
 } from '@phosphor-icons/react';
 import PickerMenu from './PickerMenu';
+import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, SHEPHERD_AVATAR_PALETTE } from '@/lib/constants';
 
 interface Props {
   family: Family;
   onClose: () => void;
 }
-
-const avatarPalette = [
-  { bg: '#EAF2EE', color: '#5B8A72' },
-  { bg: '#EBF1F7', color: '#6B8EAE' },
-  { bg: '#F5F0EB', color: '#8C7055' },
-  { bg: '#F0EBF5', color: '#7A6A8C' },
-];
 
 export default function EditFamilyDrawer({ family, onClose }: Props) {
   const { data, updateFamily, updateFamilyMembers, assignGroupsToFamily, assignShepherdsToFamily } =
@@ -127,7 +121,7 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
             {/* ── MEMBERS ── */}
             <DrawerSection label="Members">
               {currentMembers.map((m, i) => {
-                const palette = avatarPalette[i % avatarPalette.length];
+                const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
                 const inits = m.englishName
                   .split(' ')
                   .map((n) => n[0])
@@ -508,9 +502,9 @@ function MemberPickerSheet({
         className="animate-slide-up"
         style={{
           background: 'var(--surface)',
-          borderRadius: '20px 20px 0 0',
+          borderRadius: SHEET_BORDER_RADIUS,
           width: '100%',
-          maxWidth: 430,
+          maxWidth: SHEET_MAX_WIDTH,
           height: 'calc(100dvh - 48px)',
           display: 'flex',
           flexDirection: 'column',
@@ -629,7 +623,7 @@ function MemberPickerSheet({
         <div style={{ flex: 1, overflowY: 'auto' }}>
           {filtered.map((p, i) => {
             const isSel = selectedIds.includes(p.id);
-            const palette = avatarPalette[i % avatarPalette.length];
+            const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
             const inits = p.englishName
               .split(' ')
               .map((n) => n[0])
@@ -779,9 +773,9 @@ function GroupPickerSheet({
         className="animate-slide-up"
         style={{
           background: 'var(--surface)',
-          borderRadius: '20px 20px 0 0',
+          borderRadius: SHEET_BORDER_RADIUS,
           width: '100%',
-          maxWidth: 430,
+          maxWidth: SHEET_MAX_WIDTH,
           height: 'calc(100dvh - 48px)',
           display: 'flex',
           flexDirection: 'column',
@@ -977,7 +971,7 @@ function ShepherdPickerSheet({
         position: 'fixed',
         inset: 0,
         zIndex: 70,
-        background: 'rgba(30,26,24,0.35)',
+        background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',
         justifyContent: 'center',
@@ -991,7 +985,7 @@ function ShepherdPickerSheet({
           background: 'var(--surface)',
           borderRadius: '16px 16px 0 0',
           width: '100%',
-          maxWidth: 430,
+          maxWidth: SHEET_MAX_WIDTH,
           paddingBottom: 'env(safe-area-inset-bottom, 24px)',
           overflow: 'hidden',
         }}

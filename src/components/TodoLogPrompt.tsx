@@ -1,6 +1,7 @@
 'use client';
 
 import { type Todo } from '@/lib/types';
+import { BACKDROP_COLOR } from '@/lib/constants';
 
 interface TodoLogPromptProps {
   todo: Todo;
@@ -15,7 +16,7 @@ export default function TodoLogPrompt({ todo, onAddLog, onSkip }: TodoLogPromptP
         position: 'fixed',
         inset: 0,
         zIndex: 65,
-        background: 'rgba(30,26,24,0.45)',
+        background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
