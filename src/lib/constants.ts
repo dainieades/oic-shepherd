@@ -1,4 +1,13 @@
+import type { HomeSortKey } from '@/lib/context';
+
 export const DEFAULT_FOLLOW_UP_DAYS = 14;
+
+export const SORT_OPTIONS: Array<{ key: HomeSortKey; label: string }> = [
+  { key: 'last-contacted', label: 'Logged longest ago' },
+  { key: 'last-contacted-recent', label: 'Logged most recently' },
+  { key: 'name', label: 'Name A → Z' },
+  { key: 'name-desc', label: 'Name Z → A' },
+];
 export const SHEET_MAX_WIDTH = 430;
 export const SHEET_BORDER_RADIUS = '20px 20px 0 0';
 export const BACKDROP_COLOR = 'var(--backdrop)';

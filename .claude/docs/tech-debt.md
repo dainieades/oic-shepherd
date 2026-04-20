@@ -51,6 +51,24 @@ _Last audited: 2026-04-19_
 
 ---
 
+## ~~P6 — Main Dashboard is 2,067 Lines~~ ✅ Done 2026-04-20 (partial)
+**Score: (2+2)×(6-4) = 8**
+
+~~`src/app/page.tsx` contains filter UI, sort logic, search memoization, action buttons, and list rendering all inline. The filtering and sort logic (~200 LOC) can't be tested or reused without carrying the entire page.~~
+
+**What was done:** Extracted `<FilterPanel>` (full filter bottom sheet, ~580 LOC) into `src/components/FilterPanel.tsx` and `<SortControls>` (sort button + dropdown) into `src/components/SortControls.tsx`. Added `SORT_OPTIONS` to `src/lib/constants.ts`. `CheckRow` and `RadioRow` moved into `FilterPanel.tsx`. `page.tsx` reduced from ~2,067 to ~1,260 lines. The remaining `<FilterPanel>` and `<SortControls>` sub-task is complete; `<SearchBar>` extraction remains as a future item.
+
+---
+
+## ~~P8 — No Schema Documentation~~ ✅ Done 2026-04-20
+**Score: (1+2)×(6-1) = 15**
+
+~~The migrations in `supabase/migrations/` contain raw SQL with inline comments, but there is no ER diagram or relationship guide. The persona-vs-person-ID duality (where a shepherd is both a `Person` and a `Persona`) is a conceptual trap that catches new contributors.~~
+
+**What was done:** Added `.claude/docs/schema.md` with a full entity guide, ASCII ER diagram, table-by-table column reference, and 5 key invariants (including the persona/person duality and the two-table shepherd assignment pattern).
+
+---
+
 ## P5 — AppContext Monolith
 **Score: (3+3)×(6-4) = 12**
 
@@ -60,30 +78,12 @@ _Last audited: 2026-04-19_
 
 ---
 
-## P6 — Main Dashboard is 2,067 Lines
-**Score: (2+2)×(6-4) = 8**
-
-`src/app/page.tsx` contains filter UI, sort logic, search memoization, action buttons, and list rendering all inline. The filtering and sort logic (~200 LOC) can't be tested or reused without carrying the entire page.
-
-**Remediation:** Extract `<FilterPanel>`, `<SortControls>`, `<SearchBar>` as standalone components. Effort: High.
-
----
-
 ## ~~P7 — Missing Explicit Return Types on Context Mutations~~ ✅ Done 2026-04-20
 **Score: (2+1)×(6-1) = 15**
 
 ~~Most mutations in `src/lib/context.tsx` rely on inferred return types. Callers don't get IDE autocomplete on results, and future changes to return shapes won't be caught by TypeScript until use sites break.~~
 
 **What was done:** Added explicit `: Promise<void>` annotations to all 23 async mutation callbacks in `context.tsx`. `addPerson` already had `: Promise<string>` — left unchanged.
-
----
-
-## P8 — No Schema Documentation
-**Score: (1+2)×(6-1) = 15**
-
-The migrations in `supabase/migrations/` contain raw SQL with inline comments, but there is no ER diagram or relationship guide. The persona-vs-person-ID duality (where a shepherd is both a `Person` and a `Persona`) is a conceptual trap that catches new contributors.
-
-**Remediation:** Add an ER diagram and a one-page entity guide to `.claude/docs/`. Effort: Low.
 
 ---
 
@@ -101,8 +101,8 @@ The migrations in `supabase/migrations/` contain raw SQL with inline comments, b
 - [x] Introduce Zod schemas for Supabase row mappers ✅ 2026-04-20
 
 **Sprint 3 — Maintainability**
-- [ ] Extract `<FilterPanel>`, `<SortControls>` from `page.tsx`
-- [ ] Write entity/schema documentation
+- [x] Extract `<FilterPanel>`, `<SortControls>` from `page.tsx` ✅ 2026-04-20
+- [x] Write entity/schema documentation ✅ 2026-04-20
 
 **Backlog (plan before next major feature)**
 - [ ] Split AppContext into adapter + reducer when the file actively blocks work
