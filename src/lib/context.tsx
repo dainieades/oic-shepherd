@@ -23,6 +23,20 @@ import {
   type ChurchAttendance,
   type MembershipStatus,
 } from './types';
+import {
+  PersonRowSchema,
+  FamilyRowSchema,
+  PersonaRowSchema,
+  NoteRowSchema,
+  NoticeRowSchema,
+  TodoRowSchema,
+  type PersonRow,
+  type FamilyRow,
+  type NoteRow,
+  type NoticeRow,
+  type TodoRow,
+  type GroupRow,
+} from './schemas';
 
 // ── Shared filter types (exported so pages can import them) ──────────────────
 
@@ -159,31 +173,32 @@ function mapPerson(
   shepherdIds: string[],
   groupIds: string[]
 ): Person {
+  const r = PersonRowSchema.parse(row);
   return {
-    id: row.id as string,
-    englishName: row.english_name as string,
-    chineseName: row.chinese_name as string | undefined,
-    photo: row.photo as string | undefined,
-    gender: row.gender as Person['gender'],
-    maritalStatus: row.marital_status as Person['maritalStatus'],
-    birthday: row.birthday as string | undefined,
-    baptismDate: row.baptism_date as string | undefined,
-    membershipDate: row.membership_date as string | undefined,
-    anniversary: row.anniversary as string | undefined,
-    phone: row.phone as string | undefined,
-    homePhone: row.home_phone as string | undefined,
-    email: row.email as string | undefined,
-    homeAddress: row.home_address as string | undefined,
-    spiritualNeeds: row.spiritual_needs as string | undefined,
-    physicalNeeds: row.physical_needs as string | undefined,
-    isShepherd: row.is_shepherd as boolean | undefined,
-    isBeingDiscipled: row.is_being_discipled as boolean | undefined,
-    appRole: (row.app_role as AppRole | undefined) ?? 'no-access',
-    churchPositions: row.church_positions as string[] | undefined,
-    membershipStatus: row.membership_status as Person['membershipStatus'],
-    churchAttendance: (row.church_attendance as ChurchAttendance) ?? 'regular',
+    id: r.id,
+    englishName: r.english_name,
+    chineseName: r.chinese_name ?? undefined,
+    photo: r.photo ?? undefined,
+    gender: r.gender ?? undefined,
+    maritalStatus: r.marital_status ?? undefined,
+    birthday: r.birthday ?? undefined,
+    baptismDate: r.baptism_date ?? undefined,
+    membershipDate: r.membership_date ?? undefined,
+    anniversary: r.anniversary ?? undefined,
+    phone: r.phone ?? undefined,
+    homePhone: r.home_phone ?? undefined,
+    email: r.email ?? undefined,
+    homeAddress: r.home_address ?? undefined,
+    spiritualNeeds: r.spiritual_needs ?? undefined,
+    physicalNeeds: r.physical_needs ?? undefined,
+    isShepherd: r.is_shepherd ?? undefined,
+    isBeingDiscipled: r.is_being_discipled ?? undefined,
+    appRole: r.app_role ?? 'no-access',
+    churchPositions: r.church_positions ?? undefined,
+    membershipStatus: r.membership_status,
+    churchAttendance: r.church_attendance ?? 'regular',
     language: (() => {
-      const raw = row.language as string | null;
+      const raw = r.language;
       if (!raw) return ['English'];
       if (raw.startsWith('[')) {
         try {
@@ -199,40 +214,42 @@ function mapPerson(
       };
       return [legacyMap[raw] ?? 'English'];
     })(),
-    familyId: row.family_id as string | undefined,
-    followUpFrequencyDays: (row.follow_up_frequency_days as number) ?? 14,
-    lastContactDate: row.last_contact_date as string | undefined,
-    nextFollowUpDate: row.next_follow_up_date as string | undefined,
-    isFirstTimeVisitor: row.is_first_time_visitor as boolean | undefined,
-    isChild: row.is_child as boolean | undefined,
+    familyId: r.family_id ?? undefined,
+    followUpFrequencyDays: r.follow_up_frequency_days ?? 14,
+    lastContactDate: r.last_contact_date ?? undefined,
+    nextFollowUpDate: r.next_follow_up_date ?? undefined,
+    isFirstTimeVisitor: r.is_first_time_visitor ?? undefined,
+    isChild: r.is_child ?? undefined,
     assignedShepherdIds: shepherdIds,
     groupIds,
-    createdAt: row.created_at as string,
-    createdBy: row.created_by as string | undefined,
+    createdAt: r.created_at,
+    createdBy: r.created_by ?? undefined,
   };
 }
 
 function mapFamily(row: Record<string, unknown>, memberIds: string[]): Family {
+  const r = FamilyRowSchema.parse(row);
   return {
-    id: row.id as string,
-    label: row.label as string,
-    photo: row.photo as string | undefined,
-    tags: (row.tags as string[]) ?? [],
-    childCount: row.child_count as number | undefined,
-    primaryContactId: row.primary_contact_id as string | undefined,
+    id: r.id,
+    label: r.label,
+    photo: r.photo ?? undefined,
+    tags: r.tags ?? [],
+    childCount: r.child_count ?? undefined,
+    primaryContactId: r.primary_contact_id ?? undefined,
     memberIds,
-    createdAt: row.created_at as string | undefined,
-    createdBy: row.created_by as string | undefined,
+    createdAt: r.created_at ?? undefined,
+    createdBy: r.created_by ?? undefined,
   };
 }
 
 function mapPersona(row: Record<string, unknown>, assignedPeopleIds: string[]): Persona {
+  const r = PersonaRowSchema.parse(row);
   return {
-    id: row.id as string,
-    name: row.name as string,
-    role: row.role as Persona['role'],
-    personId: row.person_id as string | undefined,
-    userId: row.user_id as string | undefined,
+    id: r.id,
+    name: r.name,
+    role: r.role,
+    personId: r.person_id ?? undefined,
+    userId: r.user_id ?? undefined,
     assignedPeopleIds,
   };
 }
@@ -269,45 +286,48 @@ async function syncGoogleAvatar(
 }
 
 function mapNote(row: Record<string, unknown>): Note {
+  const r = NoteRowSchema.parse(row);
   return {
-    id: row.id as string,
-    personId: row.person_id as string | undefined,
-    familyId: row.family_id as string | undefined,
-    type: row.type as Note['type'],
-    visibility: row.visibility as Note['visibility'],
-    content: row.content as string | undefined,
-    mentions: (row.mentions as string[]) ?? [],
-    createdBy: row.created_by as string,
-    createdAt: row.created_at as string,
+    id: r.id,
+    personId: r.person_id ?? undefined,
+    familyId: r.family_id ?? undefined,
+    type: r.type,
+    visibility: r.visibility,
+    content: r.content ?? undefined,
+    mentions: r.mentions ?? [],
+    createdBy: r.created_by,
+    createdAt: r.created_at,
   };
 }
 
 function mapNotice(row: Record<string, unknown>): Notice {
+  const r = NoticeRowSchema.parse(row);
   return {
-    id: row.id as string,
-    personId: row.person_id as string | undefined,
-    familyId: row.family_id as string | undefined,
-    category: row.category as Notice['category'],
-    urgency: row.urgency as Notice['urgency'],
-    privacy: (row.privacy as Notice['privacy']) ?? 'pastor-and-shepherds',
-    content: row.content as string,
-    createdBy: row.created_by as string,
-    createdAt: row.created_at as string,
+    id: r.id,
+    personId: r.person_id ?? undefined,
+    familyId: r.family_id ?? undefined,
+    category: r.category,
+    urgency: r.urgency,
+    privacy: r.privacy ?? 'pastor-and-shepherds',
+    content: r.content,
+    createdBy: r.created_by,
+    createdAt: r.created_at,
   };
 }
 
 function mapTodo(row: Record<string, unknown>): Todo {
+  const r = TodoRowSchema.parse(row);
   return {
-    id: row.id as string,
-    personId: row.person_id as string | undefined,
-    familyId: row.family_id as string | undefined,
-    title: row.title as string,
-    dueDate: row.due_date as string | undefined,
-    repeat: row.repeat as Todo['repeat'],
-    completed: (row.completed as boolean) ?? false,
-    completedAt: row.completed_at as string | undefined,
-    createdBy: row.created_by as string,
-    createdAt: row.created_at as string,
+    id: r.id,
+    personId: r.person_id ?? undefined,
+    familyId: r.family_id ?? undefined,
+    title: r.title,
+    dueDate: r.due_date ?? undefined,
+    repeat: r.repeat ?? undefined,
+    completed: r.completed ?? false,
+    completedAt: r.completed_at ?? undefined,
+    createdBy: r.created_by,
+    createdAt: r.created_at,
   };
 }
 
@@ -680,7 +700,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         return { ...prev, notes: prev.notes.map((n) => (n.id === noteId ? { ...n, ...updates } : n)) };
       });
       const supabase = createClient();
-      const dbUpdates: Record<string, unknown> = {};
+      const dbUpdates: Partial<NoteRow> = {};
       if (updates.type !== undefined) dbUpdates.type = updates.type;
       if (updates.content !== undefined) dbUpdates.content = updates.content;
       if (updates.familyId !== undefined) dbUpdates.family_id = updates.familyId;
@@ -753,7 +773,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         return { ...prev, todos: prev.todos.map((t) => (t.id === todoId ? { ...t, ...updates } : t)) };
       });
       const supabase = createClient();
-      const dbUpdates: Record<string, unknown> = {};
+      const dbUpdates: Partial<TodoRow> = {};
       if (updates.title !== undefined) dbUpdates.title = updates.title;
       if (updates.dueDate !== undefined) dbUpdates.due_date = updates.dueDate;
       if (updates.repeat !== undefined) dbUpdates.repeat = updates.repeat;
@@ -910,7 +930,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         return { ...prev, people: prev.people.map((p) => (p.id === personId ? { ...p, ...updates } : p)) };
       });
       const supabase = createClient();
-      const dbUpdates: Record<string, unknown> = {};
+      const dbUpdates: Partial<PersonRow> = {};
       if (updates.englishName !== undefined) dbUpdates.english_name = updates.englishName;
       if (updates.chineseName !== undefined) dbUpdates.chinese_name = updates.chineseName;
       if ('photo' in updates) dbUpdates.photo = updates.photo ?? null;
@@ -1043,7 +1063,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         return { ...prev, families: prev.families.map((f) => (f.id === familyId ? { ...f, ...updates } : f)) };
       });
       const supabase = createClient();
-      const dbUpdates: Record<string, unknown> = {};
+      const dbUpdates: Partial<FamilyRow> = {};
       if (updates.label !== undefined) dbUpdates.label = updates.label;
       if ('photo' in updates) dbUpdates.photo = updates.photo ?? null;
       if (updates.primaryContactId !== undefined)
@@ -1164,7 +1184,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       });
 
       const supabase = createClient();
-      const dbUpdates: Record<string, unknown> = {};
+      const dbUpdates: Partial<GroupRow> = {};
       if (updates.name !== undefined) dbUpdates.name = updates.name;
       if (updates.description !== undefined) dbUpdates.description = updates.description ?? null;
       if (updates.leaderIds !== undefined) dbUpdates.leader_ids = updates.leaderIds;
@@ -1400,7 +1420,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         return { ...prev, notices: prev.notices.map((n) => (n.id === noticeId ? { ...n, ...updates } : n)) };
       });
       const supabase = createClient();
-      const dbUpdates: Record<string, unknown> = {};
+      const dbUpdates: Partial<NoticeRow> = {};
       if (updates.category !== undefined) dbUpdates.category = updates.category;
       if (updates.urgency !== undefined) dbUpdates.urgency = updates.urgency;
       if (updates.privacy !== undefined) dbUpdates.privacy = updates.privacy;

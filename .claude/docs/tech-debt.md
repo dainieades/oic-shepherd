@@ -26,14 +26,14 @@ _Last audited: 2026-04-19_
 
 ---
 
-## P3 — Type Safety: Unsafe `as` Casts in Supabase Mappers
+## ~~P3 — Type Safety: Unsafe `as` Casts in Supabase Mappers~~ ✅ Done 2026-04-20
 **Score: (4+4)×(6-3) = 24**
 
-Six mapper functions in `src/lib/context.tsx` (`mapPerson`, `mapFamily`, `mapNote`, `mapTodo`, `mapNotice`, `mapPersona`) accept `Record<string, unknown>` and cast every field with `as string`, `as number`, etc. If a Supabase migration renames a column, type errors are invisible until runtime.
+~~Six mapper functions in `src/lib/context.tsx` (`mapPerson`, `mapFamily`, `mapNote`, `mapTodo`, `mapNotice`, `mapPersona`) accept `Record<string, unknown>` and cast every field with `as string`, `as number`, etc. If a Supabase migration renames a column, type errors are invisible until runtime.~~
 
-The `dbUpdates: Record<string, unknown>` pattern also repeats 6+ times with string keys that aren't validated against the actual schema.
+~~The `dbUpdates: Record<string, unknown>` pattern also repeats 6+ times with string keys that aren't validated against the actual schema.~~
 
-**Remediation:** Introduce Zod schemas for each Supabase row type; validate at the DB boundary, remove `as` casts. Effort: Medium.
+**What was done:** Created `src/lib/schemas.ts` with Zod schemas for all 7 Supabase row types (`PersonRowSchema`, `FamilyRowSchema`, `PersonaRowSchema`, `NoteRowSchema`, `NoticeRowSchema`, `TodoRowSchema`, `GroupRowSchema`). All 6 mapper functions now call `Schema.parse(row)` at the DB boundary — invalid data throws at the seam rather than silently producing wrong types. All 6 `dbUpdates: Record<string, unknown>` updated to `Partial<XxxRow>` so column name typos are caught at compile time.
 
 ---
 
@@ -98,7 +98,7 @@ The migrations in `supabase/migrations/` contain raw SQL with inline comments, b
 **Sprint 2 — Reliability**
 - [x] Add try/catch + toast rollback to all context mutations ✅ 2026-04-20
 - [x] Remove `.then(() => {})` no-ops ✅ 2026-04-20
-- [ ] Introduce Zod schemas for Supabase row mappers
+- [x] Introduce Zod schemas for Supabase row mappers ✅ 2026-04-20
 
 **Sprint 3 — Maintainability**
 - [ ] Extract `<FilterPanel>`, `<SortControls>` from `page.tsx`
