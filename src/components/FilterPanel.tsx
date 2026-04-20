@@ -3,7 +3,7 @@
 import React from 'react';
 import { useApp, type HomeFilters, type HomeSortKey, HOME_DEFAULT_FILTERS } from '@/lib/context';
 import { getMembershipLabel } from '@/lib/utils';
-import { type MembershipStatus, type ChurchAttendance, type AppRole } from '@/lib/types';
+import { type MembershipStatus, type ChurchAttendance, type AppRole, CHURCH_POSITIONS } from '@/lib/types';
 import { MagnifyingGlass, X, ArrowsDownUp, Check } from '@phosphor-icons/react';
 import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, SORT_OPTIONS } from '@/lib/constants';
 
@@ -65,9 +65,9 @@ export default function FilterPanel({ show, onClose }: { show: boolean; onClose:
     { key: 'archive', label: 'Archive', count: draft.archiveFilter !== 'hide' ? 1 : 0 },
     { key: 'discipleship', label: 'Discipleship', count: draft.discipleship.length },
     { key: 'group', label: 'Group', count: draft.groups.length },
-    { key: 'app-role', label: 'App Role', count: draft.appRoles.length },
-    { key: 'position', label: 'Position', count: draft.positions.length },
+    { key: 'position', label: 'Church Position', count: draft.positions.length },
     { key: 'language', label: 'Language', count: draft.languages.length },
+    { key: 'app-role', label: 'App Role', count: draft.appRoles.length },
     { key: 'sort', label: 'Sort', count: 0 },
   ];
 
@@ -614,33 +614,24 @@ export default function FilterPanel({ show, onClose }: { show: boolean; onClose:
                     marginBottom: 12,
                   }}
                 >
-                  Position
+                  Church Position
                 </p>
-                {(() => {
-                  const allPositions = Array.from(
-                    new Set(data.people.flatMap((p) => p.churchPositions ?? []))
-                  ).sort();
-                  if (allPositions.length === 0)
-                    return (
-                      <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>No positions assigned.</p>
-                    );
-                  return allPositions.map((pos) => (
-                    <CheckRow
-                      key={pos}
-                      checked={draft.positions.includes(pos)}
-                      onToggle={() =>
-                        setDraft((d) => ({
-                          ...d,
-                          positions: d.positions.includes(pos)
-                            ? d.positions.filter((x) => x !== pos)
-                            : [...d.positions, pos],
-                        }))
-                      }
-                    >
-                      {pos}
-                    </CheckRow>
-                  ));
-                })()}
+                {CHURCH_POSITIONS.map((pos) => (
+                  <CheckRow
+                    key={pos}
+                    checked={draft.positions.includes(pos)}
+                    onToggle={() =>
+                      setDraft((d) => ({
+                        ...d,
+                        positions: d.positions.includes(pos)
+                          ? d.positions.filter((x) => x !== pos)
+                          : [...d.positions, pos],
+                      }))
+                    }
+                  >
+                    {pos}
+                  </CheckRow>
+                ))}
               </>
             )}
 

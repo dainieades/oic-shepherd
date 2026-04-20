@@ -78,10 +78,10 @@
 :root[data-theme="dark"] {
   color-scheme: dark;
 
-  --bg: #100d17;
-  --surface: #1b1725;
-  --border: #2e2840;
-  --border-light: #221d30;
+  --bg: #100f13;
+  --surface: #1a181e;
+  --border: #2d2b32;
+  --border-light: #221f27;
 
   /* Text — WCAG AA on --bg: primary 16.9:1, secondary 9.5:1, muted 5.4:1 */
   --text-primary: #ede9f5;
@@ -128,10 +128,10 @@
   :root:not([data-theme="light"]) {
     color-scheme: dark;
 
-    --bg: #100d17;
-    --surface: #1b1725;
-    --border: #2e2840;
-    --border-light: #221d30;
+    --bg: #100f13;
+    --surface: #1a181e;
+    --border: #2d2b32;
+    --border-light: #221f27;
 
     --text-primary: #ede9f5;
     --text-secondary: #b5adc8;
