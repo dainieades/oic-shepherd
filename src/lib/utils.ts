@@ -13,6 +13,42 @@ import {
   startOfDay,
   startOfToday,
 } from 'date-fns';
+
+/** Format a YYYY-MM-DD ISO string to "MMM d, yyyy" */
+export function fmtDate(iso: string): string {
+  if (!iso) return '';
+  const [y, m, d] = iso.split('-').map(Number);
+  return format(new Date(y, m - 1, d), 'MMM d, yyyy');
+}
+
+/** Format a YYYY-MM-DD date + HH:mm time to a display string */
+export function fmtDateTime(dateStr: string, timeStr: string, includeTime: boolean): string {
+  const [y, mo, d] = dateStr.split('-').map(Number);
+  const datePart = format(new Date(y, mo - 1, d), 'MMM d, yyyy');
+  if (!includeTime) return datePart;
+  const [hStr, mStr] = timeStr.split(':');
+  const h = parseInt(hStr);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 || 12;
+  return `${datePart}, ${h12}:${mStr} ${ampm}`;
+}
+
+/** Truncate a list of names to fit in ~3 lines of 14px text (~72 chars) */
+export function truncateWhoLabel(names: string[]): string | null {
+  if (names.length === 0) return null;
+  // ~24 chars/line at 14px in the available field width (~180px); 3 lines ≈ 72 chars
+  const MAX_CHARS = 72;
+  let running = 0;
+  const shown: string[] = [];
+  for (const name of names) {
+    const cost = shown.length === 0 ? name.length : 2 + name.length;
+    if (running + cost > MAX_CHARS && shown.length > 0) break;
+    shown.push(name);
+    running += cost;
+  }
+  const hidden = names.length - shown.length;
+  return shown.join(', ') + (hidden > 0 ? ` +${hidden}` : '');
+}
 import { type Person, type Note, type Todo, type Family, type ChurchAttendance } from './types';
 
 export function getTimeAgo(dateStr: string): string {

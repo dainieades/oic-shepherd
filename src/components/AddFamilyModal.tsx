@@ -3,6 +3,7 @@
 import React from 'react';
 import { MagnifyingGlass, CheckCircle, Check } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
+import { BottomSheet, ModalHeader } from './BottomSheet';
 
 interface AddFamilyModalProps {
   onClose: () => void;
@@ -91,88 +92,19 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
   const selectedPeople = data.people.filter((p) => selectedIds.includes(p.id));
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        background: 'rgba(30,26,24,0.45)',
-        zIndex: 60,
-        display: 'flex',
-        alignItems: 'flex-end',
-        justifyContent: 'center',
-      }}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-    >
-      <div
-        className="animate-slide-up"
-        style={{
-          background: 'var(--surface)',
-          borderRadius: '20px 20px 0 0',
-          width: '100%',
-          maxWidth: 430,
-          height: 'calc(100dvh - 48px)',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-        }}
-      >
-        {/* Drag handle */}
-        <div
-          style={{
-            width: 36,
-            height: 4,
-            background: 'var(--border)',
-            borderRadius: 2,
-            margin: '14px auto 0',
-            flexShrink: 0,
-          }}
-        />
+    <BottomSheet onClose={onClose} dragHandle>
 
         {/* ── Step: members ── */}
         {step === 'members' && (
           <>
-            {/* Header */}
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '14px 20px 12px',
-                flexShrink: 0,
-                borderBottom: '1px solid var(--border-light)',
-              }}
-            >
-              <button
-                onClick={onClose}
-                style={{
-                  fontSize: 14,
-                  color: 'var(--text-secondary)',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                }}
-              >
-                Cancel
-              </button>
-              <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
-                Select members
-              </span>
-              <button
-                onClick={() => selectedIds.length > 0 && setStep('name')}
-                style={{
-                  fontSize: 14,
-                  fontWeight: 600,
-                  color: selectedIds.length === 0 ? 'var(--text-muted)' : 'var(--sage)',
-                  background: 'none',
-                  border: 'none',
-                  cursor: selectedIds.length === 0 ? 'default' : 'pointer',
-                }}
-              >
-                {selectedIds.length > 0 ? `Next (${selectedIds.length})` : 'Next'}
-              </button>
-            </div>
+            <ModalHeader
+              title="Select members"
+              onCancel={onClose}
+              onAction={() => setStep('name')}
+              actionLabel={selectedIds.length > 0 ? `Next (${selectedIds.length})` : 'Next'}
+              actionDisabled={selectedIds.length === 0}
+              actionVariant="text"
+            />
 
             {/* Search */}
             <div style={{ padding: '12px 16px 8px', flexShrink: 0 }}>
@@ -310,51 +242,14 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
         {/* ── Step: name ── */}
         {step === 'name' && !submitted && (
           <>
-            {/* Header */}
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '14px 20px 12px',
-                flexShrink: 0,
-                borderBottom: '1px solid var(--border-light)',
-              }}
-            >
-              <button
-                onClick={() => setStep('members')}
-                style={{
-                  fontSize: 14,
-                  color: 'var(--text-secondary)',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                }}
-              >
-                Back
-              </button>
-              <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
-                Name family
-              </span>
-              <button
-                onClick={handleCreate}
-                disabled={!familyName.trim()}
-                style={{
-                  height: 32,
-                  padding: '0 14px',
-                  borderRadius: 8,
-                  background: familyName.trim() ? 'var(--sage)' : 'var(--border)',
-                  color: familyName.trim() ? '#fff' : 'var(--text-muted)',
-                  fontSize: 14,
-                  fontWeight: 600,
-                  border: 'none',
-                  cursor: familyName.trim() ? 'pointer' : 'default',
-                  transition: 'background 0.15s',
-                }}
-              >
-                Create
-              </button>
-            </div>
+            <ModalHeader
+              title="Name family"
+              onCancel={() => setStep('members')}
+              cancelLabel="Back"
+              onAction={handleCreate}
+              actionLabel="Create"
+              actionDisabled={!familyName.trim()}
+            />
 
             <div
               style={{
@@ -504,7 +399,6 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
             <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>{familyName} has been added.</p>
           </div>
         )}
-      </div>
-    </div>
+    </BottomSheet>
   );
 }

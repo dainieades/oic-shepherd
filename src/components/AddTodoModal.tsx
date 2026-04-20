@@ -1,6 +1,8 @@
 'use client';
 
 import { addHours, format } from 'date-fns';
+import { BottomSheet, ModalHeader } from './BottomSheet';
+import { fmtDateTime, truncateWhoLabel } from '@/lib/utils';
 import React from 'react';
 import { useFloating, autoUpdate, offset, flip, size } from '@floating-ui/react';
 import {
@@ -83,21 +85,7 @@ export default function AddTodoModal({
     ...familyIds.map((id) => data.families.find((f) => f.id === id)?.label ?? ''),
     ...personIds.map((id) => data.people.find((p) => p.id === id)?.englishName ?? ''),
   ].filter(Boolean);
-  const whoLabel = (() => {
-    if (whoNames.length === 0) return null;
-    // ~24 chars/line at 14px in the available field width (~180px); 3 lines ≈ 72 chars
-    const MAX_CHARS = 72;
-    let running = 0;
-    const shown: string[] = [];
-    for (const name of whoNames) {
-      const cost = shown.length === 0 ? name.length : 2 + name.length;
-      if (running + cost > MAX_CHARS && shown.length > 0) break;
-      shown.push(name);
-      running += cost;
-    }
-    const hidden = whoNames.length - shown.length;
-    return shown.join(', ') + (hidden > 0 ? ` +${hidden}` : '');
-  })();
+  const whoLabel = truncateWhoLabel(whoNames);
 
   const handleSave = () => {
     if (!title.trim()) return;
@@ -122,49 +110,11 @@ export default function AddTodoModal({
     onClose();
   };
 
-  function fmtDate() {
-    const [y, mo, d] = dateStr.split('-').map(Number);
-    const datePart = format(new Date(y, mo - 1, d), 'MMM d, yyyy');
-    if (!includeTime) return datePart;
-    const [hStr, mStr] = timeStr.split(':');
-    const h = parseInt(hStr);
-    const ampm = h >= 12 ? 'PM' : 'AM';
-    const h12 = h % 12 || 12;
-    return `${datePart}, ${h12}:${mStr} ${ampm}`;
-  }
-
   const repeatLabel = REPEAT_OPTIONS.find((r) => r.value === repeat)?.label ?? 'Never';
 
   return (
     <>
-      <div
-        style={{
-          position: 'fixed',
-          inset: 0,
-          background: 'rgba(30,26,24,0.45)',
-          zIndex: 60,
-          display: 'flex',
-          alignItems: 'flex-end',
-          justifyContent: 'center',
-        }}
-        onClick={(e) => {
-          if (e.target === e.currentTarget) onClose();
-        }}
-      >
-        <div
-          className="animate-slide-up"
-          style={{
-            background: 'var(--surface)',
-            borderRadius: '20px 20px 0 0',
-            width: '100%',
-            maxWidth: 430,
-            height: 'calc(100dvh - 48px)',
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden',
-            position: 'relative',
-          }}
-        >
+      <BottomSheet onClose={onClose}>
           {/* Floating delete button */}
           {isEditing && todo && !showWhoPicker && (
             <button
@@ -209,51 +159,13 @@ export default function AddTodoModal({
 
           {!showWhoPicker && (
             <>
-              {/* Header — fixed */}
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '14px 20px 12px',
-                  flexShrink: 0,
-                  borderBottom: '1px solid var(--border-light)',
-                }}
-              >
-                <button
-                  onClick={onClose}
-                  style={{
-                    fontSize: 14,
-                    color: 'var(--text-secondary)',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Cancel
-                </button>
-                <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
-                  {isEditing ? 'Edit to-do' : 'Add to-do'}
-                </span>
-                <button
-                  onClick={handleSave}
-                  disabled={!title.trim()}
-                  style={{
-                    height: 32,
-                    padding: '0 14px',
-                    borderRadius: 8,
-                    background: title.trim() ? 'var(--sage)' : 'var(--border)',
-                    color: title.trim() ? '#fff' : 'var(--text-muted)',
-                    fontSize: 14,
-                    fontWeight: 600,
-                    border: 'none',
-                    cursor: title.trim() ? 'pointer' : 'default',
-                    transition: 'background 0.15s',
-                  }}
-                >
-                  Save
-                </button>
-              </div>
+              <ModalHeader
+                title={isEditing ? 'Edit to-do' : 'Add to-do'}
+                onCancel={onClose}
+                onAction={handleSave}
+                actionLabel="Save"
+                actionDisabled={!title.trim()}
+              />
 
               {/* Scrollable body */}
               <div
@@ -295,7 +207,7 @@ export default function AddTodoModal({
                     <FieldRow
                       icon={<CalendarBlank size={16} />}
                       label="Date"
-                      value={fmtDate()}
+                      value={fmtDateTime(dateStr, timeStr, includeTime)}
                       onClick={() => setShowDatePicker(true)}
                     />
 
@@ -390,8 +302,7 @@ export default function AddTodoModal({
               </div>
             </>
           )}
-        </div>
-      </div>
+      </BottomSheet>
 
       {showDatePicker && (
         <DatePickerSheet

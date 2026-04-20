@@ -1,6 +1,5 @@
 'use client';
 
-import { format } from 'date-fns';
 import React, { useState, useRef, useEffect } from 'react';
 import {
   User,
@@ -30,7 +29,8 @@ import {
 } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { useToast } from './Toast';
-import { formatPhone } from '@/lib/utils';
+import { formatPhone, fmtDate } from '@/lib/utils';
+import { BottomSheet, ModalHeader } from './BottomSheet';
 import {
   type MembershipStatus,
   type ChurchAttendance,
@@ -70,12 +70,6 @@ const MARITAL_OPTIONS: { value: MaritalStatus | ''; label: string }[] = [
   { value: 'widowed', label: 'Widowed' },
   { value: 'divorced', label: 'Divorced' },
 ];
-
-function fmtDate(iso: string) {
-  if (!iso) return '';
-  const [y, m, d] = iso.split('-').map(Number);
-  return format(new Date(y, m - 1, d), 'MMM d, yyyy');
-}
 
 export default function AddPersonModal({ onClose }: AddPersonModalProps) {
   const { data, addPerson, assignGroupsToPerson, assignShepherds } = useApp();
@@ -203,90 +197,14 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
 
   return (
     <>
-      <div
-        style={{
-          position: 'fixed',
-          inset: 0,
-          background: 'rgba(30,26,24,0.45)',
-          zIndex: 60,
-          display: 'flex',
-          alignItems: 'flex-end',
-          justifyContent: 'center',
-        }}
-        onClick={(e) => {
-          if (e.target === e.currentTarget) onClose();
-        }}
-      >
-        <div
-          className="animate-slide-up"
-          style={{
-            background: 'var(--surface)',
-            borderRadius: '20px 20px 0 0',
-            width: '100%',
-            maxWidth: 430,
-            height: 'calc(100dvh - 48px)',
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden',
-          }}
-        >
-          {/* Drag handle */}
-          <div
-            style={{
-              width: 36,
-              height: 4,
-              background: 'var(--border)',
-              borderRadius: 2,
-              margin: '14px auto 0',
-              flexShrink: 0,
-            }}
+      <BottomSheet onClose={onClose} dragHandle>
+          <ModalHeader
+            title="Add person"
+            onCancel={onClose}
+            onAction={handleSave}
+            actionLabel="Save"
+            actionDisabled={!firstName.trim()}
           />
-
-          {/* Header */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '14px 20px 12px',
-              flexShrink: 0,
-              borderBottom: '1px solid var(--border-light)',
-            }}
-          >
-            <button
-              onClick={onClose}
-              style={{
-                fontSize: 14,
-                color: 'var(--text-secondary)',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-              }}
-            >
-              Cancel
-            </button>
-            <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
-              Add person
-            </span>
-            <button
-              onClick={handleSave}
-              disabled={!firstName.trim()}
-              style={{
-                height: 32,
-                padding: '0 14px',
-                borderRadius: 8,
-                background: firstName.trim() ? 'var(--sage)' : 'var(--border)',
-                color: firstName.trim() ? '#fff' : 'var(--text-muted)',
-                fontSize: 14,
-                fontWeight: 600,
-                border: 'none',
-                cursor: firstName.trim() ? 'pointer' : 'default',
-                transition: 'background 0.15s',
-              }}
-            >
-              Save
-            </button>
-          </div>
 
           {/* Body */}
           <div
@@ -789,8 +707,7 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
               </>
             )}
           </div>
-        </div>
-      </div>
+      </BottomSheet>
 
       {openPicker === 'status' && (
         <PickerMenu

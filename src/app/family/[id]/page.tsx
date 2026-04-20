@@ -373,12 +373,9 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
           <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap' }}>
             <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{memberCountText}</span>
             {familyGroups.map((g) => (
-              <>
-                <span key={`dot-${g.id}`} style={{ fontSize: 13, color: 'var(--text-muted)' }}>
-                  ·
-                </span>
+              <React.Fragment key={g.id}>
+                <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>·</span>
                 <button
-                  key={g.id}
                   onClick={() => setPreviewGroupId(g.id)}
                   style={{
                     fontSize: 11,
@@ -393,7 +390,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                 >
                   {g.name}
                 </button>
-              </>
+              </React.Fragment>
             ))}
           </div>
         </div>

@@ -3,6 +3,7 @@
 import React from 'react';
 import { useApp } from '@/lib/context';
 import { useToast } from './Toast';
+import { BottomSheet, ModalHeader } from './BottomSheet';
 import { type Family, type Person, type Group } from '@/lib/types';
 import {
   CaretRight,
@@ -93,88 +94,13 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
 
   return (
     <>
-      <div
-        style={{
-          position: 'fixed',
-          inset: 0,
-          background: 'rgba(30,26,24,0.45)',
-          zIndex: 60,
-          display: 'flex',
-          alignItems: 'flex-end',
-          justifyContent: 'center',
-        }}
-        onClick={(e) => {
-          if (e.target === e.currentTarget) onClose();
-        }}
-      >
-        <div
-          className="animate-slide-up"
-          style={{
-            background: 'var(--surface)',
-            borderRadius: '20px 20px 0 0',
-            width: '100%',
-            maxWidth: 430,
-            height: 'calc(100dvh - 48px)',
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden',
-          }}
-        >
-          {/* Drag handle */}
-          <div
-            style={{
-              width: 36,
-              height: 4,
-              background: 'var(--border)',
-              borderRadius: 2,
-              margin: '14px auto 0',
-              flexShrink: 0,
-            }}
+      <BottomSheet onClose={onClose} dragHandle>
+          <ModalHeader
+            title="Edit family"
+            onCancel={onClose}
+            onAction={handleSave}
+            actionLabel="Save"
           />
-
-          {/* Header */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '14px 20px 12px',
-              flexShrink: 0,
-              borderBottom: '1px solid var(--border-light)',
-            }}
-          >
-            <button
-              onClick={onClose}
-              style={{
-                fontSize: 14,
-                color: 'var(--text-secondary)',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-              }}
-            >
-              Cancel
-            </button>
-            <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
-              Edit family
-            </span>
-            <button
-              onClick={handleSave}
-              style={{
-                height: 32,
-                padding: '0 14px',
-                borderRadius: 8,
-                background: 'var(--sage)',
-                color: '#fff',
-                fontSize: 14,
-                fontWeight: 600,
-                border: 'none',
-                cursor: 'pointer',
-              }}
-            >
-              Save
-            </button>
-          </div>
 
           {/* Scrollable body */}
           <div style={{ flex: 1, overflowY: 'auto', padding: '20px 20px 48px' }}>
@@ -422,8 +348,7 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
               </button>
             </DrawerSection>
           </div>
-        </div>
-      </div>
+      </BottomSheet>
 
       {/* Primary Contact Picker */}
       {showPrimaryContactPicker && (

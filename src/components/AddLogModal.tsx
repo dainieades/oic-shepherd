@@ -19,6 +19,8 @@ import { type NoteType, type Note } from '@/lib/types';
 import PersonFamilyPicker from './PersonFamilyPicker';
 import PickerMenu from './PickerMenu';
 import DatePickerSheet from './DatePickerSheet';
+import { BottomSheet, ModalHeader } from './BottomSheet';
+import { fmtDateTime, truncateWhoLabel } from '@/lib/utils';
 
 interface AddLogModalProps {
   onClose: () => void;
@@ -36,16 +38,6 @@ const NOTE_TYPES: { value: NoteType; label: string; icon: React.ReactNode }[] = 
   { value: 'general', label: 'General note', icon: <NotePencil size={16} /> },
 ];
 
-function fmtLogDate(dateStr: string, timeStr: string, includeTime: boolean) {
-  const [y, mo, d] = dateStr.split('-').map(Number);
-  const datePart = format(new Date(y, mo - 1, d), 'MMM d, yyyy');
-  if (!includeTime) return datePart;
-  const [hStr, mStr] = timeStr.split(':');
-  const h = parseInt(hStr);
-  const ampm = h >= 12 ? 'PM' : 'AM';
-  const h12 = h % 12 || 12;
-  return `${datePart}, ${h12}:${mStr} ${ampm}`;
-}
 
 export default function AddLogModal({
   onClose,
@@ -88,21 +80,7 @@ export default function AddLogModal({
     ...familyIds.map((id) => data.families.find((f) => f.id === id)?.label ?? ''),
     ...personIds.map((id) => data.people.find((p) => p.id === id)?.englishName ?? ''),
   ].filter(Boolean);
-  const whoLabel = (() => {
-    if (whoNames.length === 0) return null;
-    // ~24 chars/line at 14px in the available field width (~180px); 3 lines ≈ 72 chars
-    const MAX_CHARS = 72;
-    let running = 0;
-    const shown: string[] = [];
-    for (const name of whoNames) {
-      const cost = shown.length === 0 ? name.length : 2 + name.length;
-      if (running + cost > MAX_CHARS && shown.length > 0) break;
-      shown.push(name);
-      running += cost;
-    }
-    const hidden = whoNames.length - shown.length;
-    return shown.join(', ') + (hidden > 0 ? ` +${hidden}` : '');
-  })();
+  const whoLabel = truncateWhoLabel(whoNames);
 
   const handleSave = () => {
     const createdAt = new Date(`${dateStr}T${includeTime ? timeStr : '00:00'}:00`).toISOString();
@@ -132,34 +110,7 @@ export default function AddLogModal({
 
   return (
     <>
-      <div
-        style={{
-          position: 'fixed',
-          inset: 0,
-          background: 'rgba(30,26,24,0.45)',
-          zIndex: 60,
-          display: 'flex',
-          alignItems: 'flex-end',
-          justifyContent: 'center',
-        }}
-        onClick={(e) => {
-          if (e.target === e.currentTarget) onClose();
-        }}
-      >
-        <div
-          className="animate-slide-up"
-          style={{
-            background: 'var(--surface)',
-            borderRadius: '20px 20px 0 0',
-            width: '100%',
-            maxWidth: 430,
-            height: 'calc(100dvh - 48px)',
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden',
-            position: 'relative',
-          }}
-        >
+      <BottomSheet onClose={onClose}>
           {showWhoPicker && (
             <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
               <PersonFamilyPicker
@@ -204,49 +155,12 @@ export default function AddLogModal({
 
           {!showWhoPicker && (
             <>
-              {/* Header — fixed */}
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '14px 20px 12px',
-                  flexShrink: 0,
-                  borderBottom: '1px solid var(--border-light)',
-                }}
-              >
-                <button
-                  onClick={onClose}
-                  style={{
-                    fontSize: 14,
-                    color: 'var(--text-secondary)',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Cancel
-                </button>
-                <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
-                  {isEditing ? 'Edit log' : 'Add log'}
-                </span>
-                <button
-                  onClick={handleSave}
-                  style={{
-                    height: 32,
-                    padding: '0 14px',
-                    borderRadius: 8,
-                    background: 'var(--sage)',
-                    color: '#fff',
-                    fontSize: 14,
-                    fontWeight: 600,
-                    border: 'none',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Save
-                </button>
-              </div>
+              <ModalHeader
+                title={isEditing ? 'Edit log' : 'Add log'}
+                onCancel={onClose}
+                onAction={handleSave}
+                actionLabel="Save"
+              />
 
               {/* Scrollable body */}
               <div
@@ -298,7 +212,7 @@ export default function AddLogModal({
                     <FieldRow
                       icon={<CalendarBlank size={16} />}
                       label="Date"
-                      value={fmtLogDate(dateStr, timeStr, includeTime)}
+                      value={fmtDateTime(dateStr, timeStr, includeTime)}
                       onClick={() => setShowDatePicker(true)}
                     />
 
@@ -372,8 +286,7 @@ export default function AddLogModal({
               </div>
             </>
           )}
-        </div>
-      </div>
+      </BottomSheet>
 
       {showDatePicker && (
         <DatePickerSheet

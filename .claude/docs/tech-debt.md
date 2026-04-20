@@ -17,18 +17,12 @@ _Last audited: 2026-04-19_
 
 ---
 
-## P2 — DRY Violations in Modal/Drawer Components
+## ~~P2 — DRY Violations in Modal/Drawer Components~~ ✅ Done 2026-04-20
 **Score: (4+3)×(6-2) = 28**
 
-Six modal/drawer components (`AddLogModal`, `AddTodoModal`, `AddPersonModal`, `AddFamilyModal`, `EditPersonDrawer`, `EditFamilyDrawer`) each independently implement:
+~~Six modal/drawer components each independently implemented the overlay/container structure, header row, `whoLabel` truncation, and date formatters.~~
 
-- The full overlay `<div>` with `position:fixed`, backdrop rgba, z-index
-- The bottom-sheet container with `borderRadius: '20px 20px 0 0'`, `maxWidth: 430`, `height: calc(100dvh - 48px)`
-- A Cancel/Title/Save header row
-- The `whoLabel` truncation loop (identical 20-line block in `AddLogModal.tsx:86–105` and `AddTodoModal.tsx:82–100`)
-- Date/time formatting helpers (`fmtDate`, `fmtLogDate`) duplicated across 4+ files
-
-**Remediation:** Extract a shared `<BottomSheet>` wrapper component, a shared `<ModalHeader>` component, and consolidate date formatters into `src/lib/utils.ts`. Effort: Medium (1–2 sprints).
+**What was done:** Extracted `<BottomSheet>` (overlay + container + optional drag handle) and `<ModalHeader>` (Cancel/Title/Action header) into `src/components/BottomSheet.tsx`. Added `fmtDate`, `fmtDateTime`, and `truncateWhoLabel` to `src/lib/utils.ts`. All 6 modals/drawers updated to use shared components. Removed ~200 LOC of duplication.
 
 ---
 
@@ -96,8 +90,8 @@ The migrations in `supabase/migrations/` contain raw SQL with inline comments, b
 ## Phased Remediation Plan
 
 **Sprint 1 — Quick wins (run alongside feature work)**
-- [ ] Extract shared `<BottomSheet>` + `<ModalHeader>` components (eliminates ~200 LOC of duplication)
-- [ ] Consolidate `fmtDate` / `whoLabel` into `src/lib/utils.ts`
+- [x] Extract shared `<BottomSheet>` + `<ModalHeader>` components (eliminates ~200 LOC of duplication) ✅ 2026-04-20
+- [x] Consolidate `fmtDate` / `whoLabel` into `src/lib/utils.ts` ✅ 2026-04-20
 - [ ] Replace magic numbers with named constants; move colors to CSS tokens
 - [ ] Add explicit return types to context mutations
 
