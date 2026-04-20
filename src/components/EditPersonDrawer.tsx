@@ -43,7 +43,7 @@ import {
 } from '@phosphor-icons/react';
 import PickerMenu from './PickerMenu';
 import AppRolePickerSheet from './AppRolePickerSheet';
-import { SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, SHEPHERD_AVATAR_PALETTE } from '@/lib/constants';
+import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, SHEPHERD_AVATAR_PALETTE } from '@/lib/constants';
 import InviteSheet from './InviteSheet';
 
 interface Props {
@@ -961,6 +961,7 @@ function GroupPickerSheet({
         position: 'fixed',
         inset: 0,
         zIndex: 70,
+        background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',
         justifyContent: 'center',
@@ -1182,6 +1183,7 @@ function ShepherdPickerSheet({
         position: 'fixed',
         inset: 0,
         zIndex: 70,
+        background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',
         justifyContent: 'center',
@@ -1435,6 +1437,7 @@ function PositionPickerSheet({
         position: 'fixed',
         inset: 0,
         zIndex: 70,
+        background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',
         justifyContent: 'center',

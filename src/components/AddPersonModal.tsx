@@ -39,7 +39,7 @@ import {
   CHURCH_POSITIONS,
 } from '@/lib/types';
 import PickerMenu from './PickerMenu';
-import { SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, SHEPHERD_AVATAR_PALETTE } from '@/lib/constants';
+import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, SHEPHERD_AVATAR_PALETTE } from '@/lib/constants';
 
 interface AddPersonModalProps {
   onClose: () => void;
@@ -990,6 +990,7 @@ function GroupPickerSheet({
         position: 'fixed',
         inset: 0,
         zIndex: 70,
+        background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',
         justifyContent: 'center',
@@ -1210,6 +1211,7 @@ function ShepherdPickerSheet({
         position: 'fixed',
         inset: 0,
         zIndex: 70,
+        background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',
         justifyContent: 'center',
@@ -1463,6 +1465,7 @@ function PositionPickerSheet({
         position: 'fixed',
         inset: 0,
         zIndex: 70,
+        background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',
         justifyContent: 'center',

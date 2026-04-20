@@ -28,7 +28,7 @@ import {
   X,
   House,
 } from '@phosphor-icons/react';
-import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, SHEPHERD_AVATAR_PALETTE } from '@/lib/constants';
+import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS } from '@/lib/constants';
 const AddPersonModal = React.lazy(() => import('@/components/AddPersonModal'));
 const AddFamilyModal = React.lazy(() => import('@/components/AddFamilyModal'));
 const InviteSheet = React.lazy(() => import('@/components/InviteSheet'));
@@ -1029,7 +1029,7 @@ const FamilyRow = React.memo(function FamilyRow({
             borderRadius: '50%',
             flexShrink: 0,
             overflow: 'hidden',
-            background: 'var(--sage-light)',
+            background: 'var(--sage)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -1043,7 +1043,7 @@ const FamilyRow = React.memo(function FamilyRow({
               style={{ width: 44, height: 44, objectFit: 'cover' }}
             />
           ) : (
-            <House size={22} color="var(--sage)" />
+            <House size={22} color="var(--sage-light)" />
           )}
         </div>
 
@@ -1131,7 +1131,6 @@ const IndividualRow = React.memo(function IndividualRow({
   lastNoteTs: number | null;
   group: Group | null;
 }) {
-  const palette = SHEPHERD_AVATAR_PALETTE[person.englishName.charCodeAt(0) % SHEPHERD_AVATAR_PALETTE.length];
   const initials = person.englishName
     .split(' ')
     .map((n) => n[0])
@@ -1154,8 +1153,8 @@ const IndividualRow = React.memo(function IndividualRow({
             width: 44,
             height: 44,
             borderRadius: '50%',
-            background: palette.bg,
-            color: palette.color,
+            background: 'var(--sage-light)',
+            color: 'var(--sage)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

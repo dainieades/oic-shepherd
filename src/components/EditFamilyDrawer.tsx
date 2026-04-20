@@ -764,6 +764,7 @@ function GroupPickerSheet({
         position: 'fixed',
         inset: 0,
         zIndex: 70,
+        background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',
         justifyContent: 'center',

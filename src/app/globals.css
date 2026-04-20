@@ -56,7 +56,7 @@
   --shadow-elevated: 0 4px 16px rgba(31, 37, 51, 0.11), 0 1px 4px rgba(31, 37, 51, 0.06);
 
   /* ── Sheet / Modal ── */
-  --backdrop: rgba(30,26,24,0.45);
+  --backdrop: rgba(30, 26, 24, 0.45);
 
   /* ── Avatar palettes ── */
   --avatar-m1-bg: #e8f0fe; --avatar-m1-text: #4a6fa5;
