@@ -95,7 +95,7 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
               padding: '0 14px',
               borderRadius: 8,
               background: canSave ? 'var(--sage)' : 'var(--border)',
-              color: canSave ? '#fff' : 'var(--text-muted)',
+              color: canSave ? 'var(--on-sage)' : 'var(--text-muted)',
               fontSize: 14,
               fontWeight: 600,
               border: 'none',

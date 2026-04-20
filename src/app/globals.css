@@ -1,8 +1,5 @@
 @import 'tailwindcss';
 
-/* Force light mode — this is always a light UI */
-@custom-variant dark (&:is(.dark *));
-
 /* ── Design Tokens ─────────────────────────────── */
 :root {
   color-scheme: light;
@@ -34,6 +31,8 @@
   --sage-mid: #d9d2e0;
   /* Dark: hsl(267 25% 37%) — used for hover/pressed states */
   --sage-dark: #5c4778;
+  /* Text on --sage backgrounds: white in light mode (6.7:1), dark in dark mode (6.7:1) */
+  --on-sage: #ffffff;
 
   /* ── Status colours (unchanged) ── */
   --blue: #6b8eae;
@@ -70,6 +69,107 @@
   --avatar-s2-bg: #ebf1f7; --avatar-s2-text: #6b8eae;
   --avatar-s3-bg: #f5f0eb; --avatar-s3-text: #8c7055;
   --avatar-s4-bg: #f0ebf5; --avatar-s4-text: #7a6a8c;
+}
+
+/* ── Dark mode tokens ──────────────────────────── */
+/* Shared dark token values used in both blocks below */
+
+/* Forced dark: data-theme="dark" on <html> */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #100d17;
+  --surface: #1b1725;
+  --border: #2e2840;
+  --border-light: #221d30;
+
+  /* Text — WCAG AA on --bg: primary 16.9:1, secondary 9.5:1, muted 5.4:1 */
+  --text-primary: #ede9f5;
+  --text-secondary: #b5adc8;
+  --text-muted: #887fa0;
+
+  /* Brand — lighter purple for dark surfaces, 5.9:1 on --bg */
+  --sage: #a88ccf;
+  --sage-light: #1e1830;
+  --sage-mid: #3e3360;
+  --sage-dark: #c4a8e0;
+  --on-sage: #100d17;
+
+  --blue: #88aacc;
+  --blue-light: #131c27;
+
+  --amber: #d9a84a;
+  --amber-light: #1e1500;
+  --amber-border: #382800;
+
+  --red: #cc706c;
+  --red-light: #1e0c0c;
+  --red-border: #3a1515;
+
+  --shadow-card: 0 1px 4px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.25);
+  --shadow-elevated: 0 4px 16px rgba(0, 0, 0, 0.5), 0 1px 4px rgba(0, 0, 0, 0.3);
+  --backdrop: rgba(0, 0, 0, 0.7);
+
+  --avatar-m1-bg: #192040; --avatar-m1-text: #7a9ed4;
+  --avatar-m2-bg: #401930; --avatar-m2-text: #d47aa0;
+  --avatar-m3-bg: #193020; --avatar-m3-text: #7ad4a0;
+  --avatar-m4-bg: #301e10; --avatar-m4-text: #d4a070;
+  --avatar-m5-bg: #28143c; --avatar-m5-text: #b07ad4;
+  --avatar-m6-bg: #103030; --avatar-m6-text: #70c8d4;
+
+  --avatar-s1-bg: #162218; --avatar-s1-text: #7ab892;
+  --avatar-s2-bg: #131c27; --avatar-s2-text: #7aaed4;
+  --avatar-s3-bg: #281e14; --avatar-s3-text: #c4a07a;
+  --avatar-s4-bg: #1e1628; --avatar-s4-text: #b09cc8;
+}
+
+/* System dark: OS prefers dark and the user hasn't forced light */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --bg: #100d17;
+    --surface: #1b1725;
+    --border: #2e2840;
+    --border-light: #221d30;
+
+    --text-primary: #ede9f5;
+    --text-secondary: #b5adc8;
+    --text-muted: #887fa0;
+
+    --sage: #a88ccf;
+    --sage-light: #1e1830;
+    --sage-mid: #3e3360;
+    --sage-dark: #c4a8e0;
+    --on-sage: #100d17;
+
+    --blue: #88aacc;
+    --blue-light: #131c27;
+
+    --amber: #d9a84a;
+    --amber-light: #1e1500;
+    --amber-border: #382800;
+
+    --red: #cc706c;
+    --red-light: #1e0c0c;
+    --red-border: #3a1515;
+
+    --shadow-card: 0 1px 4px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.25);
+    --shadow-elevated: 0 4px 16px rgba(0, 0, 0, 0.5), 0 1px 4px rgba(0, 0, 0, 0.3);
+    --backdrop: rgba(0, 0, 0, 0.7);
+
+    --avatar-m1-bg: #192040; --avatar-m1-text: #7a9ed4;
+    --avatar-m2-bg: #401930; --avatar-m2-text: #d47aa0;
+    --avatar-m3-bg: #193020; --avatar-m3-text: #7ad4a0;
+    --avatar-m4-bg: #301e10; --avatar-m4-text: #d4a070;
+    --avatar-m5-bg: #28143c; --avatar-m5-text: #b07ad4;
+    --avatar-m6-bg: #103030; --avatar-m6-text: #70c8d4;
+
+    --avatar-s1-bg: #162218; --avatar-s1-text: #7ab892;
+    --avatar-s2-bg: #131c27; --avatar-s2-text: #7aaed4;
+    --avatar-s3-bg: #281e14; --avatar-s3-text: #c4a07a;
+    --avatar-s4-bg: #1e1628; --avatar-s4-text: #b09cc8;
+  }
 }
 
 /* ── Base ──────────────────────────────────────── */

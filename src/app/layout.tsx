@@ -27,7 +27,15 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={lora.variable}>
+    <html lang="en" className={lora.variable} suppressHydrationWarning>
+      <head>
+        {/* Runs synchronously before paint to apply stored theme and prevent FOUC */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var t=localStorage.getItem('shepherd-app-theme');if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);})();`,
+          }}
+        />
+      </head>
       <body style={{ background: 'var(--bg)', color: 'var(--text-primary)' }}>
         <ToastProvider>
           <AppProvider>

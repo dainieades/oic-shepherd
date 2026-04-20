@@ -225,7 +225,7 @@ export default function AccessManagementPage() {
             borderRadius: 10,
             border: 'none',
             background: 'var(--sage)',
-            color: '#fff',
+            color: 'var(--on-sage)',
             fontSize: 15,
             fontWeight: 600,
             cursor: adding ? 'not-allowed' : 'pointer',

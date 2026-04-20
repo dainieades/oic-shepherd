@@ -361,7 +361,7 @@ export default function DatePickerSheet({
                 padding: '0 14px',
                 borderRadius: 8,
                 background: 'var(--sage)',
-                color: '#fff',
+                color: 'var(--on-sage)',
                 fontSize: 14,
                 fontWeight: 600,
                 border: 'none',
@@ -468,7 +468,7 @@ export default function DatePickerSheet({
                           ? 'color-mix(in srgb, var(--sage) 15%, transparent)'
                           : 'none',
                       color: isSelected
-                        ? '#fff'
+                        ? 'var(--on-sage)'
                         : !cell.inMonth || isFuture
                           ? 'var(--text-muted)'
                           : isToday

@@ -197,7 +197,7 @@ export default function AddPage() {
           style={{
             width: '100%',
             background: englishName.trim() ? 'var(--sage)' : '#C8C4C0',
-            color: '#fff',
+            color: 'var(--on-sage)',
             border: 'none',
             borderRadius: 'var(--radius)',
             padding: '13px 0',

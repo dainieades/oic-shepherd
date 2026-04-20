@@ -150,6 +150,20 @@ export default function PeoplePage() {
         !members.some((m) => filters.appRoles.includes(m.appRole ?? 'no-access'))
       )
         continue;
+      // Position filter (OR across selected)
+      if (
+        filters.positions.length > 0 &&
+        !members.some((m) =>
+          filters.positions.some((pos) => (m.churchPositions ?? []).includes(pos))
+        )
+      )
+        continue;
+      // Language filter (OR across selected)
+      if (
+        filters.languages.length > 0 &&
+        !members.some((m) => filters.languages.some((lang) => m.language.includes(lang)))
+      )
+        continue;
 
       const familyLastNoteTs = members.reduce((max, m) => {
         const t = lastNoteTime[m.id] ?? 0;
@@ -184,6 +198,16 @@ export default function PeoplePage() {
         if (!passes) continue;
       }
       if (filters.appRoles.length > 0 && !filters.appRoles.includes(p.appRole ?? 'no-access'))
+        continue;
+      if (
+        filters.positions.length > 0 &&
+        !filters.positions.some((pos) => (p.churchPositions ?? []).includes(pos))
+      )
+        continue;
+      if (
+        filters.languages.length > 0 &&
+        !filters.languages.some((lang) => p.language.includes(lang))
+      )
         continue;
       const personLastNoteTs = lastNoteTime[p.id] ?? null;
       const personGroup = p.groupIds[0] ? (data.groups.find((g) => g.id === p.groupIds[0]) ?? null) : null;
@@ -248,7 +272,9 @@ export default function PeoplePage() {
     filters.groups.length +
     (filters.archiveFilter !== 'hide' ? 1 : 0) +
     filters.discipleship.length +
-    filters.appRoles.length;
+    filters.appRoles.length +
+    filters.positions.length +
+    filters.languages.length;
 
   const chips: { key: string; label: string; clear: () => void }[] = [];
   filters.shepherds.forEach((sid) => {
@@ -317,6 +343,22 @@ export default function PeoplePage() {
       clear: () => setFilters((f) => ({ ...f, appRoles: f.appRoles.filter((x) => x !== r) })),
     });
   });
+  filters.positions.forEach((pos) => {
+    chips.push({
+      key: `pos-${pos}`,
+      label: pos,
+      clear: () =>
+        setFilters((f) => ({ ...f, positions: f.positions.filter((x) => x !== pos) })),
+    });
+  });
+  filters.languages.forEach((lang) => {
+    chips.push({
+      key: `lang-${lang}`,
+      label: lang,
+      clear: () =>
+        setFilters((f) => ({ ...f, languages: f.languages.filter((x) => x !== lang) })),
+    });
+  });
 
   const familyCount = entries.filter((e) => e.type === 'family').length;
   const individualCount = entries.filter((e) => e.type === 'individual').length;
@@ -383,7 +425,7 @@ export default function PeoplePage() {
               height: 15,
               borderRadius: '50%',
               background: 'var(--sage)',
-              color: '#fff',
+              color: 'var(--on-sage)',
               fontSize: 9,
               fontWeight: 700,
               display: 'flex',
@@ -404,7 +446,7 @@ export default function PeoplePage() {
           padding: btnPad,
           borderRadius: 8,
           background: 'var(--sage)',
-          color: '#fff',
+          color: 'var(--on-sage)',
           fontSize: btnFont,
           fontWeight: 600,
           border: 'none',

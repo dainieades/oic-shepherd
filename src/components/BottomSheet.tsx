@@ -115,7 +115,7 @@ export function ModalHeader({
             padding: '0 14px',
             borderRadius: 8,
             background: actionDisabled ? 'var(--border)' : 'var(--sage)',
-            color: actionDisabled ? 'var(--text-muted)' : '#fff',
+            color: actionDisabled ? 'var(--text-muted)' : 'var(--on-sage)',
             fontSize: 14,
             fontWeight: 600,
             border: 'none',

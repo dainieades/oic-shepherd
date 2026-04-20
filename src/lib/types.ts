@@ -1,3 +1,5 @@
+export type ThemePreference = 'light' | 'dark' | 'system';
+
 export type Role = 'admin' | 'shepherd' | 'welcome-team';
 export type AppRole = 'admin' | 'shepherd' | 'welcome-team' | 'no-access';
 

@@ -80,7 +80,7 @@ export default function AccessGate() {
             borderRadius: 12,
             border: 'none',
             background: 'var(--sage)',
-            color: '#fff',
+            color: 'var(--on-sage)',
             fontSize: 15,
             fontWeight: 600,
             cursor: 'pointer',

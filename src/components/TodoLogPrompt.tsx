@@ -58,7 +58,7 @@ export default function TodoLogPrompt({ todo, onAddLog, onSkip }: TodoLogPromptP
               flex: 1,
               padding: '10px 0',
               background: 'var(--sage)',
-              color: '#fff',
+              color: 'var(--on-sage)',
               border: 'none',
               borderRadius: 10,
               fontSize: 14,

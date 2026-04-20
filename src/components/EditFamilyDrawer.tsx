@@ -1093,7 +1093,7 @@ function ShepherdPickerSheet({
               height: 44,
               borderRadius: 12,
               background: 'var(--sage)',
-              color: '#fff',
+              color: 'var(--on-sage)',
               fontSize: 15,
               fontWeight: 600,
               border: 'none',

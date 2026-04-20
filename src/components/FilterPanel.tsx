@@ -7,7 +7,7 @@ import { type MembershipStatus, type ChurchAttendance, type AppRole } from '@/li
 import { MagnifyingGlass, X, ArrowsDownUp, Check } from '@phosphor-icons/react';
 import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, SORT_OPTIONS } from '@/lib/constants';
 
-type FilterCategory = 'sort' | 'shepherd' | 'membership' | 'discipleship' | 'group' | 'app-role' | 'archive';
+type FilterCategory = 'sort' | 'shepherd' | 'membership' | 'discipleship' | 'group' | 'app-role' | 'archive' | 'position' | 'language';
 
 export default function FilterPanel({ show, onClose }: { show: boolean; onClose: () => void }): React.ReactNode {
   const {
@@ -55,7 +55,9 @@ export default function FilterPanel({ show, onClose }: { show: boolean; onClose:
     draft.groups.length +
     (draft.archiveFilter !== 'hide' ? 1 : 0) +
     draft.discipleship.length +
-    draft.appRoles.length;
+    draft.appRoles.length +
+    draft.positions.length +
+    draft.languages.length;
 
   const FILTER_CATEGORIES: Array<{ key: FilterCategory; label: string; count: number }> = [
     { key: 'shepherd', label: 'Shepherd by', count: draft.shepherds.length },
@@ -64,6 +66,8 @@ export default function FilterPanel({ show, onClose }: { show: boolean; onClose:
     { key: 'discipleship', label: 'Discipleship', count: draft.discipleship.length },
     { key: 'group', label: 'Group', count: draft.groups.length },
     { key: 'app-role', label: 'App Role', count: draft.appRoles.length },
+    { key: 'position', label: 'Position', count: draft.positions.length },
+    { key: 'language', label: 'Language', count: draft.languages.length },
     { key: 'sort', label: 'Sort', count: 0 },
   ];
 
@@ -132,7 +136,7 @@ export default function FilterPanel({ show, onClose }: { show: boolean; onClose:
                   padding: '2px 8px',
                   borderRadius: '999px',
                   background: 'var(--sage)',
-                  color: '#fff',
+                  color: 'var(--on-sage)',
                 }}
               >
                 {draftTotalCount}
@@ -217,7 +221,7 @@ export default function FilterPanel({ show, onClose }: { show: boolean; onClose:
                           borderRadius: '999px',
                           padding: '0 4px',
                           background: 'var(--sage)',
-                          color: '#fff',
+                          color: 'var(--on-sage)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -597,6 +601,83 @@ export default function FilterPanel({ show, onClose }: { show: boolean; onClose:
                 })}
               </>
             )}
+
+            {activeCategory === 'position' && (
+              <>
+                <p
+                  style={{
+                    fontSize: 10,
+                    fontWeight: 600,
+                    color: 'var(--text-muted)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em',
+                    marginBottom: 12,
+                  }}
+                >
+                  Position
+                </p>
+                {(() => {
+                  const allPositions = Array.from(
+                    new Set(data.people.flatMap((p) => p.churchPositions ?? []))
+                  ).sort();
+                  if (allPositions.length === 0)
+                    return (
+                      <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>No positions assigned.</p>
+                    );
+                  return allPositions.map((pos) => (
+                    <CheckRow
+                      key={pos}
+                      checked={draft.positions.includes(pos)}
+                      onToggle={() =>
+                        setDraft((d) => ({
+                          ...d,
+                          positions: d.positions.includes(pos)
+                            ? d.positions.filter((x) => x !== pos)
+                            : [...d.positions, pos],
+                        }))
+                      }
+                    >
+                      {pos}
+                    </CheckRow>
+                  ));
+                })()}
+              </>
+            )}
+
+            {activeCategory === 'language' && (
+              <>
+                <p
+                  style={{
+                    fontSize: 10,
+                    fontWeight: 600,
+                    color: 'var(--text-muted)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em',
+                    marginBottom: 12,
+                  }}
+                >
+                  Language
+                </p>
+                {Array.from(new Set(data.people.flatMap((p) => p.language)))
+                  .sort()
+                  .map((lang) => (
+                    <CheckRow
+                      key={lang}
+                      checked={draft.languages.includes(lang)}
+                      onToggle={() =>
+                        setDraft((d) => ({
+                          ...d,
+                          languages: d.languages.includes(lang)
+                            ? d.languages.filter((x) => x !== lang)
+                            : [...d.languages, lang],
+                        }))
+                      }
+                    >
+                      {lang}
+                    </CheckRow>
+                  ))}
+              </>
+            )}
           </div>
         </div>
 
@@ -631,7 +712,7 @@ export default function FilterPanel({ show, onClose }: { show: boolean; onClose:
             style={{
               flex: 2,
               background: 'var(--sage)',
-              color: '#fff',
+              color: 'var(--on-sage)',
               border: 'none',
               borderRadius: 'var(--radius)',
               padding: '12px 0',

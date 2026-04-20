@@ -22,6 +22,7 @@ import {
   type AppRole,
   type ChurchAttendance,
   type MembershipStatus,
+  type ThemePreference,
 } from './types';
 import {
   PersonRowSchema,
@@ -50,6 +51,8 @@ export interface HomeFilters {
   archiveFilter: 'hide' | 'include' | 'only';
   discipleship: ('in' | 'not-in')[];
   appRoles: AppRole[];
+  positions: string[];
+  languages: string[];
 }
 
 export const HOME_DEFAULT_FILTERS: HomeFilters = {
@@ -60,6 +63,8 @@ export const HOME_DEFAULT_FILTERS: HomeFilters = {
   archiveFilter: 'hide',
   discipleship: [],
   appRoles: [],
+  positions: [],
+  languages: [],
 };
 import { initialData } from './data';
 import { generateId } from './utils';
@@ -163,6 +168,8 @@ interface AppContextType {
   setTodosShepherdFilter: Dispatch<SetStateAction<string[]>>;
   logsShepherdFilter: string[];
   setLogsShepherdFilter: Dispatch<SetStateAction<string[]>>;
+  themePreference: ThemePreference;
+  setThemePreference: (pref: ThemePreference) => void;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -340,6 +347,32 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [currentPersona, setCurrentPersona] = useState<Persona>(initialData.personas[0]);
   const [loaded, setLoaded] = useState(false);
   const [accessDenied, setAccessDenied] = useState(false);
+
+  // ── Theme preference ─────────────────────────────────────────────────
+  const [themePreference, setThemePreferenceState] = useState<ThemePreference>('system');
+
+  useEffect(() => {
+    const stored = localStorage.getItem('shepherd-app-theme') as ThemePreference | null;
+    if (stored === 'light' || stored === 'dark' || stored === 'system') {
+      setThemePreferenceState(stored);
+    }
+  }, []);
+
+  useEffect(() => {
+    const html = document.documentElement;
+    if (themePreference === 'dark') {
+      html.setAttribute('data-theme', 'dark');
+    } else if (themePreference === 'light') {
+      html.setAttribute('data-theme', 'light');
+    } else {
+      html.removeAttribute('data-theme');
+    }
+  }, [themePreference]);
+
+  const setThemePreference = useCallback((pref: ThemePreference): void => {
+    setThemePreferenceState(pref);
+    localStorage.setItem('shepherd-app-theme', pref);
+  }, []);
 
   // ── Persistent page filter state ─────────────────────────────────────
   const [homeFilters, setHomeFilters] = useState<HomeFilters>(HOME_DEFAULT_FILTERS);
@@ -1515,6 +1548,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setTodosShepherdFilter,
         logsShepherdFilter,
         setLogsShepherdFilter,
+        themePreference,
+        setThemePreference,
       }}
     >
       {children}

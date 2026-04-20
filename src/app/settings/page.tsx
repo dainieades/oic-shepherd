@@ -15,7 +15,11 @@ import {
   MapPin,
   Check,
   GoogleLogo,
+  Sun,
+  Moon,
+  CircleHalf,
 } from '@phosphor-icons/react';
+import type { ThemePreference } from '@/lib/types';
 import { useApp } from '@/lib/context';
 import { createClient } from '@/utils/supabase/client';
 import type { User } from '@supabase/supabase-js';
@@ -29,7 +33,7 @@ type PasswordStatus =
   | { type: 'success' };
 
 export default function SettingsPage() {
-  const { data, currentPersona, switchPersona } = useApp();
+  const { data, currentPersona, switchPersona, themePreference, setThemePreference } = useApp();
   const router = useRouter();
   const [scrolled, setScrolled] = React.useState(false);
   const [showSignOutConfirm, setShowSignOutConfirm] = React.useState(false);
@@ -243,7 +247,7 @@ export default function SettingsPage() {
                 height: 52,
                 borderRadius: '50%',
                 background: 'var(--sage)',
-                color: '#fff',
+                color: 'var(--on-sage)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -335,6 +339,67 @@ export default function SettingsPage() {
       {/* ── Preferences ── */}
       <SectionLabel>Preferences</SectionLabel>
       <SettingsCard>
+        {/* Appearance — theme segmented control */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 14,
+            padding: '12px 16px',
+            borderBottom: '1px solid var(--border-light)',
+          }}
+        >
+          <span style={{ flexShrink: 0 }}>
+            <CircleHalf size={18} color="var(--text-muted)" />
+          </span>
+          <span style={{ flex: 1, fontSize: 15, fontWeight: 500, color: 'var(--text-primary)' }}>
+            Appearance
+          </span>
+          <div
+            style={{
+              display: 'flex',
+              background: 'var(--sage-light)',
+              borderRadius: 'var(--radius-sm)',
+              padding: 3,
+              gap: 2,
+            }}
+          >
+            {(
+              [
+                { value: 'light', icon: <Sun size={15} weight="bold" />, label: 'Light' },
+                { value: 'system', icon: <CircleHalf size={15} weight="bold" />, label: 'Auto' },
+                { value: 'dark', icon: <Moon size={15} weight="bold" />, label: 'Dark' },
+              ] as { value: ThemePreference; icon: React.ReactNode; label: string }[]
+            ).map(({ value, icon, label }) => {
+              const active = themePreference === value;
+              return (
+                <button
+                  key={value}
+                  onClick={() => setThemePreference(value)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 5,
+                    padding: '5px 10px',
+                    borderRadius: 7,
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: 13,
+                    fontWeight: active ? 600 : 500,
+                    background: active ? 'var(--surface)' : 'transparent',
+                    color: active ? 'var(--sage)' : 'var(--text-muted)',
+                    boxShadow: active ? 'var(--shadow-card)' : 'none',
+                    transition: 'background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease',
+                    filter: 'none',
+                  }}
+                >
+                  {icon}
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
         <button
           onClick={() => setShowMapPicker(true)}
           style={{

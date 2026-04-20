@@ -1157,7 +1157,7 @@ function GroupPickerSheet({
                     transition: 'background 0.15s',
                   }}
                 >
-                  {isSel && <Check size={11} color="#fff" weight="bold" />}
+                  {isSel && <Check size={11} color="var(--on-sage)" weight="bold" />}
                 </div>
               </button>
             );
@@ -1366,7 +1366,7 @@ function ShepherdPickerSheet({
                     borderRadius: '50%',
                     flexShrink: 0,
                     background: isSel ? 'var(--sage)' : palette.bg,
-                    color: isSel ? '#fff' : palette.color,
+                    color: isSel ? 'var(--on-sage)' : palette.color,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -1430,7 +1430,7 @@ function ShepherdCheckCircle({ selected }: { selected: boolean }) {
         transition: 'background 0.15s',
       }}
     >
-      {selected && <Check size={11} color="#fff" weight="bold" />}
+      {selected && <Check size={11} color="var(--on-sage)" weight="bold" />}
     </div>
   );
 }
@@ -1632,7 +1632,7 @@ function PositionPickerSheet({
                     transition: 'background 0.15s',
                   }}
                 >
-                  {isSel && <Check size={11} color="#fff" weight="bold" />}
+                  {isSel && <Check size={11} color="var(--on-sage)" weight="bold" />}
                 </div>
               </button>
             );

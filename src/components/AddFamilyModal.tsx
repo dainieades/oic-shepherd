@@ -180,7 +180,7 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
                         borderRadius: '50%',
                         flexShrink: 0,
                         background: isSelected ? 'var(--sage)' : palette.bg,
-                        color: isSelected ? '#fff' : palette.color,
+                        color: isSelected ? 'var(--on-sage)' : palette.color,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',

@@ -475,7 +475,7 @@ const primaryButtonStyle: React.CSSProperties = {
   background: 'var(--sage)',
   fontSize: 15,
   fontWeight: 600,
-  color: '#fff',
+  color: 'var(--on-sage)',
 };
 
 const ghostButtonStyle: React.CSSProperties = {
