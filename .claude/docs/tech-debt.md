@@ -6,14 +6,14 @@ _Last audited: 2026-04-19_
 
 ---
 
-## P1 — Error Handling: Silent Mutation Failures
+## ~~P1 — Error Handling: Silent Mutation Failures~~ ✅ Done 2026-04-20
 **Score: (5+5)×(6-2) = 40**
 
-Every context mutation in `src/lib/context.tsx` does optimistic state updates followed by `await supabase...` with **no catch block**. If the DB write fails, the UI shows success and state is permanently stale.
+~~Every context mutation in `src/lib/context.tsx` does optimistic state updates followed by `await supabase...` with **no catch block**. If the DB write fails, the UI shows success and state is permanently stale.~~
 
-Three mutations also have `.then(() => {})` no-ops (lines ~1100, 1124, 1164) — fire-and-forget with no error surface.
+~~Three mutations also have `.then(() => {})` no-ops (lines ~1100, 1124, 1164) — fire-and-forget with no error surface.~~
 
-**Remediation:** Wrap each mutation in try/catch; on failure, rollback optimistic state and surface a toast error. Effort: Medium (2 sprints, touch each mutation).
+**What was done:** All 24 mutations in `context.tsx` wrapped in try/catch with snapshot rollback. Error toast added (`Toast.tsx` now has `success`/`error` variants). Provider nesting in `layout.tsx` swapped so `AppProvider` can consume `useToast`. The 3 `.then(() => {})` no-ops removed.
 
 ---
 
@@ -102,8 +102,8 @@ The migrations in `supabase/migrations/` contain raw SQL with inline comments, b
 - [ ] Add explicit return types to context mutations
 
 **Sprint 2 — Reliability**
-- [ ] Add try/catch + toast rollback to all context mutations
-- [ ] Remove `.then(() => {})` no-ops
+- [x] Add try/catch + toast rollback to all context mutations ✅ 2026-04-20
+- [x] Remove `.then(() => {})` no-ops ✅ 2026-04-20
 - [ ] Introduce Zod schemas for Supabase row mappers
 
 **Sprint 3 — Maintainability**

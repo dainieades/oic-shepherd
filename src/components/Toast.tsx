@@ -1,16 +1,17 @@
 'use client';
 
 import React from 'react';
-import { CheckCircle } from '@phosphor-icons/react';
+import { CheckCircle, XCircle } from '@phosphor-icons/react';
 
 interface Toast {
   id: string;
   message: string;
+  type: 'success' | 'error';
   exiting: boolean;
 }
 
 interface ToastContextType {
-  showToast: (message: string) => void;
+  showToast: (message: string, type?: 'success' | 'error') => void;
 }
 
 const ToastContext = React.createContext<ToastContextType | null>(null);
@@ -24,9 +25,9 @@ export function useToast() {
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = React.useState<Toast[]>([]);
 
-  const showToast = React.useCallback((message: string) => {
+  const showToast = React.useCallback((message: string, type: 'success' | 'error' = 'success') => {
     const id = Math.random().toString(36).slice(2);
-    setToasts((prev) => [...prev, { id, message, exiting: false }]);
+    setToasts((prev) => [...prev, { id, message, type, exiting: false }]);
     setTimeout(() => {
       setToasts((prev) => prev.map((t) => (t.id === id ? { ...t, exiting: true } : t)));
     }, 2200);
@@ -60,7 +61,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               display: 'flex',
               alignItems: 'center',
               gap: 8,
-              background: 'rgba(31, 37, 51, 0.92)',
+              background: toast.type === 'error' ? 'rgba(180, 40, 40, 0.92)' : 'rgba(31, 37, 51, 0.92)',
               color: '#fff',
               padding: '10px 18px',
               borderRadius: 'var(--radius-pill)',
@@ -72,7 +73,11 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               whiteSpace: 'nowrap',
             }}
           >
-            <CheckCircle size={17} weight="fill" color="#7EC8A4" />
+            {toast.type === 'error' ? (
+              <XCircle size={17} weight="fill" color="#FFB3B3" />
+            ) : (
+              <CheckCircle size={17} weight="fill" color="#7EC8A4" />
+            )}
             {toast.message}
           </div>
         ))}

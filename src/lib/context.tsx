@@ -50,6 +50,7 @@ export const HOME_DEFAULT_FILTERS: HomeFilters = {
 import { initialData } from './data';
 import { generateId } from './utils';
 import { createClient } from '@/utils/supabase/client';
+import { useToast } from '@/components/Toast';
 
 interface AppContextType {
   data: AppData;
@@ -313,6 +314,7 @@ function mapTodo(row: Record<string, unknown>): Todo {
 // ── AppProvider ───────────────────────────────────────────────────────────
 
 export function AppProvider({ children }: { children: ReactNode }) {
+  const { showToast } = useToast();
   const [data, setData] = useState<AppData>(initialData);
   const [currentPersona, setCurrentPersona] = useState<Persona>(initialData.personas[0]);
   const [loaded, setLoaded] = useState(false);
@@ -584,7 +586,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       };
 
       // Optimistic update
+      let snapshot: AppData | undefined;
       setData((prev) => {
+        snapshot = prev;
         const newData = { ...prev, notes: [note, ...prev.notes] };
         if (note.personId) {
           newData.people = prev.people.map((p) => {
@@ -620,39 +624,44 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       // Persist to Supabase
       const supabase = createClient();
-      await supabase.from('notes').insert({
-        id: note.id,
-        person_id: note.personId ?? null,
-        family_id: note.familyId ?? null,
-        type: note.type,
-        visibility: note.visibility,
-        content: note.content ?? null,
-        mentions: note.mentions ?? [],
-        created_by: note.createdBy,
-        created_at: note.createdAt,
-      });
+      try {
+        await supabase.from('notes').insert({
+          id: note.id,
+          person_id: note.personId ?? null,
+          family_id: note.familyId ?? null,
+          type: note.type,
+          visibility: note.visibility,
+          content: note.content ?? null,
+          mentions: note.mentions ?? [],
+          created_by: note.createdBy,
+          created_at: note.createdAt,
+        });
 
-      // Update last_contact_date in DB
-      if (note.personId) {
-        const person = (
-          await supabase
-            .from('people')
-            .select('follow_up_frequency_days')
-            .eq('id', note.personId)
-            .single()
-        ).data;
-        if (person) {
-          const days =
-            (person as { follow_up_frequency_days: number }).follow_up_frequency_days ?? 14;
-          const now = new Date();
-          await supabase
-            .from('people')
-            .update({
-              last_contact_date: formatISO(now),
-              next_follow_up_date: formatISO(addDays(now, days)),
-            })
-            .eq('id', note.personId);
+        // Update last_contact_date in DB
+        if (note.personId) {
+          const person = (
+            await supabase
+              .from('people')
+              .select('follow_up_frequency_days')
+              .eq('id', note.personId)
+              .single()
+          ).data;
+          if (person) {
+            const days =
+              (person as { follow_up_frequency_days: number }).follow_up_frequency_days ?? 14;
+            const now = new Date();
+            await supabase
+              .from('people')
+              .update({
+                last_contact_date: formatISO(now),
+                next_follow_up_date: formatISO(addDays(now, days)),
+              })
+              .eq('id', note.personId);
+          }
         }
+      } catch {
+        if (snapshot) setData(snapshot);
+        showToast('Failed to save log. Try again.', 'error');
       }
     },
     [currentPersona.id]
@@ -665,10 +674,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
         Pick<Note, 'type' | 'content' | 'familyId' | 'personId' | 'visibility' | 'createdAt'>
       >
     ) => {
-      setData((prev) => ({
-        ...prev,
-        notes: prev.notes.map((n) => (n.id === noteId ? { ...n, ...updates } : n)),
-      }));
+      let snapshot: AppData | undefined;
+      setData((prev) => {
+        snapshot = prev;
+        return { ...prev, notes: prev.notes.map((n) => (n.id === noteId ? { ...n, ...updates } : n)) };
+      });
       const supabase = createClient();
       const dbUpdates: Record<string, unknown> = {};
       if (updates.type !== undefined) dbUpdates.type = updates.type;
@@ -677,15 +687,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (updates.personId !== undefined) dbUpdates.person_id = updates.personId;
       if (updates.visibility !== undefined) dbUpdates.visibility = updates.visibility;
       if (updates.createdAt !== undefined) dbUpdates.created_at = updates.createdAt;
-      await supabase.from('notes').update(dbUpdates).eq('id', noteId);
+      try {
+        await supabase.from('notes').update(dbUpdates).eq('id', noteId);
+      } catch {
+        if (snapshot) setData(snapshot);
+        showToast('Failed to save changes. Try again.', 'error');
+      }
     },
     []
   );
 
   const deleteNote = useCallback(async (noteId: string) => {
-    setData((prev) => ({ ...prev, notes: prev.notes.filter((n) => n.id !== noteId) }));
+    let snapshot: AppData | undefined;
+    setData((prev) => { snapshot = prev; return { ...prev, notes: prev.notes.filter((n) => n.id !== noteId) }; });
     const supabase = createClient();
-    await supabase.from('notes').delete().eq('id', noteId);
+    try {
+      await supabase.from('notes').delete().eq('id', noteId);
+    } catch {
+      if (snapshot) setData(snapshot);
+      showToast('Failed to delete log. Try again.', 'error');
+    }
   }, []);
 
   // ── Todos ─────────────────────────────────────────────────────────────
@@ -698,19 +719,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
         createdBy: currentPersona.id,
         createdAt: new Date().toISOString(),
       };
-      setData((prev) => ({ ...prev, todos: [todo, ...prev.todos] }));
+      let snapshot: AppData | undefined;
+      setData((prev) => { snapshot = prev; return { ...prev, todos: [todo, ...prev.todos] }; });
       const supabase = createClient();
-      await supabase.from('todos').insert({
-        id: todo.id,
-        person_id: todo.personId ?? null,
-        family_id: todo.familyId ?? null,
-        title: todo.title,
-        due_date: todo.dueDate ?? null,
-        repeat: todo.repeat ?? null,
-        completed: false,
-        created_by: todo.createdBy,
-        created_at: todo.createdAt,
-      });
+      try {
+        await supabase.from('todos').insert({
+          id: todo.id,
+          person_id: todo.personId ?? null,
+          family_id: todo.familyId ?? null,
+          title: todo.title,
+          due_date: todo.dueDate ?? null,
+          repeat: todo.repeat ?? null,
+          completed: false,
+          created_by: todo.createdBy,
+          created_at: todo.createdAt,
+        });
+      } catch {
+        if (snapshot) setData(snapshot);
+        showToast('Failed to save to-do. Try again.', 'error');
+      }
     },
     [currentPersona.id]
   );
@@ -720,10 +747,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
       todoId: string,
       updates: Partial<Pick<Todo, 'title' | 'dueDate' | 'repeat' | 'familyId' | 'personId'>>
     ) => {
-      setData((prev) => ({
-        ...prev,
-        todos: prev.todos.map((t) => (t.id === todoId ? { ...t, ...updates } : t)),
-      }));
+      let snapshot: AppData | undefined;
+      setData((prev) => {
+        snapshot = prev;
+        return { ...prev, todos: prev.todos.map((t) => (t.id === todoId ? { ...t, ...updates } : t)) };
+      });
       const supabase = createClient();
       const dbUpdates: Record<string, unknown> = {};
       if (updates.title !== undefined) dbUpdates.title = updates.title;
@@ -731,39 +759,59 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (updates.repeat !== undefined) dbUpdates.repeat = updates.repeat;
       if (updates.familyId !== undefined) dbUpdates.family_id = updates.familyId;
       if (updates.personId !== undefined) dbUpdates.person_id = updates.personId;
-      await supabase.from('todos').update(dbUpdates).eq('id', todoId);
+      try {
+        await supabase.from('todos').update(dbUpdates).eq('id', todoId);
+      } catch {
+        if (snapshot) setData(snapshot);
+        showToast('Failed to save changes. Try again.', 'error');
+      }
     },
     []
   );
 
   const deleteTodo = useCallback(async (todoId: string) => {
-    setData((prev) => ({ ...prev, todos: prev.todos.filter((t) => t.id !== todoId) }));
+    let snapshot: AppData | undefined;
+    setData((prev) => { snapshot = prev; return { ...prev, todos: prev.todos.filter((t) => t.id !== todoId) }; });
     const supabase = createClient();
-    await supabase.from('todos').delete().eq('id', todoId);
+    try {
+      await supabase.from('todos').delete().eq('id', todoId);
+    } catch {
+      if (snapshot) setData(snapshot);
+      showToast('Failed to delete to-do. Try again.', 'error');
+    }
   }, []);
 
   const toggleTodo = useCallback(async (todoId: string) => {
     let newCompleted = false;
     let completedAt: string | undefined;
-    setData((prev) => ({
-      ...prev,
-      todos: prev.todos.map((t) => {
-        if (t.id === todoId) {
-          newCompleted = !t.completed;
-          completedAt = newCompleted ? new Date().toISOString() : undefined;
-          return { ...t, completed: newCompleted, completedAt };
-        }
-        return t;
-      }),
-    }));
+    let snapshot: AppData | undefined;
+    setData((prev) => {
+      snapshot = prev;
+      return {
+        ...prev,
+        todos: prev.todos.map((t) => {
+          if (t.id === todoId) {
+            newCompleted = !t.completed;
+            completedAt = newCompleted ? new Date().toISOString() : undefined;
+            return { ...t, completed: newCompleted, completedAt };
+          }
+          return t;
+        }),
+      };
+    });
     const supabase = createClient();
-    await supabase
-      .from('todos')
-      .update({
-        completed: newCompleted,
-        completed_at: completedAt ?? null,
-      })
-      .eq('id', todoId);
+    try {
+      await supabase
+        .from('todos')
+        .update({
+          completed: newCompleted,
+          completed_at: completedAt ?? null,
+        })
+        .eq('id', todoId);
+    } catch {
+      if (snapshot) setData(snapshot);
+      showToast('Failed to update to-do. Try again.', 'error');
+    }
   }, []);
 
   // ── People ────────────────────────────────────────────────────────────
@@ -783,35 +831,42 @@ export function AppProvider({ children }: { children: ReactNode }) {
         createdAt: new Date().toISOString(),
         createdBy: currentPersona.id,
       };
-      setData((prev) => ({ ...prev, people: [...prev.people, person] }));
+      let snapshot: AppData | undefined;
+      setData((prev) => { snapshot = prev; return { ...prev, people: [...prev.people, person] }; });
       const supabase = createClient();
-      await supabase.from('people').insert({
-        id: person.id,
-        english_name: person.englishName,
-        chinese_name: person.chineseName ?? null,
-        photo: person.photo ?? null,
-        gender: person.gender ?? null,
-        marital_status: person.maritalStatus ?? null,
-        birthday: person.birthday ?? null,
-        baptism_date: person.baptismDate ?? null,
-        membership_date: person.membershipDate ?? null,
-        anniversary: person.anniversary ?? null,
-        phone: person.phone ?? null,
-        home_phone: person.homePhone ?? null,
-        email: person.email ?? null,
-        home_address: person.homeAddress ?? null,
-        spiritual_needs: person.spiritualNeeds ?? null,
-        physical_needs: person.physicalNeeds ?? null,
-        is_shepherd: person.isShepherd ?? false,
-        church_positions: person.churchPositions ?? [],
-        membership_status: person.membershipStatus,
-        church_attendance: person.churchAttendance,
-        language: person.language,
-        family_id: person.familyId ?? null,
-        follow_up_frequency_days: 14,
-        created_at: person.createdAt,
-        created_by: person.createdBy ?? null,
-      });
+      try {
+        await supabase.from('people').insert({
+          id: person.id,
+          english_name: person.englishName,
+          chinese_name: person.chineseName ?? null,
+          photo: person.photo ?? null,
+          gender: person.gender ?? null,
+          marital_status: person.maritalStatus ?? null,
+          birthday: person.birthday ?? null,
+          baptism_date: person.baptismDate ?? null,
+          membership_date: person.membershipDate ?? null,
+          anniversary: person.anniversary ?? null,
+          phone: person.phone ?? null,
+          home_phone: person.homePhone ?? null,
+          email: person.email ?? null,
+          home_address: person.homeAddress ?? null,
+          spiritual_needs: person.spiritualNeeds ?? null,
+          physical_needs: person.physicalNeeds ?? null,
+          is_shepherd: person.isShepherd ?? false,
+          church_positions: person.churchPositions ?? [],
+          membership_status: person.membershipStatus,
+          church_attendance: person.churchAttendance,
+          language: person.language,
+          family_id: person.familyId ?? null,
+          follow_up_frequency_days: 14,
+          created_at: person.createdAt,
+          created_by: person.createdBy ?? null,
+        });
+      } catch {
+        if (snapshot) setData(snapshot);
+        showToast('Failed to add person. Try again.', 'error');
+        throw new Error('Failed to add person');
+      }
       return person.id;
     },
     [currentPersona.id]
@@ -849,10 +904,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
         >
       >
     ) => {
-      setData((prev) => ({
-        ...prev,
-        people: prev.people.map((p) => (p.id === personId ? { ...p, ...updates } : p)),
-      }));
+      let snapshot: AppData | undefined;
+      setData((prev) => {
+        snapshot = prev;
+        return { ...prev, people: prev.people.map((p) => (p.id === personId ? { ...p, ...updates } : p)) };
+      });
       const supabase = createClient();
       const dbUpdates: Record<string, unknown> = {};
       if (updates.englishName !== undefined) dbUpdates.english_name = updates.englishName;
@@ -883,43 +939,66 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (updates.churchPositions !== undefined)
         dbUpdates.church_positions = updates.churchPositions;
       if (updates.appRole !== undefined) dbUpdates.app_role = updates.appRole;
-      await supabase.from('people').update(dbUpdates).eq('id', personId);
+      try {
+        await supabase.from('people').update(dbUpdates).eq('id', personId);
+      } catch {
+        if (snapshot) setData(snapshot);
+        showToast('Failed to save changes. Try again.', 'error');
+      }
     },
     []
   );
 
   const deletePerson = useCallback(async (personId: string) => {
-    setData((prev) => ({
-      ...prev,
-      people: prev.people.filter((p) => p.id !== personId),
-      families: prev.families.map((f) => ({
-        ...f,
-        memberIds: f.memberIds.filter((id) => id !== personId),
-      })),
-      notes: prev.notes.filter((n) => n.personId !== personId),
-      todos: prev.todos.filter((t) => t.personId !== personId),
-    }));
+    let snapshot: AppData | undefined;
+    setData((prev) => {
+      snapshot = prev;
+      return {
+        ...prev,
+        people: prev.people.filter((p) => p.id !== personId),
+        families: prev.families.map((f) => ({
+          ...f,
+          memberIds: f.memberIds.filter((id) => id !== personId),
+        })),
+        notes: prev.notes.filter((n) => n.personId !== personId),
+        todos: prev.todos.filter((t) => t.personId !== personId),
+      };
+    });
     const supabase = createClient();
-    await supabase.from('person_shepherds').delete().eq('person_id', personId);
-    await supabase.from('family_members').delete().eq('person_id', personId);
-    await supabase.from('notes').delete().eq('person_id', personId);
-    await supabase.from('todos').delete().eq('person_id', personId);
-    await supabase.from('people').delete().eq('id', personId);
+    try {
+      await supabase.from('person_shepherds').delete().eq('person_id', personId);
+      await supabase.from('family_members').delete().eq('person_id', personId);
+      await supabase.from('notes').delete().eq('person_id', personId);
+      await supabase.from('todos').delete().eq('person_id', personId);
+      await supabase.from('people').delete().eq('id', personId);
+    } catch {
+      if (snapshot) setData(snapshot);
+      showToast('Failed to delete person. Try again.', 'error');
+    }
   }, []);
 
   const assignShepherds = useCallback(async (personId: string, shepherdIds: string[]) => {
-    setData((prev) => ({
-      ...prev,
-      people: prev.people.map((p) =>
-        p.id === personId ? { ...p, assignedShepherdIds: shepherdIds } : p
-      ),
-    }));
+    let snapshot: AppData | undefined;
+    setData((prev) => {
+      snapshot = prev;
+      return {
+        ...prev,
+        people: prev.people.map((p) =>
+          p.id === personId ? { ...p, assignedShepherdIds: shepherdIds } : p
+        ),
+      };
+    });
     const supabase = createClient();
-    await supabase.from('person_shepherds').delete().eq('person_id', personId);
-    if (shepherdIds.length > 0) {
-      await supabase
-        .from('person_shepherds')
-        .insert(shepherdIds.map((sid) => ({ person_id: personId, shepherd_id: sid })));
+    try {
+      await supabase.from('person_shepherds').delete().eq('person_id', personId);
+      if (shepherdIds.length > 0) {
+        await supabase
+          .from('person_shepherds')
+          .insert(shepherdIds.map((sid) => ({ person_id: personId, shepherd_id: sid })));
+      }
+    } catch {
+      if (snapshot) setData(snapshot);
+      showToast('Failed to assign shepherds. Try again.', 'error');
     }
   }, []);
 
@@ -927,20 +1006,29 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const addFamily = useCallback(async (label: string, memberIds: string[]) => {
     const familyId = generateId();
     const family: Family = { id: familyId, label, tags: [], memberIds };
-    setData((prev) => ({
-      ...prev,
-      families: [...prev.families, family],
-      people: prev.people.map((p) => (memberIds.includes(p.id) ? { ...p, familyId } : p)),
-    }));
+    let snapshot: AppData | undefined;
+    setData((prev) => {
+      snapshot = prev;
+      return {
+        ...prev,
+        families: [...prev.families, family],
+        people: prev.people.map((p) => (memberIds.includes(p.id) ? { ...p, familyId } : p)),
+      };
+    });
     const supabase = createClient();
-    await supabase.from('families').insert({ id: familyId, label, tags: [] });
-    if (memberIds.length > 0) {
-      await supabase
-        .from('family_members')
-        .insert(memberIds.map((pid) => ({ family_id: familyId, person_id: pid })));
-      for (const pid of memberIds) {
-        await supabase.from('people').update({ family_id: familyId }).eq('id', pid);
+    try {
+      await supabase.from('families').insert({ id: familyId, label, tags: [] });
+      if (memberIds.length > 0) {
+        await supabase
+          .from('family_members')
+          .insert(memberIds.map((pid) => ({ family_id: familyId, person_id: pid })));
+        for (const pid of memberIds) {
+          await supabase.from('people').update({ family_id: familyId }).eq('id', pid);
+        }
       }
+    } catch {
+      if (snapshot) setData(snapshot);
+      showToast('Failed to add family. Try again.', 'error');
     }
   }, []);
 
@@ -949,10 +1037,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
       familyId: string,
       updates: Partial<Pick<Family, 'label' | 'photo' | 'primaryContactId' | 'childCount'>>
     ) => {
-      setData((prev) => ({
-        ...prev,
-        families: prev.families.map((f) => (f.id === familyId ? { ...f, ...updates } : f)),
-      }));
+      let snapshot: AppData | undefined;
+      setData((prev) => {
+        snapshot = prev;
+        return { ...prev, families: prev.families.map((f) => (f.id === familyId ? { ...f, ...updates } : f)) };
+      });
       const supabase = createClient();
       const dbUpdates: Record<string, unknown> = {};
       if (updates.label !== undefined) dbUpdates.label = updates.label;
@@ -960,13 +1049,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (updates.primaryContactId !== undefined)
         dbUpdates.primary_contact_id = updates.primaryContactId;
       if (updates.childCount !== undefined) dbUpdates.child_count = updates.childCount;
-      await supabase.from('families').update(dbUpdates).eq('id', familyId);
+      try {
+        await supabase.from('families').update(dbUpdates).eq('id', familyId);
+      } catch {
+        if (snapshot) setData(snapshot);
+        showToast('Failed to save changes. Try again.', 'error');
+      }
     },
     []
   );
 
   const updateFamilyMembers = useCallback(async (familyId: string, newMemberIds: string[]) => {
+    let snapshot: AppData | undefined;
     setData((prev) => {
+      snapshot = prev;
       const family = prev.families.find((f) => f.id === familyId);
       if (!family) return prev;
       const oldMemberIds = family.memberIds;
@@ -986,15 +1082,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
     });
 
     const supabase = createClient();
-    await supabase.from('family_members').delete().eq('family_id', familyId);
-    if (newMemberIds.length > 0) {
-      await supabase
-        .from('family_members')
-        .insert(newMemberIds.map((pid) => ({ family_id: familyId, person_id: pid })));
-    }
-    // Update family_id on people rows
-    for (const pid of newMemberIds) {
-      await supabase.from('people').update({ family_id: familyId }).eq('id', pid);
+    try {
+      await supabase.from('family_members').delete().eq('family_id', familyId);
+      if (newMemberIds.length > 0) {
+        await supabase
+          .from('family_members')
+          .insert(newMemberIds.map((pid) => ({ family_id: familyId, person_id: pid })));
+      }
+      for (const pid of newMemberIds) {
+        await supabase.from('people').update({ family_id: familyId }).eq('id', pid);
+      }
+    } catch {
+      if (snapshot) setData(snapshot);
+      showToast('Failed to save changes. Try again.', 'error');
     }
   }, []);
 
@@ -1008,9 +1108,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
       memberIds: [],
       relatedFamilyIds: [],
     };
-    setData((prev) => ({ ...prev, groups: [...prev.groups, group] }));
+    let snapshot: AppData | undefined;
+    setData((prev) => { snapshot = prev; return { ...prev, groups: [...prev.groups, group] }; });
     const supabase = createClient();
-    await supabase.from('groups').insert({ id: group.id, name, description: description ?? null });
+    try {
+      await supabase.from('groups').insert({ id: group.id, name, description: description ?? null });
+    } catch {
+      if (snapshot) setData(snapshot);
+      showToast('Failed to add group. Try again.', 'error');
+    }
   }, []);
 
   const updateGroup = useCallback(
@@ -1023,8 +1129,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       // Side-channel to capture computed values for DB ops after setData
       let eligibleMemberIds: string[] = [];
       let newShepherdPersonaIds: string[] = [];
+      let snapshot: AppData | undefined;
 
       setData((prev) => {
+        snapshot = prev;
         const group = prev.groups.find((g) => g.id === groupId);
         const newGroups = prev.groups.map((g) => (g.id === groupId ? { ...g, ...updates } : g));
 
@@ -1061,25 +1169,32 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (updates.description !== undefined) dbUpdates.description = updates.description ?? null;
       if (updates.leaderIds !== undefined) dbUpdates.leader_ids = updates.leaderIds;
       if (updates.shepherdIds !== undefined) dbUpdates.shepherd_ids = updates.shepherdIds;
-      await supabase.from('groups').update(dbUpdates).eq('id', groupId);
+      try {
+        await supabase.from('groups').update(dbUpdates).eq('id', groupId);
 
-      // Persist auto-assigned shepherds to eligible group members
-      if (updates.shepherdIds !== undefined) {
-        for (const pid of eligibleMemberIds) {
-          await supabase.from('person_shepherds').delete().eq('person_id', pid);
-          if (newShepherdPersonaIds.length > 0) {
-            await supabase
-              .from('person_shepherds')
-              .insert(newShepherdPersonaIds.map((sid) => ({ person_id: pid, shepherd_id: sid })));
+        // Persist auto-assigned shepherds to eligible group members
+        if (updates.shepherdIds !== undefined) {
+          for (const pid of eligibleMemberIds) {
+            await supabase.from('person_shepherds').delete().eq('person_id', pid);
+            if (newShepherdPersonaIds.length > 0) {
+              await supabase
+                .from('person_shepherds')
+                .insert(newShepherdPersonaIds.map((sid) => ({ person_id: pid, shepherd_id: sid })));
+            }
           }
         }
+      } catch {
+        if (snapshot) setData(snapshot);
+        showToast('Failed to save changes. Try again.', 'error');
       }
     },
     []
   );
 
   const updateGroupMembers = useCallback(async (groupId: string, memberIds: string[]) => {
+    let snapshot: AppData | undefined;
     setData((prev) => {
+      snapshot = prev;
       const newGroups = prev.groups.map((g) => (g.id === groupId ? { ...g, memberIds } : g));
       const newPeople = prev.people.map((p) => {
         const inGroup = memberIds.includes(p.id);
@@ -1092,17 +1207,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
       return { ...prev, groups: newGroups, people: newPeople };
     });
     const supabase = createClient();
-    await supabase.from('group_members').delete().eq('group_id', groupId);
-    for (const pid of memberIds) {
-      await supabase
-        .from('group_members')
-        .insert({ group_id: groupId, person_id: pid })
-        .then(() => {});
+    try {
+      await supabase.from('group_members').delete().eq('group_id', groupId);
+      for (const pid of memberIds) {
+        await supabase.from('group_members').insert({ group_id: groupId, person_id: pid });
+      }
+    } catch {
+      if (snapshot) setData(snapshot);
+      showToast('Failed to save changes. Try again.', 'error');
     }
   }, []);
 
   const assignGroupsToPerson = useCallback(async (personId: string, groupIds: string[]) => {
+    let snapshot: AppData | undefined;
     setData((prev) => {
+      snapshot = prev;
       const newPeople = prev.people.map((p) => (p.id === personId ? { ...p, groupIds } : p));
       const newGroups = prev.groups.map((g) => {
         if (groupIds.includes(g.id)) {
@@ -1116,17 +1235,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
       return { ...prev, people: newPeople, groups: newGroups };
     });
     const supabase = createClient();
-    await supabase.from('group_members').delete().eq('person_id', personId);
-    for (const gid of groupIds) {
-      await supabase
-        .from('group_members')
-        .insert({ group_id: gid, person_id: personId })
-        .then(() => {});
+    try {
+      await supabase.from('group_members').delete().eq('person_id', personId);
+      for (const gid of groupIds) {
+        await supabase.from('group_members').insert({ group_id: gid, person_id: personId });
+      }
+    } catch {
+      if (snapshot) setData(snapshot);
+      showToast('Failed to save changes. Try again.', 'error');
     }
   }, []);
 
   const assignGroupsToFamily = useCallback(async (familyId: string, groupIds: string[]) => {
+    let snapshot: AppData | undefined;
     setData((prev) => {
+      snapshot = prev;
       const family = prev.families.find((f) => f.id === familyId);
       if (!family) return prev;
       const memberIds = family.memberIds;
@@ -1146,28 +1269,30 @@ export function AppProvider({ children }: { children: ReactNode }) {
     });
 
     const supabase = createClient();
-    // Get current family members
-    const { data: fmRows } = await supabase
-      .from('family_members')
-      .select('person_id')
-      .eq('family_id', familyId);
-    const memberIds = (fmRows ?? []).map((r: { person_id: string }) => r.person_id);
-    // Remove from all groups, re-add to selected
-    for (const mid of memberIds) {
-      await supabase.from('group_members').delete().eq('person_id', mid);
-    }
-    for (const gid of groupIds) {
+    try {
+      const { data: fmRows } = await supabase
+        .from('family_members')
+        .select('person_id')
+        .eq('family_id', familyId);
+      const memberIds = (fmRows ?? []).map((r: { person_id: string }) => r.person_id);
       for (const mid of memberIds) {
-        await supabase
-          .from('group_members')
-          .insert({ group_id: gid, person_id: mid })
-          .then(() => {});
+        await supabase.from('group_members').delete().eq('person_id', mid);
       }
+      for (const gid of groupIds) {
+        for (const mid of memberIds) {
+          await supabase.from('group_members').insert({ group_id: gid, person_id: mid });
+        }
+      }
+    } catch {
+      if (snapshot) setData(snapshot);
+      showToast('Failed to save changes. Try again.', 'error');
     }
   }, []);
 
   const assignShepherdsToFamily = useCallback(async (familyId: string, shepherdIds: string[]) => {
+    let snapshot: AppData | undefined;
     setData((prev) => {
+      snapshot = prev;
       const family = prev.families.find((f) => f.id === familyId);
       if (!family) return prev;
       const memberIds = family.memberIds;
@@ -1178,42 +1303,56 @@ export function AppProvider({ children }: { children: ReactNode }) {
     });
 
     const supabase = createClient();
-    const { data: fmRows } = await supabase
-      .from('family_members')
-      .select('person_id')
-      .eq('family_id', familyId);
-    const memberIds = (fmRows ?? []).map((r: { person_id: string }) => r.person_id);
-    for (const pid of memberIds) {
-      await supabase.from('person_shepherds').delete().eq('person_id', pid);
-      if (shepherdIds.length > 0) {
-        await supabase
-          .from('person_shepherds')
-          .insert(shepherdIds.map((sid) => ({ person_id: pid, shepherd_id: sid })));
+    try {
+      const { data: fmRows } = await supabase
+        .from('family_members')
+        .select('person_id')
+        .eq('family_id', familyId);
+      const memberIds = (fmRows ?? []).map((r: { person_id: string }) => r.person_id);
+      for (const pid of memberIds) {
+        await supabase.from('person_shepherds').delete().eq('person_id', pid);
+        if (shepherdIds.length > 0) {
+          await supabase
+            .from('person_shepherds')
+            .insert(shepherdIds.map((sid) => ({ person_id: pid, shepherd_id: sid })));
+        }
       }
+    } catch {
+      if (snapshot) setData(snapshot);
+      showToast('Failed to assign shepherds. Try again.', 'error');
     }
   }, []);
 
   const setFollowUpFrequency = useCallback(async (personId: string, days: number) => {
     let nextFollowUpDate: string | undefined;
-    setData((prev) => ({
-      ...prev,
-      people: prev.people.map((p) => {
-        if (p.id === personId) {
-          const base = p.lastContactDate ? parseISO(p.lastContactDate) : new Date();
-          nextFollowUpDate = formatISO(addDays(base, days));
-          return { ...p, followUpFrequencyDays: days, nextFollowUpDate };
-        }
-        return p;
-      }),
-    }));
+    let snapshot: AppData | undefined;
+    setData((prev) => {
+      snapshot = prev;
+      return {
+        ...prev,
+        people: prev.people.map((p) => {
+          if (p.id === personId) {
+            const base = p.lastContactDate ? parseISO(p.lastContactDate) : new Date();
+            nextFollowUpDate = formatISO(addDays(base, days));
+            return { ...p, followUpFrequencyDays: days, nextFollowUpDate };
+          }
+          return p;
+        }),
+      };
+    });
     const supabase = createClient();
-    await supabase
-      .from('people')
-      .update({
-        follow_up_frequency_days: days,
-        next_follow_up_date: nextFollowUpDate ?? null,
-      })
-      .eq('id', personId);
+    try {
+      await supabase
+        .from('people')
+        .update({
+          follow_up_frequency_days: days,
+          next_follow_up_date: nextFollowUpDate ?? null,
+        })
+        .eq('id', personId);
+    } catch {
+      if (snapshot) setData(snapshot);
+      showToast('Failed to save changes. Try again.', 'error');
+    }
   }, []);
 
   // ── Notices ───────────────────────────────────────────────────────────
@@ -1225,19 +1364,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
         createdBy: currentPersona.id,
         createdAt: new Date().toISOString(),
       };
-      setData((prev) => ({ ...prev, notices: [notice, ...prev.notices] }));
+      let snapshot: AppData | undefined;
+      setData((prev) => { snapshot = prev; return { ...prev, notices: [notice, ...prev.notices] }; });
       const supabase = createClient();
-      await supabase.from('notices').insert({
-        id: notice.id,
-        person_id: notice.personId ?? null,
-        family_id: notice.familyId ?? null,
-        category: notice.category,
-        urgency: notice.urgency,
-        privacy: notice.privacy,
-        content: notice.content,
-        created_by: notice.createdBy,
-        created_at: notice.createdAt,
-      });
+      try {
+        await supabase.from('notices').insert({
+          id: notice.id,
+          person_id: notice.personId ?? null,
+          family_id: notice.familyId ?? null,
+          category: notice.category,
+          urgency: notice.urgency,
+          privacy: notice.privacy,
+          content: notice.content,
+          created_by: notice.createdBy,
+          created_at: notice.createdAt,
+        });
+      } catch {
+        if (snapshot) setData(snapshot);
+        showToast('Failed to save notice. Try again.', 'error');
+      }
     },
     [currentPersona.id]
   );
@@ -1249,10 +1394,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
         Pick<Notice, 'category' | 'urgency' | 'privacy' | 'content' | 'personId' | 'familyId'>
       >
     ) => {
-      setData((prev) => ({
-        ...prev,
-        notices: prev.notices.map((n) => (n.id === noticeId ? { ...n, ...updates } : n)),
-      }));
+      let snapshot: AppData | undefined;
+      setData((prev) => {
+        snapshot = prev;
+        return { ...prev, notices: prev.notices.map((n) => (n.id === noticeId ? { ...n, ...updates } : n)) };
+      });
       const supabase = createClient();
       const dbUpdates: Record<string, unknown> = {};
       if (updates.category !== undefined) dbUpdates.category = updates.category;
@@ -1261,15 +1407,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (updates.content !== undefined) dbUpdates.content = updates.content;
       if (updates.personId !== undefined) dbUpdates.person_id = updates.personId;
       if (updates.familyId !== undefined) dbUpdates.family_id = updates.familyId;
-      await supabase.from('notices').update(dbUpdates).eq('id', noticeId);
+      try {
+        await supabase.from('notices').update(dbUpdates).eq('id', noticeId);
+      } catch {
+        if (snapshot) setData(snapshot);
+        showToast('Failed to save changes. Try again.', 'error');
+      }
     },
     []
   );
 
   const deleteNotice = useCallback(async (noticeId: string) => {
-    setData((prev) => ({ ...prev, notices: prev.notices.filter((n) => n.id !== noticeId) }));
+    let snapshot: AppData | undefined;
+    setData((prev) => { snapshot = prev; return { ...prev, notices: prev.notices.filter((n) => n.id !== noticeId) }; });
     const supabase = createClient();
-    await supabase.from('notices').delete().eq('id', noticeId);
+    try {
+      await supabase.from('notices').delete().eq('id', noticeId);
+    } catch {
+      if (snapshot) setData(snapshot);
+      showToast('Failed to delete notice. Try again.', 'error');
+    }
   }, []);
 
   const canViewNote = useCallback(

@@ -8,6 +8,12 @@ Mobile-first church shepherding app for One In Christ Church. Shepherds track an
 
 ---
 
+## Tech Debt
+
+After completing any tech debt item, update `.claude/docs/tech-debt.md`: mark the item done with a ✅ date, and check off the corresponding entry in the Phased Remediation Plan.
+
+---
+
 ## ⚠️ Next.js 16 — Not the Next.js You Know
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.

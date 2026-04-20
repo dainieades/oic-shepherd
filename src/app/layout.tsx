@@ -29,14 +29,14 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" className={lora.variable}>
       <body style={{ background: 'var(--bg)', color: 'var(--text-primary)' }}>
-        <AppProvider>
-          <ToastProvider>
+        <ToastProvider>
+          <AppProvider>
             <AuthSync />
             <AccessGate />
             <main className="mx-auto min-h-screen w-full max-w-[430px] px-4 pb-20">{children}</main>
             <BottomNav />
-          </ToastProvider>
-        </AppProvider>
+          </AppProvider>
+        </ToastProvider>
       </body>
     </html>
   );
