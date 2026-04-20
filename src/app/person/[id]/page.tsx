@@ -62,14 +62,13 @@ import {
 import { type Notice } from '@/lib/types';
 import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, SHEPHERD_AVATAR_PALETTE } from '@/lib/constants';
 
-type Tab = 'logs' | 'todos' | 'notices' | 'info' | 'sheep';
+type Tab = 'logs' | 'todos' | 'notices' | 'info';
 
 const TAB_LABELS: Record<Tab, string> = {
   logs: 'Logs',
   todos: 'To-dos',
   notices: 'Notices',
   info: 'Info',
-  sheep: 'Sheep',
 };
 
 function TabIcon({ tab, active }: { tab: Tab; active: boolean }) {
@@ -77,7 +76,6 @@ function TabIcon({ tab, active }: { tab: Tab; active: boolean }) {
   if (tab === 'logs') return <Notepad size={16} weight={weight} />;
   if (tab === 'todos') return <CheckCircle size={16} weight={weight} />;
   if (tab === 'notices') return <Bell size={16} weight={weight} />;
-  if (tab === 'sheep') return <HandHeart size={16} weight={weight} />;
   return <Info size={16} weight={weight} />;
 }
 
@@ -125,7 +123,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
   const [showAddTodo, setShowAddTodo] = React.useState(false);
   const [showAddNotice, setShowAddNotice] = React.useState(false);
   const [editingNotice, setEditingNotice] = React.useState<Notice | null>(null);
-  const [showSheepPicker, setShowSheepPicker] = React.useState(false);
+  const [sheepExpanded, setSheepExpanded] = React.useState(false);
   const [editingNote, setEditingNote] = React.useState<Note | null>(null);
   const [editingTodo, setEditingTodo] = React.useState<Todo | null>(null);
   const [todoLogPrompt, setTodoLogPrompt] = React.useState<Todo | null>(null);
@@ -217,9 +215,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
     ? canSeeNotices
       ? ['notices', 'info']
       : ['info']
-    : person.isShepherd
-      ? ['logs', 'todos', 'sheep', 'notices', 'info']
-      : ['logs', 'todos', 'notices', 'info'];
+    : ['logs', 'todos', 'notices', 'info'];
 
   // If the active tab isn't in the visible set (e.g. persona switched), clamp to info
   const activeTab = visibleTabs.includes(tab) ? tab : 'info';
@@ -317,29 +313,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
         </span>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-          {activeTab === 'sheep' ? (
-            <button
-              onClick={() => setShowSheepPicker(true)}
-              style={{
-                height: scrolled ? 30 : 36,
-                padding: scrolled ? '0 10px' : '0 12px',
-                borderRadius: 8,
-                background: 'var(--sage)',
-                color: '#fff',
-                border: 'none',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 5,
-                fontSize: scrolled ? 13 : 14,
-                fontWeight: 600,
-                whiteSpace: 'nowrap',
-              }}
-            >
-              <PencilSimpleIcon size={scrolled ? 13 : 15} weight="bold" />
-              Sheep
-            </button>
-          ) : activeTab === 'info' ? (
+          {activeTab === 'info' ? (
             canEdit && (
               <button
                 onClick={() => setShowEditPerson(true)}
@@ -1012,119 +986,6 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
       )}
 
       {/* Sheep tab — only for shepherds */}
-      {activeTab === 'sheep' && person.isShepherd && (
-        <div>
-          {sheep.length === 0 && (
-            <p
-              style={{
-                fontSize: 13,
-                color: 'var(--text-muted)',
-                fontStyle: 'italic',
-                paddingTop: 24,
-                textAlign: 'center',
-              }}
-            >
-              No sheep assigned yet.
-            </p>
-          )}
-          {sheep.length > 0 && (
-            <div
-              className="no-last-border"
-              style={{
-                background: 'var(--surface)',
-                borderRadius: 'var(--radius)',
-                overflow: 'hidden',
-              }}
-            >
-              {sheep.map((s) => {
-                const sFamily = s.familyId ? data.families.find((f) => f.id === s.familyId) : null;
-                const sInitials = s.englishName
-                  .split(' ')
-                  .map((n) => n[0])
-                  .slice(0, 2)
-                  .join('')
-                  .toUpperCase();
-                return (
-                  <Link
-                    key={s.id}
-                    href={`/person/${s.id}`}
-                    className="row-card-hover"
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 12,
-                      paddingTop: 10,
-                      paddingBottom: 10,
-                      borderBottom: '1px solid var(--border-light)',
-                      textDecoration: 'none',
-                    }}
-                  >
-                    {s.photo ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={s.photo}
-                        alt={s.englishName}
-                        style={{
-                          width: 40,
-                          height: 40,
-                          borderRadius: '50%',
-                          objectFit: 'cover',
-                          flexShrink: 0,
-                        }}
-                      />
-                    ) : (
-                      <div
-                        style={{
-                          width: 40,
-                          height: 40,
-                          borderRadius: '50%',
-                          background: 'var(--sage-light)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: 13,
-                          fontWeight: 700,
-                          color: 'var(--sage)',
-                          flexShrink: 0,
-                        }}
-                      >
-                        {sInitials}
-                      </div>
-                    )}
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
-                        <span
-                          style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}
-                        >
-                          {s.englishName}
-                        </span>
-                        {s.chineseName && (
-                          <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                            {s.chineseName}
-                          </span>
-                        )}
-                      </div>
-                      <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                        {getMembershipLabel(s.membershipStatus)}
-                        {sFamily && <span> · {sFamily.label}</span>}
-                        {s.lastContactDate && (
-                          <span>
-                            {' '}
-                            · Logged{' '}
-                            {format(parseISO(s.lastContactDate), 'MMM d')}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <CaretRight size={14} color="var(--text-muted)" />
-                  </Link>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      )}
-
       {/* Info tab */}
       {activeTab === 'info' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
@@ -1177,32 +1038,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                 <InfoRow
                   icon={<Globe size={15} />}
                   label="Language"
-                  value={
-                    <div
-                      style={{
-                        display: 'flex',
-                        gap: 5,
-                        flexWrap: 'wrap',
-                        justifyContent: 'flex-end',
-                      }}
-                    >
-                      {person.language.map((l) => (
-                        <span
-                          key={l}
-                          style={{
-                            fontSize: 11,
-                            padding: '3px 9px',
-                            borderRadius: '999px',
-                            background: 'var(--blue-light)',
-                            color: 'var(--blue)',
-                            fontWeight: 500,
-                          }}
-                        >
-                          {l}
-                        </span>
-                      ))}
-                    </div>
-                  }
+                  value={person.language.join(', ')}
                 />
               )}
               {person.gender && (
@@ -1243,38 +1079,12 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
             <InfoRow
               icon={<IdentificationCard size={15} />}
               label="Status"
-              value={
-                <span
-                  style={{
-                    fontSize: 11,
-                    fontWeight: 600,
-                    padding: '3px 10px',
-                    borderRadius: '999px',
-                    background: 'var(--sage-light)',
-                    color: 'var(--sage)',
-                  }}
-                >
-                  {getMembershipLabel(person.membershipStatus)}
-                </span>
-              }
+              value={getMembershipLabel(person.membershipStatus)}
             />
             <InfoRow
               icon={<Pulse size={15} />}
               label="Attendance"
-              value={
-                <span
-                  style={{
-                    fontSize: 11,
-                    fontWeight: 600,
-                    padding: '3px 10px',
-                    borderRadius: '999px',
-                    background: 'var(--blue-light)',
-                    color: 'var(--blue)',
-                  }}
-                >
-                  {getChurchAttendanceLabel(person.churchAttendance)}
-                </span>
-              }
+              value={getChurchAttendanceLabel(person.churchAttendance)}
             />
             {person.membershipStatus === 'member' && person.membershipDate && (
               <InfoRow
@@ -1374,7 +1184,159 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
               />
             )}
             {person.isShepherd && (
-              <InfoRow icon={<Compass size={15} />} label="Is Shepherd?" value="Yes" />
+              <>
+                {/* Sheep row — visible to all; edit only for admin/shepherd */}
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '11px 16px',
+                    borderBottom: '1px solid var(--border-light)',
+                    gap: 12,
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ color: 'var(--text-muted)', display: 'flex' }}>
+                      <HandHeart size={15} />
+                    </span>
+                    <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>Sheep</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    {sheep.length > 2 && (
+                      <button
+                        onClick={() => setSheepExpanded((v) => !v)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 4,
+                          fontSize: 12,
+                          fontWeight: 500,
+                          color: 'var(--text-secondary)',
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          padding: 0,
+                        }}
+                      >
+                        {sheepExpanded ? 'Hide' : 'Show all'}
+                        {!sheepExpanded && (
+                          <span
+                            style={{
+                              fontSize: 11,
+                              fontWeight: 600,
+                              padding: '1px 7px',
+                              borderRadius: 999,
+                              background: 'var(--sage-light)',
+                              color: 'var(--sage)',
+                            }}
+                          >
+                            {sheep.length}
+                          </span>
+                        )}
+                        <CaretDown
+                          size={12}
+                          style={{
+                            transition: 'transform 0.2s',
+                            transform: sheepExpanded ? 'rotate(180deg)' : 'none',
+                          }}
+                        />
+                      </button>
+                    )}
+                    {sheep.length <= 2 && sheep.length > 0 && (
+                      <span
+                        style={{
+                          fontSize: 11,
+                          fontWeight: 600,
+                          padding: '1px 7px',
+                          borderRadius: 999,
+                          background: 'var(--sage-light)',
+                          color: 'var(--sage)',
+                        }}
+                      >
+                        {sheep.length}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                {/* Inline sheep list — always shown for ≤2; shown when expanded for >2 */}
+                {sheep.length > 0 && (sheep.length <= 2 || sheepExpanded) && (
+                  <div
+                    style={{
+                      padding: '8px 16px 12px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 8,
+                      borderBottom: '1px solid var(--border-light)',
+                    }}
+                  >
+                    {sheep.map((s) => {
+                      const sInitials = s.englishName
+                        .split(' ')
+                        .map((n) => n[0])
+                        .slice(0, 2)
+                        .join('')
+                        .toUpperCase();
+                      return (
+                        <Link
+                          key={s.id}
+                          href={`/person/${s.id}`}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 8,
+                            textDecoration: 'none',
+                          }}
+                        >
+                          {s.photo ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={s.photo}
+                              alt={s.englishName}
+                              style={{
+                                width: 24,
+                                height: 24,
+                                borderRadius: '50%',
+                                objectFit: 'cover',
+                                flexShrink: 0,
+                              }}
+                            />
+                          ) : (
+                            <div
+                              style={{
+                                width: 24,
+                                height: 24,
+                                borderRadius: '50%',
+                                background: 'var(--sage-light)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: 9,
+                                fontWeight: 700,
+                                color: 'var(--sage)',
+                                flexShrink: 0,
+                              }}
+                            >
+                              {sInitials}
+                            </div>
+                          )}
+                          <span
+                            style={{ fontSize: 13, fontWeight: 500, color: 'var(--blue)' }}
+                          >
+                            {s.englishName}
+                          </span>
+                          {s.chineseName && (
+                            <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+                              {s.chineseName}
+                            </span>
+                          )}
+                          <CaretRight size={11} color="var(--blue)" style={{ marginLeft: 'auto' }} />
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </>
             )}
             {person.isBeingDiscipled && (
               <InfoRow icon={<Compass size={15} />} label="Being discipled?" value="Yes" />
@@ -1590,28 +1552,6 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
         <GroupPreviewModal groupId={previewGroupId} onClose={() => setPreviewGroupId(null)} />
       )}
 
-      {/* Edit sheep picker */}
-      {showSheepPicker && shepherdId && (
-        <SheepPickerModal
-          data={data}
-          shepherdPersonaId={shepherdId}
-          currentSheepIds={sheep.map((s) => s.id)}
-          excludePersonId={person.id}
-          onToggle={(personId, isCurrentSheep) => {
-            const target = data.people.find((p) => p.id === personId);
-            if (!target) return;
-            if (isCurrentSheep) {
-              assignShepherds(
-                personId,
-                target.assignedShepherdIds.filter((sid) => sid !== shepherdId)
-              );
-            } else {
-              assignShepherds(personId, [...target.assignedShepherdIds, shepherdId]);
-            }
-          }}
-          onClose={() => setShowSheepPicker(false)}
-        />
-      )}
 
       {/* Photo action menu */}
       {showPhotoMenu && (
@@ -2274,250 +2214,4 @@ function fmtShortDate(iso: string) {
   const dateStr = iso.includes('T') ? iso.split('T')[0] : iso;
   const [year, month, day] = dateStr.split('-').map(Number);
   return format(new Date(year, month - 1, day), 'MMM d, yyyy');
-}
-
-function SheepPickerModal({
-  data,
-  shepherdPersonaId: _shepherdPersonaId,
-  currentSheepIds,
-  excludePersonId,
-  onToggle,
-  onClose,
-}: {
-  data: AppData;
-  shepherdPersonaId: string;
-  currentSheepIds: string[];
-  excludePersonId: string;
-  onToggle: (personId: string, isCurrentSheep: boolean) => void;
-  onClose: () => void;
-}) {
-  const [search, setSearch] = React.useState('');
-  const q = search.toLowerCase();
-
-  const people = data.people.filter(
-    (p) =>
-      p.id !== excludePersonId &&
-      (q === '' ||
-        p.englishName.toLowerCase().includes(q) ||
-        (p.chineseName && p.chineseName.toLowerCase().includes(q)))
-  );
-
-  // Sort: current sheep first, then the rest alphabetically
-  const sorted = [
-    ...people.filter((p) => currentSheepIds.includes(p.id)),
-    ...people.filter((p) => !currentSheepIds.includes(p.id)),
-  ];
-
-  return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        background: BACKDROP_COLOR,
-        zIndex: 60,
-        display: 'flex',
-        alignItems: 'flex-end',
-        justifyContent: 'center',
-      }}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-    >
-      <div
-        className="animate-slide-up"
-        style={{
-          background: 'var(--surface)',
-          borderRadius: SHEET_BORDER_RADIUS,
-          width: '100%',
-          maxWidth: SHEET_MAX_WIDTH,
-          height: 'calc(100dvh - 48px)',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-        }}
-      >
-        {/* Drag handle */}
-        <div
-          style={{
-            width: 36,
-            height: 4,
-            background: 'var(--border)',
-            borderRadius: 2,
-            margin: '14px auto 0',
-            flexShrink: 0,
-          }}
-        />
-
-        {/* Header */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '14px 20px 12px',
-            flexShrink: 0,
-            borderBottom: '1px solid var(--border-light)',
-          }}
-        >
-          <button
-            onClick={onClose}
-            style={{
-              fontSize: 14,
-              color: 'var(--text-secondary)',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-            }}
-          >
-            Cancel
-          </button>
-          <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
-            Edit Sheep
-          </span>
-          <button
-            onClick={onClose}
-            style={{
-              fontSize: 14,
-              fontWeight: 600,
-              color: 'var(--sage)',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-            }}
-          >
-            Done
-          </button>
-        </div>
-
-        {/* Search */}
-        <div style={{ padding: '12px 20px' }}>
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search people…"
-            autoFocus
-            style={{
-              width: '100%',
-              padding: '10px 14px',
-              background: 'var(--bg)',
-              border: '1px solid var(--border)',
-              borderRadius: 10,
-              fontSize: 14,
-              color: 'var(--text-primary)',
-              outline: 'none',
-              boxSizing: 'border-box',
-            }}
-          />
-        </div>
-
-        {/* List */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '0 20px 40px' }}>
-          {sorted.length === 0 && (
-            <p
-              style={{
-                fontSize: 13,
-                color: 'var(--text-muted)',
-                fontStyle: 'italic',
-                paddingTop: 24,
-                textAlign: 'center',
-              }}
-            >
-              No matching people.
-            </p>
-          )}
-          {sorted.map((p) => {
-            const isSheep = currentSheepIds.includes(p.id);
-            const initials = p.englishName
-              .split(' ')
-              .map((n) => n[0])
-              .slice(0, 2)
-              .join('')
-              .toUpperCase();
-            const palette =
-              SHEPHERD_AVATAR_PALETTE[p.englishName.charCodeAt(0) % SHEPHERD_AVATAR_PALETTE.length];
-            return (
-              <button
-                key={p.id}
-                className="picker-row"
-                onClick={() => onToggle(p.id, isSheep)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 12,
-                  width: '100%',
-                  padding: '10px 8px',
-                  background: isSheep ? 'var(--sage-light)' : 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  borderRadius: 10,
-                  marginBottom: 2,
-                }}
-              >
-                {p.photo ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={p.photo}
-                    alt={p.englishName}
-                    style={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: '50%',
-                      objectFit: 'cover',
-                      flexShrink: 0,
-                    }}
-                  />
-                ) : (
-                  <div
-                    style={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: '50%',
-                      background: isSheep ? 'var(--sage)' : palette.bg,
-                      color: isSheep ? '#fff' : palette.color,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: 12,
-                      fontWeight: 700,
-                      flexShrink: 0,
-                    }}
-                  >
-                    {initials}
-                  </div>
-                )}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
-                    <span
-                      style={{
-                        fontSize: 14,
-                        fontWeight: isSheep ? 600 : 500,
-                        color: isSheep ? 'var(--sage)' : 'var(--text-primary)',
-                      }}
-                    >
-                      {p.englishName}
-                    </span>
-                    {p.chineseName && (
-                      <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                        {p.chineseName}
-                      </span>
-                    )}
-                  </div>
-                  <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-                    {getMembershipLabel(p.membershipStatus)}
-                  </span>
-                </div>
-                {isSheep ? (
-                  <Check size={16} color="var(--sage)" weight="bold" />
-                ) : (
-                  <Plus size={16} color="var(--text-muted)" />
-                )}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
 }

@@ -153,6 +153,15 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
     const [showPositionPicker, setShowPositionPicker] = React.useState(false);
     const [showGroupPicker, setShowGroupPicker] = React.useState(false);
     const [showShepherdPicker, setShowShepherdPicker] = React.useState(false);
+    const [showSheepPicker, setShowSheepPicker] = React.useState(false);
+
+    const initShepherdPersona = person.isShepherd
+      ? data.personas.find((p) => p.personId === person.id)
+      : null;
+    const shepherdId = initShepherdPersona?.id ?? (person.isShepherd ? person.id : null);
+    const [sheepIds, setSheepIds] = React.useState<string[]>(() =>
+      shepherdId ? data.people.filter((p) => p.assignedShepherdIds.includes(shepherdId)).map((p) => p.id) : []
+    );
 
     const fullName = [firstName.trim(), lastName.trim()].filter(Boolean).join(' ');
     const selectedGroups = data.groups.filter((g) => groupIds.includes(g.id));
@@ -203,6 +212,21 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
         if (!firstName.trim()) return;
         await assignGroupsToPerson(person.id, groupIds);
         await assignShepherds(person.id, shepherdIds);
+        if (shepherdId) {
+          const originalSheepIds = data.people
+            .filter((p) => p.assignedShepherdIds.includes(shepherdId))
+            .map((p) => p.id);
+          const added = sheepIds.filter((id) => !originalSheepIds.includes(id));
+          const removed = originalSheepIds.filter((id) => !sheepIds.includes(id));
+          for (const id of added) {
+            const p = data.people.find((p) => p.id === id);
+            if (p) await assignShepherds(id, [...p.assignedShepherdIds, shepherdId]);
+          }
+          for (const id of removed) {
+            const p = data.people.find((p) => p.id === id);
+            if (p) await assignShepherds(id, p.assignedShepherdIds.filter((sid) => sid !== shepherdId));
+          }
+        }
         await updatePerson(person.id, {
           englishName: fullName,
           chineseName: chineseName.trim() || undefined,
@@ -403,17 +427,9 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
               <span style={spacerStyle} />
               <Globe size={16} color="var(--text-muted)" />
               <span style={labelStyle}>Language</span>
-              <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                {language.length > 0 ? (
-                  language.map((l) => (
-                    <span key={l} style={langChipStyle}>
-                      {l}
-                    </span>
-                  ))
-                ) : (
-                  <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>None</span>
-                )}
-              </div>
+              <span style={{ flex: 1, fontSize: 14, color: language.length > 0 ? 'var(--text-primary)' : 'var(--text-muted)' }}>
+                {language.length > 0 ? language.join(', ') : 'None'}
+              </span>
               <CaretRight size={14} color="var(--text-muted)" />
             </button>
             <PickerRow
@@ -526,6 +542,31 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
               <span style={{ ...labelStyle, flex: 1 }}>Is Shepherd?</span>
               <Toggle on={isShepherd} />
             </button>
+            {isShepherd && shepherdId && (
+              <button
+                className="field-row-hover"
+                onClick={() => setShowSheepPicker(true)}
+                style={rowBtnStyle}
+              >
+                <span style={spacerStyle} />
+                <HandHeart size={16} color="var(--text-muted)" />
+                <span style={labelStyle}>Sheep</span>
+                <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                  {sheepIds.length > 0 ? (
+                    data.people
+                      .filter((p) => sheepIds.includes(p.id))
+                      .map((p) => (
+                        <span key={p.id} style={sageChipStyle}>
+                          {p.englishName}
+                        </span>
+                      ))
+                  ) : (
+                    <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>None</span>
+                  )}
+                </div>
+                <CaretRight size={14} color="var(--text-muted)" />
+              </button>
+            )}
             <button
               className="field-row-hover"
               onClick={() => setIsBeingDiscipled((v) => !v)}
@@ -703,6 +744,17 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
               setShowShepherdPicker(false);
             }}
             onBack={() => setShowShepherdPicker(false)}
+          />
+        )}
+        {showSheepPicker && shepherdId && (
+          <SheepPickerSheet
+            people={data.people.filter((p) => p.id !== person.id)}
+            currentIds={sheepIds}
+            onConfirm={(ids) => {
+              setSheepIds(ids);
+              setShowSheepPicker(false);
+            }}
+            onBack={() => setShowSheepPicker(false)}
           />
         )}
         {showInviteRow && showInvite && (
@@ -1233,6 +1285,264 @@ function GroupPickerSheet({
               No groups found.
             </p>
           )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SheepPickerSheet({
+  people,
+  currentIds,
+  onConfirm,
+  onBack,
+}: {
+  people: { id: string; englishName: string; chineseName?: string }[];
+  currentIds: string[];
+  onConfirm: (ids: string[]) => void;
+  onBack: () => void;
+}) {
+  const [search, setSearch] = React.useState('');
+  const [selectedIds, setSelectedIds] = React.useState<string[]>(currentIds);
+  const searchRef = React.useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    searchRef.current?.focus();
+  }, []);
+
+  const q = search.toLowerCase();
+  const sorted = [
+    ...people.filter((p) => selectedIds.includes(p.id)),
+    ...people.filter((p) => !selectedIds.includes(p.id)),
+  ].filter(
+    (p) =>
+      !q ||
+      p.englishName.toLowerCase().includes(q) ||
+      (p.chineseName && p.chineseName.toLowerCase().includes(q))
+  );
+  const toggle = (id: string) =>
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 70,
+        background: BACKDROP_COLOR,
+        display: 'flex',
+        alignItems: 'flex-end',
+        justifyContent: 'center',
+      }}
+    >
+      <div
+        className="animate-slide-up"
+        style={{
+          background: 'var(--surface)',
+          borderRadius: SHEET_BORDER_RADIUS,
+          width: '100%',
+          maxWidth: SHEET_MAX_WIDTH,
+          height: 'calc(100dvh - 48px)',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+        }}
+      >
+        <div
+          style={{
+            width: 36,
+            height: 4,
+            background: 'var(--border)',
+            borderRadius: 2,
+            margin: '14px auto 0',
+            flexShrink: 0,
+          }}
+        />
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '14px 20px 12px',
+            flexShrink: 0,
+            borderBottom: '1px solid var(--border-light)',
+          }}
+        >
+          <button
+            onClick={onBack}
+            style={{
+              fontSize: 14,
+              color: 'var(--text-secondary)',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 0,
+            }}
+          >
+            Back
+          </button>
+          <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
+            Sheep
+          </span>
+          <button
+            onClick={() => onConfirm(selectedIds)}
+            style={{
+              fontSize: 14,
+              fontWeight: 600,
+              color: 'var(--sage)',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 0,
+            }}
+          >
+            {selectedIds.length > 0 ? `Done (${selectedIds.length})` : 'Done'}
+          </button>
+        </div>
+        <div
+          style={{
+            padding: '12px 20px',
+            flexShrink: 0,
+            borderBottom: '1px solid var(--border-light)',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              background: 'var(--bg)',
+              border: '1px solid var(--border)',
+              borderRadius: 10,
+              padding: '9px 12px',
+            }}
+          >
+            <MagnifyingGlass size={14} color="var(--text-muted)" />
+            <input
+              ref={searchRef}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search people…"
+              style={{
+                flex: 1,
+                fontSize: 14,
+                color: 'var(--text-primary)',
+                background: 'none',
+                border: 'none',
+                outline: 'none',
+              }}
+            />
+            {search && (
+              <button
+                onClick={() => setSearch('')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'var(--text-muted)',
+                  fontSize: 18,
+                  lineHeight: 1,
+                  padding: 0,
+                }}
+              >
+                ×
+              </button>
+            )}
+          </div>
+        </div>
+        <div style={{ flex: 1, overflowY: 'auto' }}>
+          {sorted.length === 0 && (
+            <p
+              style={{
+                fontSize: 13,
+                color: 'var(--text-muted)',
+                fontStyle: 'italic',
+                paddingTop: 24,
+                textAlign: 'center',
+              }}
+            >
+              No matching people.
+            </p>
+          )}
+          {sorted.map((p, i) => {
+            const isSel = selectedIds.includes(p.id);
+            const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
+            const initials = p.englishName
+              .split(' ')
+              .map((n) => n[0])
+              .join('')
+              .toUpperCase()
+              .slice(0, 2);
+            return (
+              <button
+                key={p.id}
+                onClick={() => toggle(p.id)}
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
+                  padding: '12px 20px',
+                  background: isSel ? 'var(--sage-light)' : 'none',
+                  border: 'none',
+                  borderBottom: '1px solid var(--border-light)',
+                  cursor: 'pointer',
+                  textAlign: 'left' as const,
+                }}
+              >
+                <div
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: '50%',
+                    flexShrink: 0,
+                    background: isSel ? 'var(--sage)' : palette.bg,
+                    color: isSel ? '#fff' : palette.color,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 12,
+                    fontWeight: 700,
+                  }}
+                >
+                  {initials}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p
+                    style={{
+                      fontSize: 14,
+                      fontWeight: isSel ? 600 : 400,
+                      color: isSel ? 'var(--sage)' : 'var(--text-primary)',
+                      margin: 0,
+                    }}
+                  >
+                    {p.englishName}
+                  </p>
+                  {p.chineseName && (
+                    <p style={{ fontSize: 11, color: 'var(--text-muted)', margin: 0 }}>
+                      {p.chineseName}
+                    </p>
+                  )}
+                </div>
+                <div
+                  style={{
+                    width: 20,
+                    height: 20,
+                    borderRadius: 5,
+                    flexShrink: 0,
+                    border: isSel ? 'none' : '1.5px solid var(--border)',
+                    background: isSel ? 'var(--sage)' : 'transparent',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'background 0.15s',
+                  }}
+                >
+                  {isSel && <Check size={11} color="#fff" weight="bold" />}
+                </div>
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>
