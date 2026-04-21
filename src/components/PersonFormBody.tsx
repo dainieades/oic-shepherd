@@ -14,6 +14,7 @@ import {
   type AppRole,
 } from '@/lib/types';
 import PickerMenu from './PickerMenu';
+import PhotoAvatar from './PhotoAvatar';
 import AppRolePickerSheet from './AppRolePickerSheet';
 import LanguagePickerSheet from './LanguagePickerSheet';
 import InviteSheet from './InviteSheet';
@@ -43,7 +44,6 @@ import {
   PaperPlaneTilt,
   MagnifyingGlass,
   Check,
-  Camera,
 } from '@phosphor-icons/react';
 import {
   BACKDROP_COLOR,
@@ -138,7 +138,6 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
     const addressRef = React.useRef<HTMLTextAreaElement>(null);
     const anniversaryRef = React.useRef<HTMLInputElement>(null);
     const membershipDateRef = React.useRef<HTMLInputElement>(null);
-    const fileInputRef = React.useRef<HTMLInputElement>(null);
 
     const statusBtnRef = React.useRef<HTMLButtonElement>(null);
     const attendanceBtnRef = React.useRef<HTMLButtonElement>(null);
@@ -197,15 +196,6 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
       onValidityChange?.(!!firstName.trim());
     }, [firstName, onValidityChange]);
 
-    const handlePhotoFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        if (ev.target?.result) setPhoto(ev.target.result as string);
-      };
-      reader.readAsDataURL(file);
-    };
 
     React.useImperativeHandle(ref, () => ({
       save: async () => {
@@ -259,60 +249,12 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
           <div
             style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '24px 0 20px' }}
           >
-            <div style={{ position: 'relative', flexShrink: 0 }}>
-              {photo ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={photo}
-                  alt={fullName}
-                  style={{ width: 72, height: 72, borderRadius: '50%', objectFit: 'cover' }}
-                />
-              ) : (
-                <div
-                  style={{
-                    width: 72,
-                    height: 72,
-                    borderRadius: '50%',
-                    background: 'var(--sage)',
-                    color: 'var(--on-sage)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: 22,
-                    fontWeight: 700,
-                  }}
-                >
-                  {initials}
-                </div>
-              )}
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                style={{
-                  position: 'absolute',
-                  bottom: 0,
-                  right: 0,
-                  width: 24,
-                  height: 24,
-                  borderRadius: '50%',
-                  background: 'var(--text-secondary)',
-                  border: '2px solid var(--bg)',
-                  color: '#fff',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                }}
-              >
-                <Camera size={12} weight="fill" />
-              </button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                style={{ display: 'none' }}
-                onChange={handlePhotoFile}
-              />
-            </div>
+            <PhotoAvatar
+              photo={photo || undefined}
+              name={fullName || 'Your Name'}
+              onPhotoChange={setPhoto}
+              onPhotoRemove={() => setPhoto('')}
+            />
             <div style={{ flex: 1, minWidth: 0 }}>
               <p
                 style={{
@@ -552,13 +494,21 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
                 <span style={labelStyle}>Sheep</span>
                 <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                   {sheepIds.length > 0 ? (
-                    data.people
-                      .filter((p) => sheepIds.includes(p.id))
-                      .map((p) => (
-                        <span key={p.id} style={sageChipStyle}>
-                          {p.englishName}
+                    <>
+                      {data.people
+                        .filter((p) => sheepIds.includes(p.id))
+                        .slice(0, 5)
+                        .map((p) => (
+                          <span key={p.id} style={sageChipStyle}>
+                            {p.englishName}
+                          </span>
+                        ))}
+                      {sheepIds.length > 5 && (
+                        <span style={{ fontSize: 13, color: 'var(--text-muted)', alignSelf: 'center' }}>
+                          +{sheepIds.length - 5} more
                         </span>
-                      ))
+                      )}
+                    </>
                   ) : (
                     <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>None</span>
                   )}

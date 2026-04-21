@@ -39,6 +39,7 @@ import AddTodoModal from '@/components/AddTodoModal';
 import TodoLogPrompt from '@/components/TodoLogPrompt';
 import EditFamilyDrawer from '@/components/EditFamilyDrawer';
 import GroupPreviewModal from '@/components/GroupPreviewModal';
+import ImageCropModal from '@/components/ImageCropModal';
 import { SHEPHERD_AVATAR_PALETTE } from '@/lib/constants';
 
 type Tab = 'logs' | 'todos' | 'info';
@@ -77,6 +78,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
   const [previewGroupId, setPreviewGroupId] = React.useState<string | null>(null);
   const [showKebab, setShowKebab] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
+  const [cropSrc, setCropSrc] = React.useState<string | null>(null);
   const kebabRef = React.useRef<HTMLDivElement>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -128,7 +130,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
-      updateFamily(family.id, { photo: reader.result as string });
+      setCropSrc(reader.result as string);
     };
     reader.readAsDataURL(file);
     e.target.value = '';
@@ -144,6 +146,16 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
 
   return (
     <div style={{ paddingBottom: 40 }}>
+      {cropSrc && (
+        <ImageCropModal
+          imageSrc={cropSrc}
+          onConfirm={(croppedUrl) => {
+            updateFamily(family.id, { photo: croppedUrl });
+            setCropSrc(null);
+          }}
+          onCancel={() => setCropSrc(null)}
+        />
+      )}
       {/* ── Nav bar ── */}
       <div
         style={{

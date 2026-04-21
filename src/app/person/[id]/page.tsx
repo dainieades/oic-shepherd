@@ -24,6 +24,7 @@ import AddNoticeModal, { URGENCY_STYLE } from '@/components/AddNoticeModal';
 import TodoLogPrompt from '@/components/TodoLogPrompt';
 import EditPersonDrawer from '@/components/EditPersonDrawer';
 import GroupPreviewModal from '@/components/GroupPreviewModal';
+import PhotoAvatar from '@/components/PhotoAvatar';
 import {
   Notepad,
   CheckCircle,
@@ -50,7 +51,6 @@ import {
   CaretLeft,
   CaretRight,
   DotsThreeVertical,
-  Camera,
   Trash,
   Archive,
   Check,
@@ -131,12 +131,10 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
   const [showEditPerson, setShowEditPerson] = React.useState(false);
   const [previewGroupId, setPreviewGroupId] = React.useState<string | null>(null);
   const [showKebab, setShowKebab] = React.useState(false);
-  const [showPhotoMenu, setShowPhotoMenu] = React.useState(false);
   const [confirmAction, setConfirmAction] = React.useState<'archive' | 'delete' | null>(null);
   const [scrolled, setScrolled] = React.useState(false);
   const [mapProvider, setMapProvider] = React.useState<MapProvider>('apple');
   const kebabRef = React.useRef<HTMLDivElement>(null);
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -228,16 +226,6 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
     .join('')
     .toUpperCase();
 
-  const handlePhotoFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      updatePerson(person.id, { photo: reader.result as string });
-    };
-    reader.readAsDataURL(file);
-    e.target.value = '';
-  };
 
   const handleTodoToggle = (todoId: string) => {
     const todo = data.todos.find((t) => t.id === todoId);
@@ -501,71 +489,12 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
       {/* ── Large title — scrolls away ── */}
       <div style={{ padding: '28px 0 20px', display: 'flex', alignItems: 'center', gap: 16 }}>
         {/* Avatar */}
-        <button
-          onClick={() => setShowPhotoMenu(true)}
-          style={{
-            flexShrink: 0,
-            width: 72,
-            height: 72,
-            borderRadius: '50%',
-            padding: 0,
-            border: 'none',
-            cursor: 'pointer',
-            position: 'relative',
-            background: 'none',
-          }}
-        >
-          {person.photo ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={person.photo}
-              alt={person.englishName}
-              style={{
-                width: 72,
-                height: 72,
-                borderRadius: '50%',
-                objectFit: 'cover',
-                display: 'block',
-              }}
-            />
-          ) : (
-            <div
-              style={{
-                width: 72,
-                height: 72,
-                borderRadius: '50%',
-                background: 'var(--sage-light)',
-                border: '2px dashed var(--sage)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 22,
-                fontWeight: 700,
-                color: 'var(--sage)',
-              }}
-            >
-              {initials}
-            </div>
-          )}
-          {/* Camera badge */}
-          <div
-            style={{
-              position: 'absolute',
-              bottom: 0,
-              right: 0,
-              width: 22,
-              height: 22,
-              borderRadius: '50%',
-              background: 'var(--sage)',
-              border: '2px solid var(--bg)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Camera size={11} color="#fff" weight="fill" />
-          </div>
-        </button>
+        <PhotoAvatar
+          photo={person.photo}
+          name={person.englishName}
+          onPhotoChange={(url) => updatePerson(person.id, { photo: url })}
+          onPhotoRemove={() => updatePerson(person.id, { photo: undefined })}
+        />
 
         {/* Name + meta */}
         <div style={{ flex: 1, minWidth: 0 }}>
@@ -646,14 +575,6 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
         </div>
       </div>
 
-      {/* Hidden file input */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        style={{ display: 'none' }}
-        onChange={handlePhotoFile}
-      />
 
       {/* ── Tabs — sticky below nav bar ── */}
       {visibleTabs.length > 1 && (
@@ -1553,134 +1474,6 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
       )}
 
 
-      {/* Photo action menu */}
-      {showPhotoMenu && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: BACKDROP_COLOR,
-            zIndex: 60,
-            display: 'flex',
-            alignItems: 'flex-end',
-            justifyContent: 'center',
-          }}
-          onClick={() => setShowPhotoMenu(false)}
-        >
-          <div
-            className="animate-slide-up"
-            style={{
-              background: 'var(--surface)',
-              borderRadius: SHEET_BORDER_RADIUS,
-              width: '100%',
-              maxWidth: SHEET_MAX_WIDTH,
-              padding: '0 20px 36px',
-              overflow: 'hidden',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div
-              style={{
-                width: 36,
-                height: 4,
-                background: 'var(--border)',
-                borderRadius: 2,
-                margin: '14px auto 20px',
-              }}
-            />
-            <p
-              style={{
-                fontSize: 12,
-                fontWeight: 600,
-                color: 'var(--text-muted)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.06em',
-                textAlign: 'center',
-                marginBottom: 16,
-              }}
-            >
-              Profile Photo
-            </p>
-
-            {/* Choose / replace photo */}
-            <button
-              onClick={() => {
-                setShowPhotoMenu(false);
-                fileInputRef.current?.click();
-              }}
-              style={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 14,
-                padding: '14px 4px',
-                background: 'none',
-                border: 'none',
-                borderBottom: '1px solid var(--border-light)',
-                cursor: 'pointer',
-                textAlign: 'left',
-              }}
-            >
-              <div
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: '50%',
-                  background: 'var(--sage-light)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0,
-                }}
-              >
-                <Camera size={18} color="var(--sage)" />
-              </div>
-              <span style={{ fontSize: 16, color: 'var(--text-primary)', fontWeight: 500 }}>
-                {person.photo ? 'Replace photo' : 'Upload photo'}
-              </span>
-            </button>
-
-            {/* Remove photo — only shown if one exists */}
-            {person.photo && (
-              <button
-                onClick={() => {
-                  updatePerson(person.id, { photo: undefined });
-                  setShowPhotoMenu(false);
-                }}
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 14,
-                  padding: '14px 4px',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                }}
-              >
-                <div
-                  style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: '50%',
-                    background: '#FEF2F2',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                  }}
-                >
-                  <Trash size={18} color="var(--red)" />
-                </div>
-                <span style={{ fontSize: 16, color: 'var(--red)', fontWeight: 500 }}>
-                  Remove photo
-                </span>
-              </button>
-            )}
-          </div>
-        </div>
-      )}
       {todoLogPrompt && (
         <TodoLogPrompt
           todo={todoLogPrompt}

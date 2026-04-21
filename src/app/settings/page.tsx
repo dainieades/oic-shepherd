@@ -437,16 +437,6 @@ export default function SettingsPage() {
         </>
       )}
 
-      {/* ── Help ── */}
-      <SectionLabel>Help</SectionLabel>
-      <SettingsCard>
-        <SettingsRow
-          icon={<Question size={18} color="var(--text-muted)" />}
-          label="Help & Support"
-          chevron
-        />
-      </SettingsCard>
-
       {/* ── Sign Out ── */}
       <button
         onClick={() => setShowSignOutConfirm(true)}
