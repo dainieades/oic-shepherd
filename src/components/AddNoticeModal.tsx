@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { format, parseISO } from 'date-fns';
 import {
   FirstAid,
   HandsPraying,
@@ -16,6 +17,7 @@ import {
   Lock,
   Users,
   Globe,
+  Eye,
   UsersThree,
   Brain,
 } from '@phosphor-icons/react';
@@ -373,10 +375,10 @@ export default function AddNoticeModal({
                           display: 'flex',
                           justifyContent: 'center',
                           flexShrink: 0,
-                          color: urgencyStyle.color,
+                          color: 'var(--text-muted)',
                         }}
                       >
-                        {urgencyItem.icon}
+                        <Warning size={16} />
                       </span>
                       <span
                         style={{
@@ -409,7 +411,7 @@ export default function AddNoticeModal({
                     {/* Privacy */}
                     <FieldRow
                       btnRef={privacyBtnRef}
-                      icon={<Lock size={16} />}
+                      icon={<Eye size={16} />}
                       label="Visible to"
                       value={privacyItem.label}
                       onClick={() => setShowPrivacyPicker(true)}
@@ -452,7 +454,7 @@ export default function AddNoticeModal({
                               Added by
                             </span>
                             <span style={{ flex: 1, fontSize: 14, color: 'var(--text-secondary)' }}>
-                              {creator?.name ?? 'Unknown'}
+                              {creator?.name ?? 'Unknown'} · {format(parseISO(notice.createdAt), 'MMM d, yyyy')}
                             </span>
                           </div>
                         );
@@ -507,7 +509,6 @@ export default function AddNoticeModal({
           options={URGENCIES.map((u) => ({
             value: u.value,
             label: u.label,
-            icon: u.icon,
             description: u.description,
           }))}
           value={urgency}

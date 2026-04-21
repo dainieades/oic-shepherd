@@ -46,7 +46,7 @@ export default function AddTodoModal({
   prefillPersonId,
   todo,
 }: AddTodoModalProps) {
-  const { data, addTodo, updateTodo, deleteTodo } = useApp();
+  const { data, currentPersona, addTodo, updateTodo, deleteTodo } = useApp();
   const { showToast } = useToast();
   const isEditing = !!todo;
 
@@ -147,6 +147,7 @@ export default function AddTodoModal({
                 data={data}
                 initialFamilyIds={familyIds}
                 initialPersonIds={personIds}
+                allowedPersonIds={currentPersona.role !== 'admin' ? currentPersona.assignedPeopleIds : undefined}
                 onConfirm={(fIds, pIds) => {
                   setFamilyIds(fIds);
                   setPersonIds(pIds);

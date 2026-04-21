@@ -9,6 +9,7 @@ interface PersonFamilyPickerProps {
   data: AppData;
   initialFamilyIds?: string[];
   initialPersonIds?: string[];
+  allowedPersonIds?: string[];
   onConfirm: (familyIds: string[], personIds: string[]) => void;
   onBack: () => void;
 }
@@ -18,6 +19,7 @@ export default function PersonFamilyPicker({
   data,
   initialFamilyIds = [],
   initialPersonIds = [],
+  allowedPersonIds,
   onConfirm,
   onBack,
 }: PersonFamilyPickerProps) {
@@ -39,6 +41,7 @@ export default function PersonFamilyPicker({
     );
 
   const families = data.families.filter((f) => {
+    if (allowedPersonIds && !f.memberIds.some((id) => allowedPersonIds.includes(id))) return false;
     if (!q) return true;
     if (f.label.toLowerCase().includes(q)) return true;
     return data.people
@@ -51,6 +54,7 @@ export default function PersonFamilyPicker({
 
   const individuals = data.people.filter((p) => {
     if (p.familyId) return false;
+    if (allowedPersonIds && !allowedPersonIds.includes(p.id)) return false;
     if (!q) return true;
     return p.englishName.toLowerCase().includes(q) || (p.chineseName && p.chineseName.includes(q));
   });

@@ -14,6 +14,7 @@ import {
   CaretLeft,
   CaretRight,
   DotsThreeVertical,
+  DotsThree,
   Camera,
   Check,
   Clock,
@@ -22,6 +23,11 @@ import {
   House,
   Plus,
   Bell,
+  FirstAid,
+  HandsPraying,
+  UsersThree,
+  Brain,
+  Eye,
 } from '@phosphor-icons/react';
 import Link from 'next/link';
 import { useApp } from '@/lib/context';
@@ -75,11 +81,23 @@ const CATEGORY_LABEL: Record<string, string> = {
   other: 'Other',
 };
 const CATEGORY_STYLE: Record<string, { bg: string; color: string }> = {
-  'physical-need': { bg: 'var(--blue-light)', color: 'var(--blue)' },
+  'physical-need': { bg: 'var(--sage-light)', color: 'var(--sage)' },
   'spiritual-need': { bg: 'var(--sage-light)', color: 'var(--sage)' },
-  'social-need': { bg: 'var(--amber-light)', color: 'var(--amber)' },
-  'psychological-need': { bg: 'var(--teal-light)', color: 'var(--teal)' },
-  other: { bg: 'var(--border-light)', color: 'var(--text-muted)' },
+  'social-need': { bg: 'var(--sage-light)', color: 'var(--sage)' },
+  'psychological-need': { bg: 'var(--sage-light)', color: 'var(--sage)' },
+  other: { bg: 'var(--sage-light)', color: 'var(--sage)' },
+};
+const CATEGORY_ICON: Record<string, React.ReactNode> = {
+  'physical-need': <FirstAid size={11} />,
+  'spiritual-need': <HandsPraying size={11} />,
+  'social-need': <UsersThree size={11} />,
+  'psychological-need': <Brain size={11} />,
+  other: <DotsThree size={11} />,
+};
+const PRIVACY_LABEL: Record<string, string> = {
+  'pastor-only': 'Pastor only',
+  'pastor-and-shepherds': 'Shepherds & pastor',
+  everyone: 'Everyone',
 };
 
 function fmtDue(iso: string) {
@@ -765,7 +783,6 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                   <NoticeCard
                     key={notice.id}
                     notice={notice}
-                    personas={data.personas}
                     onClick={() => setEditingNotice(notice)}
                   />
                 ));
@@ -1159,15 +1176,12 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
 
 function NoticeCard({
   notice,
-  personas,
   onClick,
 }: {
   notice: Notice;
-  personas: import('@/lib/types').Persona[];
   onClick: () => void;
 }) {
   const style = URGENCY_STYLE[notice.urgency as import('@/lib/types').NoticeUrgency];
-  const creator = personas.find((p) => p.id === notice.createdBy);
   return (
     <button
       onClick={onClick}
@@ -1203,6 +1217,9 @@ function NoticeCard({
           <span
             key={cat}
             style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 3,
               fontSize: 11,
               fontWeight: 500,
               padding: '2px 8px',
@@ -1211,15 +1228,28 @@ function NoticeCard({
               color: CATEGORY_STYLE[cat]?.color,
             }}
           >
+            {CATEGORY_ICON[cat]}
             {CATEGORY_LABEL[cat]}
           </span>
         ))}
       </div>
-      <p style={{ fontSize: 14, color: 'var(--text-primary)', lineHeight: 1.5, margin: 0 }}>
+      <p
+        style={{
+          fontSize: 14,
+          color: 'var(--text-primary)',
+          lineHeight: 1.5,
+          margin: 0,
+          overflow: 'hidden',
+          display: '-webkit-box',
+          WebkitLineClamp: 3,
+          WebkitBoxOrient: 'vertical',
+        }}
+      >
         {notice.content}
       </p>
-      <p style={{ fontSize: 11, color: 'var(--text-muted)', margin: 0 }}>
-        Added by {creator?.name ?? 'Unknown'} · {getTimeAgo(notice.createdAt)}
+      <p style={{ fontSize: 11, color: 'var(--text-muted)', margin: 0, display: 'flex', alignItems: 'center', gap: 4 }}>
+        <Eye size={11} />
+        {PRIVACY_LABEL[notice.privacy] ?? notice.privacy}
       </p>
     </button>
   );

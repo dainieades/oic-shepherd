@@ -48,7 +48,7 @@ export default function AddLogModal({
   prefillType,
   note,
 }: AddLogModalProps) {
-  const { data, addNote, updateNote, deleteNote } = useApp();
+  const { data, currentPersona, addNote, updateNote, deleteNote } = useApp();
   const { showToast } = useToast();
   const isEditing = !!note;
 
@@ -118,6 +118,7 @@ export default function AddLogModal({
                 data={data}
                 initialFamilyIds={familyIds}
                 initialPersonIds={personIds}
+                allowedPersonIds={currentPersona.role !== 'admin' ? currentPersona.assignedPeopleIds : undefined}
                 onConfirm={(fIds, pIds) => {
                   setFamilyIds(fIds);
                   setPersonIds(pIds);
