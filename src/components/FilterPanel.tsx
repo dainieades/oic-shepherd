@@ -34,6 +34,13 @@ export default function FilterPanel({ show, onClose }: { show: boolean; onClose:
     }
   }, [show]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  React.useEffect(() => {
+    if (!show) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, [show]);
+
   const applyFilter = (): void => {
     onClose();
     startTransition(() => {

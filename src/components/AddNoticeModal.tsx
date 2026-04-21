@@ -116,6 +116,12 @@ export default function AddNoticeModal({
   const urgencyBtnRef = React.useRef<HTMLButtonElement>(null);
   const privacyBtnRef = React.useRef<HTMLButtonElement>(null);
 
+  React.useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+
   const whoNames = [
     ...familyIds.map((id) => data.families.find((f) => f.id === id)?.label ?? ''),
     ...personIds.map((id) => data.people.find((p) => p.id === id)?.englishName ?? ''),

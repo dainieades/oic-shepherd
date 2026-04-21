@@ -16,6 +16,12 @@ export function BottomSheet({
   dragHandle = false,
   children,
 }: BottomSheetProps) {
+  React.useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+
   return (
     <div
       style={{

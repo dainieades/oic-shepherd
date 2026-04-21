@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 export default function PageTransition({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   return (
-    <div key={pathname} className="tab-fade">
+    <div key={pathname} className="tab-fade" style={{ position: 'relative', zIndex: 50 }}>
       {children}
     </div>
   );
