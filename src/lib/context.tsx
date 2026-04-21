@@ -6,6 +6,7 @@ import {
   useContext,
   useState,
   useEffect,
+  useMemo,
   type ReactNode,
   useCallback,
   type Dispatch,
@@ -58,10 +59,11 @@ import { initialData } from './data';
 import { generateId } from './utils';
 import { createClient } from '@/utils/supabase/client';
 import { useToast } from '@/components/Toast';
-import { DEFAULT_FOLLOW_UP_DAYS } from '@/lib/constants';
+import { DEFAULT_FOLLOW_UP_DAYS, SAVE_ERROR_MSG } from '@/lib/constants';
 
 interface AppContextType {
   data: AppData;
+  personaByPersonId: ReadonlyMap<string, Persona>;
   currentPersona: Persona;
   accessDenied: boolean;
   switchPersona: (id: string) => void;
@@ -201,6 +203,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('shepherd-app-theme', pref);
   }, []);
 
+  const personaByPersonId = useMemo(
+    () => new Map(data.personas.filter((p) => p.personId).map((p) => [p.personId as string, p])),
+    [data.personas]
+  );
+
+  const personaById = useMemo(
+    () => new Map(data.personas.map((p) => [p.id, p])),
+    [data.personas]
+  );
+
   // ── Persistent page filter state ─────────────────────────────────────
   const [homeFilters, setHomeFilters] = useState<HomeFilters>(HOME_DEFAULT_FILTERS);
   const [homeSortKey, setHomeSortKey] = useState<HomeSortKey>('last-contacted');
@@ -328,13 +340,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // ── Persona switching ─────────────────────────────────────────────────
   const switchPersona = useCallback(
     (id: string) => {
-      const persona = data.personas.find((p) => p.id === id);
+      const persona = personaById.get(id);
       if (persona) {
         setCurrentPersona(persona);
         localStorage.setItem('shepherd-app-persona', id);
       }
     },
-    [data.personas]
+    [personaById]
   );
 
   // Reset all page filters when the active persona changes
@@ -542,7 +554,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }
       } catch {
         if (snapshot) setData(snapshot);
-        showToast('Failed to save log. Try again.', 'error');
+        showToast(SAVE_ERROR_MSG, 'error');
       }
     },
     [currentPersona.id]
@@ -572,7 +584,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         await supabase.from('notes').update(dbUpdates).eq('id', noteId);
       } catch {
         if (snapshot) setData(snapshot);
-        showToast('Failed to save changes. Try again.', 'error');
+        showToast(SAVE_ERROR_MSG, 'error');
       }
     },
     []
@@ -617,7 +629,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         });
       } catch {
         if (snapshot) setData(snapshot);
-        showToast('Failed to save to-do. Try again.', 'error');
+        showToast(SAVE_ERROR_MSG, 'error');
       }
     },
     [currentPersona.id]
@@ -644,7 +656,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         await supabase.from('todos').update(dbUpdates).eq('id', todoId);
       } catch {
         if (snapshot) setData(snapshot);
-        showToast('Failed to save changes. Try again.', 'error');
+        showToast(SAVE_ERROR_MSG, 'error');
       }
     },
     []
@@ -745,7 +757,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         });
       } catch {
         if (snapshot) setData(snapshot);
-        showToast('Failed to add person. Try again.', 'error');
+        showToast(SAVE_ERROR_MSG, 'error');
         throw new Error('Failed to add person');
       }
       return person.id;
@@ -824,7 +836,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         await supabase.from('people').update(dbUpdates).eq('id', personId);
       } catch {
         if (snapshot) setData(snapshot);
-        showToast('Failed to save changes. Try again.', 'error');
+        showToast(SAVE_ERROR_MSG, 'error');
       }
     },
     []
@@ -879,7 +891,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
     } catch {
       if (snapshot) setData(snapshot);
-      showToast('Failed to assign shepherds. Try again.', 'error');
+      showToast(SAVE_ERROR_MSG, 'error');
     }
   }, []);
 
@@ -903,13 +915,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
         await supabase
           .from('family_members')
           .insert(memberIds.map((pid) => ({ family_id: familyId, person_id: pid })));
-        for (const pid of memberIds) {
-          await supabase.from('people').update({ family_id: familyId }).eq('id', pid);
-        }
+        await Promise.all(memberIds.map((pid) => supabase.from('people').update({ family_id: familyId }).eq('id', pid)));
       }
     } catch {
       if (snapshot) setData(snapshot);
-      showToast('Failed to add family. Try again.', 'error');
+      showToast(SAVE_ERROR_MSG, 'error');
     }
   }, []);
 
@@ -934,7 +944,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         await supabase.from('families').update(dbUpdates).eq('id', familyId);
       } catch {
         if (snapshot) setData(snapshot);
-        showToast('Failed to save changes. Try again.', 'error');
+        showToast(SAVE_ERROR_MSG, 'error');
       }
     },
     []
@@ -970,12 +980,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
           .from('family_members')
           .insert(newMemberIds.map((pid) => ({ family_id: familyId, person_id: pid })));
       }
-      for (const pid of newMemberIds) {
-        await supabase.from('people').update({ family_id: familyId }).eq('id', pid);
-      }
+      await Promise.all(newMemberIds.map((pid) => supabase.from('people').update({ family_id: familyId }).eq('id', pid)));
     } catch {
       if (snapshot) setData(snapshot);
-      showToast('Failed to save changes. Try again.', 'error');
+      showToast(SAVE_ERROR_MSG, 'error');
     }
   }, []);
 
@@ -996,7 +1004,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       await supabase.from('groups').insert({ id: group.id, name, description: description ?? null });
     } catch {
       if (snapshot) setData(snapshot);
-      showToast('Failed to add group. Try again.', 'error');
+      showToast(SAVE_ERROR_MSG, 'error');
     }
   }, []);
 
@@ -1019,8 +1027,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
         if (updates.shepherdIds !== undefined && group) {
           // Map shepherd person IDs → persona IDs (with person ID fallback, matching sheep-lookup logic)
+          const pByPersonId = new Map(prev.personas.filter((p) => p.personId).map((p) => [p.personId as string, p]));
           newShepherdPersonaIds = updates.shepherdIds.flatMap((personId) => {
-            const persona = prev.personas.find((p) => p.personId === personId);
+            const persona = pByPersonId.get(personId);
             return [persona ? persona.id : personId];
           });
 
@@ -1066,7 +1075,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }
       } catch {
         if (snapshot) setData(snapshot);
-        showToast('Failed to save changes. Try again.', 'error');
+        showToast(SAVE_ERROR_MSG, 'error');
       }
     },
     []
@@ -1090,12 +1099,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const supabase = createClient();
     try {
       await supabase.from('group_members').delete().eq('group_id', groupId);
-      for (const pid of memberIds) {
-        await supabase.from('group_members').insert({ group_id: groupId, person_id: pid });
+      if (memberIds.length > 0) {
+        await supabase.from('group_members').insert(memberIds.map((pid) => ({ group_id: groupId, person_id: pid })));
       }
     } catch {
       if (snapshot) setData(snapshot);
-      showToast('Failed to save changes. Try again.', 'error');
+      showToast(SAVE_ERROR_MSG, 'error');
     }
   }, []);
 
@@ -1123,7 +1132,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
     } catch {
       if (snapshot) setData(snapshot);
-      showToast('Failed to save changes. Try again.', 'error');
+      showToast(SAVE_ERROR_MSG, 'error');
     }
   }, []);
 
@@ -1166,7 +1175,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
     } catch {
       if (snapshot) setData(snapshot);
-      showToast('Failed to save changes. Try again.', 'error');
+      showToast(SAVE_ERROR_MSG, 'error');
     }
   }, []);
 
@@ -1200,7 +1209,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
     } catch {
       if (snapshot) setData(snapshot);
-      showToast('Failed to assign shepherds. Try again.', 'error');
+      showToast(SAVE_ERROR_MSG, 'error');
     }
   }, []);
 
@@ -1232,7 +1241,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         .eq('id', personId);
     } catch {
       if (snapshot) setData(snapshot);
-      showToast('Failed to save changes. Try again.', 'error');
+      showToast(SAVE_ERROR_MSG, 'error');
     }
   }, []);
 
@@ -1262,7 +1271,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         });
       } catch {
         if (snapshot) setData(snapshot);
-        showToast('Failed to save notice. Try again.', 'error');
+        showToast(SAVE_ERROR_MSG, 'error');
       }
     },
     [currentPersona.id]
@@ -1292,7 +1301,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         await supabase.from('notices').update(dbUpdates).eq('id', noticeId);
       } catch {
         if (snapshot) setData(snapshot);
-        showToast('Failed to save changes. Try again.', 'error');
+        showToast(SAVE_ERROR_MSG, 'error');
       }
     },
     []
@@ -1338,6 +1347,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     <AppContext.Provider
       value={{
         data,
+        personaByPersonId,
         currentPersona,
         accessDenied,
         switchPersona,

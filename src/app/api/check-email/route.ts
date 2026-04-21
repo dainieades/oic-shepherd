@@ -1,14 +1,16 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { z } from 'zod';
+
+const BodySchema = z.object({ email: z.string().email() });
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json().catch(() => null);
-    const email = typeof body?.email === 'string' ? body.email.trim().toLowerCase() : null;
-
-    if (!email) {
+    const parseResult = BodySchema.safeParse(await req.json().catch(() => null));
+    if (!parseResult.success) {
       return NextResponse.json({ error: 'Invalid email' }, { status: 400 });
     }
+    const email = parseResult.data.email.trim().toLowerCase();
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;

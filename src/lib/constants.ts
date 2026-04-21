@@ -21,6 +21,8 @@ export const MEMBER_AVATAR_PALETTE: Array<{ bg: string; color: string }> = [
   { bg: 'var(--avatar-m6-bg)', color: 'var(--avatar-m6-text)' },
 ];
 
+export const SAVE_ERROR_MSG = 'Failed to save changes. Try again.';
+
 export const SHEPHERD_AVATAR_PALETTE: Array<{ bg: string; color: string }> = [
   { bg: 'var(--avatar-s1-bg)', color: 'var(--avatar-s1-text)' },
   { bg: 'var(--avatar-s2-bg)', color: 'var(--avatar-s2-text)' },

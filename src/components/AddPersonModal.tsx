@@ -186,8 +186,10 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
       spiritualNeeds: spiritualNeeds.trim() || undefined,
       physicalNeeds: physicalNeeds.trim() || undefined,
     });
-    if (groupIds.length > 0) await assignGroupsToPerson(newId, groupIds);
-    if (shepherdIds.length > 0) await assignShepherds(newId, shepherdIds);
+    await Promise.all([
+      ...(groupIds.length > 0 ? [assignGroupsToPerson(newId, groupIds)] : []),
+      ...(shepherdIds.length > 0 ? [assignShepherds(newId, shepherdIds)] : []),
+    ]);
     if (isShepherd && sheepIds.length > 0) {
       for (const sheepId of sheepIds) {
         const sheep = data.people.find((p) => p.id === sheepId);

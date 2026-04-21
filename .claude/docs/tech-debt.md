@@ -1,6 +1,6 @@
 # Tech Debt Audit — OIC Shepherd
 
-_Last audited: 2026-04-19_
+_Last audited: 2026-04-21_
 
 ### Scoring: Priority = (Impact + Risk) × (6 − Effort)
 
@@ -105,6 +105,82 @@ _Last audited: 2026-04-19_
 - [x] Write entity/schema documentation ✅ 2026-04-20
 - [x] Extract mapper functions from `context.tsx` into `src/lib/mappers.ts` ✅ 2026-04-21
 
+**Sprint 4 — Cleanup (completed 2026-04-21)**
+- [x] Remove unused `startTransition` from `page.tsx` ✅ 2026-04-21
+- [x] Standardise error toast copy via `SAVE_ERROR_MSG` constant ✅ 2026-04-21
+- [x] Add Zod validation to `check-email` API route ✅ 2026-04-21
+- [x] Expose `personaByPersonId` / `personaById` maps from context; fix O(n) scan in `updateGroup` ✅ 2026-04-21
+- [x] Extract 4 picker sheets from `PersonFormBody` into `PersonPickerSheets.tsx` ✅ 2026-04-21
+- [x] Extract todo filter logic from `todos/page.tsx` into `todo-utils.ts` ✅ 2026-04-21
+
 **Backlog (plan before next major feature)**
 - [ ] Split AppContext mutations into domain-scoped modules if the file grows beyond 1,500 lines again
 - [ ] Add server-side pagination if dataset grows beyond ~1K people
+
+---
+
+## ~~P9 — Missing Snapshot Rollback in `updateFamilyMembers` + `updateGroupMembers`~~ ✅ Done 2026-04-21
+**Score: (5+4)×(6-2) = 36**
+
+~~`updateFamilyMembers` (`context.tsx` ~line 943) and `updateGroupMembers` (~line 1075) apply optimistic state updates inside `setData()` but never capture a snapshot beforehand. If the DB write fails, the try/catch cannot call `setData(snapshot)` — the UI is permanently out of sync.~~
+
+~~The P1 fix wrapped all mutations in try/catch, but these two mutations set state before the `snapshot` variable is assigned.~~
+
+**What was done:** Both mutations already had `snapshot = prev` as the first line inside `setData`, matching the exact pattern used in `updatePerson`, `addNote`, and all other mutations. The rollback path (`if (snapshot) setData(snapshot)`) was also correctly in place in both catch blocks. The fix was applied as part of the P1 work but the item was not marked done.
+
+---
+
+## ~~P10 — Sequential DB Writes Should Be Parallelised~~ ✅ Done 2026-04-21
+**Score: (3+2)×(6-2) = 20**
+
+~~Two places issue multiple Supabase writes in series that are fully independent:~~
+
+1. ~~**`addFamily` / `updateFamilyMembers`** (`context.tsx`): Loop over `memberIds` issuing one `UPDATE people SET family_id` per member. O(n) sequential round trips.~~
+2. ~~**`addPerson` post-creation block** (`AddPersonModal.tsx` ~line 189): `assignGroupsToPerson` then `assignShepherds` called in sequence even though neither depends on the other's result.~~
+
+**What was done:** Replaced the sequential `for` loops in `addFamily` and `updateFamilyMembers` with `Promise.all(memberIds.map(...))`. Replaced the sequential `assignGroupsToPerson` / `assignShepherds` calls in `AddPersonModal.tsx` with a single `Promise.all([...])`. Also replaced the `updateGroupMembers` per-row `group_members` insert loop with a single batched `.insert()` call.
+
+---
+
+## ~~P11 — Large Component Files Need Extraction~~ ✅ Done 2026-04-21
+**Score: (2+2)×(6-3) = 12**
+
+~~Three client-side components are large enough that unrelated concerns are entangled.~~
+
+**What was done:** Extracted the 4 self-contained picker sheet components (`GroupPickerSheet`, `SheepPickerSheet`, `ShepherdPickerSheet`, `PositionPickerSheet`) from `PersonFormBody.tsx` into `src/components/PersonPickerSheets.tsx`. `PersonFormBody.tsx` reduced from ~2,188 to ~1,237 lines. Extracted `todoMatchesSearch`, `todoMatchesShepherdFilter`, and `filterTodos` from `todos/page.tsx` into `src/lib/todo-utils.ts`; the page now calls `filterTodos(...)` in one line instead of ~50 lines inline. `AddPersonModal.tsx` was left as-is — its state is too interconnected for safe section extraction at this time.
+
+---
+
+## ~~P12 — Persona Lookup Is O(n) on Every Mutation~~ ✅ Done 2026-04-21
+**Score: (2+2)×(6-2) = 16**
+
+~~Several mutations (notably `updateGroup`) call `prev.personas.find(p => p.personId === personId)` inside a `setData` callback, scanning the full personas array each time.~~
+
+**What was done:** Added `personaByPersonId: ReadonlyMap<string, Persona>` and `personaById: Map<string, Persona>` to `AppContextType`, computed with `useMemo` from `data.personas`. `switchPersona` now uses `personaById.get(id)`. The `updateGroup` `setData` callback builds a local `Map` from `prev.personas` for O(1) lookup instead of `.find()`.
+
+---
+
+## ~~P13 — Unused `startTransition` Destructure in `page.tsx`~~ ✅ Done 2026-04-21
+**Score: (1+1)×(6-1) = 10**
+
+~~`src/app/page.tsx` had `const [, startTransition] = React.useTransition();` where `startTransition` was never called.~~
+
+**What was done:** Removed the entire `useTransition` call — `isSearchPending` was already derived from `search !== deferredSearch` on the line above, so the hook was fully redundant.
+
+---
+
+## ~~P14 — Inconsistent Error Toast Copy~~ ✅ Done 2026-04-21
+**Score: (1+1)×(6-1) = 10**
+
+~~Mutation error messages were inconsistent across save/add/update operations.~~
+
+**What was done:** Added `SAVE_ERROR_MSG = 'Failed to save changes. Try again.'` to `src/lib/constants.ts`. All 14 save/add/update error toasts in `context.tsx` now use the constant. Delete-specific messages ("Failed to delete X. Try again.") were left unchanged as they are informative and already consistent with each other.
+
+---
+
+## ~~P15 — API Route Lacks Zod Validation~~ ✅ Done 2026-04-21
+**Score: (2+2)×(6-1) = 20**
+
+~~`src/app/api/check-email/route.ts` parsed the request body with a manual `typeof` check instead of Zod.~~
+
+**What was done:** Added `z.object({ email: z.string().email() }).safeParse(...)` to `check-email/route.ts`. Uses `safeParse` (not `parse`) to avoid throwing — returns a `400` with `{ error: 'Invalid email' }` on failure, matching the existing error shape. The module-level schema (`BodySchema`) is defined once outside the handler.

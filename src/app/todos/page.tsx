@@ -4,6 +4,7 @@ import { format, getDaysInMonth, getDay, parseISO } from 'date-fns';
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useApp } from '@/lib/context';
 import { categorizeTodos } from '@/lib/utils';
+import { filterTodos } from '@/lib/todo-utils';
 import { type Todo } from '@/lib/types';
 import AddTodoModal from '@/components/AddTodoModal';
 import AddLogModal from '@/components/AddLogModal';
@@ -94,57 +95,12 @@ export default function TodosPage() {
     setDraftFilter([]);
   };
 
-  const shepherdPeopleIds = (shepherdId: string): string[] => {
-    const persona = data.personas.find((p) => p.id === shepherdId);
-    return persona?.assignedPeopleIds ?? [];
-  };
-
-  const todoMatchesShepherdFilter = (t: Todo): boolean => {
-    if (shepherdFilter.length === 0) return true;
-    return shepherdFilter.some((sid) => {
-      const ids = sid === 'mine' ? currentPersona.assignedPeopleIds : shepherdPeopleIds(sid);
-      if (t.personId) return ids.includes(t.personId);
-      if (t.familyId) {
-        const family = data.families.find((f) => f.id === t.familyId);
-        return family ? family.memberIds.some((mid) => ids.includes(mid)) : false;
-      }
-      return t.createdBy === currentPersona.id;
-    });
-  };
-
-  const todoMatchesSearch = (t: Todo): boolean => {
-    if (!search) return true;
-    const q = search.toLowerCase();
-    if (t.title.toLowerCase().includes(q)) return true;
-    if (t.personId) {
-      const p = data.people.find((p) => p.id === t.personId);
-      if (p?.englishName.toLowerCase().includes(q) || p?.chineseName?.toLowerCase().includes(q))
-        return true;
-    }
-    if (t.familyId) {
-      const f = data.families.find((f) => f.id === t.familyId);
-      if (f?.label.toLowerCase().includes(q)) return true;
-    }
-    return false;
-  };
-
-  const myTodos = data.todos.filter((t) => {
-    if (isAdmin) return todoMatchesShepherdFilter(t) && todoMatchesSearch(t);
-    // Shepherds: only their scope
-    const inScope = (() => {
-      if (t.createdBy === currentPersona.id) return true;
-      if (t.personId && currentPersona.assignedPeopleIds.includes(t.personId)) return true;
-      if (t.familyId) {
-        const family = data.families.find((f) => f.id === t.familyId);
-        if (
-          family &&
-          family.memberIds.some((mid) => currentPersona.assignedPeopleIds.includes(mid))
-        )
-          return true;
-      }
-      return false;
-    })();
-    return inScope && todoMatchesSearch(t);
+  const myTodos = filterTodos(data.todos, {
+    isAdmin,
+    currentPersona,
+    shepherdFilter,
+    search,
+    data,
   });
 
   const categorized = categorizeTodos(myTodos);

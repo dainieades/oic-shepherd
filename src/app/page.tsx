@@ -47,8 +47,7 @@ export default function PeoplePage() {
   const [search, setSearch] = React.useState('');
   const deferredSearch = React.useDeferredValue(search);
   const isSearchPending = search !== deferredSearch;
-  const [, startTransition] = React.useTransition();
-  const [showSearch, setShowSearch] = React.useState(false);
+const [showSearch, setShowSearch] = React.useState(false);
   const [showFilter, setShowFilter] = React.useState(false);
   const searchInputRef = React.useRef<HTMLInputElement>(null);
   const [showAddChoice, setShowAddChoice] = React.useState(false);
