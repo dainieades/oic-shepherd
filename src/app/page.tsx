@@ -34,6 +34,7 @@ const AddFamilyModal = React.lazy(() => import('@/components/AddFamilyModal'));
 const InviteSheet = React.lazy(() => import('@/components/InviteSheet'));
 const FilterPanel = React.lazy(() => import('@/components/FilterPanel'));
 const SortControls = React.lazy(() => import('@/components/SortControls'));
+const SearchBar = React.lazy(() => import('@/components/SearchBar'));
 
 export default function PeoplePage() {
   const {
@@ -526,41 +527,14 @@ export default function PeoplePage() {
       </div>
 
       {/* ── Search (expandable) ─────────────── */}
-      {(showSearch || search) && (
-        <div style={{ position: 'relative', marginBottom: 10, marginTop: 8 }}>
-          <MagnifyingGlass
-            size={14}
-            color="var(--text-muted)"
-            style={{
-              position: 'absolute',
-              left: 10,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              pointerEvents: 'none',
-            }}
-          />
-          <input
-            ref={searchInputRef}
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by name…"
-            style={{
-              width: '100%',
-              paddingLeft: 32,
-              paddingRight: 12,
-              paddingTop: 8,
-              paddingBottom: 8,
-              background: 'var(--surface)',
-              border: '1px solid var(--border)',
-              borderRadius: 10,
-              fontSize: 14,
-              color: 'var(--text-primary)',
-              outline: 'none',
-            }}
-          />
-        </div>
-      )}
+      <React.Suspense fallback={null}>
+        <SearchBar
+          search={search}
+          setSearch={setSearch}
+          show={showSearch}
+          inputRef={searchInputRef}
+        />
+      </React.Suspense>
 
       {/* ── Active filter chips ────────────── */}
       {chips.length > 0 && (

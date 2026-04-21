@@ -51,12 +51,12 @@ _Last audited: 2026-04-19_
 
 ---
 
-## ~~P6 — Main Dashboard is 2,067 Lines~~ ✅ Done 2026-04-20 (partial)
+## ~~P6 — Main Dashboard is 2,067 Lines~~ ✅ Done 2026-04-21
 **Score: (2+2)×(6-4) = 8**
 
 ~~`src/app/page.tsx` contains filter UI, sort logic, search memoization, action buttons, and list rendering all inline. The filtering and sort logic (~200 LOC) can't be tested or reused without carrying the entire page.~~
 
-**What was done:** Extracted `<FilterPanel>` (full filter bottom sheet, ~580 LOC) into `src/components/FilterPanel.tsx` and `<SortControls>` (sort button + dropdown) into `src/components/SortControls.tsx`. Added `SORT_OPTIONS` to `src/lib/constants.ts`. `CheckRow` and `RadioRow` moved into `FilterPanel.tsx`. `page.tsx` reduced from ~2,067 to ~1,260 lines. The remaining `<FilterPanel>` and `<SortControls>` sub-task is complete; `<SearchBar>` extraction remains as a future item.
+**What was done:** Extracted `<FilterPanel>` (full filter bottom sheet, ~580 LOC) into `src/components/FilterPanel.tsx`, `<SortControls>` (sort button + dropdown) into `src/components/SortControls.tsx`, and `<SearchBar>` (expandable search input) into `src/components/SearchBar.tsx`. Added `SORT_OPTIONS` to `src/lib/constants.ts`. `CheckRow` and `RadioRow` moved into `FilterPanel.tsx`. `page.tsx` reduced from ~2,067 to ~1,255 lines.
 
 ---
 
@@ -69,12 +69,12 @@ _Last audited: 2026-04-19_
 
 ---
 
-## P5 — AppContext Monolith
+## ~~P5 — AppContext Monolith~~ ✅ Done 2026-04-21 (partial)
 **Score: (3+3)×(6-4) = 12**
 
-`src/lib/context.tsx` is 1,351 lines handling: auth sync, Supabase data loading (11 tables), 45+ mutations, persona switching, filter state, and all 6 mapper functions. There is no separation between "what state looks like" and "how it gets persisted."
+~~`src/lib/context.tsx` is 1,570 lines handling: auth sync, Supabase data loading (11 tables), 45+ mutations, persona switching, filter state, and all 7 mapper functions. There is no separation between "what state looks like" and "how it gets persisted."~~
 
-**Remediation:** Split into a Supabase adapter module, a state reducer, and auth handlers. Keep as one file until it actively blocks feature work — this is a high-effort refactor that shouldn't be rushed. Effort: High.
+**What was done:** Extracted all 7 mapper functions (`mapPerson`, `mapFamily`, `mapPersona`, `mapNote`, `mapNotice`, `mapTodo`, `syncGoogleAvatar`) into `src/lib/mappers.ts`. `context.tsx` reduced from ~1,570 to ~1,405 lines. The mutations remain in context.tsx — a full reducer/adapter split is a higher-effort follow-on if the file continues to grow.
 
 ---
 
@@ -101,9 +101,10 @@ _Last audited: 2026-04-19_
 - [x] Introduce Zod schemas for Supabase row mappers ✅ 2026-04-20
 
 **Sprint 3 — Maintainability**
-- [x] Extract `<FilterPanel>`, `<SortControls>` from `page.tsx` ✅ 2026-04-20
+- [x] Extract `<FilterPanel>`, `<SortControls>`, `<SearchBar>` from `page.tsx` ✅ 2026-04-21
 - [x] Write entity/schema documentation ✅ 2026-04-20
+- [x] Extract mapper functions from `context.tsx` into `src/lib/mappers.ts` ✅ 2026-04-21
 
 **Backlog (plan before next major feature)**
-- [ ] Split AppContext into adapter + reducer when the file actively blocks work
+- [ ] Split AppContext mutations into domain-scoped modules if the file grows beyond 1,500 lines again
 - [ ] Add server-side pagination if dataset grows beyond ~1K people
