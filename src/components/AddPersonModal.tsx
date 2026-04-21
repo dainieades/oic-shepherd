@@ -96,6 +96,8 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
   const [baptismDate, setBaptismDate] = useState('');
   const [isShepherd, setIsShepherd] = useState(false);
   const [isBeingDiscipled, setIsBeingDiscipled] = useState(false);
+  const [sheepIds, setSheepIds] = useState<string[]>([]);
+  const [showSheepPicker, setShowSheepPicker] = useState(false);
   const [churchPositions, setChurchPositions] = useState<string[]>([]);
 
   // Contact
@@ -137,6 +139,7 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
   const [showPositionPicker, setShowPositionPicker] = useState(false);
   const [showGroupPicker, setShowGroupPicker] = useState(false);
   const [showShepherdPicker, setShowShepherdPicker] = useState(false);
+  const [showSheepPickerSheet, setShowSheepPickerSheet] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
   const fullName = [firstName.trim(), lastName.trim()].filter(Boolean).join(' ');
@@ -185,6 +188,12 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
     });
     if (groupIds.length > 0) await assignGroupsToPerson(newId, groupIds);
     if (shepherdIds.length > 0) await assignShepherds(newId, shepherdIds);
+    if (isShepherd && sheepIds.length > 0) {
+      for (const sheepId of sheepIds) {
+        const sheep = data.people.find((p) => p.id === sheepId);
+        if (sheep) await assignShepherds(sheepId, [...sheep.assignedShepherdIds, newId]);
+      }
+    }
     showToast('Person added');
     setSubmitted(true);
     setTimeout(() => onClose(), 1600);
@@ -494,6 +503,61 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
                       />
                     </div>
                   </button>
+                  {isShepherd && (
+                    <button
+                      className="field-row-hover"
+                      onClick={() => setShowSheepPickerSheet(true)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 10,
+                        paddingTop: 12,
+                        paddingBottom: 12,
+                        border: 'none',
+                        borderBottom: '1px solid var(--border-light)',
+                        background: 'none',
+                        cursor: 'pointer',
+                        textAlign: 'left' as const,
+                      }}
+                    >
+                      <span style={spacerStyle} />
+                      <HandHeart size={16} color="var(--text-muted)" />
+                      <span style={labelStyle}>Sheep</span>
+                      <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                        {sheepIds.length > 0 ? (
+                          <>
+                            {data.people
+                              .filter((p) => sheepIds.includes(p.id))
+                              .slice(0, 5)
+                              .map((p) => (
+                                <span
+                                  key={p.id}
+                                  style={{
+                                    fontSize: 11,
+                                    fontWeight: 500,
+                                    padding: '2px 8px',
+                                    borderRadius: 999,
+                                    background: 'var(--sage-light)',
+                                    color: 'var(--sage)',
+                                    flexShrink: 0,
+                                  }}
+                                >
+                                  {p.englishName}
+                                </span>
+                              ))}
+                            {sheepIds.length > 5 && (
+                              <span style={{ fontSize: 13, color: 'var(--text-muted)', alignSelf: 'center' }}>
+                                +{sheepIds.length - 5} more
+                              </span>
+                            )}
+                          </>
+                        ) : (
+                          <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>None</span>
+                        )}
+                      </div>
+                      <CaretRight size={14} color="var(--text-muted)" />
+                    </button>
+                  )}
                   <button
                     className="field-row-hover"
                     onClick={() => setIsBeingDiscipled((v) => !v)}
@@ -557,28 +621,9 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
                     <span style={spacerStyle} />
                     <Buildings size={16} color="var(--text-muted)" />
                     <span style={labelStyle}>Position</span>
-                    <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                      {churchPositions.length > 0 ? (
-                        churchPositions.map((p) => (
-                          <span
-                            key={p}
-                            style={{
-                              fontSize: 11,
-                              fontWeight: 500,
-                              padding: '2px 8px',
-                              borderRadius: 999,
-                              background: 'var(--sage-light)',
-                              color: 'var(--sage)',
-                              flexShrink: 0,
-                            }}
-                          >
-                            {p}
-                          </span>
-                        ))
-                      ) : (
-                        <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>None</span>
-                      )}
-                    </div>
+                    <span style={{ flex: 1, fontSize: 14, color: churchPositions.length > 0 ? 'var(--text-primary)' : 'var(--text-muted)', textAlign: 'right' }}>
+                      {churchPositions.length > 0 ? churchPositions.join(', ') : 'None'}
+                    </span>
                     <CaretRight size={14} color="var(--text-muted)" />
                   </button>
                   <DateRow
@@ -780,6 +825,17 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
             setShowShepherdPicker(false);
           }}
           onBack={() => setShowShepherdPicker(false)}
+        />
+      )}
+      {showSheepPickerSheet && (
+        <SheepPickerSheet
+          people={data.people}
+          currentIds={sheepIds}
+          onConfirm={(ids) => {
+            setSheepIds(ids);
+            setShowSheepPickerSheet(false);
+          }}
+          onBack={() => setShowSheepPickerSheet(false)}
         />
       )}
     </>
@@ -1408,6 +1464,264 @@ function ShepherdPickerSheet({
               No shepherds found.
             </p>
           )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SheepPickerSheet({
+  people,
+  currentIds,
+  onConfirm,
+  onBack,
+}: {
+  people: { id: string; englishName: string; chineseName?: string }[];
+  currentIds: string[];
+  onConfirm: (ids: string[]) => void;
+  onBack: () => void;
+}) {
+  const [search, setSearch] = useState('');
+  const [selectedIds, setSelectedIds] = useState<string[]>(currentIds);
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    searchRef.current?.focus();
+  }, []);
+
+  const q = search.toLowerCase();
+  const sorted = [
+    ...people.filter((p) => selectedIds.includes(p.id)),
+    ...people.filter((p) => !selectedIds.includes(p.id)),
+  ].filter(
+    (p) =>
+      !q ||
+      p.englishName.toLowerCase().includes(q) ||
+      (p.chineseName && p.chineseName.toLowerCase().includes(q))
+  );
+  const toggle = (id: string) =>
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 70,
+        background: BACKDROP_COLOR,
+        display: 'flex',
+        alignItems: 'flex-end',
+        justifyContent: 'center',
+      }}
+    >
+      <div
+        className="animate-slide-up"
+        style={{
+          background: 'var(--surface)',
+          borderRadius: SHEET_BORDER_RADIUS,
+          width: '100%',
+          maxWidth: SHEET_MAX_WIDTH,
+          height: 'calc(100dvh - 48px)',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+        }}
+      >
+        <div
+          style={{
+            width: 36,
+            height: 4,
+            background: 'var(--border)',
+            borderRadius: 2,
+            margin: '14px auto 0',
+            flexShrink: 0,
+          }}
+        />
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '14px 20px 12px',
+            flexShrink: 0,
+            borderBottom: '1px solid var(--border-light)',
+          }}
+        >
+          <button
+            onClick={onBack}
+            style={{
+              fontSize: 14,
+              color: 'var(--text-secondary)',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 0,
+            }}
+          >
+            Back
+          </button>
+          <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
+            Sheep
+          </span>
+          <button
+            onClick={() => onConfirm(selectedIds)}
+            style={{
+              fontSize: 14,
+              fontWeight: 600,
+              color: 'var(--sage)',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 0,
+            }}
+          >
+            {selectedIds.length > 0 ? `Done (${selectedIds.length})` : 'Done'}
+          </button>
+        </div>
+        <div
+          style={{
+            padding: '12px 20px',
+            flexShrink: 0,
+            borderBottom: '1px solid var(--border-light)',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              background: 'var(--bg)',
+              border: '1px solid var(--border)',
+              borderRadius: 10,
+              padding: '9px 12px',
+            }}
+          >
+            <MagnifyingGlass size={14} color="var(--text-muted)" />
+            <input
+              ref={searchRef}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search people…"
+              style={{
+                flex: 1,
+                fontSize: 14,
+                color: 'var(--text-primary)',
+                background: 'none',
+                border: 'none',
+                outline: 'none',
+              }}
+            />
+            {search && (
+              <button
+                onClick={() => setSearch('')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'var(--text-muted)',
+                  fontSize: 18,
+                  lineHeight: 1,
+                  padding: 0,
+                }}
+              >
+                ×
+              </button>
+            )}
+          </div>
+        </div>
+        <div style={{ flex: 1, overflowY: 'auto' }}>
+          {sorted.length === 0 && (
+            <p
+              style={{
+                fontSize: 13,
+                color: 'var(--text-muted)',
+                fontStyle: 'italic',
+                paddingTop: 24,
+                textAlign: 'center',
+              }}
+            >
+              No matching people.
+            </p>
+          )}
+          {sorted.map((p, i) => {
+            const isSel = selectedIds.includes(p.id);
+            const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
+            const initials = p.englishName
+              .split(' ')
+              .map((n) => n[0])
+              .join('')
+              .toUpperCase()
+              .slice(0, 2);
+            return (
+              <button
+                key={p.id}
+                onClick={() => toggle(p.id)}
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
+                  padding: '12px 20px',
+                  background: isSel ? 'var(--sage-light)' : 'none',
+                  border: 'none',
+                  borderBottom: '1px solid var(--border-light)',
+                  cursor: 'pointer',
+                  textAlign: 'left' as const,
+                }}
+              >
+                <div
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: '50%',
+                    flexShrink: 0,
+                    background: isSel ? 'var(--sage)' : palette.bg,
+                    color: isSel ? '#fff' : palette.color,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 12,
+                    fontWeight: 700,
+                  }}
+                >
+                  {initials}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p
+                    style={{
+                      fontSize: 14,
+                      fontWeight: isSel ? 600 : 400,
+                      color: isSel ? 'var(--sage)' : 'var(--text-primary)',
+                      margin: 0,
+                    }}
+                  >
+                    {p.englishName}
+                  </p>
+                  {p.chineseName && (
+                    <p style={{ fontSize: 11, color: 'var(--text-muted)', margin: 0 }}>
+                      {p.chineseName}
+                    </p>
+                  )}
+                </div>
+                <div
+                  style={{
+                    width: 20,
+                    height: 20,
+                    borderRadius: 5,
+                    flexShrink: 0,
+                    border: isSel ? 'none' : '1.5px solid var(--border)',
+                    background: isSel ? 'var(--sage)' : 'transparent',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'background 0.15s',
+                  }}
+                >
+                  {isSel && <Check size={11} color="#fff" weight="bold" />}
+                </div>
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>

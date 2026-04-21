@@ -534,17 +534,9 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
               <span style={spacerStyle} />
               <Buildings size={16} color="var(--text-muted)" />
               <span style={labelStyle}>Position</span>
-              <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                {churchPositions.length > 0 ? (
-                  churchPositions.map((p) => (
-                    <span key={p} style={sageChipStyle}>
-                      {p}
-                    </span>
-                  ))
-                ) : (
-                  <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>None</span>
-                )}
-              </div>
+              <span style={{ flex: 1, fontSize: 14, color: churchPositions.length > 0 ? 'var(--text-primary)' : 'var(--text-muted)', textAlign: 'right' }}>
+                {churchPositions.length > 0 ? churchPositions.join(', ') : 'None'}
+              </span>
               <CaretRight size={14} color="var(--text-muted)" />
             </button>
             <FloatingDateRow

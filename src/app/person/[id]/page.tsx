@@ -1267,33 +1267,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
               <InfoRow
                 icon={<Buildings size={15} />}
                 label="Position"
-                value={
-                  <div
-                    style={{
-                      display: 'flex',
-                      gap: 5,
-                      flexWrap: 'wrap',
-                      justifyContent: 'flex-end',
-                    }}
-                  >
-                    {person.churchPositions.map((pos) => (
-                      <span
-                        key={pos}
-                        style={{
-                          fontSize: 11,
-                          padding: '3px 9px',
-                          borderRadius: '999px',
-                          background: 'var(--surface)',
-                          border: '1px solid var(--border)',
-                          color: 'var(--text-secondary)',
-                          fontWeight: 500,
-                        }}
-                      >
-                        {pos}
-                      </span>
-                    ))}
-                  </div>
-                }
+                value={person.churchPositions.join(', ')}
               />
             )}
             {groups.length > 0 && (
