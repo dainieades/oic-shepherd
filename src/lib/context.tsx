@@ -170,6 +170,8 @@ interface AppContextType {
   setLogsShepherdFilter: Dispatch<SetStateAction<string[]>>;
   themePreference: ThemePreference;
   setThemePreference: (pref: ThemePreference) => void;
+  fullPageModalOpen: boolean;
+  setFullPageModalOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -347,6 +349,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [currentPersona, setCurrentPersona] = useState<Persona>(initialData.personas[0]);
   const [loaded, setLoaded] = useState(false);
   const [accessDenied, setAccessDenied] = useState(false);
+
+  const [fullPageModalOpen, setFullPageModalOpen] = useState(false);
 
   // ── Theme preference ─────────────────────────────────────────────────
   const [themePreference, setThemePreferenceState] = useState<ThemePreference>('system');
@@ -1550,6 +1554,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setLogsShepherdFilter,
         themePreference,
         setThemePreference,
+        fullPageModalOpen,
+        setFullPageModalOpen,
       }}
     >
       {children}

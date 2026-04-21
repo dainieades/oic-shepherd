@@ -19,7 +19,19 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '@/lib/context';
 import { type Note } from '@/lib/types';
 import { getTimeAgo, getNoteTypeLabel, groupByMonth } from '@/lib/utils';
-import { MagnifyingGlass, Funnel, X, CaretDown, Plus } from '@phosphor-icons/react';
+import {
+  MagnifyingGlass,
+  Funnel,
+  X,
+  CaretDown,
+  Plus,
+  CheckCircle,
+  HandsPraying,
+  CalendarBlank,
+  NotePencil,
+  User,
+  House,
+} from '@phosphor-icons/react';
 import AddLogModal from '@/components/AddLogModal';
 import LogsFilterPanel, {
   type LogsFilters,
@@ -54,10 +66,16 @@ export default function LogsPage() {
     canViewNote,
     logsShepherdFilter,
     setLogsShepherdFilter,
+    setFullPageModalOpen,
   } = useApp();
   const [showAddLog, setShowAddLog] = useState(false);
   const [editingNote, setEditingNote] = useState<Note | null>(null);
   const [scrolled, setScrolled] = useState(false);
+
+  React.useEffect(() => {
+    setFullPageModalOpen(!!(showAddLog || editingNote));
+    return () => setFullPageModalOpen(false);
+  }, [showAddLog, editingNote, setFullPageModalOpen]);
   const isAdmin = currentPersona.role === 'admin';
 
   // Search
@@ -471,7 +489,10 @@ export default function LogsPage() {
           const creator = data.personas.find((p) => p.id === note.createdBy);
           const person = note.personId ? data.people.find((p) => p.id === note.personId) : null;
           const family = note.familyId ? data.families.find((f) => f.id === note.familyId) : null;
-          const targetChips = [family?.label, person?.englishName].filter(Boolean) as string[];
+          const targetChips: { label: string; isFamily: boolean }[] = [
+            ...(family ? [{ label: family.label, isFamily: true }] : []),
+            ...(person ? [{ label: person.englishName, isFamily: false }] : []),
+          ];
           return (
             <button
               key={note.id}
@@ -517,9 +538,16 @@ export default function LogsPage() {
                       background: 'var(--sage-light)',
                       color: 'var(--sage)',
                       flexShrink: 0,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 4,
                     }}
                   >
-                    {getNoteTypeLabel(note.type).toUpperCase()}
+                    {note.type === 'check-in' && <CheckCircle size={11} weight="bold" />}
+                    {note.type === 'prayer-request' && <HandsPraying size={11} weight="bold" />}
+                    {note.type === 'event' && <CalendarBlank size={11} weight="bold" />}
+                    {note.type === 'general' && <NotePencil size={11} weight="bold" />}
+                    {getNoteTypeLabel(note.type)}
                   </span>
                   {targetChips.length > 0 && (
                     <span
@@ -531,9 +559,13 @@ export default function LogsPage() {
                         borderRadius: '999px',
                         background: 'var(--blue-light)',
                         flexShrink: 0,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 3,
                       }}
                     >
-                      {targetChips[0]}
+                      {targetChips[0].isFamily ? <House size={10} weight="bold" /> : <User size={10} weight="bold" />}
+                      {targetChips[0].label}
                     </span>
                   )}
                   {targetChips.length > 1 && (

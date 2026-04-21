@@ -7,16 +7,16 @@ import { useApp } from '@/lib/context';
 
 export default function BottomNav() {
   const pathname = usePathname();
-  const { currentPersona } = useApp();
+  const { currentPersona, fullPageModalOpen } = useApp();
   const isWelcome = currentPersona.role === 'welcome-team';
 
-  // Hide on detail pages and sign-in
+  // Hide on detail pages, sign-in, and when a full-page modal is open
   const isDetail =
     /^\/(person|family|groups)\/[^/]+/.test(pathname) ||
     pathname === '/settings/profile' ||
     pathname === '/signin' ||
     pathname === '/signup';
-  if (isDetail) return null;
+  if (isDetail || fullPageModalOpen) return null;
 
   const isPeople = pathname === '/' || pathname === '/people';
   const isLogs = pathname === '/logs';

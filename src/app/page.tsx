@@ -1139,24 +1139,43 @@ const FamilyRow = React.memo(function FamilyRow({
                 , +{family.childCount} kid{family.childCount !== 1 ? 's' : ''}
               </span>
             ) : null}
-            {group && (
-              <>
-                <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>·</span>
-                <span
-                  style={{
-                    fontSize: 10,
-                    padding: '2px 7px',
-                    borderRadius: '999px',
-                    background: 'var(--blue-light)',
-                    color: 'var(--blue)',
-                    fontWeight: 600,
-                    flexShrink: 0,
-                  }}
-                >
-                  {group.name}
-                </span>
-              </>
-            )}
+            {group && (() => {
+              const allGroupIds = [...new Set(members.flatMap((m) => m.groupIds))];
+              const extra = allGroupIds.length - 1;
+              return (
+                <>
+                  <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>·</span>
+                  <span
+                    style={{
+                      fontSize: 10,
+                      padding: '2px 7px',
+                      borderRadius: '999px',
+                      background: 'var(--blue-light)',
+                      color: 'var(--blue)',
+                      fontWeight: 600,
+                      flexShrink: 0,
+                    }}
+                  >
+                    {group.name}
+                  </span>
+                  {extra > 0 && (
+                    <span
+                      style={{
+                        fontSize: 10,
+                        padding: '2px 6px',
+                        borderRadius: '999px',
+                        background: 'var(--blue-light)',
+                        color: 'var(--blue)',
+                        fontWeight: 600,
+                        flexShrink: 0,
+                      }}
+                    >
+                      +{extra}
+                    </span>
+                  )}
+                </>
+              );
+            })()}
           </div>
         </div>
       </div>
@@ -1275,24 +1294,42 @@ const IndividualRow = React.memo(function IndividualRow({
               {getMembershipLabel(person.membershipStatus)} ·{' '}
               {getChurchAttendanceLabel(person.churchAttendance)}
             </span>
-            {group && (
-              <>
-                <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>·</span>
-                <span
-                  style={{
-                    fontSize: 10,
-                    padding: '2px 7px',
-                    borderRadius: '999px',
-                    background: 'var(--blue-light)',
-                    color: 'var(--blue)',
-                    fontWeight: 600,
-                    flexShrink: 0,
-                  }}
-                >
-                  {group.name}
-                </span>
-              </>
-            )}
+            {group && (() => {
+              const extra = person.groupIds.length - 1;
+              return (
+                <>
+                  <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>·</span>
+                  <span
+                    style={{
+                      fontSize: 10,
+                      padding: '2px 7px',
+                      borderRadius: '999px',
+                      background: 'var(--blue-light)',
+                      color: 'var(--blue)',
+                      fontWeight: 600,
+                      flexShrink: 0,
+                    }}
+                  >
+                    {group.name}
+                  </span>
+                  {extra > 0 && (
+                    <span
+                      style={{
+                        fontSize: 10,
+                        padding: '2px 6px',
+                        borderRadius: '999px',
+                        background: 'var(--blue-light)',
+                        color: 'var(--blue)',
+                        fontWeight: 600,
+                        flexShrink: 0,
+                      }}
+                    >
+                      +{extra}
+                    </span>
+                  )}
+                </>
+              );
+            })()}
           </div>
         </div>
       </div>

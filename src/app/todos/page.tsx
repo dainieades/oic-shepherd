@@ -37,10 +37,16 @@ export default function TodosPage() {
     toggleTodo,
     todosShepherdFilter: shepherdFilter,
     setTodosShepherdFilter: setShepherdFilter,
+    setFullPageModalOpen,
   } = useApp();
   const [showAddTodo, setShowAddTodo] = useState(false);
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
   const [showAddLog, setShowAddLog] = useState(false);
+
+  React.useEffect(() => {
+    setFullPageModalOpen(!!(showAddTodo || editingTodo));
+    return () => setFullPageModalOpen(false);
+  }, [showAddTodo, editingTodo, setFullPageModalOpen]);
   const [todoLogPrompt, setTodoLogPrompt] = useState<Todo | null>(null);
   const [pendingLogTodo, setPendingLogTodo] = useState<Todo | null>(null);
   const [scrolled, setScrolled] = useState(false);
