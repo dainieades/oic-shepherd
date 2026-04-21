@@ -33,7 +33,7 @@ Functions covered: `formatPhone`, `normalizePhone`, `fmtDate`, `fmtDateTime`,
 
 ---
 
-## Priority 2 — `src/app/api/check-email/route.ts`
+## Priority 2 — `src/app/api/check-email/route.ts` ✅ Done 2026-04-21
 
 | Scenario | Expected |
 |---|---|
@@ -48,14 +48,14 @@ Mock the Supabase client — don't hit the real DB.
 
 ---
 
-## Priority 3 — `src/lib/schemas.ts` Zod schema tests
+## Priority 3 — `src/lib/schemas.ts` Zod schema tests ✅ Done 2026-04-21
 
 Verify each schema accepts valid rows and rejects invalid ones (missing required
 fields, bad enum values, wrong types).
 
 ---
 
-## Priority 4 — Component tests
+## Priority 4 — Component tests ✅ Done 2026-04-21
 
 | Component | What to test |
 |---|---|
@@ -69,7 +69,7 @@ Mock `AppContext` — no real Supabase.
 
 ---
 
-## Priority 5 — E2E (Playwright, future)
+## Priority 5 — E2E (Playwright, future) ✅ Done 2026-04-21
 
 | Journey | Why critical |
 |---|---|
