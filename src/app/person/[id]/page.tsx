@@ -608,6 +608,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: 5,
+                transition: 'color 0.18s ease, border-bottom-color 0.18s ease',
               }}
             >
               <TabIcon tab={t as Tab} active={activeTab === t} />
@@ -649,7 +650,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
 
       {/* Logs tab */}
       {activeTab === 'logs' && (
-        <div>
+        <div className="tab-fade">
           {notes.length === 0 && (
             <div style={{ textAlign: 'center', padding: '32px 20px' }}>
               <p
@@ -776,7 +777,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
 
       {/* Todos tab */}
       {activeTab === 'todos' && (
-        <div>
+        <div className="tab-fade">
           {categorized.today.length > 0 && (
             <TodoSection
               label="Today"
@@ -857,7 +858,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
 
       {/* Notices tab */}
       {activeTab === 'notices' && (
-        <div>
+        <div className="tab-fade">
           {notices.length === 0 && (
             <div style={{ textAlign: 'center', padding: '32px 20px' }}>
               <p
@@ -909,7 +910,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
       {/* Sheep tab — only for shepherds */}
       {/* Info tab */}
       {activeTab === 'info' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <div className="tab-fade" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
           {/* ACCESS */}
           {(() => {
             const role = (person.appRole ?? 'no-access') as AppRole;

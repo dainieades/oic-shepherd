@@ -7,6 +7,7 @@ import BottomNav from '@/components/BottomNav';
 import AuthSync from '@/components/AuthSync';
 import AccessGate from '@/components/AccessGate';
 import { ToastProvider } from '@/components/Toast';
+import PageTransition from '@/components/PageTransition';
 
 const lora = Lora({
   subsets: ['latin'],
@@ -41,7 +42,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <AppProvider>
             <AuthSync />
             <AccessGate />
-            <main className="mx-auto min-h-screen w-full max-w-[430px] px-4 pb-20">{children}</main>
+            <main className="mx-auto min-h-screen w-full max-w-[430px] px-4 pb-20">
+              <PageTransition>{children}</PageTransition>
+            </main>
             <BottomNav />
           </AppProvider>
         </ToastProvider>
