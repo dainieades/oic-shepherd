@@ -129,7 +129,7 @@ export interface Todo {
   createdAt: string; // ISO datetime
 }
 
-export type NoticeCategory = 'physical-need' | 'spiritual-need' | 'other';
+export type NoticeCategory = 'physical-need' | 'spiritual-need' | 'social-need' | 'psychological-need' | 'other';
 export type NoticeUrgency = 'urgent' | 'moderate' | 'ongoing';
 export type NoticePrivacy = 'pastor-only' | 'pastor-and-shepherds' | 'everyone';
 
@@ -137,7 +137,7 @@ export interface Notice {
   id: string;
   personId?: string;
   familyId?: string;
-  category: NoticeCategory;
+  categories: NoticeCategory[];
   urgency: NoticeUrgency;
   privacy: NoticePrivacy;
   content: string;

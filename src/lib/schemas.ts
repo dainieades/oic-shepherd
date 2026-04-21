@@ -80,11 +80,13 @@ export const NoteRowSchema = z.object({
 
 export type NoteRow = z.infer<typeof NoteRowSchema>;
 
+const noticeCategoryEnum = z.enum(['physical-need', 'spiritual-need', 'social-need', 'psychological-need', 'other']);
+
 export const NoticeRowSchema = z.object({
   id: z.string(),
   person_id: nullStr,
   family_id: nullStr,
-  category: z.enum(['physical-need', 'spiritual-need', 'other']),
+  categories: z.array(noticeCategoryEnum).default([]),
   urgency: z.enum(['urgent', 'moderate', 'ongoing']),
   privacy: z.enum(['pastor-only', 'pastor-and-shepherds', 'everyone']).nullish(),
   content: z.string(),

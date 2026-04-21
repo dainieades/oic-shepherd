@@ -155,7 +155,7 @@ interface AppContextType {
   updateNotice: (
     noticeId: string,
     updates: Partial<
-      Pick<Notice, 'category' | 'urgency' | 'privacy' | 'content' | 'personId' | 'familyId'>
+      Pick<Notice, 'categories' | 'urgency' | 'privacy' | 'content' | 'personId' | 'familyId'>
     >
   ) => void;
   deleteNotice: (noticeId: string) => void;
@@ -314,7 +314,7 @@ function mapNotice(row: Record<string, unknown>): Notice {
     id: r.id,
     personId: r.person_id ?? undefined,
     familyId: r.family_id ?? undefined,
-    category: r.category,
+    categories: r.categories,
     urgency: r.urgency,
     privacy: r.privacy ?? 'pastor-and-shepherds',
     content: r.content,
@@ -1426,7 +1426,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           id: notice.id,
           person_id: notice.personId ?? null,
           family_id: notice.familyId ?? null,
-          category: notice.category,
+          categories: notice.categories,
           urgency: notice.urgency,
           privacy: notice.privacy,
           content: notice.content,
@@ -1445,7 +1445,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     async (
       noticeId: string,
       updates: Partial<
-        Pick<Notice, 'category' | 'urgency' | 'privacy' | 'content' | 'personId' | 'familyId'>
+        Pick<Notice, 'categories' | 'urgency' | 'privacy' | 'content' | 'personId' | 'familyId'>
       >
     ): Promise<void> => {
       let snapshot: AppData | undefined;
@@ -1455,7 +1455,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       });
       const supabase = createClient();
       const dbUpdates: Partial<NoticeRow> = {};
-      if (updates.category !== undefined) dbUpdates.category = updates.category;
+      if (updates.categories !== undefined) dbUpdates.categories = updates.categories;
       if (updates.urgency !== undefined) dbUpdates.urgency = updates.urgency;
       if (updates.privacy !== undefined) dbUpdates.privacy = updates.privacy;
       if (updates.content !== undefined) dbUpdates.content = updates.content;

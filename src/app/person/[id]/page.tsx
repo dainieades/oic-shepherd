@@ -1828,11 +1828,15 @@ const URGENCY_LABEL: Record<string, string> = {
 const CATEGORY_LABEL: Record<string, string> = {
   'physical-need': 'Physical Need',
   'spiritual-need': 'Spiritual Need',
+  'social-need': 'Social Need',
+  'psychological-need': 'Psychological Need',
   other: 'Other',
 };
 const CATEGORY_STYLE: Record<string, { bg: string; color: string }> = {
   'physical-need': { bg: 'var(--blue-light)', color: 'var(--blue)' },
   'spiritual-need': { bg: 'var(--sage-light)', color: 'var(--sage)' },
+  'social-need': { bg: 'var(--amber-light)', color: 'var(--amber)' },
+  'psychological-need': { bg: 'var(--teal-light)', color: 'var(--teal)' },
   other: { bg: 'var(--border-light)', color: 'var(--text-muted)' },
 };
 
@@ -1878,18 +1882,21 @@ function NoticeCard({
         >
           {URGENCY_LABEL[notice.urgency]}
         </span>
-        <span
-          style={{
-            fontSize: 11,
-            fontWeight: 500,
-            padding: '2px 8px',
-            borderRadius: '999px',
-            background: CATEGORY_STYLE[notice.category]?.bg,
-            color: CATEGORY_STYLE[notice.category]?.color,
-          }}
-        >
-          {CATEGORY_LABEL[notice.category]}
-        </span>
+        {notice.categories.map((cat) => (
+          <span
+            key={cat}
+            style={{
+              fontSize: 11,
+              fontWeight: 500,
+              padding: '2px 8px',
+              borderRadius: '999px',
+              background: CATEGORY_STYLE[cat]?.bg,
+              color: CATEGORY_STYLE[cat]?.color,
+            }}
+          >
+            {CATEGORY_LABEL[cat]}
+          </span>
+        ))}
       </div>
       <p style={{ fontSize: 14, color: 'var(--text-primary)', lineHeight: 1.5, margin: 0 }}>
         {notice.content}

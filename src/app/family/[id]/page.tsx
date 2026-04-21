@@ -21,6 +21,7 @@ import {
   CaretDown,
   House,
   Plus,
+  Bell,
 } from '@phosphor-icons/react';
 import Link from 'next/link';
 import { useApp } from '@/lib/context';
@@ -29,29 +30,57 @@ import {
   getMembershipLabel,
   getFamilyNotes,
   getFamilyTodos,
+  getFamilyNotices,
   getNoteTypeLabel,
   groupByMonth,
   categorizeTodos,
 } from '@/lib/utils';
-import { type Todo, type Note, type AppData } from '@/lib/types';
+import { type Todo, type Note, type AppData, type Notice } from '@/lib/types';
 import AddLogModal from '@/components/AddLogModal';
 import AddTodoModal from '@/components/AddTodoModal';
+import AddNoticeModal, { URGENCY_STYLE } from '@/components/AddNoticeModal';
 import TodoLogPrompt from '@/components/TodoLogPrompt';
 import EditFamilyDrawer from '@/components/EditFamilyDrawer';
 import GroupPreviewModal from '@/components/GroupPreviewModal';
 import ImageCropModal from '@/components/ImageCropModal';
 import { SHEPHERD_AVATAR_PALETTE } from '@/lib/constants';
 
-type Tab = 'logs' | 'todos' | 'info';
+type Tab = 'logs' | 'todos' | 'notices' | 'info';
 
-const TAB_LABELS: Record<Tab, string> = { logs: 'Logs', todos: 'To-dos', info: 'Family Info' };
+const TAB_LABELS: Record<Tab, string> = {
+  logs: 'Logs',
+  todos: 'To-dos',
+  notices: 'Notices',
+  info: 'Family Info',
+};
 
 function TabIcon({ tab, active }: { tab: Tab; active: boolean }) {
   const weight = active ? 'fill' : 'regular';
   if (tab === 'logs') return <Notepad size={16} weight={weight} />;
   if (tab === 'todos') return <CheckCircle size={16} weight={weight} />;
+  if (tab === 'notices') return <Bell size={16} weight={weight} />;
   return <Info size={16} weight={weight} />;
 }
+
+const URGENCY_LABEL: Record<string, string> = {
+  urgent: 'Urgent',
+  moderate: 'Moderate',
+  ongoing: 'Ongoing',
+};
+const CATEGORY_LABEL: Record<string, string> = {
+  'physical-need': 'Physical Need',
+  'spiritual-need': 'Spiritual Need',
+  'social-need': 'Social Need',
+  'psychological-need': 'Psychological Need',
+  other: 'Other',
+};
+const CATEGORY_STYLE: Record<string, { bg: string; color: string }> = {
+  'physical-need': { bg: 'var(--blue-light)', color: 'var(--blue)' },
+  'spiritual-need': { bg: 'var(--sage-light)', color: 'var(--sage)' },
+  'social-need': { bg: 'var(--amber-light)', color: 'var(--amber)' },
+  'psychological-need': { bg: 'var(--teal-light)', color: 'var(--teal)' },
+  other: { bg: 'var(--border-light)', color: 'var(--text-muted)' },
+};
 
 function fmtDue(iso: string) {
   return format(parseISO(iso), 'M/d/yyyy h:mm a');
@@ -66,12 +95,15 @@ const noteTypeColors: Record<string, { bg: string; color: string }> = {
 
 export default function FamilyDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = React.use(params);
-  const { data, toggleTodo, canViewNote, updateFamily } = useApp();
+  const { data, toggleTodo, canViewNote, updateFamily, currentPersona } = useApp();
+  const canSeeNotices = currentPersona.role === 'admin' || currentPersona.role === 'shepherd';
   const [tab, setTab] = React.useState<Tab>('logs');
   const [showAddLog, setShowAddLog] = React.useState(false);
   const [showAddTodo, setShowAddTodo] = React.useState(false);
+  const [showAddNotice, setShowAddNotice] = React.useState(false);
   const [editingNote, setEditingNote] = React.useState<Note | null>(null);
   const [editingTodo, setEditingTodo] = React.useState<Todo | null>(null);
+  const [editingNotice, setEditingNotice] = React.useState<Notice | null>(null);
   const [todoLogPrompt, setTodoLogPrompt] = React.useState<Todo | null>(null);
   const [pendingLogTodo, setPendingLogTodo] = React.useState<Todo | null>(null);
   const [showEditFamily, setShowEditFamily] = React.useState(false);
@@ -108,6 +140,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
   const members = data.people.filter((p) => family.memberIds.includes(p.id));
   const notes = getFamilyNotes(id, data.people, data.notes).filter((n) => canViewNote(n));
   const todos = getFamilyTodos(id, data.people, data.todos);
+  const notices = canSeeNotices ? getFamilyNotices(id, data.people, data.notices) : [];
   const categorized = categorizeTodos(todos);
   const incompleteTodosCount = todos.filter((t) => !t.completed).length;
   const familyShepherds = data.personas.filter((p) =>
@@ -214,7 +247,13 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
             </button>
           ) : (
             <button
-              onClick={tab === 'logs' ? () => setShowAddLog(true) : () => setShowAddTodo(true)}
+              onClick={
+                tab === 'logs'
+                  ? () => setShowAddLog(true)
+                  : tab === 'todos'
+                    ? () => setShowAddTodo(true)
+                    : () => setShowAddNotice(true)
+              }
               style={{
                 height: scrolled ? 30 : 36,
                 padding: scrolled ? '0 12px' : '0 14px',
@@ -232,7 +271,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
               }}
             >
               <Plus size={14} weight="bold" />
-              {tab === 'logs' ? 'Log' : 'To-do'}
+              {tab === 'logs' ? 'Log' : tab === 'todos' ? 'To-do' : 'Notice'}
             </button>
           )}
           <div ref={kebabRef} style={{ position: 'relative' }}>
@@ -423,7 +462,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
           marginBottom: 20,
         }}
       >
-        {(['logs', 'todos', 'info'] as Tab[]).map((t) => (
+        {(['logs', 'todos', ...(canSeeNotices ? ['notices'] : []), 'info'] as Tab[]).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -459,6 +498,21 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                 }}
               >
                 {incompleteTodosCount}
+              </span>
+            )}
+            {t === 'notices' && notices.length > 0 && (
+              <span
+                style={{
+                  fontSize: 11,
+                  fontWeight: 600,
+                  background: 'var(--sage)',
+                  color: 'var(--on-sage)',
+                  borderRadius: 10,
+                  padding: '1px 6px',
+                  lineHeight: 1.5,
+                }}
+              >
+                {notices.length}
               </span>
             )}
           </button>
@@ -668,6 +722,54 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
               >
                 Only assigned shepherds and pastors can see these.
               </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── Notices tab ── */}
+      {tab === 'notices' && (
+        <div>
+          {notices.length === 0 && (
+            <div style={{ textAlign: 'center', padding: '32px 20px' }}>
+              <p
+                style={{
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: 'var(--text-secondary)',
+                  marginBottom: 6,
+                }}
+              >
+                No notices yet
+              </p>
+              <p
+                style={{
+                  fontSize: 13,
+                  color: 'var(--text-muted)',
+                  lineHeight: 1.6,
+                  maxWidth: 260,
+                  margin: '0 auto',
+                }}
+              >
+                Notices are things worth flagging for your shepherds or pastor — a health condition,
+                a difficult season, or anything that calls for collective awareness.
+              </p>
+            </div>
+          )}
+          {notices.length > 0 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {(['urgent', 'moderate', 'ongoing'] as const).map((level) => {
+                const group = notices.filter((n) => n.urgency === level);
+                if (group.length === 0) return null;
+                return group.map((notice) => (
+                  <NoticeCard
+                    key={notice.id}
+                    notice={notice}
+                    personas={data.personas}
+                    onClick={() => setEditingNotice(notice)}
+                  />
+                ));
+              })}
             </div>
           )}
         </div>
@@ -1026,8 +1128,14 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
         />
       )}
       {showAddTodo && <AddTodoModal onClose={() => setShowAddTodo(false)} prefillFamilyId={id} />}
+      {showAddNotice && (
+        <AddNoticeModal onClose={() => setShowAddNotice(false)} prefillFamilyId={id} />
+      )}
       {editingNote && <AddLogModal onClose={() => setEditingNote(null)} note={editingNote} />}
       {editingTodo && <AddTodoModal onClose={() => setEditingTodo(null)} todo={editingTodo} />}
+      {editingNotice && (
+        <AddNoticeModal onClose={() => setEditingNotice(null)} notice={editingNotice} />
+      )}
       {showEditFamily && (
         <EditFamilyDrawer family={family} onClose={() => setShowEditFamily(false)} />
       )}
@@ -1046,6 +1154,74 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
         />
       )}
     </div>
+  );
+}
+
+function NoticeCard({
+  notice,
+  personas,
+  onClick,
+}: {
+  notice: Notice;
+  personas: import('@/lib/types').Persona[];
+  onClick: () => void;
+}) {
+  const style = URGENCY_STYLE[notice.urgency as import('@/lib/types').NoticeUrgency];
+  const creator = personas.find((p) => p.id === notice.createdBy);
+  return (
+    <button
+      onClick={onClick}
+      className="row-card-hover"
+      style={{
+        textAlign: 'left',
+        cursor: 'pointer',
+        border: '1px solid var(--border-light)',
+        borderRadius: 12,
+        padding: '12px 14px',
+        background: style.bg,
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 6,
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+        <span
+          style={{
+            fontSize: 11,
+            fontWeight: 700,
+            padding: '2px 8px',
+            borderRadius: '999px',
+            background: style.color,
+            color: '#fff',
+            letterSpacing: '0.03em',
+          }}
+        >
+          {URGENCY_LABEL[notice.urgency]}
+        </span>
+        {notice.categories.map((cat) => (
+          <span
+            key={cat}
+            style={{
+              fontSize: 11,
+              fontWeight: 500,
+              padding: '2px 8px',
+              borderRadius: '999px',
+              background: CATEGORY_STYLE[cat]?.bg,
+              color: CATEGORY_STYLE[cat]?.color,
+            }}
+          >
+            {CATEGORY_LABEL[cat]}
+          </span>
+        ))}
+      </div>
+      <p style={{ fontSize: 14, color: 'var(--text-primary)', lineHeight: 1.5, margin: 0 }}>
+        {notice.content}
+      </p>
+      <p style={{ fontSize: 11, color: 'var(--text-muted)', margin: 0 }}>
+        Added by {creator?.name ?? 'Unknown'} · {getTimeAgo(notice.createdAt)}
+      </p>
+    </button>
   );
 }
 

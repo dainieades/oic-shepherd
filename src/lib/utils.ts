@@ -49,7 +49,7 @@ export function truncateWhoLabel(names: string[]): string | null {
   const hidden = names.length - shown.length;
   return shown.join(', ') + (hidden > 0 ? ` +${hidden}` : '');
 }
-import { type Person, type Note, type Todo, type Family, type ChurchAttendance } from './types';
+import { type Person, type Note, type Todo, type Family, type ChurchAttendance, type Notice } from './types';
 
 export function getTimeAgo(dateStr: string): string {
   const date = parseISO(dateStr);
@@ -144,6 +144,13 @@ export function getFamilyNotes(familyId: string, people: Person[], notes: Note[]
       (n) => n.familyId === familyId || (n.personId && family_member_ids.includes(n.personId))
     )
     .sort((a, b) => compareDesc(parseISO(a.createdAt), parseISO(b.createdAt)));
+}
+
+export function getFamilyNotices(familyId: string, people: Person[], notices: Notice[]): Notice[] {
+  const family_member_ids = people.filter((p) => p.familyId === familyId).map((p) => p.id);
+  return notices.filter(
+    (n) => n.familyId === familyId || (n.personId && family_member_ids.includes(n.personId))
+  );
 }
 
 export function getFamilyTodos(familyId: string, people: Person[], todos: Todo[]): Todo[] {

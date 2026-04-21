@@ -15,7 +15,8 @@ interface PickerMenuProps {
   anchorRef?: React.RefObject<HTMLButtonElement | null>;
   title: string;
   options: PickerOption[];
-  value: string;
+  value: string | string[];
+  multiSelect?: boolean;
   onSelect: (value: string) => void;
   onClose: () => void;
 }
@@ -24,6 +25,7 @@ export default function PickerMenu({
   anchorRef,
   options,
   value,
+  multiSelect = false,
   onSelect,
   onClose,
 }: PickerMenuProps) {
@@ -122,13 +124,15 @@ export default function PickerMenu({
         </div>
       )}
       {filtered.map((opt) => {
-        const isSelected = opt.value === value;
+        const isSelected = multiSelect
+          ? Array.isArray(value) && value.includes(opt.value)
+          : opt.value === value;
         return (
           <button
             key={opt.value}
             onClick={() => {
               onSelect(opt.value);
-              onClose();
+              if (!multiSelect) onClose();
             }}
             style={{
               width: '100%',
@@ -179,7 +183,25 @@ export default function PickerMenu({
                 </span>
               )}
             </span>
-            {isSelected && <Check size={14} color="var(--sage)" weight="bold" />}
+            {multiSelect ? (
+              <span
+                style={{
+                  width: 16,
+                  height: 16,
+                  borderRadius: 4,
+                  border: `2px solid ${isSelected ? 'var(--sage)' : 'var(--border)'}`,
+                  background: isSelected ? 'var(--sage)' : 'transparent',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+              >
+                {isSelected && <Check size={10} color="#fff" weight="bold" />}
+              </span>
+            ) : (
+              isSelected && <Check size={14} color="var(--sage)" weight="bold" />
+            )}
           </button>
         );
       })}

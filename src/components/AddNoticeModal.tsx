@@ -16,6 +16,8 @@ import {
   Lock,
   Users,
   Globe,
+  UsersThree,
+  Brain,
 } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { useToast } from './Toast';
@@ -37,10 +39,12 @@ interface AddNoticeModalProps {
   notice?: Notice;
 }
 
-const CATEGORIES: { value: NoticeCategory; label: string; icon: React.ReactNode }[] = [
-  { value: 'physical-need', label: 'Physical Need', icon: <FirstAid size={16} /> },
-  { value: 'spiritual-need', label: 'Spiritual Need', icon: <HandsPraying size={16} /> },
-  { value: 'other', label: 'Other', icon: <DotsThree size={16} /> },
+const CATEGORIES: { value: NoticeCategory; label: string; icon: React.ReactNode; activeColor: string; activeBg: string }[] = [
+  { value: 'physical-need', label: 'Physical Need', icon: <FirstAid size={15} />, activeColor: 'var(--blue)', activeBg: 'var(--blue-light)' },
+  { value: 'spiritual-need', label: 'Spiritual Need', icon: <HandsPraying size={15} />, activeColor: 'var(--sage)', activeBg: 'var(--sage-light)' },
+  { value: 'social-need', label: 'Social Need', icon: <UsersThree size={15} />, activeColor: 'var(--amber)', activeBg: 'var(--amber-light)' },
+  { value: 'psychological-need', label: 'Psychological Need', icon: <Brain size={15} />, activeColor: 'var(--teal)', activeBg: 'var(--teal-light)' },
+  { value: 'other', label: 'Other', icon: <DotsThree size={15} />, activeColor: 'var(--text-muted)', activeBg: 'var(--border-light)' },
 ];
 
 const PRIVACIES: { value: NoticePrivacy; label: string; icon: React.ReactNode }[] = [
@@ -91,7 +95,7 @@ export default function AddNoticeModal({
   const { showToast } = useToast();
   const isEditing = !!notice;
 
-  const [category, setCategory] = React.useState<NoticeCategory>(notice?.category ?? 'physical-need');
+  const [categories, setCategories] = React.useState<NoticeCategory[]>(notice?.categories ?? []);
   const [urgency, setUrgency] = React.useState<NoticeUrgency>(notice?.urgency ?? 'moderate');
   const [privacy, setPrivacy] = React.useState<NoticePrivacy>(notice?.privacy ?? 'pastor-and-shepherds');
   const [content, setContent] = React.useState(notice?.content ?? '');
@@ -134,11 +138,17 @@ export default function AddNoticeModal({
 
   const canSave = content.trim().length > 0 && (familyIds.length > 0 || personIds.length > 0);
 
+  const toggleCategory = (cat: NoticeCategory) => {
+    setCategories((prev) =>
+      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
+    );
+  };
+
   const handleSave = () => {
     if (!canSave) return;
     if (isEditing && notice) {
       updateNotice(notice.id, {
-        category,
+        categories,
         urgency,
         privacy,
         content: content.trim(),
@@ -148,17 +158,15 @@ export default function AddNoticeModal({
       showToast('Notice updated');
     } else {
       for (const familyId of familyIds) {
-        addNotice({ category, urgency, privacy, content: content.trim(), familyId });
+        addNotice({ categories, urgency, privacy, content: content.trim(), familyId });
       }
       for (const personId of personIds) {
-        addNotice({ category, urgency, privacy, content: content.trim(), personId });
+        addNotice({ categories, urgency, privacy, content: content.trim(), personId });
       }
       showToast('Notice added');
     }
     onClose();
   };
-
-  const categoryItem = CATEGORIES.find((c) => c.value === category) ?? CATEGORIES[0];
   const urgencyItem = URGENCIES.find((u) => u.value === urgency) ?? URGENCIES[1];
   const urgencyStyle = URGENCY_STYLE[urgency];
   const privacyItem = PRIVACIES.find((p) => p.value === privacy) ?? PRIVACIES[1];
@@ -322,9 +330,16 @@ export default function AddNoticeModal({
                     {/* Category */}
                     <FieldRow
                       btnRef={categoryBtnRef}
-                      icon={categoryItem.icon}
+                      icon={categories.length === 1 ? CATEGORIES.find((c) => c.value === categories[0])?.icon : <DotsThree size={16} />}
                       label="Category"
-                      value={categoryItem.label}
+                      value={
+                        categories.length === 0
+                          ? 'Select…'
+                          : categories.length === 1
+                            ? (CATEGORIES.find((c) => c.value === categories[0])?.label ?? '')
+                            : `${categories.length} selected`
+                      }
+                      valueColor={categories.length === 0 ? 'var(--text-muted)' : undefined}
                       onClick={() => setShowCategoryPicker(true)}
                     />
 
@@ -472,8 +487,9 @@ export default function AddNoticeModal({
           anchorRef={categoryBtnRef}
           title="Category"
           options={CATEGORIES}
-          value={category}
-          onSelect={(v) => setCategory(v as NoticeCategory)}
+          value={categories}
+          multiSelect
+          onSelect={(v) => toggleCategory(v as NoticeCategory)}
           onClose={() => setShowCategoryPicker(false)}
         />
       )}
