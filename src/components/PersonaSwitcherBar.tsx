@@ -58,7 +58,7 @@ export default function PersonaSwitcherBar() {
                   fontSize: '11px',
                   fontWeight: isActive ? 600 : 400,
                   padding: '2px 10px',
-                  borderRadius: '999px',
+                  borderRadius: 'var(--radius-pill)',
                   border: isActive ? '1px solid #5B8A72' : '1px solid #3A3A3A',
                   background: isActive ? '#5B8A72' : 'transparent',
                   color: isActive ? '#fff' : '#999',

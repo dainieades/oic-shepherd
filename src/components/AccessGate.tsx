@@ -22,7 +22,7 @@ export default function AccessGate() {
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 200,
+        zIndex: 'var(--z-toast)',
         background: 'var(--bg)',
         display: 'flex',
         alignItems: 'center',
@@ -35,7 +35,7 @@ export default function AccessGate() {
           width: '100%',
           maxWidth: 360,
           background: 'var(--surface)',
-          borderRadius: 20,
+          borderRadius: 'var(--radius-xl)',
           border: '1px solid var(--border)',
           padding: '40px 28px 32px',
           boxShadow: 'var(--shadow-elevated)',
@@ -77,7 +77,7 @@ export default function AccessGate() {
           style={{
             width: '100%',
             padding: '13px 20px',
-            borderRadius: 12,
+            borderRadius: 'var(--radius-md)',
             border: 'none',
             background: 'var(--sage)',
             color: 'var(--on-sage)',

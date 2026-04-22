@@ -107,7 +107,7 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
                   alignItems: 'center',
                   gap: 8,
                   background: 'var(--bg)',
-                  borderRadius: 10,
+                  borderRadius: 'var(--radius-sm)',
                   padding: '8px 12px',
                 }}
               >
@@ -284,7 +284,7 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
                           alignItems: 'center',
                           gap: 6,
                           background: 'var(--surface)',
-                          borderRadius: 20,
+                          borderRadius: 'var(--radius-xl)',
                           padding: '4px 10px 4px 4px',
                           border: '1px solid var(--border-light)',
                         }}

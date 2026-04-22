@@ -170,7 +170,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
         style={{
           position: 'sticky',
           top: 0,
-          zIndex: 40,
+          zIndex: 'var(--z-header)',
           background: 'var(--bg)',
           display: 'flex',
           alignItems: 'center',
@@ -205,7 +205,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
               style={{
                 height: scrolled ? 30 : 36,
                 padding: scrolled ? '0 10px' : '0 12px',
-                borderRadius: 8,
+                borderRadius: 'var(--radius-xs)',
                 background: 'var(--sage)',
                 color: 'var(--on-sage)',
                 border: 'none',
@@ -233,7 +233,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
               style={{
                 height: scrolled ? 30 : 36,
                 padding: scrolled ? '0 12px' : '0 14px',
-                borderRadius: 8,
+                borderRadius: 'var(--radius-xs)',
                 background: 'var(--sage)',
                 color: 'var(--on-sage)',
                 fontSize: scrolled ? 13 : 14,
@@ -276,9 +276,9 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                   top: 'calc(100% + 6px)',
                   background: 'var(--surface)',
                   border: '1px solid var(--border)',
-                  borderRadius: 12,
-                  boxShadow: '0 8px 28px rgba(0,0,0,0.12)',
-                  zIndex: 50,
+                  borderRadius: 'var(--radius-md)',
+                  boxShadow: 'var(--shadow-elevated)',
+                  zIndex: 'var(--z-dropdown)',
                   minWidth: 180,
                   overflow: 'hidden',
                 }}
@@ -401,7 +401,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                   style={{
                     fontSize: 11,
                     padding: '2px 7px',
-                    borderRadius: '999px',
+                    borderRadius: 'var(--radius-pill)',
                     background: 'var(--blue-light)',
                     color: 'var(--blue)',
                     fontWeight: 600,
@@ -431,7 +431,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
         style={{
           position: 'sticky',
           top: 54,
-          zIndex: 39,
+          zIndex: 'var(--z-subheader)',
           background: 'var(--bg)',
           display: 'flex',
           borderBottom: '2px solid var(--border-light)',
@@ -468,7 +468,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                   fontWeight: 600,
                   background: 'var(--sage)',
                   color: 'var(--on-sage)',
-                  borderRadius: 10,
+                  borderRadius: 'var(--radius-sm)',
                   padding: '1px 6px',
                   lineHeight: 1.5,
                 }}
@@ -483,7 +483,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                   fontWeight: 600,
                   background: 'var(--sage)',
                   color: 'var(--on-sage)',
-                  borderRadius: 10,
+                  borderRadius: 'var(--radius-sm)',
                   padding: '1px 6px',
                   lineHeight: 1.5,
                 }}
@@ -634,7 +634,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
               className="no-last-border"
               style={{
                 background: 'var(--surface)',
-                borderRadius: 14,
+                borderRadius: 'var(--radius)',
                 overflow: 'hidden',
                 padding: 0,
               }}
@@ -763,7 +763,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
               className="no-last-border"
               style={{
                 background: 'var(--surface)',
-                borderRadius: 14,
+                borderRadius: 'var(--radius)',
                 overflow: 'hidden',
                 padding: 0,
               }}
@@ -795,7 +795,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                           style={{
                             fontSize: 11,
                             padding: '2px 8px',
-                            borderRadius: '999px',
+                            borderRadius: 'var(--radius-pill)',
                             background: 'var(--blue-light)',
                             color: 'var(--blue)',
                             fontWeight: 500,
@@ -878,7 +878,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                 className="no-last-border"
                 style={{
                   background: 'var(--surface)',
-                  borderRadius: 14,
+                  borderRadius: 'var(--radius)',
                   overflow: 'hidden',
                   padding: 0,
                 }}
@@ -1123,7 +1123,7 @@ function TodoSection({
                           fontSize: 10,
                           color: 'var(--blue)',
                           padding: '1px 6px',
-                          borderRadius: '999px',
+                          borderRadius: 'var(--radius-pill)',
                           background: 'var(--blue-light)',
                           fontWeight: 500,
                         }}

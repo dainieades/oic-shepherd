@@ -279,7 +279,7 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
                           fontSize: 11,
                           fontWeight: 500,
                           padding: '2px 8px',
-                          borderRadius: 999,
+                          borderRadius: 'var(--radius-pill)',
                           background: 'var(--blue-light)',
                           color: 'var(--blue)',
                           flexShrink: 0,
@@ -325,7 +325,7 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
                           fontSize: 11,
                           fontWeight: 500,
                           padding: '2px 8px',
-                          borderRadius: 999,
+                          borderRadius: 'var(--radius-pill)',
                           background: 'var(--sage-light)',
                           color: 'var(--sage)',
                           flexShrink: 0,
@@ -492,7 +492,7 @@ function MemberPickerSheet({
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 70,
+        zIndex: 'var(--z-sheet)',
         display: 'flex',
         alignItems: 'flex-end',
         justifyContent: 'center',
@@ -581,7 +581,7 @@ function MemberPickerSheet({
               gap: 8,
               background: 'var(--bg)',
               border: '1px solid var(--border)',
-              borderRadius: 10,
+              borderRadius: 'var(--radius-sm)',
               padding: '9px 12px',
             }}
           >
@@ -763,7 +763,7 @@ function GroupPickerSheet({
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 70,
+        zIndex: 'var(--z-sheet)',
         background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',
@@ -848,7 +848,7 @@ function GroupPickerSheet({
               gap: 8,
               background: 'var(--bg)',
               border: '1px solid var(--border)',
-              borderRadius: 10,
+              borderRadius: 'var(--radius-sm)',
               padding: '9px 12px',
             }}
           >
@@ -971,7 +971,7 @@ function ShepherdPickerSheet({
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 70,
+        zIndex: 'var(--z-sheet)',
         background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',
@@ -1091,7 +1091,7 @@ function ShepherdPickerSheet({
             style={{
               width: '100%',
               height: 44,
-              borderRadius: 12,
+              borderRadius: 'var(--radius-md)',
               background: 'var(--sage)',
               color: 'var(--on-sage)',
               fontSize: 15,

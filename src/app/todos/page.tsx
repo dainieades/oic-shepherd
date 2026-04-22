@@ -145,7 +145,7 @@ export default function TodosPage() {
           display: 'flex',
           background: 'var(--surface)',
           border: '1px solid var(--border)',
-          borderRadius: 8,
+          borderRadius: 'var(--radius-xs)',
           overflow: 'hidden',
           flexShrink: 0,
         }}
@@ -200,7 +200,7 @@ export default function TodosPage() {
         style={{
           width: btnSize,
           height: btnSize,
-          borderRadius: 8,
+          borderRadius: 'var(--radius-xs)',
           background: showSearch || search ? 'var(--sage-light)' : 'transparent',
           border: showSearch || search ? '1px solid var(--sage-mid)' : '1px solid var(--border)',
           color: showSearch || search ? 'var(--sage)' : 'var(--text-secondary)',
@@ -221,7 +221,7 @@ export default function TodosPage() {
             style={{
               width: btnSize,
               height: btnSize,
-              borderRadius: 8,
+              borderRadius: 'var(--radius-xs)',
               background: filterActive ? 'var(--sage-light)' : 'transparent',
               border: filterActive ? '1px solid var(--sage-mid)' : '1px solid var(--border)',
               color: filterActive ? 'var(--sage)' : 'var(--text-secondary)',
@@ -263,7 +263,7 @@ export default function TodosPage() {
         style={{
           height: btnSize,
           padding: btnPad,
-          borderRadius: 8,
+          borderRadius: 'var(--radius-xs)',
           background: 'var(--sage)',
           color: 'var(--on-sage)',
           fontSize: btnFont,
@@ -288,7 +288,7 @@ export default function TodosPage() {
         style={{
           position: 'sticky',
           top: 0,
-          zIndex: 20,
+          zIndex: 'var(--z-sticky)',
           background: 'var(--bg)',
           marginLeft: -16,
           marginRight: -16,
@@ -372,7 +372,7 @@ export default function TodosPage() {
               paddingBottom: 8,
               background: 'var(--surface)',
               border: '1px solid var(--border)',
-              borderRadius: 10,
+              borderRadius: 'var(--radius-sm)',
               fontSize: 14,
               color: 'var(--text-primary)',
               outline: 'none',
@@ -396,7 +396,7 @@ export default function TodosPage() {
                   alignItems: 'center',
                   gap: 4,
                   padding: '3px 9px',
-                  borderRadius: '999px',
+                  borderRadius: 'var(--radius-pill)',
                   background: 'var(--sage-light)',
                   border: '1px solid var(--sage-mid)',
                   color: 'var(--sage-dark)',
@@ -539,7 +539,7 @@ export default function TodosPage() {
             position: 'fixed',
             inset: 0,
             background: BACKDROP_COLOR,
-            zIndex: 50,
+            zIndex: 'var(--z-dropdown)',
             display: 'flex',
             alignItems: 'flex-end',
             justifyContent: 'center',
@@ -631,7 +631,7 @@ export default function TodosPage() {
                     paddingBottom: 7,
                     background: 'var(--bg)',
                     border: '1px solid var(--border)',
-                    borderRadius: 8,
+                    borderRadius: 'var(--radius-xs)',
                     fontSize: 13,
                     color: 'var(--text-primary)',
                     outline: 'none',
@@ -795,7 +795,7 @@ function CalendarView({
           style={{
             width: 32,
             height: 32,
-            borderRadius: 8,
+            borderRadius: 'var(--radius-xs)',
             border: '1px solid var(--border)',
             background: 'transparent',
             color: 'var(--text-secondary)',
@@ -815,7 +815,7 @@ function CalendarView({
           style={{
             width: 32,
             height: 32,
-            borderRadius: 8,
+            borderRadius: 'var(--radius-xs)',
             border: '1px solid var(--border)',
             background: 'transparent',
             color: 'var(--text-secondary)',
@@ -866,7 +866,7 @@ function CalendarView({
               onClick={() => setSelectedDate(isSelected ? null : dateStr)}
               style={{
                 aspectRatio: '1',
-                borderRadius: 8,
+                borderRadius: 'var(--radius-xs)',
                 background: isSelected
                   ? 'var(--sage)'
                   : isToday
@@ -1028,7 +1028,7 @@ function CalendarView({
                             fontSize: 10,
                             color: 'var(--blue)',
                             padding: '1px 6px',
-                            borderRadius: '999px',
+                            borderRadius: 'var(--radius-pill)',
                             background: 'var(--blue-light)',
                             fontWeight: 500,
                           }}
@@ -1204,7 +1204,7 @@ function TodoSection({
                           fontSize: 10,
                           color: 'var(--blue)',
                           padding: '1px 6px',
-                          borderRadius: '999px',
+                          borderRadius: 'var(--radius-pill)',
                           background: 'var(--blue-light)',
                           fontWeight: 500,
                           flexShrink: 0,
@@ -1219,7 +1219,7 @@ function TodoSection({
                           fontSize: 10,
                           color: 'var(--blue)',
                           padding: '1px 6px',
-                          borderRadius: '999px',
+                          borderRadius: 'var(--radius-pill)',
                           background: 'var(--blue-light)',
                           fontWeight: 500,
                           flexShrink: 0,

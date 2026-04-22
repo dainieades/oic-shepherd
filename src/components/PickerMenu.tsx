@@ -89,12 +89,12 @@ export default function PickerMenu({
       style={{
         ...(anchorRef?.current ? floatingStyles : fallbackStyle),
         background: 'var(--surface)',
-        borderRadius: 12,
-        boxShadow: '0 8px 32px rgba(0,0,0,0.14), 0 1px 4px rgba(0,0,0,0.08)',
+        borderRadius: 'var(--radius-md)',
+        boxShadow: 'var(--shadow-elevated)',
         border: '1px solid var(--border-light)',
         maxHeight: 300,
         overflowY: 'auto',
-        zIndex: 80,
+        zIndex: 'var(--z-nested)',
       }}
     >
       {showSearch && (

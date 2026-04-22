@@ -87,7 +87,7 @@ export default function AccessManagementPage() {
         style={{
           position: 'sticky',
           top: 0,
-          zIndex: 20,
+          zIndex: 'var(--z-sticky)',
           background: 'var(--bg)',
           marginLeft: -16,
           marginRight: -16,
@@ -165,7 +165,7 @@ export default function AccessManagementPage() {
             style={{
               background: 'var(--red-light)',
               border: '1px solid var(--red-border)',
-              borderRadius: 8,
+              borderRadius: 'var(--radius-xs)',
               padding: '8px 12px',
               marginBottom: 12,
               fontSize: 13,
@@ -188,7 +188,7 @@ export default function AccessManagementPage() {
           style={{
             width: '100%',
             padding: '10px 12px',
-            borderRadius: 10,
+            borderRadius: 'var(--radius-sm)',
             border: '1.5px solid var(--border)',
             fontSize: 15,
             color: 'var(--text-primary)',
@@ -207,7 +207,7 @@ export default function AccessManagementPage() {
           style={{
             width: '100%',
             padding: '10px 12px',
-            borderRadius: 10,
+            borderRadius: 'var(--radius-sm)',
             border: '1.5px solid var(--border)',
             fontSize: 15,
             color: 'var(--text-primary)',
@@ -223,7 +223,7 @@ export default function AccessManagementPage() {
           style={{
             width: '100%',
             padding: '11px 16px',
-            borderRadius: 10,
+            borderRadius: 'var(--radius-sm)',
             border: 'none',
             background: 'var(--sage)',
             color: 'var(--on-sage)',
@@ -354,7 +354,7 @@ export default function AccessManagementPage() {
           style={{
             position: 'fixed',
             inset: 0,
-            zIndex: 80,
+            zIndex: 'var(--z-nested)',
             background: BACKDROP_COLOR,
             display: 'flex',
             alignItems: 'center',

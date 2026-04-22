@@ -56,7 +56,7 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
           top: 0,
           left: 0,
           right: 0,
-          zIndex: 30,
+          zIndex: 'var(--z-page)',
           background: 'var(--bg)',
           borderBottom: '1px solid var(--border-light)',
           height: 54,
@@ -93,7 +93,7 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
             style={{
               height: 32,
               padding: '0 14px',
-              borderRadius: 8,
+              borderRadius: 'var(--radius-xs)',
               background: canSave ? 'var(--sage)' : 'var(--border)',
               color: canSave ? 'var(--on-sage)' : 'var(--text-muted)',
               fontSize: 14,
@@ -126,7 +126,7 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
 const navBarStyle: React.CSSProperties = {
   position: 'sticky',
   top: 0,
-  zIndex: 30,
+  zIndex: 'var(--z-page)',
   background: 'var(--bg)',
   marginLeft: -16,
   marginRight: -16,

@@ -155,7 +155,7 @@ export default function AddPage() {
             style={{
               width: 48,
               height: 28,
-              borderRadius: '999px',
+              borderRadius: 'var(--radius-pill)',
               background: isFirstTime ? 'var(--sage)' : '#D8D4D0',
               border: 'none',
               cursor: 'pointer',
@@ -174,7 +174,7 @@ export default function AddPage() {
                 top: 3,
                 left: isFirstTime ? 23 : 3,
                 transition: 'left 0.2s ease',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                boxShadow: 'var(--shadow-card)',
               }}
             />
           </button>

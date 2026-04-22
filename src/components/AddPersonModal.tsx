@@ -402,7 +402,7 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
                               fontSize: 11,
                               fontWeight: 500,
                               padding: '2px 8px',
-                              borderRadius: 999,
+                              borderRadius: 'var(--radius-pill)',
                               background: 'var(--blue-light)',
                               color: 'var(--blue)',
                               flexShrink: 0,
@@ -447,7 +447,7 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
                                 fontSize: 11,
                                 fontWeight: 500,
                                 padding: '2px 8px',
-                                borderRadius: 999,
+                                borderRadius: 'var(--radius-pill)',
                                 background: 'var(--sage-light)',
                                 color: 'var(--sage)',
                                 flexShrink: 0,
@@ -485,7 +485,7 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
                       style={{
                         width: 42,
                         height: 24,
-                        borderRadius: 12,
+                        borderRadius: 'var(--radius-md)',
                         flexShrink: 0,
                         background: isShepherd ? 'var(--sage)' : 'var(--border)',
                         position: 'relative',
@@ -539,7 +539,7 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
                                     fontSize: 11,
                                     fontWeight: 500,
                                     padding: '2px 8px',
-                                    borderRadius: 999,
+                                    borderRadius: 'var(--radius-pill)',
                                     background: 'var(--sage-light)',
                                     color: 'var(--sage)',
                                     flexShrink: 0,
@@ -584,7 +584,7 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
                       style={{
                         width: 42,
                         height: 24,
-                        borderRadius: 12,
+                        borderRadius: 'var(--radius-md)',
                         flexShrink: 0,
                         background: isBeingDiscipled ? 'var(--sage)' : 'var(--border)',
                         position: 'relative',
@@ -946,7 +946,7 @@ function GroupPickerSheet({
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 70,
+        zIndex: 'var(--z-sheet)',
         background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',
@@ -1031,7 +1031,7 @@ function GroupPickerSheet({
               gap: 8,
               background: 'var(--bg)',
               border: '1px solid var(--border)',
-              borderRadius: 10,
+              borderRadius: 'var(--radius-sm)',
               padding: '9px 12px',
             }}
           >
@@ -1167,7 +1167,7 @@ function ShepherdPickerSheet({
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 70,
+        zIndex: 'var(--z-sheet)',
         background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',
@@ -1252,7 +1252,7 @@ function ShepherdPickerSheet({
               gap: 8,
               background: 'var(--bg)',
               border: '1px solid var(--border)',
-              borderRadius: 10,
+              borderRadius: 'var(--radius-sm)',
               padding: '9px 12px',
             }}
           >
@@ -1408,7 +1408,7 @@ function SheepPickerSheet({
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 70,
+        zIndex: 'var(--z-sheet)',
         background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',
@@ -1493,7 +1493,7 @@ function SheepPickerSheet({
               gap: 8,
               background: 'var(--bg)',
               border: '1px solid var(--border)',
-              borderRadius: 10,
+              borderRadius: 'var(--radius-sm)',
               padding: '9px 12px',
             }}
           >
@@ -1679,7 +1679,7 @@ function PositionPickerSheet({
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 70,
+        zIndex: 'var(--z-sheet)',
         background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',
@@ -1764,7 +1764,7 @@ function PositionPickerSheet({
               gap: 8,
               background: 'var(--bg)',
               border: '1px solid var(--border)',
-              borderRadius: 10,
+              borderRadius: 'var(--radius-sm)',
               padding: '9px 12px',
             }}
           >

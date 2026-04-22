@@ -457,7 +457,7 @@ const [showSearch, setShowSearch] = React.useState(false);
         style={{
           position: 'sticky',
           top: 0,
-          zIndex: 20,
+          zIndex: 'var(--z-sticky)',
           background: 'var(--bg)',
           marginLeft: -16,
           marginRight: -16,
@@ -539,7 +539,7 @@ const [showSearch, setShowSearch] = React.useState(false);
                 alignItems: 'center',
                 gap: 4,
                 padding: '3px 9px',
-                borderRadius: '999px',
+                borderRadius: 'var(--radius-pill)',
                 background: 'var(--sage-light)',
                 border: '1px solid var(--sage-mid)',
                 color: 'var(--sage-dark)',
@@ -563,7 +563,7 @@ const [showSearch, setShowSearch] = React.useState(false);
               style={{
                 fontSize: 10,
                 fontWeight: 700,
-                color: '#b45309',
+                color: 'var(--amber)',
                 textTransform: 'uppercase',
                 letterSpacing: '0.06em',
               }}
@@ -574,10 +574,10 @@ const [showSearch, setShowSearch] = React.useState(false);
               style={{
                 minWidth: 16,
                 height: 16,
-                borderRadius: '999px',
-                background: '#fef3c7',
-                border: '1px solid #fcd34d',
-                color: '#92400e',
+                borderRadius: 'var(--radius-pill)',
+                background: 'var(--amber-light)',
+                border: '1px solid var(--amber-border)',
+                color: 'var(--amber)',
                 fontSize: 10,
                 fontWeight: 700,
                 display: 'flex',
@@ -621,9 +621,9 @@ const [showSearch, setShowSearch] = React.useState(false);
                     name={p.englishName}
                     photo={p.photo}
                     size={44}
-                    bg="#fef3c7"
-                    color="#92400e"
-                    border="2px solid #fcd34d"
+                    bg="var(--amber-light)"
+                    color="var(--amber)"
+                    border="2px solid var(--amber-border)"
                   />
                   <span
                     style={{
@@ -639,7 +639,7 @@ const [showSearch, setShowSearch] = React.useState(false);
                   >
                     {p.englishName.split(' ')[0]}
                   </span>
-                  <span style={{ fontSize: 9, color: '#b45309', fontWeight: 500, marginTop: -2 }}>
+                  <span style={{ fontSize: 9, color: 'var(--amber)', fontWeight: 500, marginTop: -2 }}>
                     {timeLabel} ago
                   </span>
                 </Link>
@@ -752,7 +752,7 @@ const [showSearch, setShowSearch] = React.useState(false);
                 gap: 14,
                 padding: '14px 16px',
                 background: 'var(--bg)',
-                borderRadius: 12,
+                borderRadius: 'var(--radius-md)',
                 border: '1px solid var(--border-light)',
                 cursor: 'pointer',
                 textAlign: 'left',
@@ -762,7 +762,7 @@ const [showSearch, setShowSearch] = React.useState(false);
                 style={{
                   width: 40,
                   height: 40,
-                  borderRadius: 10,
+                  borderRadius: 'var(--radius-sm)',
                   background: 'var(--sage-light)',
                   display: 'flex',
                   alignItems: 'center',
@@ -792,7 +792,7 @@ const [showSearch, setShowSearch] = React.useState(false);
                 gap: 14,
                 padding: '14px 16px',
                 background: 'var(--bg)',
-                borderRadius: 12,
+                borderRadius: 'var(--radius-md)',
                 border: '1px solid var(--border-light)',
                 cursor: 'pointer',
                 textAlign: 'left',
@@ -802,7 +802,7 @@ const [showSearch, setShowSearch] = React.useState(false);
                 style={{
                   width: 40,
                   height: 40,
-                  borderRadius: 10,
+                  borderRadius: 'var(--radius-sm)',
                   background: 'var(--sage-light)',
                   display: 'flex',
                   alignItems: 'center',
@@ -832,7 +832,7 @@ const [showSearch, setShowSearch] = React.useState(false);
                 gap: 14,
                 padding: '14px 16px',
                 background: 'var(--bg)',
-                borderRadius: 12,
+                borderRadius: 'var(--radius-md)',
                 border: '1px solid var(--border-light)',
                 cursor: 'pointer',
                 textAlign: 'left',
@@ -842,7 +842,7 @@ const [showSearch, setShowSearch] = React.useState(false);
                 style={{
                   width: 40,
                   height: 40,
-                  borderRadius: 10,
+                  borderRadius: 'var(--radius-sm)',
                   background: 'var(--sage-light)',
                   display: 'flex',
                   alignItems: 'center',
@@ -993,7 +993,7 @@ const FamilyRow = React.memo(function FamilyRow({
                     style={{
                       fontSize: 10,
                       padding: '2px 7px',
-                      borderRadius: '999px',
+                      borderRadius: 'var(--radius-pill)',
                       background: 'var(--blue-light)',
                       color: 'var(--blue)',
                       fontWeight: 600,
@@ -1007,7 +1007,7 @@ const FamilyRow = React.memo(function FamilyRow({
                       style={{
                         fontSize: 10,
                         padding: '2px 6px',
-                        borderRadius: '999px',
+                        borderRadius: 'var(--radius-pill)',
                         background: 'var(--blue-light)',
                         color: 'var(--blue)',
                         fontWeight: 600,
@@ -1115,7 +1115,7 @@ const IndividualRow = React.memo(function IndividualRow({
                     style={{
                       fontSize: 10,
                       padding: '2px 7px',
-                      borderRadius: '999px',
+                      borderRadius: 'var(--radius-pill)',
                       background: 'var(--blue-light)',
                       color: 'var(--blue)',
                       fontWeight: 600,
@@ -1129,7 +1129,7 @@ const IndividualRow = React.memo(function IndividualRow({
                       style={{
                         fontSize: 10,
                         padding: '2px 6px',
-                        borderRadius: '999px',
+                        borderRadius: 'var(--radius-pill)',
                         background: 'var(--blue-light)',
                         color: 'var(--blue)',
                         fontWeight: 600,

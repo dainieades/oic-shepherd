@@ -48,12 +48,12 @@ _Last audited: 2026-04-22_
 - [x] Extract `<LogItem>` — log card with type badge, content, timestamp, creator ✅
 - [x] Extract `<NoticeCard>` — notice card with urgency left-border, badge, content ✅
 
-**Sprint 7 — Design token sweep**
-- [ ] Replace hardcoded hex values (`#b45309`, `#fcd34d`, `#e8f0fe`, etc.) with CSS vars (`--amber`, `--sage`, etc.)
-- [ ] Replace hardcoded `borderRadius: 8/12/14` with `--radius-sm`, `--radius`, `--radius-lg` tokens
-- [ ] Apply `var(--shadow-card)` / `var(--shadow-elevated)` — tokens exist but are unused
-- [ ] Add spacing scale tokens: `--spacing-xs` through `--spacing-2xl`
-- [ ] Add z-index scale tokens: `--z-modal`, `--z-dropdown`, `--z-toast` (currently hardcoded 20/40/60)
+**Sprint 7 — Design token sweep** ✅ Complete 2026-04-22
+- [x] Replace hardcoded hex values (`#b45309`, `#fcd34d`, `#fef3c7`, `#92400e`, `#EBF1F7`, `#6B8EAE`, `#FDF3E3`, `#C9912B`) with CSS vars ✅
+- [x] Replace hardcoded `borderRadius: 8/10/12/14/20/999` with `--radius-xs`, `--radius-sm`, `--radius-md`, `--radius`, `--radius-xl`, `--radius-pill` tokens ✅
+- [x] Apply `var(--shadow-card)` / `var(--shadow-elevated)` — 11 literal boxShadow values replaced ✅
+- [x] Add spacing scale tokens: `--spacing-xs` through `--spacing-3xl` ✅
+- [x] Add z-index scale tokens: full scale (`--z-sticky`, `--z-page`, `--z-subheader`, `--z-header`, `--z-dropdown`, `--z-modal`, `--z-sheet`, `--z-nested`, `--z-float`, `--z-toast`) — 40+ hardcoded values replaced ✅
 
 **Backlog (plan before next major feature)**
 - [ ] Split AppContext mutations into domain-scoped modules if the file grows beyond 1,500 lines again

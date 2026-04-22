@@ -133,7 +133,7 @@ export default function AddTodoModal({
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+                boxShadow: 'var(--shadow-card)',
               }}
               title="Delete to-do"
             >
@@ -291,7 +291,7 @@ export default function AddTodoModal({
                     minHeight: 220,
                     background: 'var(--surface)',
                     border: '1px solid var(--border-light)',
-                    borderRadius: 10,
+                    borderRadius: 'var(--radius-sm)',
                     fontSize: 15,
                     color: 'var(--text-primary)',
                     resize: 'vertical',
@@ -442,10 +442,10 @@ function CalendarPickerMenu({
       style={{
         ...floatingStyles,
         background: 'var(--surface)',
-        borderRadius: 12,
-        boxShadow: '0 8px 32px rgba(0,0,0,0.14), 0 1px 4px rgba(0,0,0,0.08)',
+        borderRadius: 'var(--radius-md)',
+        boxShadow: 'var(--shadow-elevated)',
         border: '1px solid var(--border-light)',
-        zIndex: 80,
+        zIndex: 'var(--z-nested)',
         overflow: 'hidden',
       }}
     >

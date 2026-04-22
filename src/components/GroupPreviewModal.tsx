@@ -31,7 +31,7 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 60,
+        zIndex: 'var(--z-modal)',
         background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',
@@ -148,7 +148,7 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
                   fontSize: 11,
                   fontWeight: 500,
                   padding: '3px 10px',
-                  borderRadius: '999px',
+                  borderRadius: 'var(--radius-pill)',
                   background: 'var(--sage-light)',
                   color: 'var(--sage)',
                 }}
@@ -160,9 +160,9 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
                   fontSize: 11,
                   fontWeight: 500,
                   padding: '3px 10px',
-                  borderRadius: '999px',
-                  background: '#EBF1F7',
-                  color: '#6B8EAE',
+                  borderRadius: 'var(--radius-pill)',
+                  background: 'var(--blue-light)',
+                  color: 'var(--blue)',
                 }}
               >
                 {leaders.length} {leaders.length === 1 ? 'leader' : 'leaders'}
@@ -172,7 +172,7 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
                   fontSize: 11,
                   fontWeight: 500,
                   padding: '3px 10px',
-                  borderRadius: '999px',
+                  borderRadius: 'var(--radius-pill)',
                   background: 'var(--avatar-s1-bg)',
                   color: 'var(--avatar-s1-text)',
                 }}
@@ -283,7 +283,7 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
                                 fontSize: 10,
                                 fontWeight: 600,
                                 padding: '1px 6px',
-                                borderRadius: '999px',
+                                borderRadius: 'var(--radius-pill)',
                                 background: 'var(--avatar-s1-bg)',
                                 color: 'var(--avatar-s1-text)',
                               }}

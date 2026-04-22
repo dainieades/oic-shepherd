@@ -64,7 +64,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
         style={{
           position: 'sticky',
           top: 0,
-          zIndex: 40,
+          zIndex: 'var(--z-header)',
           background: 'var(--bg)',
           display: 'flex',
           alignItems: 'center',
@@ -111,7 +111,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
           style={{
             height: scrolled ? 30 : 36,
             padding: scrolled ? '0 10px' : '0 12px',
-            borderRadius: 8,
+            borderRadius: 'var(--radius-xs)',
             background: 'var(--sage)',
             color: 'var(--on-sage)',
             border: 'none',
@@ -177,7 +177,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
               fontSize: 11,
               fontWeight: 500,
               padding: '3px 10px',
-              borderRadius: '999px',
+              borderRadius: 'var(--radius-pill)',
               background: 'var(--sage-light)',
               color: 'var(--sage)',
             }}
@@ -189,9 +189,9 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
               fontSize: 11,
               fontWeight: 500,
               padding: '3px 10px',
-              borderRadius: '999px',
-              background: '#EBF1F7',
-              color: '#6B8EAE',
+              borderRadius: 'var(--radius-pill)',
+              background: 'var(--blue-light)',
+              color: 'var(--blue)',
               display: 'inline-flex',
               alignItems: 'center',
               gap: 4,
@@ -205,7 +205,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
               fontSize: 11,
               fontWeight: 500,
               padding: '3px 10px',
-              borderRadius: '999px',
+              borderRadius: 'var(--radius-pill)',
               background: 'var(--avatar-s1-bg)',
               color: 'var(--avatar-s1-text)',
               display: 'inline-flex',
@@ -306,7 +306,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
                             fontSize: 10,
                             fontWeight: 600,
                             padding: '1px 6px',
-                            borderRadius: '999px',
+                            borderRadius: 'var(--radius-pill)',
                             background: 'var(--avatar-s1-bg)',
                             color: 'var(--avatar-s1-text)',
                             display: 'inline-flex',
@@ -575,7 +575,7 @@ function EditGroupDrawer({
           position: 'fixed',
           inset: 0,
           background: BACKDROP_COLOR,
-          zIndex: 60,
+          zIndex: 'var(--z-modal)',
           display: 'flex',
           alignItems: 'flex-end',
           justifyContent: 'center',
@@ -706,7 +706,7 @@ function EditGroupDrawer({
                 style={pickerRowStyle}
               >
                 <span style={spacerStyle} />
-                <Crown size={16} color="#6B8EAE" />
+                <Crown size={16} color="var(--blue)" />
                 <span style={labelStyle}>Leaders</span>
                 <span
                   style={{
@@ -847,7 +847,7 @@ function PeoplePickerSheet({
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 70,
+        zIndex: 'var(--z-sheet)',
         display: 'flex',
         alignItems: 'flex-end',
         justifyContent: 'center',
@@ -932,7 +932,7 @@ function PeoplePickerSheet({
             style={{
               width: '100%',
               padding: '8px 12px',
-              borderRadius: 8,
+              borderRadius: 'var(--radius-xs)',
               border: '1px solid var(--border)',
               fontSize: 14,
               background: 'var(--bg)',
@@ -1016,7 +1016,7 @@ function PeoplePickerSheet({
             style={{
               width: '100%',
               height: 44,
-              borderRadius: 12,
+              borderRadius: 'var(--radius-md)',
               background: 'var(--sage)',
               color: 'var(--on-sage)',
               fontSize: 15,

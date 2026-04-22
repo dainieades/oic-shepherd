@@ -123,7 +123,7 @@ export default function PersonFamilyPicker({
           gap: 8,
           background: 'var(--bg)',
           border: '1px solid var(--border)',
-          borderRadius: 10,
+          borderRadius: 'var(--radius-sm)',
           padding: '9px 12px',
           marginBottom: 16,
           flexShrink: 0,

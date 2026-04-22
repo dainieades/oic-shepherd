@@ -41,22 +41,22 @@ export function Button({
 
   const variants: Record<string, React.CSSProperties> = {
     primary: {
-      borderRadius: 8,
+      borderRadius: 'var(--radius-xs)',
       background: disabled ? 'var(--border)' : 'var(--sage)',
       color: disabled ? 'var(--text-muted)' : 'var(--on-sage)',
     },
     ghost: {
-      borderRadius: 8,
+      borderRadius: 'var(--radius-xs)',
       background: 'none',
       color: disabled ? 'var(--text-muted)' : 'var(--text-secondary)',
     },
     text: {
-      borderRadius: 8,
+      borderRadius: 'var(--radius-xs)',
       background: 'none',
       color: disabled ? 'var(--text-muted)' : 'var(--sage)',
     },
     danger: {
-      borderRadius: 8,
+      borderRadius: 'var(--radius-xs)',
       background: disabled ? 'var(--border)' : 'var(--red-light)',
       color: disabled ? 'var(--text-muted)' : 'var(--red)',
       border: disabled ? 'none' : '1px solid var(--red-border)',

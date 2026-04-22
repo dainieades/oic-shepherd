@@ -10,7 +10,7 @@ const roleLabel: Record<string, string> = {
 };
 
 const roleColor: Record<string, { bg: string; color: string }> = {
-  admin: { bg: '#FDF3E3', color: '#C9912B' },
+  admin: { bg: 'var(--amber-light)', color: 'var(--amber)' },
   shepherd: { bg: 'var(--sage-light)', color: 'var(--sage)' },
   'welcome-team': { bg: 'var(--blue-light)', color: 'var(--blue)' },
 };
@@ -102,7 +102,7 @@ export default function ProfilePage() {
                 fontSize: 11,
                 fontWeight: 600,
                 padding: '3px 10px',
-                borderRadius: '999px',
+                borderRadius: 'var(--radius-pill)',
                 background: role.bg,
                 color: role.color,
               }}

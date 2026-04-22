@@ -30,11 +30,11 @@ export default function TodoLogPrompt({ todo, onAddLog, onSkip }: TodoLogPromptP
         className="animate-slide-up"
         style={{
           background: 'var(--surface)',
-          borderRadius: 20,
+          borderRadius: 'var(--radius-xl)',
           width: '100%',
           maxWidth: 360,
           padding: '24px 20px 20px',
-          boxShadow: '0 8px 40px rgba(0,0,0,0.18)',
+          boxShadow: 'var(--shadow-elevated)',
         }}
       >
         <p
@@ -60,7 +60,7 @@ export default function TodoLogPrompt({ todo, onAddLog, onSkip }: TodoLogPromptP
               background: 'var(--sage)',
               color: 'var(--on-sage)',
               border: 'none',
-              borderRadius: 10,
+              borderRadius: 'var(--radius-sm)',
               fontSize: 14,
               fontWeight: 600,
               cursor: 'pointer',
@@ -76,7 +76,7 @@ export default function TodoLogPrompt({ todo, onAddLog, onSkip }: TodoLogPromptP
               background: 'var(--bg)',
               border: '1px solid var(--border)',
               color: 'var(--text-secondary)',
-              borderRadius: 10,
+              borderRadius: 'var(--radius-sm)',
               fontSize: 14,
               fontWeight: 500,
               cursor: 'pointer',

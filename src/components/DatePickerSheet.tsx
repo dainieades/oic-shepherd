@@ -126,7 +126,7 @@ export default function DatePickerSheet({
   const navBtnStyle: React.CSSProperties = {
     width: 32,
     height: 32,
-    borderRadius: 8,
+    borderRadius: 'var(--radius-xs)',
     background: 'var(--bg)',
     border: '1px solid var(--border-light)',
     color: 'var(--text-secondary)',
@@ -162,7 +162,7 @@ export default function DatePickerSheet({
             height: 20,
             borderRadius: '50%',
             background: '#fff',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.25)',
+            boxShadow: 'var(--shadow-card)',
             transition: 'left 0.2s',
           }}
         />
@@ -199,7 +199,7 @@ export default function DatePickerSheet({
           width: '100%',
           display: 'flex',
           alignItems: 'stretch',
-          borderRadius: 10,
+          borderRadius: 'var(--radius-sm)',
           overflow: 'hidden',
           border: `2px solid ${isActive ? 'var(--sage)' : 'var(--border-light)'}`,
           background: 'var(--bg)',
@@ -295,7 +295,7 @@ export default function DatePickerSheet({
   return (
     <>
       <div
-        style={{ position: 'fixed', inset: 0, background: BACKDROP_COLOR, zIndex: 70 }}
+        style={{ position: 'fixed', inset: 0, background: BACKDROP_COLOR, zIndex: 'var(--z-sheet)' }}
         onClick={onClose}
       />
       <div
@@ -359,7 +359,7 @@ export default function DatePickerSheet({
               style={{
                 height: 32,
                 padding: '0 14px',
-                borderRadius: 8,
+                borderRadius: 'var(--radius-xs)',
                 background: 'var(--sage)',
                 color: 'var(--on-sage)',
                 fontSize: 14,

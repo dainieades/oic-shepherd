@@ -40,7 +40,7 @@ export default function SearchBar({ search, setSearch, show, inputRef }: SearchB
           paddingBottom: 8,
           background: 'var(--surface)',
           border: '1px solid var(--border)',
-          borderRadius: 10,
+          borderRadius: 'var(--radius-sm)',
           fontSize: 14,
           color: 'var(--text-primary)',
           outline: 'none',

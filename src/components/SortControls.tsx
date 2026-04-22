@@ -50,9 +50,9 @@ export default function SortControls(): React.ReactNode {
             top: 'calc(100% + 4px)',
             background: 'var(--surface)',
             border: '1px solid var(--border)',
-            borderRadius: 10,
+            borderRadius: 'var(--radius-sm)',
             boxShadow: 'var(--shadow-elevated)',
-            zIndex: 30,
+            zIndex: 'var(--z-page)',
             minWidth: 160,
             padding: '4px 0',
           }}

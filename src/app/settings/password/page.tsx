@@ -61,7 +61,7 @@ export default function ChangePasswordPage() {
           style={{
             height: 32,
             padding: '0 14px',
-            borderRadius: 8,
+            borderRadius: 'var(--radius-xs)',
             background: status.type === 'loading' ? 'var(--border)' : 'var(--sage)',
             color: status.type === 'loading' ? 'var(--text-muted)' : 'var(--on-sage)',
             border: 'none',
@@ -95,7 +95,7 @@ export default function ChangePasswordPage() {
             style={{
               height: 44,
               padding: '0 24px',
-              borderRadius: 10,
+              borderRadius: 'var(--radius-sm)',
               background: 'var(--sage)',
               color: 'var(--on-sage)',
               border: 'none',
@@ -114,7 +114,7 @@ export default function ChangePasswordPage() {
               style={{
                 background: 'var(--red-light)',
                 border: '1px solid var(--red-border)',
-                borderRadius: 10,
+                borderRadius: 'var(--radius-sm)',
                 padding: '9px 13px',
                 marginBottom: 16,
                 fontSize: 13,
@@ -166,7 +166,7 @@ export default function ChangePasswordPage() {
 const navBarStyle: React.CSSProperties = {
   position: 'sticky',
   top: 0,
-  zIndex: 30,
+  zIndex: 'var(--z-page)',
   background: 'var(--bg)',
   marginLeft: -16,
   marginRight: -16,
@@ -210,7 +210,7 @@ const labelStyle: React.CSSProperties = {
 const inputStyle: React.CSSProperties = {
   width: '100%',
   padding: '11px 13px',
-  borderRadius: 10,
+  borderRadius: 'var(--radius-sm)',
   border: '1.5px solid var(--border)',
   fontSize: 15,
   color: 'var(--text-primary)',

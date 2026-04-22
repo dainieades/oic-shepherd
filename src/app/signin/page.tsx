@@ -344,7 +344,7 @@ export default function SignInPage() {
               fontWeight: 700,
               letterSpacing: '0.03em',
               padding: '2px 8px',
-              borderRadius: 20,
+              borderRadius: 'var(--radius-xl)',
               pointerEvents: 'none',
               zIndex: 1,
             }}
@@ -361,7 +361,7 @@ export default function SignInPage() {
               justifyContent: 'center',
               gap: 10,
               padding: '13px 20px',
-              borderRadius: 12,
+              borderRadius: 'var(--radius-md)',
               border: '1.5px solid var(--sage)',
               background: 'var(--surface)',
               fontSize: 15,
@@ -472,7 +472,7 @@ const cardStyle: React.CSSProperties = {
   width: '100%',
   maxWidth: 390,
   background: 'var(--surface)',
-  borderRadius: 20,
+  borderRadius: 'var(--radius-xl)',
   border: '1px solid var(--border)',
   padding: '36px 28px 32px',
   boxShadow: 'var(--shadow-elevated)',
@@ -496,7 +496,7 @@ const labelStyle: React.CSSProperties = {
 const inputStyle: React.CSSProperties = {
   width: '100%',
   padding: '12px 14px',
-  borderRadius: 12,
+  borderRadius: 'var(--radius-md)',
   border: '1.5px solid var(--border)',
   fontSize: 15,
   color: 'var(--text-primary)',
@@ -507,7 +507,7 @@ const inputStyle: React.CSSProperties = {
 const primaryButtonStyle: React.CSSProperties = {
   width: '100%',
   padding: '13px 20px',
-  borderRadius: 12,
+  borderRadius: 'var(--radius-md)',
   border: 'none',
   background: 'var(--sage)',
   fontSize: 15,
@@ -533,7 +533,7 @@ function ErrorBanner({ message }: { message: string }) {
       style={{
         background: 'var(--red-light)',
         border: '1px solid var(--red-border)',
-        borderRadius: 10,
+        borderRadius: 'var(--radius-sm)',
         padding: '10px 14px',
         marginBottom: 16,
         fontSize: 13,

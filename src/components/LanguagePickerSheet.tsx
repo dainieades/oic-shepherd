@@ -90,7 +90,7 @@ export default function LanguagePickerSheet({ currentLanguages, onConfirm, onBac
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 70,
+        zIndex: 'var(--z-sheet)',
         background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',
@@ -177,7 +177,7 @@ export default function LanguagePickerSheet({ currentLanguages, onConfirm, onBac
               gap: 8,
               background: 'var(--bg)',
               border: '1px solid var(--border)',
-              borderRadius: 10,
+              borderRadius: 'var(--radius-sm)',
               padding: '9px 12px',
             }}
           >

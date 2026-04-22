@@ -108,7 +108,7 @@ export default function SettingsPage() {
         style={{
           position: 'sticky',
           top: 0,
-          zIndex: 20,
+          zIndex: 'var(--z-sticky)',
           background: 'var(--bg)',
           marginLeft: -16,
           marginRight: -16,
@@ -337,7 +337,7 @@ export default function SettingsPage() {
           style={{
             position: 'fixed',
             inset: 0,
-            zIndex: 80,
+            zIndex: 'var(--z-nested)',
             background: BACKDROP_COLOR,
             display: 'flex',
             alignItems: 'center',

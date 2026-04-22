@@ -34,7 +34,7 @@ export function GroupPickerSheet({
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 70,
+        zIndex: 'var(--z-sheet)',
         background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',
@@ -119,7 +119,7 @@ export function GroupPickerSheet({
               gap: 8,
               background: 'var(--bg)',
               border: '1px solid var(--border)',
-              borderRadius: 10,
+              borderRadius: 'var(--radius-sm)',
               padding: '9px 12px',
             }}
           >
@@ -263,7 +263,7 @@ export function SheepPickerSheet({
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 70,
+        zIndex: 'var(--z-sheet)',
         background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',
@@ -348,7 +348,7 @@ export function SheepPickerSheet({
               gap: 8,
               background: 'var(--bg)',
               border: '1px solid var(--border)',
-              borderRadius: 10,
+              borderRadius: 'var(--radius-sm)',
               padding: '9px 12px',
             }}
           >
@@ -513,7 +513,7 @@ export function ShepherdPickerSheet({
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 70,
+        zIndex: 'var(--z-sheet)',
         background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',
@@ -598,7 +598,7 @@ export function ShepherdPickerSheet({
               gap: 8,
               background: 'var(--bg)',
               border: '1px solid var(--border)',
-              borderRadius: 10,
+              borderRadius: 'var(--radius-sm)',
               padding: '9px 12px',
             }}
           >
@@ -761,7 +761,7 @@ export function PositionPickerSheet({
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 70,
+        zIndex: 'var(--z-sheet)',
         background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',
@@ -846,7 +846,7 @@ export function PositionPickerSheet({
               gap: 8,
               background: 'var(--bg)',
               border: '1px solid var(--border)',
-              borderRadius: 10,
+              borderRadius: 'var(--radius-sm)',
               padding: '9px 12px',
             }}
           >

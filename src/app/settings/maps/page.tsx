@@ -103,7 +103,7 @@ export default function MapsAppPage() {
 const navBarStyle: React.CSSProperties = {
   position: 'sticky',
   top: 0,
-  zIndex: 30,
+  zIndex: 'var(--z-page)',
   background: 'var(--bg)',
   marginLeft: -16,
   marginRight: -16,

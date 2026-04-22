@@ -187,7 +187,7 @@ export default function AddNoticeModal({
           position: 'fixed',
           inset: 0,
           background: BACKDROP_COLOR,
-          zIndex: 60,
+          zIndex: 'var(--z-modal)',
           display: 'flex',
           alignItems: 'flex-end',
           justifyContent: 'center',
@@ -244,7 +244,7 @@ export default function AddNoticeModal({
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+                boxShadow: 'var(--shadow-card)',
               }}
               title="Delete notice"
             >
@@ -360,7 +360,7 @@ export default function AddNoticeModal({
                             fontSize: 12,
                             fontWeight: 600,
                             padding: '3px 9px',
-                            borderRadius: '999px',
+                            borderRadius: 'var(--radius-pill)',
                             background: urgencyStyle.bg,
                             color: urgencyStyle.color,
                             border: `1px solid ${urgencyStyle.border}`,
@@ -439,7 +439,7 @@ export default function AddNoticeModal({
                     minHeight: 200,
                     background: 'var(--surface)',
                     border: '1px solid var(--border-light)',
-                    borderRadius: 10,
+                    borderRadius: 'var(--radius-sm)',
                     fontSize: 14,
                     color: 'var(--text-primary)',
                     resize: 'vertical',

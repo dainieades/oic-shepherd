@@ -147,7 +147,7 @@ export default function AddLogModal({
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+                boxShadow: 'var(--shadow-card)',
               }}
               title="Delete log"
             >
@@ -276,7 +276,7 @@ export default function AddLogModal({
                     minHeight: 220,
                     background: 'var(--surface)',
                     border: '1px solid var(--border-light)',
-                    borderRadius: 10,
+                    borderRadius: 'var(--radius-sm)',
                     fontSize: 14,
                     color: 'var(--text-primary)',
                     resize: 'vertical',
@@ -406,7 +406,7 @@ export function DeleteConfirmDialog({
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 80,
+        zIndex: 'var(--z-nested)',
         background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'center',

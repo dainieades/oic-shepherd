@@ -86,7 +86,7 @@ function FloatingCalendar({
   }
 
   const navBtnStyle: React.CSSProperties = {
-    width: 30, height: 30, borderRadius: 8,
+    width: 30, height: 30, borderRadius: 'var(--radius-xs)',
     background: 'var(--bg)', border: '1px solid var(--border-light)',
     color: 'var(--text-secondary)', cursor: 'pointer',
     display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
@@ -94,12 +94,12 @@ function FloatingCalendar({
 
   return (
     <>
-      <div style={{ position: 'fixed', inset: 0, zIndex: 90 }} onClick={onClose} />
+      <div style={{ position: 'fixed', inset: 0, zIndex: 'var(--z-float)' }} onClick={onClose} />
       <div
         style={{
           position: 'fixed', top, left, width: calWidth, zIndex: 91,
           background: 'var(--surface)', borderRadius: 16,
-          boxShadow: '0 8px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.10)',
+          boxShadow: 'var(--shadow-elevated)',
           border: '1px solid var(--border-light)', overflow: 'hidden',
         }}
       >
@@ -109,7 +109,7 @@ function FloatingCalendar({
           </button>
           <button
             onClick={() => onSelect(selectedDate)}
-            style={{ height: 28, padding: '0 12px', borderRadius: 8, background: 'var(--sage)', color: '#fff', fontSize: 14, fontWeight: 600, border: 'none', cursor: 'pointer' }}
+            style={{ height: 28, padding: '0 12px', borderRadius: 'var(--radius-xs)', background: 'var(--sage)', color: '#fff', fontSize: 14, fontWeight: 600, border: 'none', cursor: 'pointer' }}
           >
             Done
           </button>
@@ -124,7 +124,7 @@ function FloatingCalendar({
             placeholder="Apr 17, 2026"
             style={{
               width: '100%', boxSizing: 'border-box',
-              padding: '9px 12px', borderRadius: 10,
+              padding: '9px 12px', borderRadius: 'var(--radius-sm)',
               border: '2px solid var(--sage)',
               background: 'var(--bg)', outline: 'none',
               fontSize: 15, fontWeight: 500, color: 'var(--text-primary)',

@@ -123,7 +123,7 @@ export default function PhotoAvatar({ photo, name, onPhotoChange, onPhotoRemove 
               position: 'fixed',
               inset: 0,
               background: BACKDROP_COLOR,
-              zIndex: 80,
+              zIndex: 'var(--z-nested)',
               display: 'flex',
               alignItems: 'flex-end',
               justifyContent: 'center',

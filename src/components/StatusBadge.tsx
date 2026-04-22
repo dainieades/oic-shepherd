@@ -15,7 +15,7 @@ export function StatusBadge({ label, bg, color, border }: StatusBadgeProps) {
       style={{
         fontSize: 11,
         padding: '1px 7px',
-        borderRadius: '999px',
+        borderRadius: 'var(--radius-pill)',
         background: bg,
         color,
         border,

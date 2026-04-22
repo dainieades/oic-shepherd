@@ -47,7 +47,7 @@ export default function AppRolePickerSheet({
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 70,
+        zIndex: 'var(--z-sheet)',
         background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',
@@ -144,7 +144,7 @@ export default function AppRolePickerSheet({
                 background: '#DC2626',
                 color: '#fff',
                 border: 'none',
-                borderRadius: 12,
+                borderRadius: 'var(--radius-md)',
                 fontSize: 15,
                 fontWeight: 600,
                 cursor: 'pointer',

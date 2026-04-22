@@ -222,7 +222,7 @@ export default function LogsPage() {
         style={{
           width: btnSize,
           height: btnSize,
-          borderRadius: 8,
+          borderRadius: 'var(--radius-xs)',
           background: showSearch || search ? 'var(--sage-light)' : 'transparent',
           border: showSearch || search ? '1px solid var(--sage-mid)' : '1px solid var(--border)',
           color: showSearch || search ? 'var(--sage)' : 'var(--text-secondary)',
@@ -243,7 +243,7 @@ export default function LogsPage() {
           style={{
             width: btnSize,
             height: btnSize,
-            borderRadius: 8,
+            borderRadius: 'var(--radius-xs)',
             background: filterActive ? 'var(--sage-light)' : 'transparent',
             border: filterActive ? '1px solid var(--sage-mid)' : '1px solid var(--border)',
             color: filterActive ? 'var(--sage)' : 'var(--text-secondary)',
@@ -285,7 +285,7 @@ export default function LogsPage() {
         style={{
           height: btnSize,
           padding: btnPad,
-          borderRadius: 8,
+          borderRadius: 'var(--radius-xs)',
           background: 'var(--sage)',
           color: 'var(--on-sage)',
           fontSize: btnFont,
@@ -310,7 +310,7 @@ export default function LogsPage() {
         style={{
           position: 'sticky',
           top: 0,
-          zIndex: 20,
+          zIndex: 'var(--z-sticky)',
           background: 'var(--bg)',
           marginLeft: -16,
           marginRight: -16,
@@ -394,7 +394,7 @@ export default function LogsPage() {
               paddingBottom: 8,
               background: 'var(--surface)',
               border: '1px solid var(--border)',
-              borderRadius: 10,
+              borderRadius: 'var(--radius-sm)',
               fontSize: 14,
               color: 'var(--text-primary)',
               outline: 'none',
@@ -510,7 +510,7 @@ function FilterChip({ children, onRemove }: { children: React.ReactNode; onRemov
         alignItems: 'center',
         gap: 4,
         padding: '3px 9px',
-        borderRadius: '999px',
+        borderRadius: 'var(--radius-pill)',
         background: 'var(--sage-light)',
         border: '1px solid var(--sage-mid)',
         color: 'var(--sage-dark)',

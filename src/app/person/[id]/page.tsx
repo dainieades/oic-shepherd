@@ -253,7 +253,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
         style={{
           position: 'sticky',
           top: 0,
-          zIndex: 40,
+          zIndex: 'var(--z-header)',
           background: 'var(--bg)',
           display: 'flex',
           alignItems: 'center',
@@ -303,7 +303,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                 style={{
                   height: scrolled ? 30 : 36,
                   padding: scrolled ? '0 10px' : '0 12px',
-                  borderRadius: 8,
+                  borderRadius: 'var(--radius-xs)',
                   background: 'var(--sage)',
                   color: 'var(--on-sage)',
                   border: 'none',
@@ -327,7 +327,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                 style={{
                   height: scrolled ? 30 : 36,
                   padding: scrolled ? '0 12px' : '0 14px',
-                  borderRadius: 8,
+                  borderRadius: 'var(--radius-xs)',
                   background: 'var(--sage)',
                   color: 'var(--on-sage)',
                   fontSize: scrolled ? 13 : 14,
@@ -352,7 +352,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
               style={{
                 height: scrolled ? 30 : 36,
                 padding: scrolled ? '0 12px' : '0 14px',
-                borderRadius: 8,
+                borderRadius: 'var(--radius-xs)',
                 background: 'var(--sage)',
                 color: 'var(--on-sage)',
                 fontSize: scrolled ? 13 : 14,
@@ -395,11 +395,11 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                     position: 'absolute',
                     top: 'calc(100% + 6px)',
                     right: 0,
-                    zIndex: 50,
+                    zIndex: 'var(--z-dropdown)',
                     background: 'var(--surface)',
                     border: '1px solid var(--border)',
-                    borderRadius: 12,
-                    boxShadow: '0 8px 28px rgba(0,0,0,0.12)',
+                    borderRadius: 'var(--radius-md)',
+                    boxShadow: 'var(--shadow-elevated)',
                     minWidth: 180,
                     overflow: 'hidden',
                   }}
@@ -554,7 +554,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                   style={{
                     fontSize: 11,
                     padding: '2px 7px',
-                    borderRadius: '999px',
+                    borderRadius: 'var(--radius-pill)',
                     background: 'var(--blue-light)',
                     color: 'var(--blue)',
                     fontWeight: 600,
@@ -577,7 +577,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
           style={{
             position: 'sticky',
             top: 54,
-            zIndex: 39,
+            zIndex: 'var(--z-subheader)',
             background: 'var(--bg)',
             display: 'flex',
             borderBottom: '2px solid var(--border-light)',
@@ -615,7 +615,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                     fontWeight: 600,
                     background: 'var(--sage)',
                     color: 'var(--on-sage)',
-                    borderRadius: 10,
+                    borderRadius: 'var(--radius-sm)',
                     padding: '1px 6px',
                     lineHeight: 1.5,
                   }}
@@ -630,7 +630,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                     fontWeight: 600,
                     background: 'var(--red)',
                     color: 'var(--on-red)',
-                    borderRadius: 10,
+                    borderRadius: 'var(--radius-sm)',
                     padding: '1px 6px',
                     lineHeight: 1.5,
                   }}
@@ -949,7 +949,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                               fontSize: 11,
                               fontWeight: 600,
                               padding: '1px 7px',
-                              borderRadius: 999,
+                              borderRadius: 'var(--radius-pill)',
                               background: 'var(--sage-light)',
                               color: 'var(--sage)',
                             }}
@@ -972,7 +972,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                           fontSize: 11,
                           fontWeight: 600,
                           padding: '1px 7px',
-                          borderRadius: 999,
+                          borderRadius: 'var(--radius-pill)',
                           background: 'var(--sage-light)',
                           color: 'var(--sage)',
                         }}
@@ -1054,7 +1054,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                         style={{
                           fontSize: 11,
                           padding: '3px 9px',
-                          borderRadius: '999px',
+                          borderRadius: 'var(--radius-pill)',
                           background: 'var(--blue-light)',
                           color: 'var(--blue)',
                           fontWeight: 500,
@@ -1232,7 +1232,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
             position: 'fixed',
             inset: 0,
             background: BACKDROP_COLOR,
-            zIndex: 70,
+            zIndex: 'var(--z-sheet)',
             display: 'flex',
             alignItems: 'flex-end',
             justifyContent: 'center',
@@ -1290,7 +1290,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                   style={{
                     width: '100%',
                     height: 50,
-                    borderRadius: 14,
+                    borderRadius: 'var(--radius)',
                     background: 'var(--sage)',
                     color: 'var(--on-sage)',
                     fontSize: 16,
@@ -1307,7 +1307,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                   style={{
                     width: '100%',
                     height: 50,
-                    borderRadius: 14,
+                    borderRadius: 'var(--radius)',
                     background: 'var(--bg)',
                     color: 'var(--text-secondary)',
                     fontSize: 16,
@@ -1348,7 +1348,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                   style={{
                     width: '100%',
                     height: 50,
-                    borderRadius: 14,
+                    borderRadius: 'var(--radius)',
                     background: 'var(--red)',
                     color: '#fff',
                     fontSize: 16,
@@ -1365,7 +1365,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                   style={{
                     width: '100%',
                     height: 50,
-                    borderRadius: 14,
+                    borderRadius: 'var(--radius)',
                     background: 'var(--bg)',
                     color: 'var(--text-secondary)',
                     fontSize: 16,
@@ -1522,7 +1522,7 @@ function TodoSection({
                           fontSize: 10,
                           color: 'var(--blue)',
                           padding: '1px 6px',
-                          borderRadius: '999px',
+                          borderRadius: 'var(--radius-pill)',
                           background: 'var(--blue-light)',
                           fontWeight: 500,
                         }}
@@ -1611,7 +1611,7 @@ function InfoSection({
       </p>
       <div
         className="no-last-border"
-        style={{ background: 'var(--surface)', borderRadius: 14, overflow: 'hidden', padding: 0 }}
+        style={{ background: 'var(--surface)', borderRadius: 'var(--radius)', overflow: 'hidden', padding: 0 }}
       >
         {children}
       </div>
