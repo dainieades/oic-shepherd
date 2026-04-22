@@ -45,6 +45,7 @@
   --red: #b85450;
   --red-light: #fbf0ef;
   --red-border: #edbbba;
+  --on-red: #ffffff;
 
   --teal: #3d8c8c;
   --teal-light: #e6f4f4;
@@ -108,6 +109,7 @@
   --red: #cc706c;
   --red-light: #1e0c0c;
   --red-border: #3a1515;
+  --on-red: #100f13;
 
   --teal: #5ab8b8;
   --teal-light: #0e2222;
@@ -159,6 +161,7 @@
     --red: #cc706c;
     --red-light: #1e0c0c;
     --red-border: #3a1515;
+    --on-red: #100f13;
 
     --teal: #5ab8b8;
     --teal-light: #0e2222;

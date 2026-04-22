@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS } from '@/lib/constants';
+import { Button } from './Button';
 
 interface BottomSheetProps {
   onClose: () => void;
@@ -99,53 +100,18 @@ export function ModalHeader({
         borderBottom: '1px solid var(--border-light)',
       }}
     >
-      <button
-        onClick={onCancel}
-        style={{
-          fontSize: 14,
-          color: 'var(--text-secondary)',
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-        }}
-      >
+      <Button variant="ghost" size="sm" onClick={onCancel}>
         {cancelLabel}
-      </button>
+      </Button>
       <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>{title}</span>
-      {actionVariant === 'pill' ? (
-        <button
-          onClick={onAction}
-          disabled={actionDisabled}
-          style={{
-            height: 32,
-            padding: '0 14px',
-            borderRadius: 8,
-            background: actionDisabled ? 'var(--border)' : 'var(--sage)',
-            color: actionDisabled ? 'var(--text-muted)' : 'var(--on-sage)',
-            fontSize: 14,
-            fontWeight: 600,
-            border: 'none',
-            cursor: actionDisabled ? 'default' : 'pointer',
-            transition: 'background 0.15s',
-          }}
-        >
-          {actionLabel}
-        </button>
-      ) : (
-        <button
-          onClick={actionDisabled ? undefined : onAction}
-          style={{
-            fontSize: 14,
-            fontWeight: 600,
-            color: actionDisabled ? 'var(--text-muted)' : 'var(--sage)',
-            background: 'none',
-            border: 'none',
-            cursor: actionDisabled ? 'default' : 'pointer',
-          }}
-        >
-          {actionLabel}
-        </button>
-      )}
+      <Button
+        variant={actionVariant === 'text' ? 'text' : 'primary'}
+        size="sm"
+        onClick={onAction}
+        disabled={actionDisabled}
+      >
+        {actionLabel}
+      </Button>
     </div>
   );
 }

@@ -183,44 +183,62 @@ export default function SignInPage() {
 
           {status.type === 'error' && <ErrorBanner message={status.message} />}
 
-          <div style={{ marginBottom: 12 }}>
-            <label style={labelStyle}>Password</label>
-            <input
-              type="password"
-              placeholder="At least 8 characters"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={isLoading}
-              autoFocus
-              style={inputStyle}
-            />
-          </div>
-
-          <div style={{ marginBottom: 20 }}>
-            <label style={labelStyle}>Confirm password</label>
-            <input
-              type="password"
-              placeholder="••••••••"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              disabled={isLoading}
-              onKeyDown={(e) => e.key === 'Enter' && handleCreatePassword()}
-              style={inputStyle}
-            />
-          </div>
-
-          <button
-            onClick={handleCreatePassword}
-            disabled={isLoading}
-            style={{
-              ...primaryButtonStyle,
-              opacity: isLoading ? 0.6 : 1,
-              cursor: isLoading ? 'not-allowed' : 'pointer',
-              marginBottom: 12,
-            }}
+          <form
+            onSubmit={(e) => { e.preventDefault(); handleCreatePassword(); }}
+            style={{ display: 'contents' }}
           >
-            {isLoading ? 'Creating account…' : 'Create account'}
-          </button>
+            {/* Hidden email so password managers link the new password to this account */}
+            <input
+              type="email"
+              name="username"
+              autoComplete="username"
+              value={step.email}
+              readOnly
+              style={{ display: 'none' }}
+            />
+
+            <div style={{ marginBottom: 12 }}>
+              <label style={labelStyle}>Password</label>
+              <input
+                type="password"
+                name="password"
+                autoComplete="new-password"
+                placeholder="At least 8 characters"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
+                autoFocus
+                style={inputStyle}
+              />
+            </div>
+
+            <div style={{ marginBottom: 20 }}>
+              <label style={labelStyle}>Confirm password</label>
+              <input
+                type="password"
+                name="confirm-password"
+                autoComplete="new-password"
+                placeholder="••••••••"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                disabled={isLoading}
+                style={inputStyle}
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              style={{
+                ...primaryButtonStyle,
+                opacity: isLoading ? 0.6 : 1,
+                cursor: isLoading ? 'not-allowed' : 'pointer',
+                marginBottom: 12,
+              }}
+            >
+              {isLoading ? 'Creating account…' : 'Create account'}
+            </button>
+          </form>
 
           <button onClick={resetToEmail} style={ghostButtonStyle}>
             Back
@@ -244,32 +262,48 @@ export default function SignInPage() {
 
           {status.type === 'error' && <ErrorBanner message={status.message} />}
 
-          <div style={{ marginBottom: 20 }}>
-            <label style={labelStyle}>Password</label>
-            <input
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={isLoading}
-              autoFocus
-              onKeyDown={(e) => e.key === 'Enter' && handleSignIn()}
-              style={inputStyle}
-            />
-          </div>
-
-          <button
-            onClick={handleSignIn}
-            disabled={isLoading}
-            style={{
-              ...primaryButtonStyle,
-              opacity: isLoading ? 0.6 : 1,
-              cursor: isLoading ? 'not-allowed' : 'pointer',
-              marginBottom: 12,
-            }}
+          <form
+            onSubmit={(e) => { e.preventDefault(); handleSignIn(); }}
+            style={{ display: 'contents' }}
           >
-            {isLoading ? 'Signing in…' : 'Sign in'}
-          </button>
+            {/* Hidden email so password managers know which account's password to fill */}
+            <input
+              type="email"
+              name="username"
+              autoComplete="username"
+              value={step.email}
+              readOnly
+              style={{ display: 'none' }}
+            />
+
+            <div style={{ marginBottom: 20 }}>
+              <label style={labelStyle}>Password</label>
+              <input
+                type="password"
+                name="password"
+                autoComplete="current-password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
+                autoFocus
+                style={inputStyle}
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              style={{
+                ...primaryButtonStyle,
+                opacity: isLoading ? 0.6 : 1,
+                cursor: isLoading ? 'not-allowed' : 'pointer',
+                marginBottom: 12,
+              }}
+            >
+              {isLoading ? 'Signing in…' : 'Sign in'}
+            </button>
+          </form>
 
           <button onClick={resetToEmail} style={ghostButtonStyle}>
             Back
@@ -367,31 +401,34 @@ export default function SignInPage() {
         </div>
 
         {/* Email field */}
-        <div style={{ marginBottom: 12 }}>
-          <label style={labelStyle}>Email address</label>
-          <input
-            type="email"
-            placeholder="you@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            disabled={isLoading}
-            onKeyDown={(e) => e.key === 'Enter' && handleContinue()}
-            style={inputStyle}
-          />
-        </div>
+        <form onSubmit={(e) => { e.preventDefault(); handleContinue(); }} style={{ display: 'contents' }}>
+          <div style={{ marginBottom: 12 }}>
+            <label style={labelStyle}>Email address</label>
+            <input
+              type="email"
+              name="username"
+              autoComplete="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={isLoading}
+              style={inputStyle}
+            />
+          </div>
 
-        {/* Continue button */}
-        <button
-          onClick={handleContinue}
-          disabled={isLoading || !isValidEmail(email)}
-          style={{
-            ...primaryButtonStyle,
-            opacity: isLoading || !isValidEmail(email) ? 0.4 : 1,
-            cursor: isLoading || !isValidEmail(email) ? 'not-allowed' : 'pointer',
-          }}
-        >
-          {isLoading ? 'Checking…' : 'Continue'}
-        </button>
+          {/* Continue button */}
+          <button
+            type="submit"
+            disabled={isLoading || !isValidEmail(email)}
+            style={{
+              ...primaryButtonStyle,
+              opacity: isLoading || !isValidEmail(email) ? 0.4 : 1,
+              cursor: isLoading || !isValidEmail(email) ? 'not-allowed' : 'pointer',
+            }}
+          >
+            {isLoading ? 'Checking…' : 'Continue'}
+          </button>
+        </form>
 
         {/* Footer */}
         <div

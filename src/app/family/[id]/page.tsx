@@ -1206,8 +1206,8 @@ function NoticeCard({
             fontWeight: 700,
             padding: '2px 8px',
             borderRadius: '999px',
-            background: style.color,
-            color: '#fff',
+            background: style.pillBg,
+            color: style.color,
             letterSpacing: '0.03em',
           }}
         >

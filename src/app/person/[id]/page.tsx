@@ -640,7 +640,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                     fontSize: 11,
                     fontWeight: 600,
                     background: 'var(--red)',
-                    color: 'white',
+                    color: 'var(--on-red)',
                     borderRadius: 10,
                     padding: '1px 6px',
                     lineHeight: 1.5,
@@ -1870,8 +1870,8 @@ function NoticeCard({
             fontWeight: 700,
             padding: '2px 8px',
             borderRadius: '999px',
-            background: style.color,
-            color: '#fff',
+            background: style.pillBg,
+            color: style.color,
             letterSpacing: '0.03em',
           }}
         >

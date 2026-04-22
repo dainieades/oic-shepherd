@@ -23,6 +23,7 @@ import {
 } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { useToast } from './Toast';
+import { ModalHeader } from './BottomSheet';
 import {
   type Notice,
   type NoticeCategory,
@@ -81,10 +82,10 @@ const URGENCIES: {
   },
 ];
 
-export const URGENCY_STYLE: Record<NoticeUrgency, { bg: string; color: string; border: string }> = {
-  urgent: { bg: 'var(--surface)', color: 'var(--red)', border: 'var(--border-light)' },
-  moderate: { bg: 'var(--surface)', color: 'var(--amber)', border: 'var(--border-light)' },
-  ongoing: { bg: 'var(--surface)', color: 'var(--blue)', border: 'var(--border-light)' },
+export const URGENCY_STYLE: Record<NoticeUrgency, { bg: string; color: string; border: string; pillBg: string }> = {
+  urgent: { bg: 'var(--surface)', color: 'var(--red)', border: 'var(--border-light)', pillBg: 'var(--red-light)' },
+  moderate: { bg: 'var(--surface)', color: 'var(--amber)', border: 'var(--border-light)', pillBg: 'var(--amber-light)' },
+  ongoing: { bg: 'var(--surface)', color: 'var(--blue)', border: 'var(--border-light)', pillBg: 'var(--blue-light)' },
 };
 
 export default function AddNoticeModal({
@@ -253,50 +254,13 @@ export default function AddNoticeModal({
 
           {!showWhoPicker && (
             <>
-              {/* Header */}
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '14px 20px 12px',
-                  flexShrink: 0,
-                  borderBottom: '1px solid var(--border-light)',
-                }}
-              >
-                <button
-                  onClick={onClose}
-                  style={{
-                    fontSize: 14,
-                    color: 'var(--text-secondary)',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Cancel
-                </button>
-                <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
-                  {isEditing ? 'Edit notice' : 'Add notice'}
-                </span>
-                <button
-                  onClick={handleSave}
-                  disabled={!canSave}
-                  style={{
-                    height: 32,
-                    padding: '0 14px',
-                    borderRadius: 8,
-                    background: canSave ? 'var(--sage)' : 'var(--border)',
-                    color: canSave ? '#fff' : 'var(--text-muted)',
-                    fontSize: 14,
-                    fontWeight: 600,
-                    border: 'none',
-                    cursor: canSave ? 'pointer' : 'default',
-                  }}
-                >
-                  Save
-                </button>
-              </div>
+              <ModalHeader
+                title={isEditing ? 'Edit notice' : 'Add notice'}
+                onCancel={onClose}
+                onAction={handleSave}
+                actionLabel="Save"
+                actionDisabled={!canSave}
+              />
 
               {/* Scrollable body */}
               <div
