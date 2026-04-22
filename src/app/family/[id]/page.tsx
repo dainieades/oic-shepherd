@@ -252,6 +252,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
           )}
           <div ref={kebabRef} style={{ position: 'relative' }}>
             <button
+              aria-label="More options"
               onClick={() => setShowKebab(!showKebab)}
               style={{
                 width: scrolled ? 30 : 36,

@@ -455,7 +455,7 @@ const [showSearch, setShowSearch] = React.useState(false);
   return (
     <div style={{ paddingBottom: 32 }}>
       {/* ── Sticky collapsing header ─────────── */}
-      <div
+      <header
         style={{
           position: 'sticky',
           top: 0,
@@ -513,8 +513,9 @@ const [showSearch, setShowSearch] = React.useState(false);
             <ActionButtons />
           </div>
         )}
-      </div>
+      </header>
 
+      <main>
       {/* ── Search (expandable) ─────────────── */}
       <React.Suspense fallback={null}>
         <SearchBar
@@ -535,12 +536,14 @@ const [showSearch, setShowSearch] = React.useState(false);
             <button
               key={chip.key}
               onClick={chip.clear}
+              aria-label={`Remove ${chip.label} filter`}
               style={{
                 flexShrink: 0,
                 display: 'flex',
                 alignItems: 'center',
                 gap: 4,
-                padding: '3px 9px',
+                padding: '5px 10px',
+                minHeight: 28,
                 borderRadius: 'var(--radius-pill)',
                 background: 'var(--sage-light)',
                 border: '1px solid var(--sage-mid)',
@@ -551,7 +554,7 @@ const [showSearch, setShowSearch] = React.useState(false);
               }}
             >
               {chip.label}
-              <X size={14} aria-hidden="true" />
+              <X size={16} aria-hidden="true" />
             </button>
           ))}
         </div>
@@ -871,6 +874,7 @@ const [showSearch, setShowSearch] = React.useState(false);
       <React.Suspense fallback={null}>
         <FilterPanel show={showFilter} onClose={() => setShowFilter(false)} />
       </React.Suspense>
+      </main>
     </div>
   );
 }

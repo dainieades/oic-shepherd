@@ -374,6 +374,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
           {canEdit && (
             <div ref={kebabRef} style={{ position: 'relative' }}>
               <button
+                aria-label="More options"
                 onClick={() => setShowKebab((v) => !v)}
                 style={{
                   width: scrolled ? 30 : 36,
@@ -1462,6 +1463,7 @@ function TodoSection({
                 }}
               >
                 <button
+                  aria-label={t.completed ? 'Mark as incomplete' : 'Mark as complete'}
                   onClick={() => onToggle(t.id)}
                   style={{
                     width: 20,

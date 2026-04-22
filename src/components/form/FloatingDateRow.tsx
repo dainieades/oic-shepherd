@@ -98,7 +98,6 @@ function FloatingCalendar({
     background: 'var(--bg)', border: '1px solid var(--border-light)',
     color: 'var(--text-secondary)', cursor: 'pointer',
     display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-    outline: 'none',
   };
 
   return (
