@@ -153,7 +153,7 @@ export default function ProfilePage() {
       {currentPersona.role === 'admin' && (
         <div
           style={{
-            background: '#FFFAF4',
+            background: 'var(--amber-light)',
             borderRadius: 'var(--radius-lg)',
             border: '1px solid var(--amber-border)',
             boxShadow: 'var(--shadow-card)',

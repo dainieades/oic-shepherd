@@ -101,14 +101,14 @@ export default function AppRolePickerSheet({
                 width: 44,
                 height: 44,
                 borderRadius: '50%',
-                background: '#FEE2E2',
+                background: 'var(--red-light)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 margin: '0 auto 16px',
               }}
             >
-              <Warning size={20} color="#DC2626" />
+              <Warning size={20} color="var(--red)" />
             </div>
             <p
               style={{
@@ -141,8 +141,8 @@ export default function AppRolePickerSheet({
               style={{
                 width: '100%',
                 padding: '14px',
-                background: '#DC2626',
-                color: '#fff',
+                background: 'var(--red)',
+                color: 'var(--on-red)',
                 border: 'none',
                 borderRadius: 'var(--radius-md)',
                 fontSize: 15,
@@ -234,7 +234,7 @@ export default function AppRolePickerSheet({
                   borderBottom: '1px solid var(--border-light)',
                   fontSize: 15,
                   fontWeight: 500,
-                  color: '#DC2626',
+                  color: 'var(--red)',
                   cursor: 'pointer',
                   textAlign: 'left',
                 }}

@@ -55,50 +55,12 @@ _Last audited: 2026-04-22_
 - [x] Add spacing scale tokens: `--spacing-xs` through `--spacing-3xl` ✅
 - [x] Add z-index scale tokens: full scale (`--z-sticky`, `--z-page`, `--z-subheader`, `--z-header`, `--z-dropdown`, `--z-modal`, `--z-sheet`, `--z-nested`, `--z-float`, `--z-toast`) — 40+ hardcoded values replaced ✅
 
+**Sprint 8 — Component + token cleanup** ✅ Complete 2026-04-22
+- [x] P16: Replace inline avatar divs in `groups/[id]/page.tsx` with `<AvatarBadge>` (leaders, shepherds, members sections) ✅
+- [x] P17: Form subcomponents (`TextInputRow`, `TextareaRow`, `DateRow`, `PickerRow`) already extracted to `src/components/form/` — no duplication found ✅
+- [x] P18: Replace remaining hardcoded colors (`#FEE2E2`, `#DC2626`, `#5B8A72`, `#FEF2F2`, `#FFFAF4`, `#D8D4D0`, `#fff` on colored backgrounds) with tokens; replace hardcoded z-index values (65, 71, 91, 9999) with `var(--z-*)` or `calc()` expressions ✅
+- [x] P19: `CheckRow` and `RadioRow` already extracted to `src/components/` and imported by FilterPanel, LogsFilterPanel, todos — no duplication found ✅
+
 **Backlog (plan before next major feature)**
 - [ ] Split AppContext mutations into domain-scoped modules if the file grows beyond 1,500 lines again
 - [ ] Add server-side pagination if dataset grows beyond ~1K people
-
----
-
-## P16 — Inline UI Patterns Not Using Existing Components
-**Score: (4+2)×(6-2) = 24**
-
-`AvatarBadge`, `StatusBadge`, `InfoRow`, `CollapsibleSection`, and `Button` patterns are each implemented inline in multiple pages rather than using or extracting a shared component. This causes visual drift, makes global style changes require multi-file edits, and grows the page files unnecessarily.
-
-**Key instances:**
-- Avatar badge (circular initial/photo) — `page.tsx`, `person/[id]`, `family/[id]`, `groups/[id]` — 15+ occurrences, each manually computing initials and colors from `MEMBER_AVATAR_PALETTE`
-- Status pill badge (`borderRadius: 999px` inline) — `page.tsx`, `person/[id]`, `AddNoticeModal` — 20+ occurrences
-- `InfoRow` key-value pair — defined as a local component separately in `person/[id]/page.tsx` and `family/[id]/page.tsx`
-- `CollapsibleSection` — 4 near-identical section header variants with `fontSize: 10`, `fontWeight: 600`, `textTransform: uppercase`, `letterSpacing: '0.06em'`
-- `Button` exists in `src/components/Button.tsx` but `page.tsx` builds the search, filter, and add buttons inline
-
----
-
-## P17 — Form Subcomponents Trapped Inside PersonFormBody
-**Score: (3+2)×(6-2) = 20**
-
-`TextInputRow`, `TextareaRow`, `PickerRow`, `DateRow`, and `FloatingDateRow` are defined inside `src/components/PersonFormBody.tsx` and cannot be imported by other form components. `AddPersonModal.tsx` (1,973 lines) either duplicates these or rebuilds them inline — it's unclear without a full audit.
-
-Moving these to `src/components/form/` would let all modal/drawer forms share one set of styled form primitives, and reduce `PersonFormBody.tsx` (currently 1,237 lines) further.
-
----
-
-## P18 — Design Token Violations
-**Score: (3+1)×(6-2) = 16**
-
-Several CSS values are hardcoded in components and pages instead of using the tokens defined in `src/app/globals.css`:
-
-- **Colors:** `#b45309`, `#92400e`, `#fcd34d`, `#fef3c7`, `#e8f0fe` appear inline — should map to `--amber`, `--sage`, etc.
-- **Border radius:** `8`, `12`, `14` hardcoded in many places — tokens `--radius-sm`, `--radius`, `--radius-lg` exist but aren't applied
-- **Shadows:** `--shadow-card` and `--shadow-elevated` are defined but almost never used
-- **Z-index:** Values 20, 40, 60 are hardcoded across modals and overlays — no named scale
-
----
-
-## P19 — CheckRow / RadioRow Defined Three Times
-**Score: (2+2)×(6-1) = 20**
-
-`CheckRow` and `RadioRow` are local components defined inside both `FilterPanel.tsx` and `LogsFilterPanel.tsx`, with subtle styling differences (padding 7px vs 9px, borderRadius 5 vs 4). A third variant exists in `todos/page.tsx`. Any style change requires three edits; the visual inconsistencies are unintentional.
-
-Extracting to `src/components/CheckRow.tsx` and `src/components/RadioRow.tsx` and normalising the variants would eliminate the duplication and give a single source of truth for the checkbox/radio list item pattern.

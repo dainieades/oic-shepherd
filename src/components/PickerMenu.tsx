@@ -197,7 +197,7 @@ export default function PickerMenu({
                   flexShrink: 0,
                 }}
               >
-                {isSelected && <Check size={10} color="#fff" weight="bold" />}
+                {isSelected && <Check size={10} color="var(--on-sage)" weight="bold" />}
               </span>
             ) : (
               isSelected && <Check size={14} color="var(--sage)" weight="bold" />

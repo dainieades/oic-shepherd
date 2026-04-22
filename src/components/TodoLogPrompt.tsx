@@ -15,7 +15,7 @@ export default function TodoLogPrompt({ todo, onAddLog, onSkip }: TodoLogPromptP
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 65,
+        zIndex: 'var(--z-sheet)',
         background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'center',

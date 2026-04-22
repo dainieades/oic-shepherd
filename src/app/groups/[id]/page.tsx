@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { SectionLabel } from '@/components/SectionLabel';
+import { AvatarBadge } from '@/components/AvatarBadge';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/lib/context';
@@ -249,12 +250,6 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
           >
             {leaders.map((leader, i) => {
               const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
-              const initials = leader.englishName
-                .split(' ')
-                .map((n) => n[0])
-                .join('')
-                .toUpperCase()
-                .slice(0, 2);
               const isAlsoShepherd = group.shepherdIds.includes(leader.id);
               return (
                 <Link
@@ -271,23 +266,13 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
                     textDecoration: 'none',
                   }}
                 >
-                  <div
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: '50%',
-                      background: palette.bg,
-                      color: palette.color,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: 13,
-                      fontWeight: 600,
-                      flexShrink: 0,
-                    }}
-                  >
-                    {initials}
-                  </div>
+                  <AvatarBadge
+                    name={leader.englishName}
+                    photo={leader.photo}
+                    size={40}
+                    bg={palette.bg}
+                    color={palette.color}
+                  />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div
                       style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}
@@ -345,12 +330,6 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
             }}
           >
             {shepherds.map((shepherd) => {
-              const initials = shepherd.englishName
-                .split(' ')
-                .map((n) => n[0])
-                .join('')
-                .toUpperCase()
-                .slice(0, 2);
               return (
                 <Link
                   key={shepherd.id}
@@ -366,23 +345,13 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
                     textDecoration: 'none',
                   }}
                 >
-                  <div
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: '50%',
-                      background: 'var(--avatar-s1-bg)',
-                      color: 'var(--avatar-s1-text)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: 13,
-                      fontWeight: 600,
-                      flexShrink: 0,
-                    }}
-                  >
-                    {initials}
-                  </div>
+                  <AvatarBadge
+                    name={shepherd.englishName}
+                    photo={shepherd.photo}
+                    size={40}
+                    bg="var(--avatar-s1-bg)"
+                    color="var(--avatar-s1-text)"
+                  />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div
                       style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}
@@ -427,12 +396,6 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
           >
             {members.map((m, i) => {
               const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
-              const initials = m.englishName
-                .split(' ')
-                .map((n) => n[0])
-                .join('')
-                .toUpperCase()
-                .slice(0, 2);
               const due = getDueLabel(m.nextFollowUpDate);
 
               return (
@@ -450,23 +413,13 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
                     textDecoration: 'none',
                   }}
                 >
-                  <div
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: '50%',
-                      background: palette.bg,
-                      color: palette.color,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: 13,
-                      fontWeight: 600,
-                      flexShrink: 0,
-                    }}
-                  >
-                    {initials}
-                  </div>
+                  <AvatarBadge
+                    name={m.englishName}
+                    photo={m.photo}
+                    size={40}
+                    bg={palette.bg}
+                    color={palette.color}
+                  />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div
                       style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}
@@ -732,7 +685,7 @@ function EditGroupDrawer({
                 style={pickerRowStyle}
               >
                 <span style={spacerStyle} />
-                <HandHeart size={16} color="#5B8A72" />
+                <HandHeart size={16} color="var(--sage)" />
                 <span style={labelStyle}>Shepherds</span>
                 <span
                   style={{
@@ -976,7 +929,7 @@ function PeoplePickerSheet({
                     height: 36,
                     borderRadius: '50%',
                     background: isSel ? 'var(--sage)' : 'var(--sage-light)',
-                    color: isSel ? '#fff' : 'var(--sage)',
+                    color: isSel ? 'var(--on-sage)' : 'var(--sage)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',

@@ -161,7 +161,7 @@ export default function DatePickerSheet({
             width: 20,
             height: 20,
             borderRadius: '50%',
-            background: '#fff',
+            background: 'var(--surface)',
             boxShadow: 'var(--shadow-card)',
             transition: 'left 0.2s',
           }}
@@ -304,7 +304,7 @@ export default function DatePickerSheet({
           bottom: 0,
           left: 0,
           right: 0,
-          zIndex: 71,
+          zIndex: 'calc(var(--z-sheet) + 1)',
           display: 'flex',
           justifyContent: 'center',
         }}

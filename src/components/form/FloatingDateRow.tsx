@@ -97,7 +97,7 @@ function FloatingCalendar({
       <div style={{ position: 'fixed', inset: 0, zIndex: 'var(--z-float)' }} onClick={onClose} />
       <div
         style={{
-          position: 'fixed', top, left, width: calWidth, zIndex: 91,
+          position: 'fixed', top, left, width: calWidth, zIndex: 'calc(var(--z-float) + 1)',
           background: 'var(--surface)', borderRadius: 16,
           boxShadow: 'var(--shadow-elevated)',
           border: '1px solid var(--border-light)', overflow: 'hidden',
@@ -109,7 +109,7 @@ function FloatingCalendar({
           </button>
           <button
             onClick={() => onSelect(selectedDate)}
-            style={{ height: 28, padding: '0 12px', borderRadius: 'var(--radius-xs)', background: 'var(--sage)', color: '#fff', fontSize: 14, fontWeight: 600, border: 'none', cursor: 'pointer' }}
+            style={{ height: 28, padding: '0 12px', borderRadius: 'var(--radius-xs)', background: 'var(--sage)', color: 'var(--on-sage)', fontSize: 14, fontWeight: 600, border: 'none', cursor: 'pointer' }}
           >
             Done
           </button>
@@ -168,7 +168,7 @@ function FloatingCalendar({
                   width: 36, height: 36, margin: '0 auto', borderRadius: '50%',
                   border: isToday && !isSelected ? '2px solid var(--sage)' : '2px solid transparent',
                   background: isSelected ? 'var(--sage)' : 'none',
-                  color: isSelected ? '#fff' : !cell.inMonth || isFuture ? 'var(--text-muted)' : isToday ? 'var(--sage)' : 'var(--text-primary)',
+                  color: isSelected ? 'var(--on-sage)' : !cell.inMonth || isFuture ? 'var(--text-muted)' : isToday ? 'var(--sage)' : 'var(--text-primary)',
                   fontSize: 13, fontWeight: isSelected || isToday ? 600 : 400,
                   cursor: cell.inMonth && !isFuture ? 'pointer' : 'default',
                   opacity: cell.inMonth && !isFuture ? 1 : 0.35,

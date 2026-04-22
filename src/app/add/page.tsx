@@ -156,7 +156,7 @@ export default function AddPage() {
               width: 48,
               height: 28,
               borderRadius: 'var(--radius-pill)',
-              background: isFirstTime ? 'var(--sage)' : '#D8D4D0',
+              background: isFirstTime ? 'var(--sage)' : 'var(--border)',
               border: 'none',
               cursor: 'pointer',
               position: 'relative',
@@ -168,7 +168,7 @@ export default function AddPage() {
               style={{
                 width: 22,
                 height: 22,
-                background: '#fff',
+                background: 'var(--surface)',
                 borderRadius: '50%',
                 position: 'absolute',
                 top: 3,

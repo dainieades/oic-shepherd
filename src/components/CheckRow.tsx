@@ -38,7 +38,7 @@ export function CheckRow({ checked, onToggle, children }: CheckRowProps) {
           justifyContent: 'center',
         }}
       >
-        {checked && <Check size={10} color="#fff" weight="bold" />}
+        {checked && <Check size={10} color="var(--on-sage)" weight="bold" />}
       </div>
       <span style={{ fontSize: 14, color: 'var(--text-primary)', fontWeight: checked ? 500 : 400 }}>
         {children}

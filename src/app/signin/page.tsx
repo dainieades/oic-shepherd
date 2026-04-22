@@ -339,7 +339,7 @@ export default function SignInPage() {
               left: '50%',
               transform: 'translateX(-50%)',
               background: 'var(--sage)',
-              color: '#fff',
+              color: 'var(--on-sage)',
               fontSize: 11,
               fontWeight: 700,
               letterSpacing: '0.03em',

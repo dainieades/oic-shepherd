@@ -171,7 +171,7 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
                         width: 28,
                         height: 28,
                         borderRadius: '50%',
-                        background: '#FEE2E2',
+                        background: 'var(--red-light)',
                         border: 'none',
                         cursor: 'pointer',
                         display: 'flex',
@@ -718,7 +718,7 @@ function MemberCheckCircle({ selected }: { selected: boolean }) {
         justifyContent: 'center',
       }}
     >
-      <Check size={12} color="#fff" weight="bold" />
+      <Check size={12} color="var(--on-sage)" weight="bold" />
     </div>
   ) : (
     <div
@@ -931,7 +931,7 @@ function GroupPickerSheet({
                     transition: 'background 0.15s',
                   }}
                 >
-                  {isSel && <Check size={11} color="#fff" weight="bold" />}
+                  {isSel && <Check size={11} color="var(--surface)" weight="bold" />}
                 </div>
               </button>
             );
@@ -1052,7 +1052,7 @@ function ShepherdPickerSheet({
                     justifyContent: 'center',
                     fontSize: 11,
                     fontWeight: 700,
-                    color: isSel ? '#fff' : 'var(--text-muted)',
+                    color: isSel ? 'var(--on-sage)' : 'var(--text-muted)',
                     flexShrink: 0,
                   }}
                 >

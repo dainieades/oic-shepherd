@@ -334,7 +334,7 @@ function LanguageRow({
           transition: 'background 0.15s',
         }}
       >
-        {isSel && <Check size={11} color="#fff" weight="bold" />}
+        {isSel && <Check size={11} color="var(--on-sage)" weight="bold" />}
       </div>
     </button>
   );

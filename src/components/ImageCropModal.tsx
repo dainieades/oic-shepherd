@@ -142,7 +142,7 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 9999,
+        zIndex: 'var(--z-float)',
         background: '#111',
         display: 'flex',
         flexDirection: 'column',

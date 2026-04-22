@@ -202,7 +202,7 @@ export function GroupPickerSheet({
                     transition: 'background 0.15s',
                   }}
                 >
-                  {isSel && <Check size={11} color="#fff" weight="bold" />}
+                  {isSel && <Check size={11} color="var(--on-sage)" weight="bold" />}
                 </div>
               </button>
             );
@@ -432,7 +432,7 @@ export function SheepPickerSheet({
                     borderRadius: '50%',
                     flexShrink: 0,
                     background: isSel ? 'var(--sage)' : palette.bg,
-                    color: isSel ? '#fff' : palette.color,
+                    color: isSel ? 'var(--on-sage)' : palette.color,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -473,7 +473,7 @@ export function SheepPickerSheet({
                     transition: 'background 0.15s',
                   }}
                 >
-                  {isSel && <Check size={11} color="#fff" weight="bold" />}
+                  {isSel && <Check size={11} color="var(--on-sage)" weight="bold" />}
                 </div>
               </button>
             );
@@ -669,7 +669,7 @@ export function ShepherdPickerSheet({
                     borderRadius: '50%',
                     flexShrink: 0,
                     background: isSel ? 'var(--sage)' : palette.bg,
-                    color: isSel ? '#fff' : palette.color,
+                    color: isSel ? 'var(--on-sage)' : palette.color,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -708,7 +708,7 @@ export function ShepherdPickerSheet({
                     transition: 'background 0.15s',
                   }}
                 >
-                  {isSel && <Check size={11} color="#fff" weight="bold" />}
+                  {isSel && <Check size={11} color="var(--on-sage)" weight="bold" />}
                 </div>
               </button>
             );
@@ -929,7 +929,7 @@ export function PositionPickerSheet({
                     transition: 'background 0.15s',
                   }}
                 >
-                  {isSel && <Check size={11} color="#fff" weight="bold" />}
+                  {isSel && <Check size={11} color="var(--on-sage)" weight="bold" />}
                 </div>
               </button>
             );

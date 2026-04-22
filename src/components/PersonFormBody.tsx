@@ -795,7 +795,7 @@ function Toggle({ on }: { on: boolean }) {
           width: 18,
           height: 18,
           borderRadius: '50%',
-          background: '#fff',
+          background: 'var(--surface)',
           transition: 'left 0.2s',
         }}
       />

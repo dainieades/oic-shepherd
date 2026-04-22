@@ -372,7 +372,7 @@ function CheckCircle({ selected }: { selected: boolean }) {
         justifyContent: 'center',
       }}
     >
-      <Check size={12} color="#fff" weight="bold" />
+      <Check size={12} color="var(--on-sage)" weight="bold" />
     </div>
   ) : (
     <div

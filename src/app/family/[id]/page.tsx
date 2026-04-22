@@ -373,7 +373,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
               justifyContent: 'center',
             }}
           >
-            <Camera size={11} color="#fff" weight="fill" />
+            <Camera size={11} color="var(--on-sage)" weight="fill" />
           </div>
         </button>
 
@@ -1075,7 +1075,7 @@ function TodoSection({
                     cursor: 'pointer',
                   }}
                 >
-                  {t.completed && <Check size={11} color="#fff" weight="bold" />}
+                  {t.completed && <Check size={11} color="var(--on-sage)" weight="bold" />}
                 </button>
                 <button
                   onClick={() => onEdit(t)}

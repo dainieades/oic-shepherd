@@ -1350,7 +1350,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                     height: 50,
                     borderRadius: 'var(--radius)',
                     background: 'var(--red)',
-                    color: '#fff',
+                    color: 'var(--on-red)',
                     fontSize: 16,
                     fontWeight: 600,
                     border: 'none',
@@ -1474,7 +1474,7 @@ function TodoSection({
                     cursor: 'pointer',
                   }}
                 >
-                  {t.completed && <Check size={11} color="#fff" weight="bold" />}
+                  {t.completed && <Check size={11} color="var(--on-sage)" weight="bold" />}
                 </button>
                 <button
                   onClick={() => onEdit(t)}

@@ -891,7 +891,7 @@ function CalendarView({
                 style={{
                   fontSize: 13,
                   fontWeight: isToday || isSelected ? 700 : 400,
-                  color: isSelected ? '#fff' : isToday ? 'var(--sage)' : 'var(--text-primary)',
+                  color: isSelected ? 'var(--on-sage)' : isToday ? 'var(--sage)' : 'var(--text-primary)',
                   lineHeight: 1,
                 }}
               >
@@ -997,7 +997,7 @@ function CalendarView({
                         cursor: 'pointer',
                       }}
                     >
-                      {t.completed && <Check size={11} color="#fff" weight="bold" />}
+                      {t.completed && <Check size={11} color="var(--on-sage)" weight="bold" />}
                     </button>
                     <button
                       onClick={() => onEdit(t)}
@@ -1148,7 +1148,7 @@ function TodoSection({
                     cursor: 'pointer',
                   }}
                 >
-                  {t.completed && <Check size={11} color="#fff" weight="bold" />}
+                  {t.completed && <Check size={11} color="var(--on-sage)" weight="bold" />}
                 </button>
                 <button
                   onClick={() => onEdit(t)}

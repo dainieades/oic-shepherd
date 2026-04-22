@@ -93,7 +93,7 @@ export default function PhotoAvatar({ photo, name, onPhotoChange, onPhotoRemove 
             justifyContent: 'center',
           }}
         >
-          <Camera size={11} color="#fff" weight="fill" />
+          <Camera size={11} color="var(--on-sage)" weight="fill" />
         </div>
       </button>
 
@@ -223,7 +223,7 @@ export default function PhotoAvatar({ photo, name, onPhotoChange, onPhotoRemove 
                       width: 36,
                       height: 36,
                       borderRadius: '50%',
-                      background: '#FEF2F2',
+                      background: 'var(--red-light)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
