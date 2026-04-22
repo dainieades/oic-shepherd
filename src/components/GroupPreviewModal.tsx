@@ -3,7 +3,8 @@
 import Link from 'next/link';
 import { useApp } from '@/lib/context';
 import { getMembershipLabel } from '@/lib/utils';
-import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, SHEPHERD_AVATAR_PALETTE } from '@/lib/constants';
+import { BottomSheet } from './BottomSheet';
+import { SHEPHERD_AVATAR_PALETTE } from '@/lib/constants';
 
 interface Props {
   groupId: string;
@@ -27,45 +28,10 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
   );
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 'var(--z-modal)',
-        background: BACKDROP_COLOR,
-        display: 'flex',
-        alignItems: 'flex-end',
-        justifyContent: 'center',
-      }}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
+    <BottomSheet
+      onClose={onClose}
+      contentStyle={{ height: 'auto', maxHeight: 'calc(100dvh - 5rem)', paddingBottom: 'env(safe-area-inset-bottom, 1rem)' }}
     >
-      <div
-        className="animate-slide-up"
-        style={{
-          background: 'var(--surface)',
-          borderRadius: SHEET_BORDER_RADIUS,
-          width: '100%',
-          maxWidth: SHEET_MAX_WIDTH,
-          maxHeight: 'calc(100dvh - 80px)',
-          display: 'flex',
-          flexDirection: 'column',
-          paddingBottom: 'env(safe-area-inset-bottom, 16px)',
-          overflow: 'hidden',
-        }}
-      >
-        {/* Drag handle */}
-        <div
-          style={{
-            width: 36,
-            height: 4,
-            background: 'var(--border)',
-            borderRadius: 2,
-            margin: '14px auto 0',
-            flexShrink: 0,
-          }}
-        />
 
         {/* Header */}
         <div
@@ -73,7 +39,7 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: '12px 20px 12px',
+            padding: '0.75rem 1.25rem 0.75rem',
             flexShrink: 0,
             borderBottom: '1px solid var(--border-light)',
           }}
@@ -98,7 +64,7 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
               color: 'var(--text-primary)',
               flex: 1,
               textAlign: 'center',
-              padding: '0 8px',
+              padding: '0 0.5rem',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
@@ -123,7 +89,7 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
 
         {/* Scrollable content */}
         <div
-          style={{ flex: 1, overflowY: 'auto', padding: '16px 20px 8px', background: 'var(--bg)' }}
+          style={{ flex: 1, overflowY: 'auto', padding: '1rem 1.25rem 0.5rem', background: 'var(--bg)' }}
         >
           {/* Stats + description */}
           <div
@@ -131,7 +97,7 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
               background: 'var(--surface)',
               borderRadius: 'var(--radius)',
               border: '1px solid var(--border-light)',
-              padding: '14px 16px',
+              padding: '0.875rem 1rem',
               marginBottom: 14,
             }}
           >
@@ -147,7 +113,7 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
                 style={{
                   fontSize: 11,
                   fontWeight: 500,
-                  padding: '3px 10px',
+                  padding: '0.1875rem 0.625rem',
                   borderRadius: 'var(--radius-pill)',
                   background: 'var(--sage-light)',
                   color: 'var(--sage)',
@@ -159,7 +125,7 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
                 style={{
                   fontSize: 11,
                   fontWeight: 500,
-                  padding: '3px 10px',
+                  padding: '0.1875rem 0.625rem',
                   borderRadius: 'var(--radius-pill)',
                   background: 'var(--blue-light)',
                   color: 'var(--blue)',
@@ -171,7 +137,7 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
                 style={{
                   fontSize: 11,
                   fontWeight: 500,
-                  padding: '3px 10px',
+                  padding: '0.1875rem 0.625rem',
                   borderRadius: 'var(--radius-pill)',
                   background: 'var(--avatar-s1-bg)',
                   color: 'var(--avatar-s1-text)',
@@ -188,7 +154,7 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
                   color: 'var(--text-secondary)',
                   lineHeight: 1.6,
                   paddingLeft: 12,
-                  borderLeft: '2px solid var(--sage-mid)',
+                  borderLeft: '0.125rem solid var(--sage-mid)',
                   margin: 0,
                 }}
               >
@@ -237,7 +203,7 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
                         display: 'flex',
                         alignItems: 'center',
                         gap: 12,
-                        padding: '10px 16px',
+                        padding: '0.625rem 1rem',
                         borderBottom: '1px solid var(--border-light)',
                       }}
                     >
@@ -282,7 +248,7 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
                               style={{
                                 fontSize: 10,
                                 fontWeight: 600,
-                                padding: '1px 6px',
+                                padding: '0.0625rem 0.375rem',
                                 borderRadius: 'var(--radius-pill)',
                                 background: 'var(--avatar-s1-bg)',
                                 color: 'var(--avatar-s1-text)',
@@ -341,7 +307,7 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
                         display: 'flex',
                         alignItems: 'center',
                         gap: 12,
-                        padding: '10px 16px',
+                        padding: '0.625rem 1rem',
                         borderBottom: '1px solid var(--border-light)',
                       }}
                     >
@@ -423,7 +389,7 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
                         display: 'flex',
                         alignItems: 'center',
                         gap: 12,
-                        padding: '10px 16px',
+                        padding: '0.625rem 1rem',
                         borderBottom: '1px solid var(--border-light)',
                       }}
                     >
@@ -468,7 +434,6 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
             </div>
           )}
         </div>
-      </div>
-    </div>
+    </BottomSheet>
   );
 }

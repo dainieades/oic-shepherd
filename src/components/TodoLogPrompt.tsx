@@ -20,7 +20,7 @@ export default function TodoLogPrompt({ todo, onAddLog, onSkip }: TodoLogPromptP
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '0 24px',
+        padding: '0 1.5rem',
       }}
       onClick={(e) => {
         if (e.target === e.currentTarget) onSkip();
@@ -33,7 +33,7 @@ export default function TodoLogPrompt({ todo, onAddLog, onSkip }: TodoLogPromptP
           borderRadius: 'var(--radius-xl)',
           width: '100%',
           maxWidth: 360,
-          padding: '24px 20px 20px',
+          padding: '1.5rem 1.25rem 1.25rem',
           boxShadow: 'var(--shadow-elevated)',
         }}
       >
@@ -56,7 +56,7 @@ export default function TodoLogPrompt({ todo, onAddLog, onSkip }: TodoLogPromptP
             onClick={onAddLog}
             style={{
               flex: 1,
-              padding: '10px 0',
+              padding: '0.625rem 0',
               background: 'var(--sage)',
               color: 'var(--on-sage)',
               border: 'none',
@@ -72,7 +72,7 @@ export default function TodoLogPrompt({ todo, onAddLog, onSkip }: TodoLogPromptP
             onClick={onSkip}
             style={{
               flex: 1,
-              padding: '10px 0',
+              padding: '0.625rem 0',
               background: 'var(--bg)',
               border: '1px solid var(--border)',
               color: 'var(--text-secondary)',

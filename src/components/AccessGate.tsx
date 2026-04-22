@@ -27,7 +27,7 @@ export default function AccessGate() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '24px 16px',
+        padding: '1.5rem 1rem',
       }}
     >
       <div
@@ -37,7 +37,7 @@ export default function AccessGate() {
           background: 'var(--surface)',
           borderRadius: 'var(--radius-xl)',
           border: '1px solid var(--border)',
-          padding: '40px 28px 32px',
+          padding: '2.5rem 1.75rem 2rem',
           boxShadow: 'var(--shadow-elevated)',
           textAlign: 'center',
         }}
@@ -51,7 +51,7 @@ export default function AccessGate() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            margin: '0 auto 20px',
+            margin: '0 auto 1.25rem',
           }}
         >
           <Lock size={28} color="var(--text-muted)" weight="bold" />
@@ -76,7 +76,7 @@ export default function AccessGate() {
           onClick={handleBack}
           style={{
             width: '100%',
-            padding: '13px 20px',
+            padding: '0.8125rem 1.25rem',
             borderRadius: 'var(--radius-md)',
             border: 'none',
             background: 'var(--sage)',

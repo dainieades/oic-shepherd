@@ -2,8 +2,9 @@
 
 import React from 'react';
 import { type AppData } from '@/lib/types';
-import { CaretLeft, MagnifyingGlass, Check } from '@phosphor-icons/react';
+import { CaretLeft, MagnifyingGlass, Check, House } from '@phosphor-icons/react';
 import { SHEPHERD_AVATAR_PALETTE } from '@/lib/constants';
+import { AvatarBadge } from './AvatarBadge';
 
 interface PersonFamilyPickerProps {
   data: AppData;
@@ -13,7 +14,6 @@ interface PersonFamilyPickerProps {
   onConfirm: (familyIds: string[], personIds: string[]) => void;
   onBack: () => void;
 }
-
 
 export default function PersonFamilyPicker({
   data,
@@ -66,10 +66,9 @@ export default function PersonFamilyPicker({
         flexDirection: 'column',
         flex: 1,
         minHeight: 0,
-        padding: '16px 20px 0',
+        padding: '1rem 1.25rem 0',
       }}
     >
-      {/* Header */}
       <div
         style={{
           display: 'flex',
@@ -115,7 +114,6 @@ export default function PersonFamilyPicker({
         </button>
       </div>
 
-      {/* Search */}
       <div
         style={{
           display: 'flex',
@@ -124,7 +122,7 @@ export default function PersonFamilyPicker({
           background: 'var(--bg)',
           border: '1px solid var(--border)',
           borderRadius: 'var(--radius-sm)',
-          padding: '9px 12px',
+          padding: '0.5625rem 0.75rem',
           marginBottom: 16,
           flexShrink: 0,
         }}
@@ -134,7 +132,7 @@ export default function PersonFamilyPicker({
           autoFocus
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search families or people…"
+          placeholder="Search families or people..."
           style={{
             flex: 1,
             fontSize: 14,
@@ -157,12 +155,11 @@ export default function PersonFamilyPicker({
               padding: 0,
             }}
           >
-            ×
+            x
           </button>
         )}
       </div>
 
-      {/* List */}
       <div style={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
         {families.length > 0 && (
           <div style={{ marginBottom: 8 }}>
@@ -181,12 +178,6 @@ export default function PersonFamilyPicker({
             {families.map((f, fi) => {
               const members = data.people.filter((p) => f.memberIds.includes(p.id));
               const palette = SHEPHERD_AVATAR_PALETTE[fi % SHEPHERD_AVATAR_PALETTE.length];
-              const initials = f.label
-                .split(' ')
-                .map((w) => w[0])
-                .join('')
-                .toUpperCase()
-                .slice(0, 2);
               const selected = selectedFamilyIds.includes(f.id);
               return (
                 <button
@@ -210,23 +201,14 @@ export default function PersonFamilyPicker({
                     textAlign: 'left',
                   }}
                 >
-                  <div
-                    style={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: '50%',
-                      flexShrink: 0,
-                      background: palette.bg,
-                      color: palette.color,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: 12,
-                      fontWeight: 700,
-                    }}
-                  >
-                    {initials}
-                  </div>
+                  <AvatarBadge
+                    name={f.label}
+                    photo={f.photo}
+                    size={36}
+                    bg={palette.bg}
+                    color={palette.color}
+                    icon={<House size={18} />}
+                  />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p
                       style={{
@@ -273,12 +255,6 @@ export default function PersonFamilyPicker({
             </p>
             {individuals.map((p, pi) => {
               const palette = SHEPHERD_AVATAR_PALETTE[pi % SHEPHERD_AVATAR_PALETTE.length];
-              const initials = p.englishName
-                .split(' ')
-                .map((n) => n[0])
-                .join('')
-                .toUpperCase()
-                .slice(0, 2);
               const selected = selectedPersonIds.includes(p.id);
               return (
                 <button
@@ -302,23 +278,13 @@ export default function PersonFamilyPicker({
                     textAlign: 'left',
                   }}
                 >
-                  <div
-                    style={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: '50%',
-                      flexShrink: 0,
-                      background: palette.bg,
-                      color: palette.color,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: 12,
-                      fontWeight: 700,
-                    }}
-                  >
-                    {initials}
-                  </div>
+                  <AvatarBadge
+                    name={p.englishName}
+                    photo={p.photo}
+                    size={36}
+                    bg={palette.bg}
+                    color={palette.color}
+                  />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p
                       style={{
@@ -381,8 +347,7 @@ function CheckCircle({ selected }: { selected: boolean }) {
         height: 22,
         borderRadius: '50%',
         flexShrink: 0,
-        border: '2px solid var(--border)',
-        background: 'transparent',
+        border: '0.09375rem solid var(--border)',
       }}
     />
   );

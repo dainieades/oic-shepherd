@@ -64,7 +64,7 @@ export default function ProfilePage() {
           borderRadius: 'var(--radius-lg)',
           border: '1px solid var(--border-light)',
           boxShadow: 'var(--shadow-card)',
-          padding: '20px',
+          padding: '1.25rem',
           marginBottom: 14,
         }}
       >
@@ -101,7 +101,7 @@ export default function ProfilePage() {
               style={{
                 fontSize: 11,
                 fontWeight: 600,
-                padding: '3px 10px',
+                padding: '0.1875rem 0.625rem',
                 borderRadius: 'var(--radius-pill)',
                 background: role.bg,
                 color: role.color,
@@ -157,7 +157,7 @@ export default function ProfilePage() {
             borderRadius: 'var(--radius-lg)',
             border: '1px solid var(--amber-border)',
             boxShadow: 'var(--shadow-card)',
-            padding: '14px 16px',
+            padding: '0.875rem 1rem',
             marginBottom: 14,
           }}
         >
@@ -176,14 +176,14 @@ export default function ProfilePage() {
           {adminRows.map((row, i) => (
             <div key={row.label}>
               {i > 0 && (
-                <div style={{ height: 1, background: 'rgba(200,170,100,0.2)', margin: '2px 0' }} />
+                <div style={{ height: 1, background: 'rgba(200,170,100,0.2)', margin: '0.125rem 0' }} />
               )}
               <div
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  padding: '9px 0',
+                  padding: '0.5625rem 0',
                 }}
               >
                 <div>
@@ -224,7 +224,7 @@ export default function ProfilePage() {
 
 function StatCell({ label, value }: { label: string; value: string }) {
   return (
-    <div style={{ background: 'var(--bg)', padding: '12px 16px' }}>
+    <div style={{ background: 'var(--bg)', padding: '0.75rem 1rem' }}>
       <p
         style={{
           fontSize: 10,
@@ -257,7 +257,7 @@ function Card({
         borderRadius: 'var(--radius-lg)',
         border: '1px solid var(--border-light)',
         boxShadow: 'var(--shadow-card)',
-        padding: '14px 16px',
+        padding: '0.875rem 1rem',
         ...style,
       }}
     >
@@ -292,14 +292,14 @@ function SettingsRow({
   return (
     <>
       {showDivider && (
-        <div style={{ height: 1, background: 'var(--border-light)', margin: '2px 0' }} />
+        <div style={{ height: 1, background: 'var(--border-light)', margin: '0.125rem 0' }} />
       )}
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '9px 0',
+          padding: '0.5625rem 0',
           opacity: active ? 1 : 0.45,
         }}
       >

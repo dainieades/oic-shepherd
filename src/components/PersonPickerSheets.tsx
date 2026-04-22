@@ -2,8 +2,10 @@
 
 import React from 'react';
 import { MagnifyingGlass, Check } from '@phosphor-icons/react';
-import { BACKDROP_COLOR, SHEET_BORDER_RADIUS, SHEET_MAX_WIDTH, SHEPHERD_AVATAR_PALETTE, Z_SHEET } from '@/lib/constants';
+import { SHEPHERD_AVATAR_PALETTE, Z_SHEET } from '@/lib/constants';
 import { CHURCH_POSITIONS } from '@/lib/types';
+import { AvatarBadge } from './AvatarBadge';
+import { BottomSheet, ModalHeader } from './BottomSheet';
 
 export function GroupPickerSheet({
   groups,
@@ -30,84 +32,18 @@ export function GroupPickerSheet({
     setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: Z_SHEET,
-        background: BACKDROP_COLOR,
-        display: 'flex',
-        alignItems: 'flex-end',
-        justifyContent: 'center',
-      }}
-    >
-      <div
-        className="animate-slide-up"
-        style={{
-          background: 'var(--surface)',
-          borderRadius: SHEET_BORDER_RADIUS,
-          width: '100%',
-          maxWidth: SHEET_MAX_WIDTH,
-          height: 'calc(100dvh - 48px)',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-        }}
-      >
+    <BottomSheet onClose={onBack} zIndex={Z_SHEET}>
+      <ModalHeader
+        title="Fellowship Groups"
+        onCancel={onBack}
+        cancelLabel="Back"
+        onAction={() => onConfirm(selectedIds)}
+        actionLabel={selectedIds.length > 0 ? `Done (${selectedIds.length})` : 'Done'}
+        actionVariant="text"
+      />
         <div
           style={{
-            width: 36,
-            height: 4,
-            background: 'var(--border)',
-            borderRadius: 2,
-            margin: '14px auto 0',
-            flexShrink: 0,
-          }}
-        />
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '14px 20px 12px',
-            flexShrink: 0,
-            borderBottom: '1px solid var(--border-light)',
-          }}
-        >
-          <button
-            onClick={onBack}
-            style={{
-              fontSize: 14,
-              color: 'var(--text-secondary)',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-            }}
-          >
-            Back
-          </button>
-          <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
-            Fellowship Groups
-          </span>
-          <button
-            onClick={() => onConfirm(selectedIds)}
-            style={{
-              fontSize: 14,
-              fontWeight: 600,
-              color: 'var(--sage)',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-            }}
-          >
-            {selectedIds.length > 0 ? `Done (${selectedIds.length})` : 'Done'}
-          </button>
-        </div>
-        <div
-          style={{
-            padding: '12px 20px',
+            padding: '0.75rem 1.25rem',
             flexShrink: 0,
             borderBottom: '1px solid var(--border-light)',
           }}
@@ -120,7 +56,7 @@ export function GroupPickerSheet({
               background: 'var(--bg)',
               border: '1px solid var(--border)',
               borderRadius: 'var(--radius-sm)',
-              padding: '9px 12px',
+              padding: '0.5625rem 0.75rem',
             }}
           >
             <MagnifyingGlass size={14} color="var(--text-muted)" />
@@ -168,7 +104,7 @@ export function GroupPickerSheet({
                   display: 'flex',
                   alignItems: 'center',
                   gap: 12,
-                  padding: '12px 20px',
+                  padding: '0.75rem 1.25rem',
                   background: isSel ? 'var(--blue-light)' : 'none',
                   border: 'none',
                   borderBottom: '1px solid var(--border-light)',
@@ -194,7 +130,7 @@ export function GroupPickerSheet({
                     height: 20,
                     borderRadius: 5,
                     flexShrink: 0,
-                    border: isSel ? 'none' : '1.5px solid var(--border)',
+                    border: isSel ? 'none' : '0.09375rem solid var(--border)',
                     background: isSel ? 'var(--blue)' : 'transparent',
                     display: 'flex',
                     alignItems: 'center',
@@ -210,7 +146,7 @@ export function GroupPickerSheet({
           {filtered.length === 0 && (
             <p
               style={{
-                padding: '24px 20px',
+                padding: '1.5rem 1.25rem',
                 fontSize: 13,
                 color: 'var(--text-muted)',
                 textAlign: 'center',
@@ -221,8 +157,7 @@ export function GroupPickerSheet({
             </p>
           )}
         </div>
-      </div>
-    </div>
+    </BottomSheet>
   );
 }
 
@@ -232,7 +167,7 @@ export function SheepPickerSheet({
   onConfirm,
   onBack,
 }: {
-  people: { id: string; englishName: string; chineseName?: string }[];
+  people: { id: string; englishName: string; chineseName?: string; photo?: string }[];
   currentIds: string[];
   onConfirm: (ids: string[]) => void;
   onBack: () => void;
@@ -259,84 +194,18 @@ export function SheepPickerSheet({
     setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: Z_SHEET,
-        background: BACKDROP_COLOR,
-        display: 'flex',
-        alignItems: 'flex-end',
-        justifyContent: 'center',
-      }}
-    >
-      <div
-        className="animate-slide-up"
-        style={{
-          background: 'var(--surface)',
-          borderRadius: SHEET_BORDER_RADIUS,
-          width: '100%',
-          maxWidth: SHEET_MAX_WIDTH,
-          height: 'calc(100dvh - 48px)',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-        }}
-      >
+    <BottomSheet onClose={onBack} zIndex={Z_SHEET}>
+      <ModalHeader
+        title="Sheep"
+        onCancel={onBack}
+        cancelLabel="Back"
+        onAction={() => onConfirm(selectedIds)}
+        actionLabel={selectedIds.length > 0 ? `Done (${selectedIds.length})` : 'Done'}
+        actionVariant="text"
+      />
         <div
           style={{
-            width: 36,
-            height: 4,
-            background: 'var(--border)',
-            borderRadius: 2,
-            margin: '14px auto 0',
-            flexShrink: 0,
-          }}
-        />
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '14px 20px 12px',
-            flexShrink: 0,
-            borderBottom: '1px solid var(--border-light)',
-          }}
-        >
-          <button
-            onClick={onBack}
-            style={{
-              fontSize: 14,
-              color: 'var(--text-secondary)',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-            }}
-          >
-            Back
-          </button>
-          <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
-            Sheep
-          </span>
-          <button
-            onClick={() => onConfirm(selectedIds)}
-            style={{
-              fontSize: 14,
-              fontWeight: 600,
-              color: 'var(--sage)',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-            }}
-          >
-            {selectedIds.length > 0 ? `Done (${selectedIds.length})` : 'Done'}
-          </button>
-        </div>
-        <div
-          style={{
-            padding: '12px 20px',
+            padding: '0.75rem 1.25rem',
             flexShrink: 0,
             borderBottom: '1px solid var(--border-light)',
           }}
@@ -349,7 +218,7 @@ export function SheepPickerSheet({
               background: 'var(--bg)',
               border: '1px solid var(--border)',
               borderRadius: 'var(--radius-sm)',
-              padding: '9px 12px',
+              padding: '0.5625rem 0.75rem',
             }}
           >
             <MagnifyingGlass size={14} color="var(--text-muted)" />
@@ -402,12 +271,6 @@ export function SheepPickerSheet({
           {sorted.map((p, i) => {
             const isSel = selectedIds.includes(p.id);
             const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
-            const initials = p.englishName
-              .split(' ')
-              .map((n) => n[0])
-              .join('')
-              .toUpperCase()
-              .slice(0, 2);
             return (
               <button
                 key={p.id}
@@ -417,7 +280,7 @@ export function SheepPickerSheet({
                   display: 'flex',
                   alignItems: 'center',
                   gap: 12,
-                  padding: '12px 20px',
+                  padding: '0.75rem 1.25rem',
                   background: isSel ? 'var(--sage-light)' : 'none',
                   border: 'none',
                   borderBottom: '1px solid var(--border-light)',
@@ -425,23 +288,13 @@ export function SheepPickerSheet({
                   textAlign: 'left' as const,
                 }}
               >
-                <div
-                  style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: '50%',
-                    flexShrink: 0,
-                    background: isSel ? 'var(--sage)' : palette.bg,
-                    color: isSel ? 'var(--on-sage)' : palette.color,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: 12,
-                    fontWeight: 700,
-                  }}
-                >
-                  {initials}
-                </div>
+                <AvatarBadge
+                  name={p.englishName}
+                  photo={p.photo}
+                  size={36}
+                  bg={isSel ? 'var(--sage)' : palette.bg}
+                  color={isSel ? 'var(--on-sage)' : palette.color}
+                />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p
                     style={{
@@ -465,7 +318,7 @@ export function SheepPickerSheet({
                     height: 20,
                     borderRadius: 5,
                     flexShrink: 0,
-                    border: isSel ? 'none' : '1.5px solid var(--border)',
+                    border: isSel ? 'none' : '0.09375rem solid var(--border)',
                     background: isSel ? 'var(--sage)' : 'transparent',
                     display: 'flex',
                     alignItems: 'center',
@@ -479,8 +332,7 @@ export function SheepPickerSheet({
             );
           })}
         </div>
-      </div>
-    </div>
+    </BottomSheet>
   );
 }
 
@@ -490,7 +342,7 @@ export function ShepherdPickerSheet({
   onConfirm,
   onBack,
 }: {
-  entries: { id: string; name: string; subtitle: string }[];
+  entries: { id: string; name: string; subtitle: string; photo?: string }[];
   currentIds: string[];
   onConfirm: (ids: string[]) => void;
   onBack: () => void;
@@ -509,84 +361,18 @@ export function ShepherdPickerSheet({
     setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: Z_SHEET,
-        background: BACKDROP_COLOR,
-        display: 'flex',
-        alignItems: 'flex-end',
-        justifyContent: 'center',
-      }}
-    >
-      <div
-        className="animate-slide-up"
-        style={{
-          background: 'var(--surface)',
-          borderRadius: SHEET_BORDER_RADIUS,
-          width: '100%',
-          maxWidth: SHEET_MAX_WIDTH,
-          height: 'calc(100dvh - 48px)',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-        }}
-      >
+    <BottomSheet onClose={onBack} zIndex={Z_SHEET}>
+      <ModalHeader
+        title="Shepherd"
+        onCancel={onBack}
+        cancelLabel="Back"
+        onAction={() => onConfirm(selectedIds)}
+        actionLabel={selectedIds.length > 0 ? `Done (${selectedIds.length})` : 'Done'}
+        actionVariant="text"
+      />
         <div
           style={{
-            width: 36,
-            height: 4,
-            background: 'var(--border)',
-            borderRadius: 2,
-            margin: '14px auto 0',
-            flexShrink: 0,
-          }}
-        />
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '14px 20px 12px',
-            flexShrink: 0,
-            borderBottom: '1px solid var(--border-light)',
-          }}
-        >
-          <button
-            onClick={onBack}
-            style={{
-              fontSize: 14,
-              color: 'var(--text-secondary)',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-            }}
-          >
-            Back
-          </button>
-          <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
-            Shepherd
-          </span>
-          <button
-            onClick={() => onConfirm(selectedIds)}
-            style={{
-              fontSize: 14,
-              fontWeight: 600,
-              color: 'var(--sage)',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-            }}
-          >
-            {selectedIds.length > 0 ? `Done (${selectedIds.length})` : 'Done'}
-          </button>
-        </div>
-        <div
-          style={{
-            padding: '12px 20px',
+            padding: '0.75rem 1.25rem',
             flexShrink: 0,
             borderBottom: '1px solid var(--border-light)',
           }}
@@ -599,7 +385,7 @@ export function ShepherdPickerSheet({
               background: 'var(--bg)',
               border: '1px solid var(--border)',
               borderRadius: 'var(--radius-sm)',
-              padding: '9px 12px',
+              padding: '0.5625rem 0.75rem',
             }}
           >
             <MagnifyingGlass size={14} color="var(--text-muted)" />
@@ -639,12 +425,6 @@ export function ShepherdPickerSheet({
           {filtered.map((entry, i) => {
             const isSel = selectedIds.includes(entry.id);
             const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
-            const initials = entry.name
-              .split(' ')
-              .map((n) => n[0])
-              .join('')
-              .toUpperCase()
-              .slice(0, 2);
             return (
               <button
                 key={entry.id}
@@ -654,7 +434,7 @@ export function ShepherdPickerSheet({
                   display: 'flex',
                   alignItems: 'center',
                   gap: 12,
-                  padding: '12px 20px',
+                  padding: '0.75rem 1.25rem',
                   background: isSel ? 'var(--sage-light)' : 'none',
                   border: 'none',
                   borderBottom: '1px solid var(--border-light)',
@@ -662,23 +442,13 @@ export function ShepherdPickerSheet({
                   textAlign: 'left' as const,
                 }}
               >
-                <div
-                  style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: '50%',
-                    flexShrink: 0,
-                    background: isSel ? 'var(--sage)' : palette.bg,
-                    color: isSel ? 'var(--on-sage)' : palette.color,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: 12,
-                    fontWeight: 700,
-                  }}
-                >
-                  {initials}
-                </div>
+                <AvatarBadge
+                  name={entry.name}
+                  photo={entry.photo}
+                  size={36}
+                  bg={isSel ? 'var(--sage)' : palette.bg}
+                  color={isSel ? 'var(--on-sage)' : palette.color}
+                />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p
                     style={{
@@ -700,7 +470,7 @@ export function ShepherdPickerSheet({
                     height: 20,
                     borderRadius: 5,
                     flexShrink: 0,
-                    border: isSel ? 'none' : '1.5px solid var(--border)',
+                    border: isSel ? 'none' : '0.09375rem solid var(--border)',
                     background: isSel ? 'var(--sage)' : 'transparent',
                     display: 'flex',
                     alignItems: 'center',
@@ -716,7 +486,7 @@ export function ShepherdPickerSheet({
           {filtered.length === 0 && (
             <p
               style={{
-                padding: '24px 20px',
+                padding: '1.5rem 1.25rem',
                 fontSize: 13,
                 color: 'var(--text-muted)',
                 textAlign: 'center',
@@ -727,8 +497,7 @@ export function ShepherdPickerSheet({
             </p>
           )}
         </div>
-      </div>
-    </div>
+    </BottomSheet>
   );
 }
 
@@ -757,84 +526,18 @@ export function PositionPickerSheet({
     );
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: Z_SHEET,
-        background: BACKDROP_COLOR,
-        display: 'flex',
-        alignItems: 'flex-end',
-        justifyContent: 'center',
-      }}
-    >
-      <div
-        className="animate-slide-up"
-        style={{
-          background: 'var(--surface)',
-          borderRadius: SHEET_BORDER_RADIUS,
-          width: '100%',
-          maxWidth: SHEET_MAX_WIDTH,
-          height: 'calc(100dvh - 48px)',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-        }}
-      >
+    <BottomSheet onClose={onBack} zIndex={Z_SHEET}>
+      <ModalHeader
+        title="Church Position"
+        onCancel={onBack}
+        cancelLabel="Back"
+        onAction={() => onConfirm(selectedPositions)}
+        actionLabel={selectedPositions.length > 0 ? `Done (${selectedPositions.length})` : 'Done'}
+        actionVariant="text"
+      />
         <div
           style={{
-            width: 36,
-            height: 4,
-            background: 'var(--border)',
-            borderRadius: 2,
-            margin: '14px auto 0',
-            flexShrink: 0,
-          }}
-        />
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '14px 20px 12px',
-            flexShrink: 0,
-            borderBottom: '1px solid var(--border-light)',
-          }}
-        >
-          <button
-            onClick={onBack}
-            style={{
-              fontSize: 14,
-              color: 'var(--text-secondary)',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-            }}
-          >
-            Back
-          </button>
-          <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
-            Church Position
-          </span>
-          <button
-            onClick={() => onConfirm(selectedPositions)}
-            style={{
-              fontSize: 14,
-              fontWeight: 600,
-              color: 'var(--sage)',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-            }}
-          >
-            {selectedPositions.length > 0 ? `Done (${selectedPositions.length})` : 'Done'}
-          </button>
-        </div>
-        <div
-          style={{
-            padding: '12px 20px',
+            padding: '0.75rem 1.25rem',
             flexShrink: 0,
             borderBottom: '1px solid var(--border-light)',
           }}
@@ -847,7 +550,7 @@ export function PositionPickerSheet({
               background: 'var(--bg)',
               border: '1px solid var(--border)',
               borderRadius: 'var(--radius-sm)',
-              padding: '9px 12px',
+              padding: '0.5625rem 0.75rem',
             }}
           >
             <MagnifyingGlass size={14} color="var(--text-muted)" />
@@ -895,7 +598,7 @@ export function PositionPickerSheet({
                   display: 'flex',
                   alignItems: 'center',
                   gap: 12,
-                  padding: '12px 20px',
+                  padding: '0.75rem 1.25rem',
                   background: isSel ? 'var(--sage-light)' : 'none',
                   border: 'none',
                   borderBottom: '1px solid var(--border-light)',
@@ -921,7 +624,7 @@ export function PositionPickerSheet({
                     height: 20,
                     borderRadius: 5,
                     flexShrink: 0,
-                    border: isSel ? 'none' : '1.5px solid var(--border)',
+                    border: isSel ? 'none' : '0.09375rem solid var(--border)',
                     background: isSel ? 'var(--sage)' : 'transparent',
                     display: 'flex',
                     alignItems: 'center',
@@ -937,7 +640,7 @@ export function PositionPickerSheet({
           {filtered.length === 0 && (
             <p
               style={{
-                padding: '24px 20px',
+                padding: '1.5rem 1.25rem',
                 fontSize: 13,
                 color: 'var(--text-muted)',
                 textAlign: 'center',
@@ -948,8 +651,7 @@ export function PositionPickerSheet({
             </p>
           )}
         </div>
-      </div>
-    </div>
+    </BottomSheet>
   );
 }
 
@@ -984,84 +686,18 @@ export function FamilyPickerSheet({
   });
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: Z_SHEET,
-        background: BACKDROP_COLOR,
-        display: 'flex',
-        alignItems: 'flex-end',
-        justifyContent: 'center',
-      }}
-    >
-      <div
-        className="animate-slide-up"
-        style={{
-          background: 'var(--surface)',
-          borderRadius: SHEET_BORDER_RADIUS,
-          width: '100%',
-          maxWidth: SHEET_MAX_WIDTH,
-          height: 'calc(100dvh - 48px)',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-        }}
-      >
+    <BottomSheet onClose={onBack} zIndex={Z_SHEET}>
+      <ModalHeader
+        title="Family"
+        onCancel={onBack}
+        cancelLabel="Back"
+        onAction={() => onConfirm(selectedId)}
+        actionLabel="Done"
+        actionVariant="text"
+      />
         <div
           style={{
-            width: 36,
-            height: 4,
-            background: 'var(--border)',
-            borderRadius: 2,
-            margin: '14px auto 0',
-            flexShrink: 0,
-          }}
-        />
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '14px 20px 12px',
-            flexShrink: 0,
-            borderBottom: '1px solid var(--border-light)',
-          }}
-        >
-          <button
-            onClick={onBack}
-            style={{
-              fontSize: 14,
-              color: 'var(--text-secondary)',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-            }}
-          >
-            Back
-          </button>
-          <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
-            Family
-          </span>
-          <button
-            onClick={() => onConfirm(selectedId)}
-            style={{
-              fontSize: 14,
-              fontWeight: 600,
-              color: 'var(--sage)',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-            }}
-          >
-            Done
-          </button>
-        </div>
-        <div
-          style={{
-            padding: '12px 20px',
+            padding: '0.75rem 1.25rem',
             flexShrink: 0,
             borderBottom: '1px solid var(--border-light)',
           }}
@@ -1074,7 +710,7 @@ export function FamilyPickerSheet({
               background: 'var(--bg)',
               border: '1px solid var(--border)',
               borderRadius: 'var(--radius-sm)',
-              padding: '9px 12px',
+              padding: '0.5625rem 0.75rem',
             }}
           >
             <MagnifyingGlass size={14} color="var(--text-muted)" />
@@ -1119,7 +755,7 @@ export function FamilyPickerSheet({
                 display: 'flex',
                 alignItems: 'center',
                 gap: 12,
-                padding: '12px 20px',
+                padding: '0.75rem 1.25rem',
                 background: !selectedId ? 'var(--sage-light)' : 'none',
                 border: 'none',
                 borderBottom: '1px solid var(--border-light)',
@@ -1162,7 +798,7 @@ export function FamilyPickerSheet({
                   display: 'flex',
                   alignItems: 'center',
                   gap: 12,
-                  padding: '12px 20px',
+                  padding: '0.75rem 1.25rem',
                   background: isSel ? 'var(--sage-light)' : 'none',
                   border: 'none',
                   borderBottom: '1px solid var(--border-light)',
@@ -1220,7 +856,7 @@ export function FamilyPickerSheet({
           {filtered.length === 0 && (
             <p
               style={{
-                padding: '24px 20px',
+                padding: '1.5rem 1.25rem',
                 fontSize: 13,
                 color: 'var(--text-muted)',
                 textAlign: 'center',
@@ -1231,8 +867,7 @@ export function FamilyPickerSheet({
             </p>
           )}
         </div>
-      </div>
-    </div>
+    </BottomSheet>
   );
 }
 
@@ -1244,7 +879,7 @@ function RadioDot({ selected }: { selected: boolean }) {
         height: 20,
         borderRadius: '50%',
         flexShrink: 0,
-        border: selected ? 'none' : '1.5px solid var(--border)',
+        border: selected ? 'none' : '0.09375rem solid var(--border)',
         background: selected ? 'var(--sage)' : 'transparent',
         display: 'flex',
         alignItems: 'center',

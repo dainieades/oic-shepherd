@@ -343,7 +343,7 @@ export default function SignInPage() {
               fontSize: 11,
               fontWeight: 700,
               letterSpacing: '0.03em',
-              padding: '2px 8px',
+              padding: '0.125rem 0.5rem',
               borderRadius: 'var(--radius-xl)',
               pointerEvents: 'none',
               zIndex: 1,
@@ -360,9 +360,9 @@ export default function SignInPage() {
               alignItems: 'center',
               justifyContent: 'center',
               gap: 10,
-              padding: '13px 20px',
+              padding: '0.8125rem 1.25rem',
               borderRadius: 'var(--radius-md)',
-              border: '1.5px solid var(--sage)',
+              border: '0.09375rem solid var(--sage)',
               background: 'var(--surface)',
               fontSize: 15,
               fontWeight: 600,
@@ -394,7 +394,7 @@ export default function SignInPage() {
         </div>
 
         {/* Divider */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '20px 0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '1.25rem 0' }}>
           <div style={{ flex: 1, height: 1, background: 'var(--border-light)' }} />
           <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>or</span>
           <div style={{ flex: 1, height: 1, background: 'var(--border-light)' }} />
@@ -463,7 +463,7 @@ const outerStyle: React.CSSProperties = {
   alignItems: 'center',
   justifyContent: 'center',
   background: 'var(--bg)',
-  padding: '24px 16px',
+  padding: '1.5rem 1rem',
   zIndex: 10,
   overflowY: 'auto',
 };
@@ -474,7 +474,7 @@ const cardStyle: React.CSSProperties = {
   background: 'var(--surface)',
   borderRadius: 'var(--radius-xl)',
   border: '1px solid var(--border)',
-  padding: '36px 28px 32px',
+  padding: '2.25rem 1.75rem 2rem',
   boxShadow: 'var(--shadow-elevated)',
 };
 
@@ -495,9 +495,9 @@ const labelStyle: React.CSSProperties = {
 
 const inputStyle: React.CSSProperties = {
   width: '100%',
-  padding: '12px 14px',
+  padding: '0.75rem 0.875rem',
   borderRadius: 'var(--radius-md)',
-  border: '1.5px solid var(--border)',
+  border: '0.09375rem solid var(--border)',
   fontSize: 15,
   color: 'var(--text-primary)',
   background: 'var(--surface)',
@@ -506,7 +506,7 @@ const inputStyle: React.CSSProperties = {
 
 const primaryButtonStyle: React.CSSProperties = {
   width: '100%',
-  padding: '13px 20px',
+  padding: '0.8125rem 1.25rem',
   borderRadius: 'var(--radius-md)',
   border: 'none',
   background: 'var(--sage)',
@@ -524,7 +524,7 @@ const ghostButtonStyle: React.CSSProperties = {
   fontSize: 14,
   cursor: 'pointer',
   textAlign: 'center',
-  padding: '4px 0',
+  padding: '0.25rem 0',
 };
 
 function ErrorBanner({ message }: { message: string }) {
@@ -534,7 +534,7 @@ function ErrorBanner({ message }: { message: string }) {
         background: 'var(--red-light)',
         border: '1px solid var(--red-border)',
         borderRadius: 'var(--radius-sm)',
-        padding: '10px 14px',
+        padding: '0.625rem 0.875rem',
         marginBottom: 16,
         fontSize: 13,
         color: 'var(--red)',

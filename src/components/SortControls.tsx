@@ -28,7 +28,7 @@ export default function SortControls(): React.ReactNode {
           display: 'flex',
           alignItems: 'center',
           gap: 4,
-          padding: '4px 8px',
+          padding: '0.25rem 0.5rem',
           background: 'transparent',
           border: 'none',
           fontSize: 12,
@@ -47,14 +47,14 @@ export default function SortControls(): React.ReactNode {
           style={{
             position: 'absolute',
             right: 0,
-            top: 'calc(100% + 4px)',
+            top: 'calc(100% + 0.25rem)',
             background: 'var(--surface)',
             border: '1px solid var(--border)',
             borderRadius: 'var(--radius-sm)',
             boxShadow: 'var(--shadow-elevated)',
             zIndex: 'var(--z-page)',
             minWidth: 160,
-            padding: '4px 0',
+            padding: '0.25rem 0',
           }}
         >
           {SORT_OPTIONS.map((opt) => (
@@ -66,7 +66,7 @@ export default function SortControls(): React.ReactNode {
               }}
               style={{
                 width: '100%',
-                padding: '8px 14px',
+                padding: '0.5rem 0.875rem',
                 textAlign: 'left',
                 fontSize: 13,
                 fontWeight: sortKey === opt.key ? 600 : 400,

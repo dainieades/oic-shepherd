@@ -29,7 +29,6 @@ import {
   House,
 } from '@phosphor-icons/react';
 import { Button } from '@/components/Button';
-import { BottomSheet } from '@/components/BottomSheet';
 import { AvatarBadge } from '@/components/AvatarBadge';
 import { StatusBadge } from '@/components/StatusBadge';
 const AddPersonModal = React.lazy(() => import('@/components/AddPersonModal'));
@@ -53,6 +52,7 @@ export default function PeoplePage() {
 const [showSearch, setShowSearch] = React.useState(false);
   const [showFilter, setShowFilter] = React.useState(false);
   const searchInputRef = React.useRef<HTMLInputElement>(null);
+  const addBtnRef = React.useRef<HTMLDivElement>(null);
   const [showAddChoice, setShowAddChoice] = React.useState(false);
   const [showAddPerson, setShowAddPerson] = React.useState(false);
   const [showAddFamily, setShowAddFamily] = React.useState(false);
@@ -66,6 +66,17 @@ const [showSearch, setShowSearch] = React.useState(false);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  React.useEffect(() => {
+    if (!showAddChoice) return;
+    const handler = (e: MouseEvent) => {
+      if (addBtnRef.current && !addBtnRef.current.contains(e.target as Node)) {
+        setShowAddChoice(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showAddChoice]);
 
 
   // Build the list: families + solo individuals
@@ -368,7 +379,7 @@ const [showSearch, setShowSearch] = React.useState(false);
   const totalEntries = familyCount + individualCount;
   const btnSize = scrolled ? 30 : 36;
   const btnFont = scrolled ? 13 : 14;
-  const btnPad = scrolled ? '0 12px' : '0 14px';
+  const btnPad = scrolled ? '0 0.75rem' : '0 0.875rem';
 
   const searchActive = showSearch || !!search;
   const filterActive = activeFilterCount > 0;
@@ -440,15 +451,70 @@ const [showSearch, setShowSearch] = React.useState(false);
           </span>
         )}
       </div>
-      {/* Add button */}
-      <Button
-        variant="primary"
-        onClick={() => setShowAddChoice(true)}
-        style={{ height: btnSize, padding: btnPad, fontSize: btnFont }}
-      >
-        <Plus size={16} weight="bold" />
-        People
-      </Button>
+      {/* Add button + dropdown */}
+      <div ref={addBtnRef} style={{ position: 'relative' }}>
+        <Button
+          variant="primary"
+          onClick={() => setShowAddChoice((v) => !v)}
+          style={{ height: btnSize, padding: btnPad, fontSize: btnFont }}
+        >
+          <Plus size={16} weight="bold" />
+          People
+        </Button>
+        {showAddChoice && (
+          <div
+            style={{
+              position: 'absolute',
+              top: 'calc(100% + 0.375rem)',
+              right: 0,
+              zIndex: 'var(--z-dropdown)' as unknown as number,
+              background: 'var(--surface)',
+              borderRadius: 'var(--radius-md)',
+              boxShadow: 'var(--shadow-elevated)',
+              border: '1px solid var(--border-light)',
+              width: 220,
+              overflow: 'hidden',
+            }}
+          >
+            <button
+              onClick={() => { setShowAddChoice(false); setShowAddPerson(true); }}
+              style={addMenuItemStyle}
+            >
+              <div style={addMenuIconStyle}>
+                <Plus size={16} color="var(--sage)" weight="bold" />
+              </div>
+              <div>
+                <p style={addMenuLabelStyle}>Individual</p>
+                <p style={addMenuDescStyle}>Add a single person</p>
+              </div>
+            </button>
+            <button
+              onClick={() => { setShowAddChoice(false); setShowAddFamily(true); }}
+              style={addMenuItemStyle}
+            >
+              <div style={addMenuIconStyle}>
+                <UsersThree size={16} color="var(--sage)" />
+              </div>
+              <div>
+                <p style={addMenuLabelStyle}>Family</p>
+                <p style={addMenuDescStyle}>Group people into a family</p>
+              </div>
+            </button>
+            <button
+              onClick={() => { setShowAddChoice(false); setShowInvite(true); }}
+              style={{ ...addMenuItemStyle, borderBottom: 'none' }}
+            >
+              <div style={addMenuIconStyle}>
+                <PaperPlaneTilt size={16} color="var(--sage)" />
+              </div>
+              <div>
+                <p style={addMenuLabelStyle}>Invite to app</p>
+                <p style={addMenuDescStyle}>Give someone access</p>
+              </div>
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 
@@ -542,7 +608,7 @@ const [showSearch, setShowSearch] = React.useState(false);
                 display: 'flex',
                 alignItems: 'center',
                 gap: 4,
-                padding: '5px 10px',
+                padding: '0.3125rem 0.625rem',
                 minHeight: 28,
                 borderRadius: 'var(--radius-pill)',
                 background: 'var(--sage-light)',
@@ -588,7 +654,7 @@ const [showSearch, setShowSearch] = React.useState(false);
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '0 4px',
+                padding: '0 0.25rem',
               }}
             >
               {newPeople.length}
@@ -628,7 +694,7 @@ const [showSearch, setShowSearch] = React.useState(false);
                     size={44}
                     bg="var(--amber-light)"
                     color="var(--amber)"
-                    border="2px solid var(--amber-border)"
+                    border="0.125rem solid var(--amber-border)"
                   />
                   <span
                     style={{
@@ -721,155 +787,6 @@ const [showSearch, setShowSearch] = React.useState(false);
         {showInvite && <InviteSheet onClose={() => setShowInvite(false)} />}
       </React.Suspense>
 
-      {/* ── Add type choice sheet ── */}
-      {showAddChoice && (
-        <BottomSheet onClose={() => setShowAddChoice(false)} compact dragHandle>
-          <p
-            style={{
-              fontSize: 12,
-              fontWeight: 600,
-              color: 'var(--text-muted)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.06em',
-              textAlign: 'center',
-              paddingBottom: 12,
-              borderBottom: '1px solid var(--border-light)',
-            }}
-          >
-            Add
-          </p>
-          <div
-            style={{
-              padding: '12px 16px 16px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 10,
-            }}
-          >
-            <button
-              onClick={() => {
-                setShowAddChoice(false);
-                setShowAddPerson(true);
-              }}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 14,
-                padding: '14px 16px',
-                background: 'var(--bg)',
-                borderRadius: 'var(--radius-md)',
-                border: '1px solid var(--border-light)',
-                cursor: 'pointer',
-                textAlign: 'left',
-              }}
-            >
-              <div
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 'var(--radius-sm)',
-                  background: 'var(--sage-light)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0,
-                }}
-              >
-                <Plus size={20} color="var(--sage)" />
-              </div>
-              <div>
-                <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
-                  Individual
-                </p>
-                <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: '2px 0 0' }}>
-                  Add a single person to the directory
-                </p>
-              </div>
-            </button>
-            <button
-              onClick={() => {
-                setShowAddChoice(false);
-                setShowAddFamily(true);
-              }}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 14,
-                padding: '14px 16px',
-                background: 'var(--bg)',
-                borderRadius: 'var(--radius-md)',
-                border: '1px solid var(--border-light)',
-                cursor: 'pointer',
-                textAlign: 'left',
-              }}
-            >
-              <div
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 'var(--radius-sm)',
-                  background: 'var(--sage-light)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0,
-                }}
-              >
-                <UsersThree size={20} color="var(--sage)" />
-              </div>
-              <div>
-                <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
-                  Family
-                </p>
-                <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: '2px 0 0' }}>
-                  Group existing individuals into a family
-                </p>
-              </div>
-            </button>
-            <button
-              onClick={() => {
-                setShowAddChoice(false);
-                setShowInvite(true);
-              }}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 14,
-                padding: '14px 16px',
-                background: 'var(--bg)',
-                borderRadius: 'var(--radius-md)',
-                border: '1px solid var(--border-light)',
-                cursor: 'pointer',
-                textAlign: 'left',
-              }}
-            >
-              <div
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 'var(--radius-sm)',
-                  background: 'var(--sage-light)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0,
-                }}
-              >
-                <PaperPlaneTilt size={20} color="var(--sage)" />
-              </div>
-              <div>
-                <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
-                  Invite to app
-                </p>
-                <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: '2px 0 0' }}>
-                  Give someone access to sign in
-                </p>
-              </div>
-            </button>
-          </div>
-        </BottomSheet>
-      )}
-
       {/* ── Filter panel (bottom sheet) ────── */}
       <React.Suspense fallback={null}>
         <FilterPanel show={showFilter} onClose={() => setShowFilter(false)} />
@@ -928,7 +845,7 @@ const FamilyRow = React.memo(function FamilyRow({
       className="row-hover"
       style={{ borderBottom: '1px solid var(--border-light)' }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '0.625rem 0' }}>
         {/* Family avatar — single circle with photo or house icon */}
         <AvatarBadge
           name={family.label}
@@ -998,7 +915,7 @@ const FamilyRow = React.memo(function FamilyRow({
                   <span
                     style={{
                       fontSize: 10,
-                      padding: '2px 7px',
+                      padding: '0.125rem 0.4375rem',
                       borderRadius: 'var(--radius-pill)',
                       background: 'var(--blue-light)',
                       color: 'var(--blue)',
@@ -1012,7 +929,7 @@ const FamilyRow = React.memo(function FamilyRow({
                     <span
                       style={{
                         fontSize: 10,
-                        padding: '2px 6px',
+                        padding: '0.125rem 0.375rem',
                         borderRadius: 'var(--radius-pill)',
                         background: 'var(--blue-light)',
                         color: 'var(--blue)',
@@ -1033,6 +950,43 @@ const FamilyRow = React.memo(function FamilyRow({
   );
 });
 
+const addMenuItemStyle: React.CSSProperties = {
+  width: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  gap: 10,
+  padding: '0.625rem 0.875rem',
+  background: 'none',
+  border: 'none',
+  borderBottom: '1px solid var(--border-light)',
+  cursor: 'pointer',
+  textAlign: 'left',
+};
+
+const addMenuIconStyle: React.CSSProperties = {
+  width: 28,
+  height: 28,
+  borderRadius: 'var(--radius-sm)',
+  background: 'var(--sage-light)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flexShrink: 0,
+};
+
+const addMenuLabelStyle: React.CSSProperties = {
+  fontSize: 14,
+  fontWeight: 600,
+  color: 'var(--text-primary)',
+  margin: 0,
+};
+
+const addMenuDescStyle: React.CSSProperties = {
+  fontSize: 11,
+  color: 'var(--text-muted)',
+  margin: '0.0625rem 0 0',
+};
+
 const IndividualRow = React.memo(function IndividualRow({
   person,
   lastNoteTs,
@@ -1051,7 +1005,7 @@ const IndividualRow = React.memo(function IndividualRow({
       className="row-hover"
       style={{ borderBottom: '1px solid var(--border-light)' }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '0.625rem 0' }}>
         {/* Avatar */}
         <AvatarBadge name={person.englishName} photo={person.photo} size={44} />
 
@@ -1120,7 +1074,7 @@ const IndividualRow = React.memo(function IndividualRow({
                   <span
                     style={{
                       fontSize: 10,
-                      padding: '2px 7px',
+                      padding: '0.125rem 0.4375rem',
                       borderRadius: 'var(--radius-pill)',
                       background: 'var(--blue-light)',
                       color: 'var(--blue)',
@@ -1134,7 +1088,7 @@ const IndividualRow = React.memo(function IndividualRow({
                     <span
                       style={{
                         fontSize: 10,
-                        padding: '2px 6px',
+                        padding: '0.125rem 0.375rem',
                         borderRadius: 'var(--radius-pill)',
                         background: 'var(--blue-light)',
                         color: 'var(--blue)',

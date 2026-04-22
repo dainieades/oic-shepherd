@@ -166,7 +166,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
     const selectedGroups = data.groups.filter((g) => groupIds.includes(g.id));
 
     const personaPersonIds = new Set(data.personas.map((p) => p.personId).filter(Boolean));
-    type ShepherdEntry = { id: string; name: string; subtitle: string };
+    type ShepherdEntry = { id: string; name: string; subtitle: string; photo?: string };
     const shepherdEntries: ShepherdEntry[] = [
       ...data.personas
         .filter((p) => p.role === 'shepherd' || p.role === 'admin')
@@ -174,10 +174,11 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
           id: p.id,
           name: p.name,
           subtitle: p.role === 'admin' ? 'Pastor' : 'Shepherd',
+          photo: p.personId ? data.people.find((person) => person.id === p.personId)?.photo : undefined,
         })),
       ...data.people
         .filter((p) => p.isShepherd && !personaPersonIds.has(p.id))
-        .map((p) => ({ id: p.id, name: p.englishName, subtitle: 'Shepherd' })),
+        .map((p) => ({ id: p.id, name: p.englishName, subtitle: 'Shepherd', photo: p.photo })),
     ];
 
     const statusLabel = MEMBERSHIP_OPTIONS.find((o) => o.value === status)?.label ?? '';
@@ -262,7 +263,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
       <>
         {showPhotoUpload && (
           <div
-            style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '24px 0 20px' }}
+            style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '1.5rem 0 1.25rem' }}
           >
             <PhotoAvatar
               photo={photo || undefined}
@@ -762,7 +763,7 @@ export default PersonFormBody;
 const langChipStyle: React.CSSProperties = {
   fontSize: 11,
   fontWeight: 500,
-  padding: '2px 8px',
+  padding: '0.125rem 0.5rem',
   borderRadius: 'var(--radius-pill)',
   background: 'var(--blue-light)',
   color: 'var(--blue)',
@@ -772,7 +773,7 @@ const langChipStyle: React.CSSProperties = {
 const blueChipStyle: React.CSSProperties = {
   fontSize: 11,
   fontWeight: 500,
-  padding: '2px 8px',
+  padding: '0.125rem 0.5rem',
   borderRadius: 'var(--radius-pill)',
   background: 'var(--blue-light)',
   color: 'var(--blue)',
@@ -782,7 +783,7 @@ const blueChipStyle: React.CSSProperties = {
 const sageChipStyle: React.CSSProperties = {
   fontSize: 11,
   fontWeight: 500,
-  padding: '2px 8px',
+  padding: '0.125rem 0.5rem',
   borderRadius: 'var(--radius-pill)',
   background: 'var(--sage-light)',
   color: 'var(--sage)',
@@ -813,7 +814,7 @@ function FormSection({ label, children }: { label: string; children: React.React
           borderRadius: 'var(--radius)',
           border: '1px solid var(--border-light)',
           overflow: 'hidden',
-          padding: '0 20px',
+          padding: '0 1.25rem',
         }}
       >
         {children}

@@ -16,7 +16,7 @@ export function InfoRow({ icon, label, value, muted }: InfoRowProps) {
         display: 'flex',
         alignItems: 'flex-start',
         justifyContent: 'space-between',
-        padding: '11px 16px',
+        padding: '0.6875rem 1rem',
         borderBottom: '1px solid var(--border-light)',
         gap: 12,
       }}

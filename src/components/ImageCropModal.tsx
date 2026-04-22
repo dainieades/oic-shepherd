@@ -36,7 +36,7 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
       const { naturalWidth: w, naturalHeight: h } = img;
       setNaturalSize({ w, h });
       const minDim = Math.min(w, h);
-      setScale(CROP_DIAMETER / minDim);
+      setScale(Math.max(MIN_SCALE, CROP_DIAMETER / minDim));
       setOffset({ x: 0, y: 0 });
     };
     img.src = imageSrc;
@@ -94,6 +94,7 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
     dragRef.current = null;
     pinchRef.current = null;
   };
+  const handleTouchCancel = handleTouchEnd;
 
   const handleWheel = (e: React.WheelEvent) => {
     e.preventDefault();
@@ -148,6 +149,7 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
         background: '#111',
         display: 'flex',
         flexDirection: 'column',
+        touchAction: 'none',
       }}
     >
       <div
@@ -155,7 +157,7 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '14px 20px',
+          padding: '0.875rem 1.25rem',
           color: '#fff',
           flexShrink: 0,
         }}
@@ -186,6 +188,7 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchCancel}
         onWheel={handleWheel}
       >
         {naturalSize.w > 0 && (
@@ -235,7 +238,7 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
 
       <div
         style={{
-          padding: '16px 28px 24px',
+          padding: '1rem 1.75rem 1.5rem',
           flexShrink: 0,
           display: 'flex',
           flexDirection: 'column',

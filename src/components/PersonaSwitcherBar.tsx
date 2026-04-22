@@ -22,17 +22,17 @@ export default function PersonaSwitcherBar() {
 
   return (
     <div className="dev-rail fixed top-0 right-0 left-0 z-50">
-      <div className="mx-auto flex h-9 max-w-[430px] items-center gap-3 px-3">
+      <div className="mx-auto flex h-9 max-w-[26.875rem] items-center gap-3 px-3">
         {/* DEV badge */}
         <span
           style={{
             fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
-            fontSize: '9px',
+            fontSize: '0.5625rem',
             letterSpacing: '0.08em',
             color: '#888',
             border: '1px solid #444',
-            borderRadius: '4px',
-            padding: '1px 5px',
+            borderRadius: '0.25rem',
+            padding: '0.0625rem 0.3125rem',
             flexShrink: 0,
           }}
         >
@@ -55,9 +55,9 @@ export default function PersonaSwitcherBar() {
                 }}
                 style={{
                   flexShrink: 0,
-                  fontSize: '11px',
+                  fontSize: '0.6875rem',
                   fontWeight: isActive ? 600 : 400,
-                  padding: '2px 10px',
+                  padding: '0.125rem 0.625rem',
                   borderRadius: 'var(--radius-pill)',
                   border: isActive ? '1px solid var(--sage)' : '1px solid #3A3A3A',
                   background: isActive ? 'var(--sage)' : 'transparent',
@@ -75,7 +75,7 @@ export default function PersonaSwitcherBar() {
         {/* Current persona label */}
         <span
           style={{
-            fontSize: '10px',
+            fontSize: '0.625rem',
             color: '#666',
             flexShrink: 0,
             maxWidth: 100,

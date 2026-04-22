@@ -101,7 +101,7 @@ export default function PickerMenu({
       {showSearch && (
         <div
           style={{
-            padding: '10px 14px',
+            padding: '0.625rem 0.875rem',
             borderBottom: '1px solid var(--border-light)',
             position: 'sticky',
             top: 0,
@@ -140,7 +140,7 @@ export default function PickerMenu({
               display: 'flex',
               alignItems: 'center',
               gap: 10,
-              padding: '10px 14px',
+              padding: '0.625rem 0.875rem',
               background: isSelected ? 'var(--sage-light)' : 'none',
               border: 'none',
               borderBottom: '1px solid var(--border-light)',
@@ -190,7 +190,7 @@ export default function PickerMenu({
                   width: 16,
                   height: 16,
                   borderRadius: 4,
-                  border: `2px solid ${isSelected ? 'var(--sage)' : 'var(--border)'}`,
+                  border: `0.125rem solid ${isSelected ? 'var(--sage)' : 'var(--border)'}`,
                   background: isSelected ? 'var(--sage)' : 'transparent',
                   display: 'inline-flex',
                   alignItems: 'center',

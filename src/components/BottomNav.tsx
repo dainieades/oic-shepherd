@@ -32,7 +32,7 @@ export default function BottomNav() {
         borderTop: '1px solid var(--border-light)',
       }}
     >
-      <div className="mx-auto flex h-14 max-w-[430px] items-end justify-around px-2">
+      <div className="mx-auto flex h-14 max-w-[26.875rem] items-end justify-around px-2">
         <NavTab href="/" label="People" active={isPeople}>
           <UserList size={24} weight={isPeople ? 'fill' : 'regular'} />
         </NavTab>

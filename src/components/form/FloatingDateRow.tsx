@@ -111,19 +111,19 @@ function FloatingCalendar({
           border: '1px solid var(--border)', overflow: 'hidden',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px 10px', borderBottom: '1px solid var(--border-light)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 1rem 0.625rem', borderBottom: '1px solid var(--border-light)' }}>
           <button onClick={onClose} style={{ fontSize: 14, color: 'var(--text-secondary)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
             Cancel
           </button>
           <button
             onClick={() => onSelect(selectedDate)}
-            style={{ height: 28, padding: '0 12px', borderRadius: 'var(--radius-xs)', background: 'var(--sage)', color: 'var(--on-sage)', fontSize: 14, fontWeight: 600, border: 'none', cursor: 'pointer' }}
+            style={{ height: 28, padding: '0 0.75rem', borderRadius: 'var(--radius-xs)', background: 'var(--sage)', color: 'var(--on-sage)', fontSize: 14, fontWeight: 600, border: 'none', cursor: 'pointer' }}
           >
             Done
           </button>
         </div>
 
-        <div style={{ padding: '10px 12px 6px' }}>
+        <div style={{ padding: '0.625rem 0.75rem 0.375rem' }}>
           <input
             key={selectedDate}
             type="text"
@@ -132,15 +132,15 @@ function FloatingCalendar({
             placeholder="Apr 17, 2026"
             style={{
               width: '100%', boxSizing: 'border-box',
-              padding: '9px 12px', borderRadius: 'var(--radius-sm)',
-              border: '2px solid var(--sage)',
+              padding: '0.5625rem 0.75rem', borderRadius: 'var(--radius-sm)',
+              border: '0.125rem solid var(--sage)',
               background: 'var(--bg)', outline: 'none',
               fontSize: 15, fontWeight: 500, color: 'var(--text-primary)',
             }}
           />
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4px 14px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.25rem 0.875rem' }}>
           <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>
             {MONTH_NAMES[viewMonth]} {viewYear}
           </span>
@@ -154,15 +154,15 @@ function FloatingCalendar({
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', padding: '0 8px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', padding: '0 0.5rem' }}>
           {DAY_HEADERS.map(h => (
-            <div key={h} style={{ textAlign: 'center', fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', padding: '2px 0' }}>
+            <div key={h} style={{ textAlign: 'center', fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', padding: '0.125rem 0' }}>
               {h}
             </div>
           ))}
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', padding: '0 8px 10px', gap: '1px 0' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', padding: '0 0.5rem 0.625rem', gap: '0.0625rem 0' }}>
           {cells.map((cell, i) => {
             const isSelected = cell.dateStr === selectedDate;
             const isToday = cell.dateStr === todayStr;
@@ -174,7 +174,7 @@ function FloatingCalendar({
                 onClick={() => { if (cell.dateStr) setSelectedDate(cell.dateStr); }}
                 style={{
                   width: 36, height: 36, margin: '0 auto', borderRadius: '50%',
-                  border: isToday && !isSelected ? '2px solid var(--sage)' : '2px solid transparent',
+                  border: isToday && !isSelected ? '0.125rem solid var(--sage)' : '0.125rem solid transparent',
                   background: isSelected ? 'var(--sage)' : 'none',
                   color: isSelected ? 'var(--on-sage)' : !cell.inMonth || isFuture ? 'var(--text-muted)' : isToday ? 'var(--sage)' : 'var(--text-primary)',
                   fontSize: 13, fontWeight: isSelected || isToday ? 600 : 400,

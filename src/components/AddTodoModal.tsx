@@ -128,7 +128,7 @@ export default function AddTodoModal({
                 height: 44,
                 borderRadius: '50%',
                 background: 'var(--red-light)',
-                border: '1.5px solid var(--red-border)',
+                border: '0.09375rem solid var(--red-border)',
                 color: 'var(--red)',
                 display: 'flex',
                 alignItems: 'center',
@@ -175,7 +175,7 @@ export default function AddTodoModal({
                 style={{
                   flex: 1,
                   overflowY: 'auto',
-                  padding: `16px 20px ${isEditing ? 80 : 16}px`,
+                  padding: `1rem 1.25rem ${isEditing ? 80 : 16}px`,
                   background: 'var(--bg)',
                   display: 'flex',
                   flexDirection: 'column',
@@ -188,7 +188,7 @@ export default function AddTodoModal({
                     borderRadius: 'var(--radius)',
                     border: '1px solid var(--border-light)',
                     overflow: 'hidden',
-                    padding: '0 16px',
+                    padding: '0 1rem',
                     flexShrink: 0,
                   }}
                 >
@@ -428,7 +428,7 @@ function CalendarPickerMenu({
     display: 'flex',
     alignItems: 'center',
     gap: 10,
-    padding: '10px 14px',
+    padding: '0.625rem 0.875rem',
     background: 'none',
     border: 'none',
     borderBottom: '1px solid var(--border-light)',

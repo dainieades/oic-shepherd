@@ -33,10 +33,10 @@ export function fmtDateTime(dateStr: string, timeStr: string, includeTime: boole
   return `${datePart}, ${h12}:${mStr} ${ampm}`;
 }
 
-/** Truncate a list of names to fit in ~3 lines of 14px text (~72 chars) */
+/** Truncate a list of names to fit in ~3 lines of 0.875rem text (~72 chars) */
 export function truncateWhoLabel(names: string[]): string | null {
   if (names.length === 0) return null;
-  // ~24 chars/line at 14px in the available field width (~180px); 3 lines ≈ 72 chars
+  // ~24 chars/line at 0.875rem in the available field width (~11.25rem); 3 lines ≈ 72 chars
   const MAX_CHARS = 72;
   let running = 0;
   const shown: string[] = [];

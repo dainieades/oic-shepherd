@@ -42,7 +42,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <AppProvider>
             <AuthSync />
             <AccessGate />
-            <main className="mx-auto min-h-screen w-full max-w-[430px] px-4 pb-20">
+            <main className="mx-auto min-h-screen w-full max-w-[26.875rem] px-4 pb-20">
               <PageTransition>{children}</PageTransition>
             </main>
             <BottomNav />

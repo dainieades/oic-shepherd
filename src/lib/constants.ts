@@ -9,7 +9,7 @@ export const SORT_OPTIONS: Array<{ key: HomeSortKey; label: string }> = [
   { key: 'name-desc', label: 'Name Z → A' },
 ];
 export const SHEET_MAX_WIDTH = 430;
-export const SHEET_BORDER_RADIUS = '20px 20px 0 0';
+export const SHEET_BORDER_RADIUS = '1.25rem 1.25rem 0 0';
 export const BACKDROP_COLOR = 'var(--backdrop)';
 
 export const Z_SUBHEADER = 39;

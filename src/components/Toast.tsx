@@ -63,13 +63,13 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               gap: 8,
               background: toast.type === 'error' ? 'rgba(180, 40, 40, 0.92)' : 'rgba(31, 37, 51, 0.92)',
               color: '#fff',
-              padding: '10px 18px',
+              padding: '0.625rem 1.125rem',
               borderRadius: 'var(--radius-pill)',
               fontSize: 14,
               fontWeight: 500,
               boxShadow: 'var(--shadow-elevated)',
-              backdropFilter: 'blur(8px)',
-              WebkitBackdropFilter: 'blur(8px)',
+              backdropFilter: 'blur(0.5rem)',
+              WebkitBackdropFilter: 'blur(0.5rem)',
               whiteSpace: 'nowrap',
             }}
           >

@@ -2,13 +2,50 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Plus, Trash, EnvelopeSimple } from '@phosphor-icons/react';
+import { CaretLeft, Plus, Trash, EnvelopeSimple } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { createClient } from '@/utils/supabase/client';
 import { BACKDROP_COLOR, Z_NESTED } from '@/lib/constants';
 import { EmptyState } from '@/components/EmptyState';
+import InviteSheet from '@/components/InviteSheet';
+import { Button } from '@/components/Button';
+import { deleteApprovedEmail } from './actions';
 
 type ApprovedEmail = { email: string; label: string | null; created_at: string };
+
+const navBarStyle: React.CSSProperties = {
+  position: 'sticky',
+  top: 0,
+  zIndex: 'var(--z-page)',
+  background: 'var(--bg)',
+  marginLeft: -16,
+  marginRight: -16,
+  paddingLeft: 16,
+  paddingRight: 16,
+  borderBottom: '1px solid var(--border-light)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  height: 54,
+};
+
+const backBtnStyle: React.CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: 4,
+  fontSize: 13,
+  color: 'var(--sage)',
+  background: 'none',
+  border: 'none',
+  cursor: 'pointer',
+  padding: 0,
+};
+
+const navTitleStyle: React.CSSProperties = {
+  fontSize: 15,
+  fontWeight: 600,
+  color: 'var(--text-primary)',
+};
 
 export default function AccessManagementPage() {
   const { currentPersona } = useApp();
@@ -16,11 +53,23 @@ export default function AccessManagementPage() {
 
   const [emails, setEmails] = React.useState<ApprovedEmail[]>([]);
   const [loading, setLoading] = React.useState(true);
-  const [newEmail, setNewEmail] = React.useState('');
-  const [newLabel, setNewLabel] = React.useState('');
-  const [adding, setAdding] = React.useState(false);
-  const [error, setError] = React.useState('');
+  const [showInvite, setShowInvite] = React.useState(false);
   const [confirmDelete, setConfirmDelete] = React.useState<string | null>(null);
+  const [deleteError, setDeleteError] = React.useState('');
+  const [deleting, setDeleting] = React.useState(false);
+  const [titleVisible, setTitleVisible] = React.useState(true);
+  const titleRef = React.useRef<HTMLHeadingElement>(null);
+
+  React.useEffect(() => {
+    const el = titleRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setTitleVisible(entry.isIntersecting),
+      { threshold: 0 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   const isAdmin = currentPersona.role === 'admin';
 
@@ -41,206 +90,64 @@ export default function AccessManagementPage() {
 
   if (!isAdmin) {
     return (
-      <div style={{ padding: '40px 0', textAlign: 'center' }}>
+      <div style={{ padding: '2.5rem 0', textAlign: 'center' }}>
         <p style={{ color: 'var(--text-muted)', fontSize: 15 }}>Admin access required.</p>
       </div>
     );
   }
 
-  async function handleAdd() {
-    const email = newEmail.trim().toLowerCase();
-    if (!email) {
-      setError('Enter an email address.');
-      return;
-    }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError('Enter a valid email address.');
-      return;
-    }
-    setAdding(true);
-    setError('');
-    const supabase = createClient();
-    const { error: err } = await supabase
-      .from('approved_emails')
-      .insert({ email, label: newLabel.trim() || null });
-    if (err) {
-      setError(err.message.includes('duplicate') ? 'That email is already approved.' : err.message);
-    } else {
-      setNewEmail('');
-      setNewLabel('');
-      await load();
-    }
-    setAdding(false);
-  }
-
   async function handleDelete(email: string) {
-    const supabase = createClient();
-    await supabase.from('approved_emails').delete().eq('email', email);
+    setDeleting(true);
+    const { error: err } = await deleteApprovedEmail(email);
+    setDeleting(false);
+    if (err) {
+      setDeleteError(err);
+      return;
+    }
     setConfirmDelete(null);
+    setDeleteError('');
     await load();
   }
 
   return (
     <div style={{ paddingBottom: 48 }}>
-      {/* Header */}
-      <div
+      {/* Nav bar */}
+      <div style={navBarStyle}>
+        <button onClick={() => router.push('/settings')} style={backBtnStyle}>
+          <CaretLeft size={16} weight="bold" />
+          Settings
+        </button>
+        <span style={{ ...navTitleStyle, opacity: titleVisible ? 0 : 1, transition: 'opacity 0.15s' }}>Access Management</span>
+        <Button variant="primary" size="sm" onClick={() => setShowInvite(true)}>
+          <Plus size={16} weight="bold" />
+          Invite
+        </Button>
+      </div>
+
+      <h1
+        ref={titleRef}
         style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 'var(--z-sticky)',
-          background: 'var(--bg)',
-          marginLeft: -16,
-          marginRight: -16,
-          paddingLeft: 16,
-          paddingRight: 16,
-          borderBottom: '1px solid var(--border-light)',
-          height: 44,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 10,
+          fontSize: 28,
+          fontWeight: 700,
+          color: 'var(--text-primary)',
+          letterSpacing: '-0.02em',
+          margin: '1.5rem 0 0.5rem',
         }}
       >
-        <button
-          onClick={() => router.back()}
-          style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            padding: 0,
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
-          <ArrowLeft size={20} color="var(--text-primary)" />
-        </button>
-        <span
-          style={{
-            fontSize: 17,
-            fontWeight: 600,
-            color: 'var(--text-primary)',
-            letterSpacing: '-0.01em',
-          }}
-        >
-          Access Management
-        </span>
-      </div>
+        Access Management
+      </h1>
 
       <p
         style={{
           fontSize: 13,
           color: 'var(--text-muted)',
-          marginTop: 20,
+          marginTop: 0,
           marginBottom: 20,
           lineHeight: 1.5,
         }}
       >
         Only people on this list can sign in. Add someone&apos;s email before they try to log in.
       </p>
-
-      {/* Add form */}
-      <div
-        style={{
-          background: 'var(--surface)',
-          borderRadius: 'var(--radius)',
-          border: '1px solid var(--border-light)',
-          padding: 16,
-          marginBottom: 24,
-        }}
-      >
-        <p
-          style={{
-            fontSize: 12,
-            fontWeight: 600,
-            color: 'var(--text-muted)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.06em',
-            marginBottom: 12,
-          }}
-        >
-          Add access
-        </p>
-
-        {error && (
-          <div
-            style={{
-              background: 'var(--red-light)',
-              border: '1px solid var(--red-border)',
-              borderRadius: 'var(--radius-xs)',
-              padding: '8px 12px',
-              marginBottom: 12,
-              fontSize: 13,
-              color: 'var(--red)',
-            }}
-          >
-            {error}
-          </div>
-        )}
-
-        <input
-          type="email"
-          placeholder="Email address"
-          value={newEmail}
-          onChange={(e) => {
-            setNewEmail(e.target.value);
-            setError('');
-          }}
-          onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
-          style={{
-            width: '100%',
-            padding: '10px 12px',
-            borderRadius: 'var(--radius-sm)',
-            border: '1.5px solid var(--border)',
-            fontSize: 15,
-            color: 'var(--text-primary)',
-            background: 'var(--bg)',
-            outline: 'none',
-            marginBottom: 8,
-            boxSizing: 'border-box',
-          }}
-        />
-        <input
-          type="text"
-          placeholder="Name (optional)"
-          value={newLabel}
-          onChange={(e) => setNewLabel(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
-          style={{
-            width: '100%',
-            padding: '10px 12px',
-            borderRadius: 'var(--radius-sm)',
-            border: '1.5px solid var(--border)',
-            fontSize: 15,
-            color: 'var(--text-primary)',
-            background: 'var(--bg)',
-            outline: 'none',
-            marginBottom: 12,
-            boxSizing: 'border-box',
-          }}
-        />
-        <button
-          onClick={handleAdd}
-          disabled={adding}
-          style={{
-            width: '100%',
-            padding: '11px 16px',
-            borderRadius: 'var(--radius-sm)',
-            border: 'none',
-            background: 'var(--sage)',
-            color: 'var(--on-sage)',
-            fontSize: 15,
-            fontWeight: 600,
-            cursor: adding ? 'not-allowed' : 'pointer',
-            opacity: adding ? 0.6 : 1,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-          }}
-        >
-          <Plus size={16} weight="bold" />
-          {adding ? 'Adding…' : 'Add email'}
-        </button>
-      </div>
 
       {/* Email list */}
       <p
@@ -262,7 +169,7 @@ export default function AccessManagementPage() {
             fontSize: 14,
             color: 'var(--text-muted)',
             textAlign: 'center',
-            padding: '24px 0',
+            padding: '1.5rem 0',
           }}
         >
           Loading…
@@ -297,7 +204,7 @@ export default function AccessManagementPage() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: 12,
-                padding: '12px 16px',
+                padding: '0.75rem 1rem',
                 borderBottom: '1px solid var(--border-light)',
               }}
             >
@@ -348,6 +255,13 @@ export default function AccessManagementPage() {
         </div>
       )}
 
+      {showInvite && (
+        <InviteSheet
+          onClose={() => setShowInvite(false)}
+          onSuccess={() => load()}
+        />
+      )}
+
       {/* Delete confirm modal */}
       {confirmDelete && (
         <div
@@ -359,10 +273,10 @@ export default function AccessManagementPage() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '0 32px',
+            padding: '0 2rem',
           }}
           onClick={(e) => {
-            if (e.target === e.currentTarget) setConfirmDelete(null);
+            if (e.target === e.currentTarget) { setConfirmDelete(null); setDeleteError(''); }
           }}
         >
           <div
@@ -374,13 +288,13 @@ export default function AccessManagementPage() {
               overflow: 'hidden',
             }}
           >
-            <div style={{ padding: '24px 20px 16px', textAlign: 'center' }}>
+            <div style={{ padding: '1.5rem 1.25rem 1rem', textAlign: 'center' }}>
               <p
                 style={{
                   fontSize: 16,
                   fontWeight: 600,
                   color: 'var(--text-primary)',
-                  margin: '0 0 6px',
+                  margin: '0 0 0.375rem',
                 }}
               >
                 Remove access?
@@ -396,9 +310,22 @@ export default function AccessManagementPage() {
                 {confirmDelete}
               </p>
             </div>
+            {deleteError && (
+              <div
+                style={{
+                  padding: '0.5rem 1.25rem',
+                  fontSize: 13,
+                  color: 'var(--red)',
+                  textAlign: 'center',
+                  borderTop: '1px solid var(--border-light)',
+                }}
+              >
+                {deleteError}
+              </div>
+            )}
             <div style={{ borderTop: '1px solid var(--border-light)', display: 'flex' }}>
               <button
-                onClick={() => setConfirmDelete(null)}
+                onClick={() => { setConfirmDelete(null); setDeleteError(''); }}
                 style={{
                   flex: 1,
                   height: 50,
@@ -415,6 +342,7 @@ export default function AccessManagementPage() {
               </button>
               <button
                 onClick={() => handleDelete(confirmDelete)}
+                disabled={deleting}
                 style={{
                   flex: 1,
                   height: 50,
@@ -422,11 +350,12 @@ export default function AccessManagementPage() {
                   border: 'none',
                   fontSize: 15,
                   color: 'var(--red)',
-                  cursor: 'pointer',
+                  cursor: deleting ? 'not-allowed' : 'pointer',
                   fontWeight: 600,
+                  opacity: deleting ? 0.5 : 1,
                 }}
               >
-                Remove
+                {deleting ? 'Removing…' : 'Remove'}
               </button>
             </div>
           </div>

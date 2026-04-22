@@ -3,7 +3,8 @@
 import React from 'react';
 import { type AppRole } from '@/lib/types';
 import { Warning, Check } from '@phosphor-icons/react';
-import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, Z_SHEET } from '@/lib/constants';
+import { Z_SHEET } from '@/lib/constants';
+import { BottomSheet } from '@/components/BottomSheet';
 
 const ROLE_OPTIONS: { value: AppRole; label: string; description: string }[] = [
   {
@@ -43,40 +44,7 @@ export default function AppRolePickerSheet({
   const [confirmRemove, setConfirmRemove] = React.useState(false);
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: Z_SHEET,
-        background: BACKDROP_COLOR,
-        display: 'flex',
-        alignItems: 'flex-end',
-        justifyContent: 'center',
-      }}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-    >
-      <div
-        style={{
-          background: 'var(--surface)',
-          borderRadius: SHEET_BORDER_RADIUS,
-          width: '100%',
-          maxWidth: SHEET_MAX_WIDTH,
-          paddingBottom: 'env(safe-area-inset-bottom, 24px)',
-        }}
-      >
-        {/* Handle */}
-        <div
-          style={{
-            width: 36,
-            height: 4,
-            background: 'var(--border)',
-            borderRadius: 2,
-            margin: '12px auto 0',
-          }}
-        />
-
+    <BottomSheet onClose={onClose} compact zIndex={Z_SHEET}>
         {/* Title */}
         <p
           style={{
@@ -86,7 +54,7 @@ export default function AppRolePickerSheet({
             textAlign: 'center',
             textTransform: 'uppercase',
             letterSpacing: '0.06em',
-            padding: '12px 20px 10px',
+            padding: '0.75rem 1.25rem 0.625rem',
             borderBottom: '1px solid var(--border-light)',
           }}
         >
@@ -95,7 +63,7 @@ export default function AppRolePickerSheet({
 
         {confirmRemove ? (
           /* ── Warning state ── */
-          <div style={{ padding: '24px 20px 8px' }}>
+          <div style={{ padding: '1.5rem 1.25rem 0.5rem' }}>
             <div
               style={{
                 width: 44,
@@ -105,7 +73,7 @@ export default function AppRolePickerSheet({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                margin: '0 auto 16px',
+                margin: '0 auto 1rem',
               }}
             >
               <Warning size={20} color="var(--red)" />
@@ -140,7 +108,7 @@ export default function AppRolePickerSheet({
               }}
               style={{
                 width: '100%',
-                padding: '14px',
+                padding: '0.875rem',
                 background: 'var(--red)',
                 color: 'var(--on-red)',
                 border: 'none',
@@ -157,7 +125,7 @@ export default function AppRolePickerSheet({
               onClick={() => setConfirmRemove(false)}
               style={{
                 width: '100%',
-                padding: '14px',
+                padding: '0.875rem',
                 background: 'none',
                 color: 'var(--text-secondary)',
                 border: 'none',
@@ -187,7 +155,7 @@ export default function AppRolePickerSheet({
                     display: 'flex',
                     alignItems: 'center',
                     gap: 12,
-                    padding: '14px 20px',
+                    padding: '0.875rem 1.25rem',
                     background: isSelected ? 'var(--sage-light)' : 'none',
                     border: 'none',
                     borderBottom: '1px solid var(--border-light)',
@@ -228,7 +196,7 @@ export default function AppRolePickerSheet({
                 onClick={() => setConfirmRemove(true)}
                 style={{
                   width: '100%',
-                  padding: '15px 20px',
+                  padding: '0.9375rem 1.25rem',
                   background: 'none',
                   border: 'none',
                   borderBottom: '1px solid var(--border-light)',
@@ -244,7 +212,6 @@ export default function AppRolePickerSheet({
             )}
           </>
         )}
-      </div>
-    </div>
+    </BottomSheet>
   );
 }

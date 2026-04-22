@@ -20,7 +20,7 @@ export default function AppearancePage() {
     <div style={{ paddingBottom: 48 }}>
       {/* Nav bar */}
       <div style={navBarStyle}>
-        <button onClick={() => router.back()} style={backBtnStyle}>
+        <button onClick={() => router.push('/settings')} style={backBtnStyle}>
           <CaretLeft size={16} weight="bold" />
           Settings
         </button>
@@ -48,7 +48,7 @@ export default function AppearancePage() {
                   background: active ? 'color-mix(in srgb, var(--sage) 10%, transparent)' : 'none',
                   border: 'none',
                   borderBottom: i < OPTIONS.length - 1 ? '1px solid var(--border-light)' : 'none',
-                  padding: '16px',
+                  padding: '1rem',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
@@ -99,7 +99,7 @@ export default function AppearancePage() {
                     width: 22,
                     height: 22,
                     borderRadius: '50%',
-                    border: `2px solid ${active ? 'var(--sage)' : 'var(--border-light)'}`,
+                    border: `0.125rem solid ${active ? 'var(--sage)' : 'var(--border-light)'}`,
                     background: active ? 'var(--sage)' : 'transparent',
                     display: 'flex',
                     alignItems: 'center',

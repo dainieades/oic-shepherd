@@ -7,7 +7,7 @@ export function EmptyState({
   description,
   subtext,
   icon,
-  padding = '32px 20px',
+  padding = '2rem 1.25rem',
 }: {
   title: string;
   description?: string;
@@ -48,7 +48,7 @@ export function EmptyState({
             color: 'var(--text-muted)',
             lineHeight: 1.5,
             maxWidth: 260,
-            margin: '10px auto 0',
+            margin: '0.625rem auto 0',
             fontWeight: 600,
           }}
         >

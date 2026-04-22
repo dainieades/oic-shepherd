@@ -18,7 +18,7 @@ export default function SettingsProfilePage() {
     return (
       <div style={{ minHeight: '100dvh' }}>
         <div style={navBarStyle}>
-          <button onClick={() => router.back()} style={backBtnStyle}>
+          <button onClick={() => router.push('/settings')} style={backBtnStyle}>
             <CaretLeft size={16} />
             Settings
           </button>
@@ -27,7 +27,7 @@ export default function SettingsProfilePage() {
         </div>
         <div
           style={{
-            padding: '40px 0',
+            padding: '2.5rem 0',
             textAlign: 'center',
             color: 'var(--text-muted)',
             fontSize: 14,
@@ -39,7 +39,7 @@ export default function SettingsProfilePage() {
     );
   }
 
-  return <ProfileEditor personId={person.id} onBack={() => router.back()} />;
+  return <ProfileEditor personId={person.id} onBack={() => router.push('/settings')} />;
 }
 
 function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => void }) {
@@ -70,7 +70,7 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: '0 16px',
+            padding: '0 1rem',
           }}
         >
           <button
@@ -92,7 +92,7 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
             disabled={!canSave}
             style={{
               height: 32,
-              padding: '0 14px',
+              padding: '0 0.875rem',
               borderRadius: 'var(--radius-xs)',
               background: canSave ? 'var(--sage)' : 'var(--border)',
               color: canSave ? 'var(--on-sage)' : 'var(--text-muted)',

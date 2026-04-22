@@ -3,7 +3,8 @@
 import { format, getDaysInMonth, getDay, parseISO, isValid } from 'date-fns';
 import React from 'react';
 import { CaretLeft, CaretRight } from '@phosphor-icons/react';
-import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, Z_SHEET } from '@/lib/constants';
+import { Z_SHEET } from '@/lib/constants';
+import { BottomSheet } from '@/components/BottomSheet';
 
 const MONTH_NAMES = [
   'January',
@@ -94,7 +95,7 @@ function TimeButton({
       onKeyDown={handleKeyDown}
       style={{
         flex: 1,
-        padding: '10px 14px',
+        padding: '0.625rem 0.875rem',
         background: 'none',
         border: 'none',
         outline: 'none',
@@ -287,7 +288,7 @@ export default function DatePickerSheet({
           alignItems: 'stretch',
           borderRadius: 'var(--radius-sm)',
           overflow: 'hidden',
-          border: `2px solid ${isActive ? 'var(--sage)' : 'var(--border-light)'}`,
+          border: `0.125rem solid ${isActive ? 'var(--sage)' : 'var(--border-light)'}`,
           background: 'var(--bg)',
           transition: 'border-color 0.15s',
           position: 'relative',
@@ -311,7 +312,7 @@ export default function DatePickerSheet({
           placeholder="Apr 17, 2026"
           style={{
             flex: 1,
-            padding: '10px 14px',
+            padding: '0.625rem 0.875rem',
             background: 'none',
             border: 'none',
             outline: 'none',
@@ -330,7 +331,7 @@ export default function DatePickerSheet({
               style={{
                 width: 1,
                 background: 'var(--border-light)',
-                margin: '8px 0',
+                margin: '0.5rem 0',
                 flexShrink: 0,
               }}
             />
@@ -350,41 +351,14 @@ export default function DatePickerSheet({
   }
 
   return (
-    <>
-      <div
-        style={{ position: 'fixed', inset: 0, background: BACKDROP_COLOR, zIndex: Z_SHEET }}
-        onClick={onClose}
-      />
-      <div
-        style={{
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          zIndex: Z_SHEET + 1,
-          display: 'flex',
-          justifyContent: 'center',
-        }}
-      >
-        <div
-          className="animate-slide-up"
-          style={{
-            width: '100%',
-            maxWidth: SHEET_MAX_WIDTH,
-            background: 'var(--surface)',
-            borderRadius: SHEET_BORDER_RADIUS,
-            display: 'flex',
-            flexDirection: 'column',
-            height: 'calc(100dvh - 48px)',
-          }}
-        >
+    <BottomSheet onClose={onClose} zIndex={Z_SHEET}>
           {/* Header */}
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              padding: '14px 20px 12px',
+              padding: '0.875rem 1.25rem 0.75rem',
               borderBottom: '1px solid var(--border-light)',
             }}
           >
@@ -415,7 +389,7 @@ export default function DatePickerSheet({
               }
               style={{
                 height: 32,
-                padding: '0 14px',
+                padding: '0 0.875rem',
                 borderRadius: 'var(--radius-xs)',
                 background: 'var(--sage)',
                 color: 'var(--on-sage)',
@@ -433,7 +407,7 @@ export default function DatePickerSheet({
           <div style={{ flex: 1, overflowY: 'auto', paddingBottom: 40 }}>
             {/* Date pill inputs */}
             <div
-              style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: '10px 16px 2px' }}
+              style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: '0.625rem 1rem 0.125rem' }}
             >
               <DatePill field="start" dateVal={startDate} timeVal={startTime} />
               {showEndDate && <DatePill field="end" dateVal={endDate} timeVal={endTime} />}
@@ -445,7 +419,7 @@ export default function DatePickerSheet({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                padding: '8px 16px 4px',
+                padding: '0.5rem 1rem 0.25rem',
               }}
             >
               <span style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)' }}>
@@ -466,7 +440,7 @@ export default function DatePickerSheet({
               style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(7, 1fr)',
-                padding: '0 10px',
+                padding: '0 0.625rem',
                 marginBottom: 0,
               }}
             >
@@ -478,7 +452,7 @@ export default function DatePickerSheet({
                     fontSize: 11,
                     fontWeight: 600,
                     color: 'var(--text-muted)',
-                    padding: '2px 0',
+                    padding: '0.125rem 0',
                   }}
                 >
                   {h}
@@ -491,8 +465,8 @@ export default function DatePickerSheet({
               style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(7, 1fr)',
-                padding: '0 10px',
-                gap: '1px 0',
+                padding: '0 0.625rem',
+                gap: '0.0625rem 0',
               }}
             >
               {cells.map((cell, i) => {
@@ -518,7 +492,7 @@ export default function DatePickerSheet({
                       margin: '0 auto',
                       borderRadius: '50%',
                       border:
-                        isToday && !isSelected ? '2px solid var(--sage)' : '2px solid transparent',
+                        isToday && !isSelected ? '0.125rem solid var(--sage)' : '0.125rem solid transparent',
                       background: isSelected
                         ? 'var(--sage)'
                         : inRange
@@ -544,7 +518,7 @@ export default function DatePickerSheet({
             </div>
 
             {/* Divider */}
-            <div style={{ margin: '8px 16px 0', borderTop: '1px solid var(--border-light)' }} />
+            <div style={{ margin: '0.5rem 1rem 0', borderTop: '1px solid var(--border-light)' }} />
 
             {/* End date toggle */}
             <div
@@ -552,7 +526,7 @@ export default function DatePickerSheet({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                padding: '10px 16px 0',
+                padding: '0.625rem 1rem 0',
               }}
             >
               <span style={{ fontSize: 15, color: 'var(--text-primary)' }}>End date</span>
@@ -571,7 +545,7 @@ export default function DatePickerSheet({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                padding: '10px 16px 0',
+                padding: '0.625rem 1rem 0',
               }}
             >
               <span style={{ fontSize: 15, color: 'var(--text-primary)' }}>Include time</span>
@@ -579,8 +553,6 @@ export default function DatePickerSheet({
             </div>
           </div>
           {/* end scrollable body */}
-        </div>
-      </div>
-    </>
+    </BottomSheet>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { DrawerSection } from '@/components/form/DrawerSection';
 import { SectionLabel } from '@/components/SectionLabel';
 import { AvatarBadge } from '@/components/AvatarBadge';
 import Link from 'next/link';
@@ -18,7 +19,8 @@ import {
   CaretLeft,
   Check,
 } from '@phosphor-icons/react';
-import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, SHEPHERD_AVATAR_PALETTE, Z_SHEET } from '@/lib/constants';
+import { SHEPHERD_AVATAR_PALETTE, Z_SHEET, SHEET_BORDER_RADIUS, SHEET_MAX_WIDTH } from '@/lib/constants';
+import { BottomSheet, ModalHeader } from '@/components/BottomSheet';
 
 export default function GroupDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = React.use(params);
@@ -74,7 +76,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
         }}
       >
         <button
-          onClick={() => router.back()}
+          onClick={() => router.push('/groups')}
           style={{
             display: 'inline-flex',
             alignItems: 'center',
@@ -98,7 +100,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
             color: 'var(--text-secondary)',
             flex: 1,
             textAlign: 'center',
-            padding: '0 8px',
+            padding: '0 0.5rem',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
@@ -111,7 +113,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
           onClick={() => setShowEdit(true)}
           style={{
             height: scrolled ? 30 : 36,
-            padding: scrolled ? '0 10px' : '0 12px',
+            padding: scrolled ? '0 0.625rem' : '0 0.75rem',
             borderRadius: 'var(--radius-xs)',
             background: 'var(--sage)',
             color: 'var(--on-sage)',
@@ -137,7 +139,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
           background: 'var(--surface)',
           borderRadius: 'var(--radius-lg)',
           border: '1px solid var(--border-light)',
-          padding: '20px',
+          padding: '1.25rem',
           marginBottom: 14,
         }}
       >
@@ -177,7 +179,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
             style={{
               fontSize: 11,
               fontWeight: 500,
-              padding: '3px 10px',
+              padding: '0.1875rem 0.625rem',
               borderRadius: 'var(--radius-pill)',
               background: 'var(--sage-light)',
               color: 'var(--sage)',
@@ -189,7 +191,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
             style={{
               fontSize: 11,
               fontWeight: 500,
-              padding: '3px 10px',
+              padding: '0.1875rem 0.625rem',
               borderRadius: 'var(--radius-pill)',
               background: 'var(--blue-light)',
               color: 'var(--blue)',
@@ -205,7 +207,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
             style={{
               fontSize: 11,
               fontWeight: 500,
-              padding: '3px 10px',
+              padding: '0.1875rem 0.625rem',
               borderRadius: 'var(--radius-pill)',
               background: 'var(--avatar-s1-bg)',
               color: 'var(--avatar-s1-text)',
@@ -226,7 +228,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
               color: 'var(--text-secondary)',
               lineHeight: 1.6,
               paddingLeft: 12,
-              borderLeft: '2px solid var(--sage-mid)',
+              borderLeft: '0.125rem solid var(--sage-mid)',
               marginTop: 14,
             }}
           >
@@ -290,7 +292,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
                           style={{
                             fontSize: 10,
                             fontWeight: 600,
-                            padding: '1px 6px',
+                            padding: '0.0625rem 0.375rem',
                             borderRadius: 'var(--radius-pill)',
                             background: 'var(--avatar-s1-bg)',
                             color: 'var(--avatar-s1-text)',
@@ -523,92 +525,20 @@ function EditGroupDrawer({
 
   return (
     <>
-      <div
-        style={{
-          position: 'fixed',
-          inset: 0,
-          background: BACKDROP_COLOR,
-          zIndex: 'var(--z-modal)',
-          display: 'flex',
-          alignItems: 'flex-end',
-          justifyContent: 'center',
-        }}
-        onClick={(e) => {
-          if (e.target === e.currentTarget) onClose();
-        }}
-      >
-        <div
-          className="animate-slide-up"
-          style={{
-            background: 'var(--surface)',
-            borderRadius: SHEET_BORDER_RADIUS,
-            width: '100%',
-            maxWidth: SHEET_MAX_WIDTH,
-            height: 'calc(100dvh - 48px)',
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden',
-          }}
-        >
-          {/* Drag handle */}
-          <div
-            style={{
-              width: 36,
-              height: 4,
-              background: 'var(--border)',
-              borderRadius: 2,
-              margin: '14px auto 0',
-              flexShrink: 0,
-            }}
-          />
-
-          {/* Fixed header */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '14px 20px 12px',
-              flexShrink: 0,
-              borderBottom: '1px solid var(--border-light)',
-            }}
-          >
-            <button
-              onClick={onClose}
-              style={{
-                fontSize: 14,
-                color: 'var(--text-secondary)',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-              }}
-            >
-              Cancel
-            </button>
-            <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
-              Edit group
-            </span>
-            <button
-              onClick={handleSave}
-              style={{
-                fontSize: 14,
-                fontWeight: 600,
-                color: 'var(--sage)',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-              }}
-            >
-              Save
-            </button>
-          </div>
+      <BottomSheet onClose={onClose}>
+        <ModalHeader
+          title="Edit group"
+          onCancel={onClose}
+          onAction={handleSave}
+          actionLabel="Save"
+        />
 
           {/* Scrollable body */}
           <div
             style={{
               flex: 1,
               overflowY: 'auto',
-              padding: '20px 20px 48px',
+              padding: '1.25rem 1.25rem 3rem',
               background: 'var(--bg)',
             }}
           >
@@ -722,8 +652,7 @@ function EditGroupDrawer({
               </button>
             </DrawerSection>
           </div>
-        </div>
-      </div>
+      </BottomSheet>
 
       {/* Leader picker sheet */}
       {showLeaderPicker && (
@@ -814,7 +743,7 @@ function PeoplePickerSheet({
           borderRadius: SHEET_BORDER_RADIUS,
           width: '100%',
           maxWidth: SHEET_MAX_WIDTH,
-          height: 'calc(100dvh - 48px)',
+          height: 'calc(100dvh - 3rem)',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
@@ -825,7 +754,7 @@ function PeoplePickerSheet({
           style={{
             display: 'flex',
             alignItems: 'center',
-            padding: '14px 20px 12px',
+            padding: '0.875rem 1.25rem 0.75rem',
             flexShrink: 0,
             borderBottom: '1px solid var(--border-light)',
           }}
@@ -872,7 +801,7 @@ function PeoplePickerSheet({
         {/* Search */}
         <div
           style={{
-            padding: '10px 16px',
+            padding: '0.625rem 1rem',
             borderBottom: '1px solid var(--border-light)',
             flexShrink: 0,
           }}
@@ -884,7 +813,7 @@ function PeoplePickerSheet({
             placeholder="Search…"
             style={{
               width: '100%',
-              padding: '8px 12px',
+              padding: '0.5rem 0.75rem',
               borderRadius: 'var(--radius-xs)',
               border: '1px solid var(--border)',
               fontSize: 14,
@@ -915,7 +844,7 @@ function PeoplePickerSheet({
                   display: 'flex',
                   alignItems: 'center',
                   gap: 12,
-                  padding: '10px 20px',
+                  padding: '0.625rem 1.25rem',
                   background: isSel ? 'var(--sage-light)' : 'none',
                   border: 'none',
                   borderBottom: '1px solid var(--border-light)',
@@ -963,7 +892,7 @@ function PeoplePickerSheet({
         </div>
 
         {/* Done button */}
-        <div style={{ padding: '16px 20px', flexShrink: 0 }}>
+        <div style={{ padding: '1rem 1.25rem', flexShrink: 0 }}>
           <button
             onClick={onDone}
             style={{
@@ -1035,34 +964,4 @@ const inputStyle: React.CSSProperties = {
   color: 'var(--text-primary)',
 };
 
-function DrawerSection({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div style={{ marginBottom: 24 }}>
-      <p
-        style={{
-          fontSize: 10,
-          fontWeight: 600,
-          color: 'var(--text-muted)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.06em',
-          marginBottom: 4,
-        }}
-      >
-        {label}
-      </p>
-      <div
-        className="no-last-border"
-        style={{
-          background: 'var(--surface)',
-          borderRadius: 'var(--radius)',
-          border: '1px solid var(--border-light)',
-          overflow: 'hidden',
-          padding: '0 16px',
-        }}
-      >
-        {children}
-      </div>
-    </div>
-  );
-}
 

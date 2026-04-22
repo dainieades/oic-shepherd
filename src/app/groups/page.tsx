@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useApp } from '@/lib/context';
 import { Crown, HandHeart, Plus } from '@phosphor-icons/react';
 import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS } from '@/lib/constants';
+import { Button } from '@/components/Button';
 
 export default function GroupsPage() {
   const { data, currentPersona, addGroup } = useApp();
@@ -18,6 +19,15 @@ export default function GroupsPage() {
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  React.useEffect(() => {
+    if (showAdd) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [showAdd]);
 
   const handleAdd = () => {
     if (!newName.trim()) return;
@@ -81,7 +91,7 @@ export default function GroupsPage() {
               onClick={() => setShowAdd(true)}
               style={{
                 height: 32,
-                padding: '0 14px',
+                padding: '0 0.875rem',
                 borderRadius: 'var(--radius-xs)',
                 background: 'var(--sage)',
                 color: 'var(--on-sage)',
@@ -123,7 +133,7 @@ export default function GroupsPage() {
               onClick={() => setShowAdd(true)}
               style={{
                 height: 36,
-                padding: '0 16px',
+                padding: '0 1rem',
                 borderRadius: 'var(--radius-xs)',
                 background: 'var(--sage)',
                 color: 'var(--on-sage)',
@@ -161,9 +171,9 @@ export default function GroupsPage() {
                   background: 'var(--surface)',
                   borderRadius: 'var(--radius)',
                   border: iAmInvolved
-                    ? '1.5px solid var(--sage-mid)'
-                    : '1px solid var(--border-light)',
-                  padding: '14px 16px',
+                    ? '0.09375rem solid var(--sage-mid)'
+                    : '0.0625rem solid var(--border-light)',
+                  padding: '0.875rem 1rem',
                 }}
               >
                 <div
@@ -196,7 +206,7 @@ export default function GroupsPage() {
                     style={{
                       fontSize: 11,
                       fontWeight: 500,
-                      padding: '2px 8px',
+                      padding: '0.125rem 0.5rem',
                       borderRadius: 'var(--radius-pill)',
                       background: 'var(--sage-light)',
                       color: 'var(--sage)',
@@ -208,7 +218,7 @@ export default function GroupsPage() {
                     style={{
                       fontSize: 11,
                       fontWeight: 500,
-                      padding: '2px 8px',
+                      padding: '0.125rem 0.5rem',
                       borderRadius: 'var(--radius-pill)',
                       background: 'var(--blue-light)',
                       color: 'var(--blue)',
@@ -224,7 +234,7 @@ export default function GroupsPage() {
                     style={{
                       fontSize: 11,
                       fontWeight: 500,
-                      padding: '2px 8px',
+                      padding: '0.125rem 0.5rem',
                       borderRadius: 'var(--radius-pill)',
                       background: 'var(--avatar-s1-bg)',
                       color: 'var(--avatar-s1-text)',
@@ -268,22 +278,21 @@ export default function GroupsPage() {
             inset: 0,
             zIndex: 'var(--z-modal)',
             display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'flex-end',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '0 1rem',
+            background: 'rgba(0,0,0,0.4)',
           }}
+          onClick={(e) => { if (e.target === e.currentTarget) setShowAdd(false); }}
         >
           <div
-            style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)' }}
-            onClick={() => setShowAdd(false)}
-          />
-          <div
-            className="animate-slide-up"
             style={{
-              position: 'relative',
               background: 'var(--surface)',
-              borderRadius: SHEET_BORDER_RADIUS,
-              padding: '20px 20px 40px',
-              zIndex: 1,
+              borderRadius: 'var(--radius-lg)',
+              padding: '1.25rem 1.25rem 1.5rem',
+              width: '100%',
+              maxWidth: 480,
+              boxShadow: 'var(--shadow-elevated)',
             }}
           >
             <div
@@ -334,7 +343,7 @@ export default function GroupsPage() {
                   placeholder="Group name"
                   style={{
                     width: '100%',
-                    padding: '10px 12px',
+                    padding: '0.625rem 0.75rem',
                     borderRadius: 'var(--radius-sm)',
                     border: '1px solid var(--border)',
                     fontSize: 15,
@@ -367,7 +376,7 @@ export default function GroupsPage() {
                   rows={3}
                   style={{
                     width: '100%',
-                    padding: '10px 12px',
+                    padding: '0.625rem 0.75rem',
                     borderRadius: 'var(--radius-sm)',
                     border: '1px solid var(--border)',
                     fontSize: 14,
@@ -381,24 +390,13 @@ export default function GroupsPage() {
               </div>
             </div>
 
-            <button
+            <Button
               onClick={handleAdd}
               disabled={!newName.trim()}
-              style={{
-                marginTop: 20,
-                width: '100%',
-                padding: '14px',
-                borderRadius: 'var(--radius-md)',
-                background: newName.trim() ? 'var(--sage)' : 'var(--border)',
-                color: newName.trim() ? '#fff' : 'var(--text-muted)',
-                border: 'none',
-                fontSize: 15,
-                fontWeight: 700,
-                cursor: newName.trim() ? 'pointer' : 'default',
-              }}
+              style={{ marginTop: 20, width: '100%' }}
             >
               Create Group
-            </button>
+            </Button>
           </div>
         </div>
       )}

@@ -11,12 +11,14 @@ import {
 } from '@phosphor-icons/react';
 import { createClient } from '@/utils/supabase/client';
 import { useApp } from '@/lib/context';
-import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, Z_SHEET } from '@/lib/constants';
+import { X } from '@phosphor-icons/react';
+import { BACKDROP_COLOR, SHEET_MAX_WIDTH, Z_SHEET } from '@/lib/constants';
 
 type InviteRole = 'shepherd' | 'welcome-team' | 'admin';
 
 interface Props {
   onClose: () => void;
+  onSuccess?: () => void;
   initialEmail?: string;
   initialRole?: InviteRole;
   personName?: string;
@@ -47,6 +49,7 @@ const ROLES: { value: InviteRole; label: string; description: string; icon: Reac
 
 export default function InviteSheet({
   onClose,
+  onSuccess,
   initialEmail = '',
   initialRole = 'shepherd',
   personName,
@@ -96,6 +99,7 @@ export default function InviteSheet({
     }
 
     setStatus('success');
+    onSuccess?.();
   }
 
   return (
@@ -106,50 +110,67 @@ export default function InviteSheet({
         background: BACKDROP_COLOR,
         zIndex: Z_SHEET,
         display: 'flex',
-        alignItems: 'flex-end',
+        alignItems: 'center',
         justifyContent: 'center',
+        padding: '0 1.25rem',
       }}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div
-        className="animate-slide-up"
+        className="animate-fade-in"
         style={{
           background: 'var(--surface)',
-          borderRadius: SHEET_BORDER_RADIUS,
+          borderRadius: 'var(--radius-lg)',
           width: '100%',
           maxWidth: SHEET_MAX_WIDTH,
-          paddingBottom: 'env(safe-area-inset-bottom, 24px)',
         }}
       >
         <div
           style={{
-            width: 36,
-            height: 4,
-            background: 'var(--border)',
-            borderRadius: 2,
-            margin: '14px auto 10px',
-          }}
-        />
-        <p
-          style={{
-            fontSize: 12,
-            fontWeight: 600,
-            color: 'var(--text-muted)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.06em',
-            textAlign: 'center',
-            paddingBottom: 12,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '0.875rem 1rem 0.75rem',
             borderBottom: '1px solid var(--border-light)',
           }}
         >
-          Invite to App
-        </p>
+          <p
+            style={{
+              fontSize: 12,
+              fontWeight: 600,
+              color: 'var(--text-muted)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.06em',
+              margin: 0,
+              flex: 1,
+              textAlign: 'center',
+            }}
+          >
+            Invite to App
+          </p>
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 4,
+              color: 'var(--text-muted)',
+              display: 'flex',
+              alignItems: 'center',
+              marginLeft: 8,
+            }}
+          >
+            <X size={18} />
+          </button>
+        </div>
 
         {status === 'success' ? (
           /* ── Success state ── */
-          <div style={{ padding: '32px 24px 16px', textAlign: 'center' }}>
+          <div style={{ padding: '2rem 1.5rem 1rem', textAlign: 'center' }}>
             <CheckCircle size={48} color="var(--sage)" weight="fill" style={{ marginBottom: 14 }} />
             <p
               style={{
@@ -176,7 +197,7 @@ export default function InviteSheet({
               onClick={onClose}
               style={{
                 width: '100%',
-                padding: '13px 20px',
+                padding: '0.8125rem 1.25rem',
                 borderRadius: 'var(--radius-md)',
                 border: 'none',
                 background: 'var(--sage)',
@@ -192,7 +213,7 @@ export default function InviteSheet({
         ) : (
           /* ── Form ── */
           <div
-            style={{ padding: '16px 16px 8px', display: 'flex', flexDirection: 'column', gap: 14 }}
+            style={{ padding: '1rem 1rem 0.5rem', display: 'flex', flexDirection: 'column', gap: 14 }}
           >
             {/* Email */}
             <div>
@@ -221,9 +242,9 @@ export default function InviteSheet({
                 autoFocus={!initialEmail}
                 style={{
                   width: '100%',
-                  padding: '11px 14px',
+                  padding: '0.6875rem 0.875rem',
                   borderRadius: 'var(--radius-sm)',
-                  border: `1.5px solid ${errorMsg ? 'var(--red)' : 'var(--border)'}`,
+                  border: `0.09375rem solid ${errorMsg ? 'var(--red)' : 'var(--border)'}`,
                   fontSize: 15,
                   color: 'var(--text-primary)',
                   background: 'var(--bg)',
@@ -260,10 +281,10 @@ export default function InviteSheet({
                       display: 'flex',
                       alignItems: 'center',
                       gap: 12,
-                      padding: '12px 14px',
+                      padding: '0.75rem 0.875rem',
                       borderRadius: 'var(--radius-sm)',
                       textAlign: 'left',
-                      border: `1.5px solid ${role === r.value ? 'var(--sage)' : 'var(--border-light)'}`,
+                      border: `0.09375rem solid ${role === r.value ? 'var(--sage)' : 'var(--border-light)'}`,
                       background: role === r.value ? 'var(--sage-light)' : 'var(--bg)',
                       cursor: 'pointer',
                     }}
@@ -280,7 +301,7 @@ export default function InviteSheet({
                       >
                         {r.label}
                       </p>
-                      <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: '1px 0 0' }}>
+                      <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: '0.0625rem 0 0' }}>
                         {r.description}
                       </p>
                     </div>
@@ -312,7 +333,7 @@ export default function InviteSheet({
               disabled={status === 'loading'}
               style={{
                 width: '100%',
-                padding: '13px 20px',
+                padding: '0.8125rem 1.25rem',
                 borderRadius: 'var(--radius-md)',
                 border: 'none',
                 background: 'var(--sage)',

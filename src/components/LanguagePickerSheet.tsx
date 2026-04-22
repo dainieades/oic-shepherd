@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { MagnifyingGlass, Check } from '@phosphor-icons/react';
-import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, Z_SHEET } from '@/lib/constants';
+import { Z_SHEET } from '@/lib/constants';
+import { BottomSheet, ModalHeader } from '@/components/BottomSheet';
 
 const PRIORITY_LANGUAGES = ['English', 'Mandarin Chinese', 'Cantonese', 'Spanish'];
 
@@ -86,86 +87,19 @@ export default function LanguagePickerSheet({ currentLanguages, onConfirm, onBac
   const doneLabel = selected.length > 0 ? `Done (${selected.length})` : 'Done';
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: Z_SHEET,
-        background: BACKDROP_COLOR,
-        display: 'flex',
-        alignItems: 'flex-end',
-        justifyContent: 'center',
-      }}
-    >
-      <div
-        className="animate-slide-up"
-        style={{
-          background: 'var(--surface)',
-          borderRadius: SHEET_BORDER_RADIUS,
-          width: '100%',
-          maxWidth: SHEET_MAX_WIDTH,
-          height: 'calc(100dvh - 48px)',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-        }}
-      >
-        <div
-          style={{
-            width: 36,
-            height: 4,
-            background: 'var(--border)',
-            borderRadius: 2,
-            margin: '14px auto 0',
-            flexShrink: 0,
-          }}
-        />
+    <BottomSheet onClose={onBack} zIndex={Z_SHEET}>
+      <ModalHeader
+        title="Languages"
+        onCancel={onBack}
+        cancelLabel="Back"
+        onAction={() => onConfirm(selected)}
+        actionLabel={doneLabel}
+        actionVariant="text"
+      />
 
         <div
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '14px 20px 12px',
-            flexShrink: 0,
-            borderBottom: '1px solid var(--border-light)',
-          }}
-        >
-          <button
-            onClick={onBack}
-            style={{
-              fontSize: 14,
-              color: 'var(--text-secondary)',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-            }}
-          >
-            Back
-          </button>
-          <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
-            Languages
-          </span>
-          <button
-            onClick={() => onConfirm(selected)}
-            style={{
-              fontSize: 14,
-              fontWeight: 600,
-              color: 'var(--sage)',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-            }}
-          >
-            {doneLabel}
-          </button>
-        </div>
-
-        <div
-          style={{
-            padding: '12px 20px',
+            padding: '0.75rem 1.25rem',
             flexShrink: 0,
             borderBottom: '1px solid var(--border-light)',
           }}
@@ -178,7 +112,7 @@ export default function LanguagePickerSheet({ currentLanguages, onConfirm, onBac
               background: 'var(--bg)',
               border: '1px solid var(--border)',
               borderRadius: 'var(--radius-sm)',
-              padding: '9px 12px',
+              padding: '0.5625rem 0.75rem',
             }}
           >
             <MagnifyingGlass size={14} color="var(--text-muted)" />
@@ -227,7 +161,7 @@ export default function LanguagePickerSheet({ currentLanguages, onConfirm, onBac
                     color: 'var(--text-muted)',
                     textTransform: 'uppercase',
                     letterSpacing: '0.06em',
-                    padding: '12px 20px 6px',
+                    padding: '0.75rem 1.25rem 0.375rem',
                     margin: 0,
                   }}
                 >
@@ -251,7 +185,7 @@ export default function LanguagePickerSheet({ currentLanguages, onConfirm, onBac
                     color: 'var(--text-muted)',
                     textTransform: 'uppercase',
                     letterSpacing: '0.06em',
-                    padding: '12px 20px 6px',
+                    padding: '0.75rem 1.25rem 0.375rem',
                     margin: 0,
                     borderTop: '1px solid var(--border-light)',
                   }}
@@ -268,7 +202,7 @@ export default function LanguagePickerSheet({ currentLanguages, onConfirm, onBac
           {filteredPriority.length === 0 && filteredOther.length === 0 && (
             <p
               style={{
-                padding: '24px 20px',
+                padding: '1.5rem 1.25rem',
                 fontSize: 13,
                 color: 'var(--text-muted)',
                 textAlign: 'center',
@@ -279,8 +213,7 @@ export default function LanguagePickerSheet({ currentLanguages, onConfirm, onBac
             </p>
           )}
         </div>
-      </div>
-    </div>
+    </BottomSheet>
   );
 }
 
@@ -302,7 +235,7 @@ function LanguageRow({
         display: 'flex',
         alignItems: 'center',
         gap: 12,
-        padding: '12px 20px',
+        padding: '0.75rem 1.25rem',
         background: isSel ? 'var(--sage-light)' : 'none',
         border: 'none',
         borderBottom: '1px solid var(--border-light)',
@@ -326,7 +259,7 @@ function LanguageRow({
           height: 20,
           borderRadius: 5,
           flexShrink: 0,
-          border: isSel ? 'none' : '1.5px solid var(--border)',
+          border: isSel ? 'none' : '0.09375rem solid var(--border)',
           background: isSel ? 'var(--sage)' : 'transparent',
           display: 'flex',
           alignItems: 'center',

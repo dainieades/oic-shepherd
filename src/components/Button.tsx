@@ -22,7 +22,7 @@ export function Button({
   children,
 }: ButtonProps) {
   const height = size === 'sm' ? 32 : 40;
-  const padding = size === 'sm' ? '0 14px' : '0 20px';
+  const padding = size === 'sm' ? '0 0.875rem' : '0 1.25rem';
   const fontSize = size === 'sm' ? 14 : 15;
 
   const base: React.CSSProperties = {

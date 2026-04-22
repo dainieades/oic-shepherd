@@ -141,7 +141,7 @@ export default function AddLogModal({
                 height: 44,
                 borderRadius: '50%',
                 background: 'var(--red-light)',
-                border: '1.5px solid var(--red-border)',
+                border: '0.09375rem solid var(--red-border)',
                 color: 'var(--red)',
                 display: 'flex',
                 alignItems: 'center',
@@ -170,7 +170,7 @@ export default function AddLogModal({
                 style={{
                   flex: 1,
                   overflowY: 'auto',
-                  padding: `16px 20px ${isEditing ? 80 : 16}px`,
+                  padding: `1rem 1.25rem ${isEditing ? 80 : 16}px`,
                   background: 'var(--bg)',
                   display: 'flex',
                   flexDirection: 'column',
@@ -183,7 +183,7 @@ export default function AddLogModal({
                     borderRadius: 'var(--radius)',
                     border: '1px solid var(--border-light)',
                     overflow: 'hidden',
-                    padding: '0 16px',
+                    padding: '0 1rem',
                     marginBottom: 16,
                     flexShrink: 0,
                   }}
@@ -412,7 +412,7 @@ export function DeleteConfirmDialog({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '0 32px',
+        padding: '0 2rem',
       }}
       onClick={(e) => {
         if (e.target === e.currentTarget) onCancel();
@@ -427,13 +427,13 @@ export function DeleteConfirmDialog({
           overflow: 'hidden',
         }}
       >
-        <div style={{ padding: '24px 20px 16px', textAlign: 'center' }}>
+        <div style={{ padding: '1.5rem 1.25rem 1rem', textAlign: 'center' }}>
           <p
             style={{
               fontSize: 16,
               fontWeight: 600,
               color: 'var(--text-primary)',
-              margin: '0 0 8px',
+              margin: '0 0 0.5rem',
             }}
           >
             {label}

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import { DrawerSection } from '@/components/form/DrawerSection';
 import {
   User,
   TextT,
@@ -41,6 +42,7 @@ import {
 } from '@/lib/types';
 import PickerMenu from './PickerMenu';
 import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, SHEPHERD_AVATAR_PALETTE, Z_SHEET } from '@/lib/constants';
+import { AvatarBadge } from './AvatarBadge';
 
 interface AddPersonModalProps {
   onClose: () => void;
@@ -74,7 +76,11 @@ const MARITAL_OPTIONS: { value: MaritalStatus | ''; label: string }[] = [
 ];
 
 export default function AddPersonModal({ onClose }: AddPersonModalProps) {
-  const { data, addPerson, assignGroupsToPerson, assignShepherds } = useApp();
+  const { data, addPerson, assignGroupsToPerson, assignShepherds, setFullPageModalOpen } = useApp();
+  React.useEffect(() => {
+    setFullPageModalOpen(true);
+    return () => setFullPageModalOpen(false);
+  }, [setFullPageModalOpen]);
   const { showToast } = useToast();
 
   // Basic
@@ -147,7 +153,7 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
 
   // Build shepherd entries (same as EditPersonDrawer)
   const personaPersonIds = new Set(data.personas.map((p) => p.personId).filter(Boolean));
-  type ShepherdEntry = { id: string; name: string; subtitle: string };
+  type ShepherdEntry = { id: string; name: string; subtitle: string; photo?: string };
   const shepherdEntries: ShepherdEntry[] = [
     ...data.personas
       .filter((p) => p.role === 'shepherd' || p.role === 'admin')
@@ -155,10 +161,11 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
         id: p.id,
         name: p.name,
         subtitle: p.role === 'admin' ? 'Pastor' : 'Shepherd',
+        photo: p.personId ? data.people.find((person) => person.id === p.personId)?.photo : undefined,
       })),
     ...data.people
       .filter((p) => p.isShepherd && !personaPersonIds.has(p.id))
-      .map((p) => ({ id: p.id, name: p.englishName, subtitle: 'Shepherd' })),
+      .map((p) => ({ id: p.id, name: p.englishName, subtitle: 'Shepherd', photo: p.photo })),
   ];
 
   const selectedGroups = data.groups.filter((g) => groupIds.includes(g.id));
@@ -210,7 +217,7 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
 
   return (
     <>
-      <BottomSheet onClose={onClose} dragHandle aria-labelledby="add-person-title">
+      <BottomSheet onClose={onClose} aria-labelledby="add-person-title">
           <ModalHeader
             title="Add person"
             titleId="add-person-title"
@@ -225,7 +232,7 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
             style={{
               flex: 1,
               overflowY: 'auto',
-              padding: '20px 20px 48px',
+              padding: '1.25rem 1.25rem 3rem',
               background: 'var(--bg)',
             }}
           >
@@ -402,7 +409,7 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
                             style={{
                               fontSize: 11,
                               fontWeight: 500,
-                              padding: '2px 8px',
+                              padding: '0.125rem 0.5rem',
                               borderRadius: 'var(--radius-pill)',
                               background: 'var(--blue-light)',
                               color: 'var(--blue)',
@@ -447,7 +454,7 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
                               style={{
                                 fontSize: 11,
                                 fontWeight: 500,
-                                padding: '2px 8px',
+                                padding: '0.125rem 0.5rem',
                                 borderRadius: 'var(--radius-pill)',
                                 background: 'var(--sage-light)',
                                 color: 'var(--sage)',
@@ -539,7 +546,7 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
                                   style={{
                                     fontSize: 11,
                                     fontWeight: 500,
-                                    padding: '2px 8px',
+                                    padding: '0.125rem 0.5rem',
                                     borderRadius: 'var(--radius-pill)',
                                     background: 'var(--sage-light)',
                                     color: 'var(--sage)',
@@ -887,36 +894,8 @@ const inputStyle: React.CSSProperties = {
   color: 'var(--text-primary)',
 };
 
-const sectionLabelStyle: React.CSSProperties = {
-  fontSize: 10,
-  fontWeight: 600,
-  color: 'var(--text-muted)',
-  textTransform: 'uppercase',
-  letterSpacing: '0.06em',
-  marginBottom: 4,
-};
-
 // ── Sub-components ───────────────────────────────────────────────────────────
 
-function DrawerSection({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div style={{ marginBottom: 24 }}>
-      <p style={sectionLabelStyle}>{label}</p>
-      <div
-        className="no-last-border"
-        style={{
-          background: 'var(--surface)',
-          borderRadius: 'var(--radius)',
-          border: '1px solid var(--border-light)',
-          overflow: 'hidden',
-          padding: '0 16px',
-        }}
-      >
-        {children}
-      </div>
-    </div>
-  );
-}
 
 function GroupPickerSheet({
   groups,
@@ -961,7 +940,7 @@ function GroupPickerSheet({
           borderRadius: SHEET_BORDER_RADIUS,
           width: '100%',
           maxWidth: SHEET_MAX_WIDTH,
-          height: 'calc(100dvh - 48px)',
+          height: 'calc(100dvh - 3rem)',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
@@ -973,7 +952,7 @@ function GroupPickerSheet({
             height: 4,
             background: 'var(--border)',
             borderRadius: 2,
-            margin: '14px auto 0',
+            margin: '0.875rem auto 0',
             flexShrink: 0,
           }}
         />
@@ -982,7 +961,7 @@ function GroupPickerSheet({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: '14px 20px 12px',
+            padding: '0.875rem 1.25rem 0.75rem',
             flexShrink: 0,
             borderBottom: '1px solid var(--border-light)',
           }}
@@ -1020,7 +999,7 @@ function GroupPickerSheet({
         </div>
         <div
           style={{
-            padding: '12px 20px',
+            padding: '0.75rem 1.25rem',
             flexShrink: 0,
             borderBottom: '1px solid var(--border-light)',
           }}
@@ -1033,7 +1012,7 @@ function GroupPickerSheet({
               background: 'var(--bg)',
               border: '1px solid var(--border)',
               borderRadius: 'var(--radius-sm)',
-              padding: '9px 12px',
+              padding: '0.5625rem 0.75rem',
             }}
           >
             <MagnifyingGlass size={14} color="var(--text-muted)" />
@@ -1081,7 +1060,7 @@ function GroupPickerSheet({
                   display: 'flex',
                   alignItems: 'center',
                   gap: 12,
-                  padding: '12px 20px',
+                  padding: '0.75rem 1.25rem',
                   background: isSel ? 'var(--blue-light)' : 'none',
                   border: 'none',
                   borderBottom: '1px solid var(--border-light)',
@@ -1107,7 +1086,7 @@ function GroupPickerSheet({
                     height: 20,
                     borderRadius: 5,
                     flexShrink: 0,
-                    border: isSel ? 'none' : '1.5px solid var(--border)',
+                    border: isSel ? 'none' : '0.09375rem solid var(--border)',
                     background: isSel ? 'var(--blue)' : 'transparent',
                     display: 'flex',
                     alignItems: 'center',
@@ -1123,7 +1102,7 @@ function GroupPickerSheet({
           {filtered.length === 0 && (
             <p
               style={{
-                padding: '24px 20px',
+                padding: '1.5rem 1.25rem',
                 fontSize: 13,
                 color: 'var(--text-muted)',
                 textAlign: 'center',
@@ -1145,7 +1124,7 @@ function ShepherdPickerSheet({
   onConfirm,
   onBack,
 }: {
-  entries: { id: string; name: string; subtitle: string }[];
+  entries: { id: string; name: string; subtitle: string; photo?: string }[];
   currentIds: string[];
   onConfirm: (ids: string[]) => void;
   onBack: () => void;
@@ -1182,7 +1161,7 @@ function ShepherdPickerSheet({
           borderRadius: SHEET_BORDER_RADIUS,
           width: '100%',
           maxWidth: SHEET_MAX_WIDTH,
-          height: 'calc(100dvh - 48px)',
+          height: 'calc(100dvh - 3rem)',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
@@ -1194,7 +1173,7 @@ function ShepherdPickerSheet({
             height: 4,
             background: 'var(--border)',
             borderRadius: 2,
-            margin: '14px auto 0',
+            margin: '0.875rem auto 0',
             flexShrink: 0,
           }}
         />
@@ -1203,7 +1182,7 @@ function ShepherdPickerSheet({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: '14px 20px 12px',
+            padding: '0.875rem 1.25rem 0.75rem',
             flexShrink: 0,
             borderBottom: '1px solid var(--border-light)',
           }}
@@ -1241,7 +1220,7 @@ function ShepherdPickerSheet({
         </div>
         <div
           style={{
-            padding: '12px 20px',
+            padding: '0.75rem 1.25rem',
             flexShrink: 0,
             borderBottom: '1px solid var(--border-light)',
           }}
@@ -1254,7 +1233,7 @@ function ShepherdPickerSheet({
               background: 'var(--bg)',
               border: '1px solid var(--border)',
               borderRadius: 'var(--radius-sm)',
-              padding: '9px 12px',
+              padding: '0.5625rem 0.75rem',
             }}
           >
             <MagnifyingGlass size={14} color="var(--text-muted)" />
@@ -1294,12 +1273,6 @@ function ShepherdPickerSheet({
           {filtered.map((entry, i) => {
             const isSel = selectedIds.includes(entry.id);
             const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
-            const initials = entry.name
-              .split(' ')
-              .map((n) => n[0])
-              .join('')
-              .toUpperCase()
-              .slice(0, 2);
             return (
               <button
                 key={entry.id}
@@ -1309,7 +1282,7 @@ function ShepherdPickerSheet({
                   display: 'flex',
                   alignItems: 'center',
                   gap: 12,
-                  padding: '12px 20px',
+                  padding: '0.75rem 1.25rem',
                   background: isSel ? 'var(--sage-light)' : 'none',
                   border: 'none',
                   borderBottom: '1px solid var(--border-light)',
@@ -1317,23 +1290,13 @@ function ShepherdPickerSheet({
                   textAlign: 'left' as const,
                 }}
               >
-                <div
-                  style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: '50%',
-                    flexShrink: 0,
-                    background: isSel ? 'var(--sage)' : palette.bg,
-                    color: isSel ? 'var(--on-sage)' : palette.color,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: 12,
-                    fontWeight: 700,
-                  }}
-                >
-                  {initials}
-                </div>
+                <AvatarBadge
+                  name={entry.name}
+                  photo={entry.photo}
+                  size={36}
+                  bg={isSel ? 'var(--sage)' : palette.bg}
+                  color={isSel ? 'var(--on-sage)' : palette.color}
+                />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p
                     style={{
@@ -1356,7 +1319,7 @@ function ShepherdPickerSheet({
           {filtered.length === 0 && (
             <p
               style={{
-                padding: '24px 20px',
+                padding: '1.5rem 1.25rem',
                 fontSize: 13,
                 color: 'var(--text-muted)',
                 textAlign: 'center',
@@ -1378,7 +1341,7 @@ function SheepPickerSheet({
   onConfirm,
   onBack,
 }: {
-  people: { id: string; englishName: string; chineseName?: string }[];
+  people: { id: string; englishName: string; chineseName?: string; photo?: string }[];
   currentIds: string[];
   onConfirm: (ids: string[]) => void;
   onBack: () => void;
@@ -1423,7 +1386,7 @@ function SheepPickerSheet({
           borderRadius: SHEET_BORDER_RADIUS,
           width: '100%',
           maxWidth: SHEET_MAX_WIDTH,
-          height: 'calc(100dvh - 48px)',
+          height: 'calc(100dvh - 3rem)',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
@@ -1435,7 +1398,7 @@ function SheepPickerSheet({
             height: 4,
             background: 'var(--border)',
             borderRadius: 2,
-            margin: '14px auto 0',
+            margin: '0.875rem auto 0',
             flexShrink: 0,
           }}
         />
@@ -1444,7 +1407,7 @@ function SheepPickerSheet({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: '14px 20px 12px',
+            padding: '0.875rem 1.25rem 0.75rem',
             flexShrink: 0,
             borderBottom: '1px solid var(--border-light)',
           }}
@@ -1482,7 +1445,7 @@ function SheepPickerSheet({
         </div>
         <div
           style={{
-            padding: '12px 20px',
+            padding: '0.75rem 1.25rem',
             flexShrink: 0,
             borderBottom: '1px solid var(--border-light)',
           }}
@@ -1495,7 +1458,7 @@ function SheepPickerSheet({
               background: 'var(--bg)',
               border: '1px solid var(--border)',
               borderRadius: 'var(--radius-sm)',
-              padding: '9px 12px',
+              padding: '0.5625rem 0.75rem',
             }}
           >
             <MagnifyingGlass size={14} color="var(--text-muted)" />
@@ -1548,12 +1511,6 @@ function SheepPickerSheet({
           {sorted.map((p, i) => {
             const isSel = selectedIds.includes(p.id);
             const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
-            const initials = p.englishName
-              .split(' ')
-              .map((n) => n[0])
-              .join('')
-              .toUpperCase()
-              .slice(0, 2);
             return (
               <button
                 key={p.id}
@@ -1563,7 +1520,7 @@ function SheepPickerSheet({
                   display: 'flex',
                   alignItems: 'center',
                   gap: 12,
-                  padding: '12px 20px',
+                  padding: '0.75rem 1.25rem',
                   background: isSel ? 'var(--sage-light)' : 'none',
                   border: 'none',
                   borderBottom: '1px solid var(--border-light)',
@@ -1571,23 +1528,13 @@ function SheepPickerSheet({
                   textAlign: 'left' as const,
                 }}
               >
-                <div
-                  style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: '50%',
-                    flexShrink: 0,
-                    background: isSel ? 'var(--sage)' : palette.bg,
-                    color: isSel ? 'var(--on-sage)' : palette.color,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: 12,
-                    fontWeight: 700,
-                  }}
-                >
-                  {initials}
-                </div>
+                <AvatarBadge
+                  name={p.englishName}
+                  photo={p.photo}
+                  size={36}
+                  bg={isSel ? 'var(--sage)' : palette.bg}
+                  color={isSel ? 'var(--on-sage)' : palette.color}
+                />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p
                     style={{
@@ -1611,7 +1558,7 @@ function SheepPickerSheet({
                     height: 20,
                     borderRadius: 5,
                     flexShrink: 0,
-                    border: isSel ? 'none' : '1.5px solid var(--border)',
+                    border: isSel ? 'none' : '0.09375rem solid var(--border)',
                     background: isSel ? 'var(--sage)' : 'transparent',
                     display: 'flex',
                     alignItems: 'center',
@@ -1638,7 +1585,7 @@ function ShepherdCheckCircle({ selected }: { selected: boolean }) {
         height: 20,
         borderRadius: 5,
         flexShrink: 0,
-        border: selected ? 'none' : '1.5px solid var(--border)',
+        border: selected ? 'none' : '0.09375rem solid var(--border)',
         background: selected ? 'var(--sage)' : 'transparent',
         display: 'flex',
         alignItems: 'center',
@@ -1694,7 +1641,7 @@ function PositionPickerSheet({
           borderRadius: SHEET_BORDER_RADIUS,
           width: '100%',
           maxWidth: SHEET_MAX_WIDTH,
-          height: 'calc(100dvh - 48px)',
+          height: 'calc(100dvh - 3rem)',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
@@ -1706,7 +1653,7 @@ function PositionPickerSheet({
             height: 4,
             background: 'var(--border)',
             borderRadius: 2,
-            margin: '14px auto 0',
+            margin: '0.875rem auto 0',
             flexShrink: 0,
           }}
         />
@@ -1715,7 +1662,7 @@ function PositionPickerSheet({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: '14px 20px 12px',
+            padding: '0.875rem 1.25rem 0.75rem',
             flexShrink: 0,
             borderBottom: '1px solid var(--border-light)',
           }}
@@ -1753,7 +1700,7 @@ function PositionPickerSheet({
         </div>
         <div
           style={{
-            padding: '12px 20px',
+            padding: '0.75rem 1.25rem',
             flexShrink: 0,
             borderBottom: '1px solid var(--border-light)',
           }}
@@ -1766,7 +1713,7 @@ function PositionPickerSheet({
               background: 'var(--bg)',
               border: '1px solid var(--border)',
               borderRadius: 'var(--radius-sm)',
-              padding: '9px 12px',
+              padding: '0.5625rem 0.75rem',
             }}
           >
             <MagnifyingGlass size={14} color="var(--text-muted)" />
@@ -1814,7 +1761,7 @@ function PositionPickerSheet({
                   display: 'flex',
                   alignItems: 'center',
                   gap: 12,
-                  padding: '12px 20px',
+                  padding: '0.75rem 1.25rem',
                   background: isSel ? 'var(--sage-light)' : 'none',
                   border: 'none',
                   borderBottom: '1px solid var(--border-light)',
@@ -1840,7 +1787,7 @@ function PositionPickerSheet({
                     height: 20,
                     borderRadius: 5,
                     flexShrink: 0,
-                    border: isSel ? 'none' : '1.5px solid var(--border)',
+                    border: isSel ? 'none' : '0.09375rem solid var(--border)',
                     background: isSel ? 'var(--sage)' : 'transparent',
                     display: 'flex',
                     alignItems: 'center',
@@ -1856,7 +1803,7 @@ function PositionPickerSheet({
           {filtered.length === 0 && (
             <p
               style={{
-                padding: '24px 20px',
+                padding: '1.5rem 1.25rem',
                 fontSize: 13,
                 color: 'var(--text-muted)',
                 textAlign: 'center',

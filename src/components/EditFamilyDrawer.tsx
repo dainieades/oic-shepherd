@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { DrawerSection } from '@/components/form/DrawerSection';
 import { useApp } from '@/lib/context';
 import { useToast } from './Toast';
 import { BottomSheet, ModalHeader } from './BottomSheet';
@@ -17,6 +18,7 @@ import {
   Check,
 } from '@phosphor-icons/react';
 import PickerMenu from './PickerMenu';
+import { ShepherdPickerSheet } from './PersonPickerSheets';
 import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, SHEPHERD_AVATAR_PALETTE, Z_SHEET } from '@/lib/constants';
 
 interface Props {
@@ -37,7 +39,7 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
   );
 
   // State
-  const [label, setLabel] = React.useState(family.label);
+  const [label, setLabel] = React.useState(family.label.replace(/ Family$/i, ''));
   const [memberIds, setMemberIds] = React.useState<string[]>(family.memberIds);
   const [primaryContactId, setPrimaryContactId] = React.useState<string>(
     family.primaryContactId ?? family.memberIds[0] ?? ''
@@ -61,7 +63,7 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
   const handleSave = async () => {
     if (!label.trim()) return;
     await updateFamily(family.id, {
-      label: label.trim(),
+      label: `${label.trim()} Family`,
       primaryContactId: primaryContactId || undefined,
     });
     await updateFamilyMembers(family.id, memberIds);
@@ -71,15 +73,19 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
     onClose();
   };
 
-  const toggleShepherd = (id: string) => {
-    setShepherdIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
-  };
-
   // All people that can be toggled as members: no family, or already in this family
   const memberPickerPool = data.people.filter((p) => !p.familyId || p.familyId === family.id);
 
   const selectedGroups = data.groups.filter((g) => groupIds.includes(g.id));
-  const selectedShepherds = data.personas.filter((p) => shepherdIds.includes(p.id));
+  const shepherdEntries = data.personas
+    .filter((p) => p.role === 'shepherd' || p.role === 'admin')
+    .map((p) => ({
+      id: p.id,
+      name: p.name,
+      subtitle: p.role === 'admin' ? 'Pastor' : 'Shepherd',
+      photo: p.personId ? data.people.find((person) => person.id === p.personId)?.photo : undefined,
+    }));
+  const selectedShepherds = shepherdEntries.filter((e) => shepherdIds.includes(e.id));
 
   const primaryContactOptions = [
     { value: '', label: 'Not set' },
@@ -88,7 +94,7 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
 
   return (
     <>
-      <BottomSheet onClose={onClose} dragHandle aria-labelledby="edit-family-title">
+      <BottomSheet onClose={onClose} aria-labelledby="edit-family-title">
           <ModalHeader
             title="Edit family"
             titleId="edit-family-title"
@@ -98,7 +104,7 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
           />
 
           {/* Scrollable body */}
-          <div style={{ flex: 1, overflowY: 'auto', padding: '20px 20px 48px' }}>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '1.25rem 1.25rem 3rem', background: 'var(--bg)' }}>
             {/* ── BASIC ── */}
             <DrawerSection label="Basic">
               <div
@@ -108,14 +114,17 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
               >
                 <span style={asteriskStyle}>*</span>
                 <House size={16} color="var(--text-muted)" />
-                <span style={labelStyle}>Name</span>
+                <span style={labelStyle}>Last name</span>
                 <input
                   ref={labelRef}
                   value={label}
                   onChange={(e) => setLabel(e.target.value)}
-                  placeholder="e.g. Chen Family"
+                  placeholder="e.g. Chen"
                   style={inputInlineStyle}
                 />
+                <span style={{ fontSize: 15, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+                  Family
+                </span>
               </div>
             </DrawerSection>
 
@@ -279,7 +288,7 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
                         style={{
                           fontSize: 11,
                           fontWeight: 500,
-                          padding: '2px 8px',
+                          padding: '0.125rem 0.5rem',
                           borderRadius: 'var(--radius-pill)',
                           background: 'var(--blue-light)',
                           color: 'var(--blue)',
@@ -325,7 +334,7 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
                         style={{
                           fontSize: 11,
                           fontWeight: 500,
-                          padding: '2px 8px',
+                          padding: '0.125rem 0.5rem',
                           borderRadius: 'var(--radius-pill)',
                           background: 'var(--sage-light)',
                           color: 'var(--sage)',
@@ -387,10 +396,13 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
       {/* Shepherd Picker Sheet */}
       {showShepherdPicker && (
         <ShepherdPickerSheet
-          personas={data.personas}
-          selected={shepherdIds}
-          onToggle={toggleShepherd}
-          onDone={() => setShowShepherdPicker(false)}
+          entries={shepherdEntries}
+          currentIds={shepherdIds}
+          onConfirm={(ids) => {
+            setShepherdIds(ids);
+            setShowShepherdPicker(false);
+          }}
+          onBack={() => setShowShepherdPicker(false)}
         />
       )}
     </>
@@ -438,25 +450,8 @@ const inputInlineStyle: React.CSSProperties = {
   color: 'var(--text-primary)',
 };
 
-const sectionLabelStyle: React.CSSProperties = {
-  fontSize: 10,
-  fontWeight: 600,
-  color: 'var(--text-muted)',
-  textTransform: 'uppercase',
-  letterSpacing: '0.06em',
-  marginBottom: 4,
-};
-
 // ── Sub-components ─────────────────────────────────────────────────────────────
 
-function DrawerSection({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div style={{ marginBottom: 28 }}>
-      <p style={sectionLabelStyle}>{label}</p>
-      {children}
-    </div>
-  );
-}
 
 function MemberPickerSheet({
   pool,
@@ -506,23 +501,12 @@ function MemberPickerSheet({
           borderRadius: SHEET_BORDER_RADIUS,
           width: '100%',
           maxWidth: SHEET_MAX_WIDTH,
-          height: 'calc(100dvh - 48px)',
+          height: 'calc(100dvh - 3rem)',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
         }}
       >
-        {/* Drag handle */}
-        <div
-          style={{
-            width: 36,
-            height: 4,
-            background: 'var(--border)',
-            borderRadius: 2,
-            margin: '14px auto 0',
-            flexShrink: 0,
-          }}
-        />
 
         {/* Header */}
         <div
@@ -530,7 +514,7 @@ function MemberPickerSheet({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: '14px 20px 12px',
+            padding: '0.875rem 1.25rem 0.75rem',
             flexShrink: 0,
             borderBottom: '1px solid var(--border-light)',
           }}
@@ -570,7 +554,7 @@ function MemberPickerSheet({
         {/* Search */}
         <div
           style={{
-            padding: '12px 20px',
+            padding: '0.75rem 1.25rem',
             flexShrink: 0,
             borderBottom: '1px solid var(--border-light)',
           }}
@@ -583,7 +567,7 @@ function MemberPickerSheet({
               background: 'var(--bg)',
               border: '1px solid var(--border)',
               borderRadius: 'var(--radius-sm)',
-              padding: '9px 12px',
+              padding: '0.5625rem 0.75rem',
             }}
           >
             <MagnifyingGlass size={14} color="var(--text-muted)" />
@@ -640,7 +624,7 @@ function MemberPickerSheet({
                   display: 'flex',
                   alignItems: 'center',
                   gap: 12,
-                  padding: '12px 20px',
+                  padding: '0.75rem 1.25rem',
                   background: isSel ? 'var(--sage-light)' : 'none',
                   border: 'none',
                   borderBottom: '1px solid var(--border-light)',
@@ -689,7 +673,7 @@ function MemberPickerSheet({
           {filtered.length === 0 && (
             <p
               style={{
-                padding: '24px 20px',
+                padding: '1.5rem 1.25rem',
                 fontSize: 13,
                 color: 'var(--text-muted)',
                 textAlign: 'center',
@@ -728,7 +712,7 @@ function MemberCheckCircle({ selected }: { selected: boolean }) {
         height: 22,
         borderRadius: '50%',
         flexShrink: 0,
-        border: '2px solid var(--border)',
+        border: '0.125rem solid var(--border)',
         background: 'transparent',
       }}
     />
@@ -778,7 +762,7 @@ function GroupPickerSheet({
           borderRadius: SHEET_BORDER_RADIUS,
           width: '100%',
           maxWidth: SHEET_MAX_WIDTH,
-          height: 'calc(100dvh - 48px)',
+          height: 'calc(100dvh - 3rem)',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
@@ -790,7 +774,7 @@ function GroupPickerSheet({
             height: 4,
             background: 'var(--border)',
             borderRadius: 2,
-            margin: '14px auto 0',
+            margin: '0.875rem auto 0',
             flexShrink: 0,
           }}
         />
@@ -799,7 +783,7 @@ function GroupPickerSheet({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: '14px 20px 12px',
+            padding: '0.875rem 1.25rem 0.75rem',
             flexShrink: 0,
             borderBottom: '1px solid var(--border-light)',
           }}
@@ -837,7 +821,7 @@ function GroupPickerSheet({
         </div>
         <div
           style={{
-            padding: '12px 20px',
+            padding: '0.75rem 1.25rem',
             flexShrink: 0,
             borderBottom: '1px solid var(--border-light)',
           }}
@@ -850,7 +834,7 @@ function GroupPickerSheet({
               background: 'var(--bg)',
               border: '1px solid var(--border)',
               borderRadius: 'var(--radius-sm)',
-              padding: '9px 12px',
+              padding: '0.5625rem 0.75rem',
             }}
           >
             <MagnifyingGlass size={14} color="var(--text-muted)" />
@@ -898,7 +882,7 @@ function GroupPickerSheet({
                   display: 'flex',
                   alignItems: 'center',
                   gap: 12,
-                  padding: '12px 20px',
+                  padding: '0.75rem 1.25rem',
                   background: isSel ? 'var(--blue-light)' : 'none',
                   border: 'none',
                   borderBottom: '1px solid var(--border-light)',
@@ -924,7 +908,7 @@ function GroupPickerSheet({
                     height: 20,
                     borderRadius: 5,
                     flexShrink: 0,
-                    border: isSel ? 'none' : '1.5px solid var(--border)',
+                    border: isSel ? 'none' : '0.09375rem solid var(--border)',
                     background: isSel ? 'var(--blue)' : 'transparent',
                     display: 'flex',
                     alignItems: 'center',
@@ -940,7 +924,7 @@ function GroupPickerSheet({
           {filtered.length === 0 && (
             <p
               style={{
-                padding: '24px 20px',
+                padding: '1.5rem 1.25rem',
                 fontSize: 13,
                 color: 'var(--text-muted)',
                 textAlign: 'center',
@@ -950,159 +934,6 @@ function GroupPickerSheet({
               No groups found.
             </p>
           )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ShepherdPickerSheet({
-  personas,
-  selected,
-  onToggle,
-  onDone,
-}: {
-  personas: import('@/lib/types').Persona[];
-  selected: string[];
-  onToggle: (id: string) => void;
-  onDone: () => void;
-}) {
-  return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: Z_SHEET,
-        background: BACKDROP_COLOR,
-        display: 'flex',
-        alignItems: 'flex-end',
-        justifyContent: 'center',
-      }}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onDone();
-      }}
-    >
-      <div
-        style={{
-          background: 'var(--surface)',
-          borderRadius: '16px 16px 0 0',
-          width: '100%',
-          maxWidth: SHEET_MAX_WIDTH,
-          paddingBottom: 'env(safe-area-inset-bottom, 24px)',
-          overflow: 'hidden',
-        }}
-      >
-        <div
-          style={{
-            width: 36,
-            height: 4,
-            background: 'var(--border)',
-            borderRadius: 2,
-            margin: '12px auto 0',
-          }}
-        />
-        <p
-          style={{
-            fontSize: 12,
-            fontWeight: 600,
-            color: 'var(--text-muted)',
-            textAlign: 'center',
-            textTransform: 'uppercase',
-            letterSpacing: '0.06em',
-            padding: '12px 20px 10px',
-            borderBottom: '1px solid var(--border-light)',
-          }}
-        >
-          Assign Shepherd
-        </p>
-        {personas.map((p) => {
-          const isSel = selected.includes(p.id);
-          const initials = p.name
-            .split(' ')
-            .map((n) => n[0])
-            .join('')
-            .toUpperCase()
-            .slice(0, 2);
-          return (
-            <button
-              key={p.id}
-              onClick={() => onToggle(p.id)}
-              style={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '12px 20px',
-                background: isSel ? 'var(--sage-light)' : 'none',
-                border: 'none',
-                borderBottom: '1px solid var(--border-light)',
-                cursor: 'pointer',
-                textAlign: 'left' as const,
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div
-                  style={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: '50%',
-                    background: isSel ? 'var(--sage)' : 'var(--bg)',
-                    border: '1px solid var(--border)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: 11,
-                    fontWeight: 700,
-                    color: isSel ? 'var(--on-sage)' : 'var(--text-muted)',
-                    flexShrink: 0,
-                  }}
-                >
-                  {initials}
-                </div>
-                <div>
-                  <p
-                    style={{
-                      fontSize: 14,
-                      fontWeight: isSel ? 600 : 400,
-                      color: isSel ? 'var(--sage)' : 'var(--text-primary)',
-                      margin: 0,
-                    }}
-                  >
-                    {p.name}
-                  </p>
-                  <p
-                    style={{
-                      fontSize: 11,
-                      color: 'var(--text-muted)',
-                      margin: 0,
-                      textTransform: 'capitalize',
-                    }}
-                  >
-                    {p.role}
-                  </p>
-                </div>
-              </div>
-              {isSel && <Check size={16} color="var(--sage)" weight="bold" />}
-            </button>
-          );
-        })}
-        <div style={{ padding: '16px 20px 0' }}>
-          <button
-            onClick={onDone}
-            style={{
-              width: '100%',
-              height: 44,
-              borderRadius: 'var(--radius-md)',
-              background: 'var(--sage)',
-              color: 'var(--on-sage)',
-              fontSize: 15,
-              fontWeight: 600,
-              border: 'none',
-              cursor: 'pointer',
-            }}
-          >
-            Done
-          </button>
         </div>
       </div>
     </div>

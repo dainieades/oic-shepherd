@@ -23,7 +23,7 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
 
   return (
     <>
-      <BottomSheet onClose={onClose} dragHandle aria-labelledby="edit-person-title">
+      <BottomSheet onClose={onClose} aria-labelledby="edit-person-title">
         <ModalHeader
           title="Edit person"
           titleId="edit-person-title"
@@ -36,7 +36,7 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
           style={{
             flex: 1,
             overflowY: 'auto',
-            padding: '20px 20px 48px',
+            padding: '1.25rem 1.25rem 3rem',
             background: 'var(--bg)',
           }}
         >

@@ -23,7 +23,7 @@ import {
 } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { useToast } from './Toast';
-import { ModalHeader } from './BottomSheet';
+import { BottomSheet, ModalHeader } from './BottomSheet';
 import {
   type Notice,
   type NoticeCategory,
@@ -33,7 +33,6 @@ import {
 import PersonFamilyPicker from './PersonFamilyPicker';
 import PickerMenu from './PickerMenu';
 import { DeleteConfirmDialog } from './AddLogModal';
-import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS } from '@/lib/constants';
 
 interface AddNoticeModalProps {
   onClose: () => void;
@@ -119,12 +118,6 @@ export default function AddNoticeModal({
   const urgencyBtnRef = React.useRef<HTMLButtonElement>(null);
   const privacyBtnRef = React.useRef<HTMLButtonElement>(null);
 
-  React.useEffect(() => {
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = prev; };
-  }, []);
-
   const whoNames = [
     ...familyIds.map((id) => data.families.find((f) => f.id === id)?.label ?? ''),
     ...personIds.map((id) => data.people.find((p) => p.id === id)?.englishName ?? ''),
@@ -182,34 +175,7 @@ export default function AddNoticeModal({
 
   return (
     <>
-      <div
-        style={{
-          position: 'fixed',
-          inset: 0,
-          background: BACKDROP_COLOR,
-          zIndex: 'var(--z-modal)',
-          display: 'flex',
-          alignItems: 'flex-end',
-          justifyContent: 'center',
-        }}
-        onClick={(e) => {
-          if (e.target === e.currentTarget) onClose();
-        }}
-      >
-        <div
-          className="animate-slide-up"
-          style={{
-            background: 'var(--surface)',
-            borderRadius: SHEET_BORDER_RADIUS,
-            width: '100%',
-            maxWidth: SHEET_MAX_WIDTH,
-            height: 'calc(100dvh - 48px)',
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden',
-            position: 'relative',
-          }}
-        >
+      <BottomSheet onClose={onClose}>
           {showWhoPicker && (
             <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
               <PersonFamilyPicker
@@ -238,7 +204,7 @@ export default function AddNoticeModal({
                 height: 44,
                 borderRadius: '50%',
                 background: 'var(--red-light)',
-                border: '1.5px solid var(--red-border)',
+                border: '0.09375rem solid var(--red-border)',
                 color: 'var(--red)',
                 display: 'flex',
                 alignItems: 'center',
@@ -267,7 +233,7 @@ export default function AddNoticeModal({
                 style={{
                   flex: 1,
                   overflowY: 'auto',
-                  padding: `16px 20px ${isEditing ? 80 : 16}px`,
+                  padding: `1rem 1.25rem ${isEditing ? 80 : 16}px`,
                   background: 'var(--bg)',
                   display: 'flex',
                   flexDirection: 'column',
@@ -280,7 +246,7 @@ export default function AddNoticeModal({
                     borderRadius: 'var(--radius)',
                     border: '1px solid var(--border-light)',
                     overflow: 'hidden',
-                    padding: '0 16px',
+                    padding: '0 1rem',
                     marginBottom: 16,
                     flexShrink: 0,
                   }}
@@ -359,7 +325,7 @@ export default function AddNoticeModal({
                           style={{
                             fontSize: 12,
                             fontWeight: 600,
-                            padding: '3px 9px',
+                            padding: '0.1875rem 0.5625rem',
                             borderRadius: 'var(--radius-pill)',
                             background: urgencyStyle.bg,
                             color: urgencyStyle.color,
@@ -451,8 +417,7 @@ export default function AddNoticeModal({
               </div>
             </>
           )}
-        </div>
-      </div>
+      </BottomSheet>
 
       {showCategoryPicker && (
         <PickerMenu

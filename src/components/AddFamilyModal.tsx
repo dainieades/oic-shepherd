@@ -26,13 +26,17 @@ function suggestFamilyName(
   const freq: Record<string, number> = {};
   for (const n of lastNames) freq[n] = (freq[n] ?? 0) + 1;
   const top = Object.entries(freq).sort((a, b) => b[1] - a[1])[0]?.[0] ?? lastNames[0];
-  // If all same last name → "Smith Family", else "Smith / Jones Family"
+  // If all same last name → "Smith", else "Smith / Jones"
   const unique = [...new Set(lastNames)];
-  return unique.length === 1 ? `${top} Family` : `${unique.slice(0, 2).join(' / ')} Family`;
+  return unique.length === 1 ? top : unique.slice(0, 2).join(' / ');
 }
 
 export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
-  const { data, addFamily } = useApp();
+  const { data, addFamily, setFullPageModalOpen } = useApp();
+  React.useEffect(() => {
+    setFullPageModalOpen(true);
+    return () => setFullPageModalOpen(false);
+  }, [setFullPageModalOpen]);
   const [step, setStep] = React.useState<'members' | 'name'>('members');
   const [selectedIds, setSelectedIds] = React.useState<string[]>([]);
   const [search, setSearch] = React.useState('');
@@ -77,7 +81,7 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
 
   const handleCreate = () => {
     if (!familyName.trim() || selectedIds.length === 0) return;
-    addFamily(familyName.trim(), selectedIds);
+    addFamily(`${familyName.trim()} Family`, selectedIds);
     setSubmitted(true);
     setTimeout(() => onClose(), 1600);
   };
@@ -85,7 +89,7 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
   const selectedPeople = data.people.filter((p) => selectedIds.includes(p.id));
 
   return (
-    <BottomSheet onClose={onClose} dragHandle aria-labelledby="add-family-title">
+    <BottomSheet onClose={onClose} aria-labelledby="add-family-title">
 
         {/* ── Step: members ── */}
         {step === 'members' && (
@@ -101,7 +105,7 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
             />
 
             {/* Search */}
-            <div style={{ padding: '12px 16px 8px', flexShrink: 0 }}>
+            <div style={{ padding: '0.75rem 1rem 0.5rem', flexShrink: 0 }}>
               <div
                 style={{
                   display: 'flex',
@@ -109,7 +113,7 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
                   gap: 8,
                   background: 'var(--bg)',
                   borderRadius: 'var(--radius-sm)',
-                  padding: '8px 12px',
+                  padding: '0.5rem 0.75rem',
                 }}
               >
                 <MagnifyingGlass size={16} color="var(--text-muted)" />
@@ -131,7 +135,7 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
             </div>
 
             {/* List */}
-            <div style={{ flex: 1, overflowY: 'auto', padding: '0 16px 32px' }}>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '0 1rem 2rem' }}>
               {sorted.length === 0 && (
                 <p
                   style={{
@@ -164,7 +168,7 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
                       display: 'flex',
                       alignItems: 'center',
                       gap: 12,
-                      padding: '10px 0',
+                      padding: '0.625rem 0',
                       background: isSelected ? 'var(--sage-light)' : 'none',
                       border: 'none',
                       borderBottom: '1px solid var(--border-light)',
@@ -221,7 +225,7 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
                           width: 22,
                           height: 22,
                           borderRadius: '50%',
-                          border: '1.5px solid var(--border)',
+                          border: '0.09375rem solid var(--border)',
                           flexShrink: 0,
                         }}
                       />
@@ -250,7 +254,7 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
               style={{
                 flex: 1,
                 overflowY: 'auto',
-                padding: '24px 20px 48px',
+                padding: '1.5rem 1.25rem 3rem',
                 background: 'var(--bg)',
               }}
             >
@@ -287,7 +291,7 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
                           gap: 6,
                           background: 'var(--surface)',
                           borderRadius: 'var(--radius-xl)',
-                          padding: '4px 10px 4px 4px',
+                          padding: '0.25rem 0.625rem 0.25rem 0.25rem',
                           border: '1px solid var(--border-light)',
                         }}
                       >
@@ -331,14 +335,17 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
                     marginBottom: 4,
                   }}
                 >
-                  Family name
+                  Last name
                 </p>
                 <div
                   style={{
                     background: 'var(--surface)',
                     borderRadius: 'var(--radius)',
                     border: '1px solid var(--border-light)',
-                    padding: '0 16px',
+                    padding: '0 1rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 4,
                   }}
                 >
                   <input
@@ -346,10 +353,10 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
                     value={familyName}
                     onChange={(e) => setFamilyName(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
-                    placeholder="e.g. Smith Family"
+                    placeholder="e.g. Smith"
                     style={{
-                      width: '100%',
-                      padding: '14px 0',
+                      flex: 1,
+                      padding: '0.875rem 0',
                       background: 'none',
                       border: 'none',
                       outline: 'none',
@@ -357,6 +364,9 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
                       color: 'var(--text-primary)',
                     }}
                   />
+                  <span style={{ fontSize: 16, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+                    Family
+                  </span>
                 </div>
               </div>
             </div>
@@ -391,7 +401,7 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
             <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)' }}>
               Family created
             </p>
-            <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>{familyName} has been added.</p>
+            <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>{familyName} Family has been added.</p>
           </div>
         )}
     </BottomSheet>

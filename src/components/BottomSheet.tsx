@@ -7,8 +7,8 @@ import { Button } from './Button';
 interface BottomSheetProps {
   onClose: () => void;
   zIndex?: number;
-  dragHandle?: boolean;
   compact?: boolean;
+  contentStyle?: React.CSSProperties;
   children: React.ReactNode;
   'aria-labelledby'?: string;
 }
@@ -16,8 +16,8 @@ interface BottomSheetProps {
 export function BottomSheet({
   onClose,
   zIndex = 60,
-  dragHandle = false,
   compact = false,
+  contentStyle,
   children,
   'aria-labelledby': ariaLabelledby,
 }: BottomSheetProps) {
@@ -61,23 +61,12 @@ export function BottomSheet({
           width: '100%',
           maxWidth: SHEET_MAX_WIDTH,
           ...(compact
-            ? { paddingBottom: 'env(safe-area-inset-bottom, 24px)' }
-            : { height: 'calc(100dvh - 48px)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }),
+            ? { paddingBottom: 'env(safe-area-inset-bottom, 1.5rem)' }
+            : { height: 'calc(100dvh - 3rem)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }),
           position: 'relative',
+          ...contentStyle,
         }}
       >
-        {dragHandle && (
-          <div
-            style={{
-              width: 36,
-              height: 4,
-              background: 'var(--border)',
-              borderRadius: 2,
-              margin: '14px auto 0',
-              flexShrink: 0,
-            }}
-          />
-        )}
         {children}
       </div>
     </div>
@@ -111,7 +100,7 @@ export function ModalHeader({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: '14px 20px 12px',
+        padding: '0.875rem 1.25rem 0.75rem',
         flexShrink: 0,
         borderBottom: '1px solid var(--border-light)',
       }}

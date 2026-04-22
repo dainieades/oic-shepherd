@@ -14,7 +14,7 @@ export function StatusBadge({ label, bg, color, border }: StatusBadgeProps) {
     <span
       style={{
         fontSize: 11,
-        padding: '1px 7px',
+        padding: '0.0625rem 0.4375rem',
         borderRadius: 'var(--radius-pill)',
         background: bg,
         color,

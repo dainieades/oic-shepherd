@@ -204,7 +204,7 @@ export default function LogsPage() {
 
   const btnSize = scrolled ? 30 : 36;
   const btnFont = scrolled ? 13 : 14;
-  const btnPad = scrolled ? '0 12px' : '0 14px';
+  const btnPad = scrolled ? '0 0.75rem' : '0 0.875rem';
 
   const ActionButtons = () => (
     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
@@ -446,7 +446,7 @@ export default function LogsPage() {
           title="No logs yet"
           description="Logs capture past interactions — a conversation, a check-in, a prayer request, or a moment you shared together."
           subtext="Only assigned shepherds and pastors can see these."
-          padding="64px 32px 32px"
+          padding="4rem 2rem 2rem"
         />
       )}
 
@@ -509,7 +509,7 @@ function FilterChip({ children, onRemove }: { children: React.ReactNode; onRemov
         display: 'flex',
         alignItems: 'center',
         gap: 4,
-        padding: '3px 9px',
+        padding: '0.1875rem 0.5625rem',
         borderRadius: 'var(--radius-pill)',
         background: 'var(--sage-light)',
         border: '1px solid var(--sage-mid)',
@@ -543,7 +543,7 @@ function LogSection({
           display: 'flex',
           alignItems: 'center',
           gap: 6,
-          padding: '4px 0',
+          padding: '0.25rem 0',
           marginBottom: open ? 8 : 0,
           background: 'none',
           border: 'none',

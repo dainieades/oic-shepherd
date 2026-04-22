@@ -47,7 +47,7 @@ export default function ChangePasswordPage() {
       {/* Nav bar */}
       <div style={navBarStyle}>
         <button
-          onClick={() => router.back()}
+          onClick={() => router.push('/settings')}
           disabled={status.type === 'loading'}
           style={{ ...backBtnStyle, opacity: status.type === 'loading' ? 0.5 : 1 }}
         >
@@ -60,7 +60,7 @@ export default function ChangePasswordPage() {
           disabled={!canSave}
           style={{
             height: 32,
-            padding: '0 14px',
+            padding: '0 0.875rem',
             borderRadius: 'var(--radius-xs)',
             background: status.type === 'loading' ? 'var(--border)' : 'var(--sage)',
             color: status.type === 'loading' ? 'var(--text-muted)' : 'var(--on-sage)',
@@ -81,20 +81,20 @@ export default function ChangePasswordPage() {
               fontSize: 17,
               fontWeight: 600,
               color: 'var(--text-primary)',
-              margin: '0 0 8px',
+              margin: '0 0 0.5rem',
               letterSpacing: '-0.01em',
             }}
           >
             Password updated
           </p>
-          <p style={{ fontSize: 14, color: 'var(--text-muted)', margin: '0 0 24px' }}>
+          <p style={{ fontSize: 14, color: 'var(--text-muted)', margin: '0 0 1.5rem' }}>
             Your new password is active.
           </p>
           <button
-            onClick={() => router.back()}
+            onClick={() => router.push('/settings')}
             style={{
               height: 44,
-              padding: '0 24px',
+              padding: '0 1.5rem',
               borderRadius: 'var(--radius-sm)',
               background: 'var(--sage)',
               color: 'var(--on-sage)',
@@ -115,7 +115,7 @@ export default function ChangePasswordPage() {
                 background: 'var(--red-light)',
                 border: '1px solid var(--red-border)',
                 borderRadius: 'var(--radius-sm)',
-                padding: '9px 13px',
+                padding: '0.5625rem 0.8125rem',
                 marginBottom: 16,
                 fontSize: 13,
                 color: 'var(--red)',
@@ -132,7 +132,7 @@ export default function ChangePasswordPage() {
               overflow: 'hidden',
             }}
           >
-            <div style={{ padding: '14px 16px', borderBottom: '1px solid var(--border-light)' }}>
+            <div style={{ padding: '0.875rem 1rem', borderBottom: '1px solid var(--border-light)' }}>
               <label style={labelStyle}>New password</label>
               <input
                 type="password"
@@ -144,7 +144,7 @@ export default function ChangePasswordPage() {
                 style={inputStyle}
               />
             </div>
-            <div style={{ padding: '14px 16px' }}>
+            <div style={{ padding: '0.875rem 1rem' }}>
               <label style={labelStyle}>Confirm new password</label>
               <input
                 type="password"
@@ -209,9 +209,9 @@ const labelStyle: React.CSSProperties = {
 
 const inputStyle: React.CSSProperties = {
   width: '100%',
-  padding: '11px 13px',
+  padding: '0.6875rem 0.8125rem',
   borderRadius: 'var(--radius-sm)',
-  border: '1.5px solid var(--border)',
+  border: '0.09375rem solid var(--border)',
   fontSize: 15,
   color: 'var(--text-primary)',
   background: 'var(--bg)',

@@ -29,7 +29,7 @@ export default function MapsAppPage() {
     <div style={{ paddingBottom: 48 }}>
       {/* Nav bar */}
       <div style={navBarStyle}>
-        <button onClick={() => router.back()} style={backBtnStyle}>
+        <button onClick={() => router.push('/settings')} style={backBtnStyle}>
           <CaretLeft size={16} weight="bold" />
           Settings
         </button>
@@ -37,7 +37,7 @@ export default function MapsAppPage() {
         <span style={{ width: 72 }} />
       </div>
 
-      <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: '16px 0 12px' }}>
+      <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: '1rem 0 0.75rem' }}>
         Choose which app opens when you tap an address.
       </p>
 
@@ -60,7 +60,7 @@ export default function MapsAppPage() {
                 background: 'none',
                 border: 'none',
                 borderBottom: i < PROVIDERS.length - 1 ? '1px solid var(--border-light)' : 'none',
-                padding: '16px',
+                padding: '1rem',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',

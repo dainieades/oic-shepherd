@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { SectionLabel } from '@/components/SectionLabel';
+import { DrawerSection } from '@/components/form/DrawerSection';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -157,7 +157,7 @@ export default function SettingsPage() {
             background: 'var(--surface)',
             borderRadius: 'var(--radius)',
             border: '1px solid var(--border-light)',
-            padding: '14px 16px',
+            padding: '0.875rem 1rem',
             display: 'flex',
             alignItems: 'center',
             gap: 14,
@@ -234,8 +234,7 @@ export default function SettingsPage() {
       </Link>
 
       {/* ── Account ── */}
-      <SectionLabel>Account</SectionLabel>
-      <SettingsCard>
+      <DrawerSection label="Account" cardPadding="0">
         <SettingsRow
           icon={<EnvelopeSimple size={18} color="var(--text-muted)" />}
           label="Email"
@@ -272,11 +271,10 @@ export default function SettingsPage() {
             />
           </button>
         )}
-      </SettingsCard>
+      </DrawerSection>
 
       {/* ── Preferences ── */}
-      <SectionLabel>Preferences</SectionLabel>
-      <SettingsCard>
+      <DrawerSection label="Preferences" cardPadding="0">
         <Link href="/settings/appearance" style={{ textDecoration: 'none', display: 'block' }}>
           <SettingsRow
             icon={<CircleHalf size={18} color="var(--text-muted)" />}
@@ -293,13 +291,12 @@ export default function SettingsPage() {
             chevron
           />
         </Link>
-      </SettingsCard>
+      </DrawerSection>
 
       {/* ── Admin ── */}
       {currentPersona.role === 'admin' && (
         <>
-          <SectionLabel>Admin</SectionLabel>
-          <SettingsCard>
+          <DrawerSection label="Admin" cardPadding="0">
             <Link href="/settings/access" style={{ textDecoration: 'none', display: 'block' }}>
               <SettingsRow
                 icon={<Users size={18} color="var(--text-muted)" />}
@@ -307,7 +304,7 @@ export default function SettingsPage() {
                 chevron
               />
             </Link>
-          </SettingsCard>
+          </DrawerSection>
         </>
       )}
 
@@ -320,7 +317,7 @@ export default function SettingsPage() {
           background: 'var(--surface)',
           border: '1px solid var(--border-light)',
           borderRadius: 'var(--radius)',
-          padding: '16px',
+          padding: '1rem',
           cursor: 'pointer',
           textAlign: 'left',
           display: 'flex',
@@ -342,7 +339,7 @@ export default function SettingsPage() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '0 32px',
+            padding: '0 2rem',
           }}
           onClick={(e) => {
             if (e.target === e.currentTarget) setShowSignOutConfirm(false);
@@ -357,13 +354,13 @@ export default function SettingsPage() {
               overflow: 'hidden',
             }}
           >
-            <div style={{ padding: '24px 20px 16px', textAlign: 'center' }}>
+            <div style={{ padding: '1.5rem 1.25rem 1rem', textAlign: 'center' }}>
               <p
                 style={{
                   fontSize: 16,
                   fontWeight: 600,
                   color: 'var(--text-primary)',
-                  margin: '0 0 6px',
+                  margin: '0 0 0.375rem',
                 }}
               >
                 Sign out?
@@ -413,23 +410,6 @@ export default function SettingsPage() {
 }
 
 
-function SettingsCard({ children }: { children: React.ReactNode }) {
-  return (
-    <div
-      className="no-last-border"
-      style={{
-        background: 'var(--surface)',
-        borderRadius: 'var(--radius)',
-        border: '1px solid var(--border-light)',
-        overflow: 'hidden',
-        marginBottom: 20,
-      }}
-    >
-      {children}
-    </div>
-  );
-}
-
 function SettingsRow({
   icon,
   label,
@@ -447,7 +427,7 @@ function SettingsRow({
         display: 'flex',
         alignItems: 'center',
         gap: 14,
-        padding: '14px 16px',
+        padding: '0.875rem 1rem',
         borderBottom: '1px solid var(--border-light)',
       }}
       className="no-last-border"

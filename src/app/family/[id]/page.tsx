@@ -204,7 +204,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
               onClick={() => setShowEditFamily(true)}
               style={{
                 height: scrolled ? 30 : 36,
-                padding: scrolled ? '0 10px' : '0 12px',
+                padding: scrolled ? '0 0.625rem' : '0 0.75rem',
                 borderRadius: 'var(--radius-xs)',
                 background: 'var(--sage)',
                 color: 'var(--on-sage)',
@@ -232,7 +232,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
               }
               style={{
                 height: scrolled ? 30 : 36,
-                padding: scrolled ? '0 12px' : '0 14px',
+                padding: scrolled ? '0 0.75rem' : '0 0.875rem',
                 borderRadius: 'var(--radius-xs)',
                 background: 'var(--sage)',
                 color: 'var(--on-sage)',
@@ -274,7 +274,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                 style={{
                   position: 'absolute',
                   right: 0,
-                  top: 'calc(100% + 6px)',
+                  top: 'calc(100% + 0.375rem)',
                   background: 'var(--surface)',
                   border: '1px solid var(--border)',
                   borderRadius: 'var(--radius-md)',
@@ -294,7 +294,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                     display: 'flex',
                     alignItems: 'center',
                     gap: 10,
-                    padding: '13px 16px',
+                    padding: '0.8125rem 1rem',
                     background: 'none',
                     border: 'none',
                     cursor: 'pointer',
@@ -313,7 +313,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
       </div>
 
       {/* ── Page header — scrolls away ── */}
-      <div style={{ padding: '28px 0 20px', display: 'flex', alignItems: 'center', gap: 16 }}>
+      <div style={{ padding: '1.75rem 0 1.25rem', display: 'flex', alignItems: 'center', gap: 16 }}>
         {/* Avatar / Photo */}
         <button
           onClick={() => fileInputRef.current?.click()}
@@ -349,7 +349,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                 height: 72,
                 borderRadius: '50%',
                 background: 'var(--sage-light)',
-                border: '2px dashed var(--sage)',
+                border: '0.125rem dashed var(--sage)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -368,7 +368,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
               height: 22,
               borderRadius: '50%',
               background: 'var(--sage)',
-              border: '2px solid var(--bg)',
+              border: '0.125rem solid var(--bg)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -401,7 +401,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                   onClick={() => setPreviewGroupId(g.id)}
                   style={{
                     fontSize: 11,
-                    padding: '2px 7px',
+                    padding: '0.125rem 0.4375rem',
                     borderRadius: 'var(--radius-pill)',
                     background: 'var(--blue-light)',
                     color: 'var(--blue)',
@@ -435,7 +435,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
           zIndex: Z_SUBHEADER,
           background: 'var(--bg)',
           display: 'flex',
-          borderBottom: '2px solid var(--border-light)',
+          borderBottom: '0.125rem solid var(--border-light)',
           marginBottom: 20,
         }}
       >
@@ -445,13 +445,13 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
             onClick={() => setTab(t)}
             style={{
               flex: 1,
-              padding: '10px 0',
+              padding: '0.625rem 0',
               fontSize: 13,
               fontWeight: tab === t ? 600 : 400,
               color: tab === t ? 'var(--sage)' : 'var(--text-muted)',
               background: 'none',
               border: 'none',
-              borderBottom: tab === t ? '2px solid var(--sage)' : '2px solid transparent',
+              borderBottom: tab === t ? '0.125rem solid var(--sage)' : '0.125rem solid transparent',
               cursor: 'pointer',
               marginBottom: -2,
               display: 'flex',
@@ -470,7 +470,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                   background: 'var(--sage)',
                   color: 'var(--on-sage)',
                   borderRadius: 'var(--radius-sm)',
-                  padding: '1px 6px',
+                  padding: '0.0625rem 0.375rem',
                   lineHeight: 1.5,
                 }}
               >
@@ -485,7 +485,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                   background: 'var(--sage)',
                   color: 'var(--on-sage)',
                   borderRadius: 'var(--radius-sm)',
-                  padding: '1px 6px',
+                  padding: '0.0625rem 0.375rem',
                   lineHeight: 1.5,
                 }}
               >
@@ -795,7 +795,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                           onClick={() => setPreviewGroupId(g.id)}
                           style={{
                             fontSize: 11,
-                            padding: '2px 8px',
+                            padding: '0.125rem 0.5rem',
                             borderRadius: 'var(--radius-pill)',
                             background: 'var(--blue-light)',
                             color: 'var(--blue)',
@@ -961,7 +961,7 @@ function LogSection({
           display: 'flex',
           alignItems: 'center',
           gap: 6,
-          padding: '4px 0',
+          padding: '0.25rem 0',
           marginBottom: open ? 8 : 0,
           background: 'none',
           border: 'none',
@@ -1011,7 +1011,7 @@ function TodoSection({
           display: 'flex',
           alignItems: 'center',
           gap: 6,
-          padding: '4px 0',
+          padding: '0.25rem 0',
           marginBottom: open ? 8 : 0,
           background: 'none',
           border: 'none',
@@ -1068,7 +1068,7 @@ function TodoSection({
                     borderRadius: '50%',
                     flexShrink: 0,
                     marginTop: 2,
-                    border: t.completed ? 'none' : '2px solid var(--border)',
+                    border: t.completed ? 'none' : '0.125rem solid var(--border)',
                     background: t.completed ? 'var(--sage)' : 'transparent',
                     display: 'flex',
                     alignItems: 'center',
@@ -1123,7 +1123,7 @@ function TodoSection({
                         style={{
                           fontSize: 10,
                           color: 'var(--blue)',
-                          padding: '1px 6px',
+                          padding: '0.0625rem 0.375rem',
                           borderRadius: 'var(--radius-pill)',
                           background: 'var(--blue-light)',
                           fontWeight: 500,

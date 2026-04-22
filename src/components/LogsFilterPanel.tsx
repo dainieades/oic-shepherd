@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { X, MagnifyingGlass, ArrowsDownUp } from '@phosphor-icons/react';
-import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS } from '@/lib/constants';
+import { BottomSheet } from './BottomSheet';
 import { CheckRow } from './CheckRow';
 import { RadioRow } from './RadioRow';
 import { SectionLabel } from './SectionLabel';
@@ -85,12 +85,6 @@ export default function LogsFilterPanel({
     }
   }, [show]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  React.useEffect(() => {
-    if (!show) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = prev; };
-  }, [show]);
 
   const applyFilter = (): void => {
     onApply(draft);
@@ -117,44 +111,7 @@ export default function LogsFilterPanel({
   if (!show) return null;
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        background: BACKDROP_COLOR,
-        zIndex: 'var(--z-dropdown)',
-        display: 'flex',
-        alignItems: 'flex-end',
-        justifyContent: 'center',
-      }}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-    >
-      <div
-        className="animate-slide-up"
-        style={{
-          background: 'var(--surface)',
-          borderRadius: SHEET_BORDER_RADIUS,
-          width: '100%',
-          maxWidth: SHEET_MAX_WIDTH,
-          height: 'calc(100dvh - 48px)',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-        }}
-      >
-        {/* Drag handle */}
-        <div
-          style={{
-            width: 36,
-            height: 4,
-            background: 'var(--border)',
-            borderRadius: 2,
-            margin: '14px auto 0',
-            flexShrink: 0,
-          }}
-        />
+    <BottomSheet onClose={onClose} zIndex={50}>
 
         {/* Header */}
         <div
@@ -162,7 +119,7 @@ export default function LogsFilterPanel({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: '14px 20px 12px',
+            padding: '0.875rem 1.25rem 0.75rem',
             flexShrink: 0,
             borderBottom: '1px solid var(--border-light)',
           }}
@@ -174,7 +131,7 @@ export default function LogsFilterPanel({
                 style={{
                   fontSize: 11,
                   fontWeight: 700,
-                  padding: '2px 8px',
+                  padding: '0.125rem 0.5rem',
                   borderRadius: 'var(--radius-pill)',
                   background: 'var(--sage)',
                   color: 'var(--on-sage)',
@@ -223,11 +180,11 @@ export default function LogsFilterPanel({
                   onClick={() => setActiveCategory(key)}
                   style={{
                     width: '100%',
-                    padding: '14px 16px',
+                    padding: '0.875rem 1rem',
                     textAlign: 'left',
                     background: isActive ? 'var(--surface)' : 'none',
                     border: 'none',
-                    borderLeft: isActive ? '3px solid var(--sage)' : '3px solid transparent',
+                    borderLeft: isActive ? '0.1875rem solid var(--sage)' : '0.1875rem solid transparent',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
@@ -251,7 +208,7 @@ export default function LogsFilterPanel({
                         minWidth: 18,
                         height: 18,
                         borderRadius: 'var(--radius-pill)',
-                        padding: '0 4px',
+                        padding: '0 0.25rem',
                         background: 'var(--sage)',
                         color: 'var(--on-sage)',
                         display: 'flex',
@@ -269,7 +226,7 @@ export default function LogsFilterPanel({
           </div>
 
           {/* Right: options */}
-          <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '1rem 1.25rem' }}>
             {activeCategory === 'type' && (
               <>
                 <SectionLabel>Log type</SectionLabel>
@@ -330,7 +287,7 @@ export default function LogsFilterPanel({
                         onChange={(e) => setDraft((d) => ({ ...d, dateFrom: e.target.value }))}
                         style={{
                           width: '100%',
-                          padding: '7px 10px',
+                          padding: '0.4375rem 0.625rem',
                           background: 'var(--bg)',
                           border: '1px solid var(--border)',
                           borderRadius: 'var(--radius-xs)',
@@ -358,7 +315,7 @@ export default function LogsFilterPanel({
                         onChange={(e) => setDraft((d) => ({ ...d, dateTo: e.target.value }))}
                         style={{
                           width: '100%',
-                          padding: '7px 10px',
+                          padding: '0.4375rem 0.625rem',
                           background: 'var(--bg)',
                           border: '1px solid var(--border)',
                           borderRadius: 'var(--radius-xs)',
@@ -455,7 +412,7 @@ export default function LogsFilterPanel({
         {/* Footer */}
         <div
           style={{
-            padding: '10px 20px 16px',
+            padding: '0.625rem 1.25rem 1rem',
             flexShrink: 0,
             borderTop: '1px solid var(--border-light)',
             display: 'flex',
@@ -473,7 +430,7 @@ export default function LogsFilterPanel({
               fontWeight: 600,
               color: 'var(--text-secondary)',
               cursor: 'pointer',
-              padding: '12px 0',
+              padding: '0.75rem 0',
             }}
           >
             Clear filters
@@ -486,7 +443,7 @@ export default function LogsFilterPanel({
               color: 'var(--on-sage)',
               border: 'none',
               borderRadius: 'var(--radius)',
-              padding: '12px 0',
+              padding: '0.75rem 0',
               fontSize: 15,
               fontWeight: 600,
               cursor: 'pointer',
@@ -495,8 +452,7 @@ export default function LogsFilterPanel({
             Apply
           </button>
         </div>
-      </div>
-    </div>
+    </BottomSheet>
   );
 }
 

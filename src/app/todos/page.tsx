@@ -135,7 +135,7 @@ export default function TodosPage() {
 
   const btnSize = scrolled ? 30 : 36;
   const btnFont = scrolled ? 13 : 14;
-  const btnPad = scrolled ? '0 12px' : '0 14px';
+  const btnPad = scrolled ? '0 0.75rem' : '0 0.875rem';
 
   const ActionButtons = () => (
     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
@@ -395,7 +395,7 @@ export default function TodosPage() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: 4,
-                  padding: '3px 9px',
+                  padding: '0.1875rem 0.5625rem',
                   borderRadius: 'var(--radius-pill)',
                   background: 'var(--sage-light)',
                   border: '1px solid var(--sage-mid)',
@@ -468,7 +468,7 @@ export default function TodosPage() {
       )}
 
       {myTodos.length === 0 && (
-        <div style={{ textAlign: 'center', padding: '64px 32px 32px' }}>
+        <div style={{ textAlign: 'center', padding: '4rem 2rem 2rem' }}>
           <p
             style={{
               fontSize: 15,
@@ -497,7 +497,7 @@ export default function TodosPage() {
               color: 'var(--text-muted)',
               lineHeight: 1.5,
               maxWidth: 260,
-              margin: '10px auto 0',
+              margin: '0.625rem auto 0',
               fontWeight: 600,
             }}
           >
@@ -555,7 +555,7 @@ export default function TodosPage() {
               borderRadius: SHEET_BORDER_RADIUS,
               width: '100%',
               maxWidth: SHEET_MAX_WIDTH,
-              maxHeight: 'calc(100dvh - 80px)',
+              maxHeight: 'calc(100dvh - 5rem)',
               display: 'flex',
               flexDirection: 'column',
               overflow: 'hidden',
@@ -566,7 +566,7 @@ export default function TodosPage() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                padding: '14px 20px 12px',
+                padding: '0.875rem 1.25rem 0.75rem',
                 flexShrink: 0,
                 borderBottom: '1px solid var(--border-light)',
               }}
@@ -593,7 +593,7 @@ export default function TodosPage() {
               </button>
             </div>
 
-            <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '1rem 1.25rem' }}>
               <p
                 style={{
                   fontSize: 10,
@@ -674,7 +674,7 @@ export default function TodosPage() {
 
             <div
               style={{
-                padding: '10px 20px 16px',
+                padding: '0.625rem 1.25rem 1rem',
                 flexShrink: 0,
                 borderTop: '1px solid var(--border-light)',
                 display: 'flex',
@@ -691,7 +691,7 @@ export default function TodosPage() {
                   fontWeight: 600,
                   color: 'var(--text-secondary)',
                   cursor: 'pointer',
-                  padding: '12px 0',
+                  padding: '0.75rem 0',
                 }}
               >
                 Clear
@@ -704,7 +704,7 @@ export default function TodosPage() {
                   color: 'var(--on-sage)',
                   border: 'none',
                   borderRadius: 'var(--radius)',
-                  padding: '12px 0',
+                  padding: '0.75rem 0',
                   fontSize: 15,
                   fontWeight: 600,
                   cursor: 'pointer',
@@ -874,10 +874,10 @@ function CalendarView({
                     : 'transparent',
                 border:
                   isToday && !isSelected
-                    ? '1.5px solid var(--sage-mid)'
+                    ? '0.09375rem solid var(--sage-mid)'
                     : isSelected
                       ? 'none'
-                      : '1px solid transparent',
+                      : '0.0625rem solid transparent',
                 cursor: 'pointer',
                 display: 'flex',
                 flexDirection: 'column',
@@ -950,7 +950,7 @@ function CalendarView({
             · {selectedTodos.length}
           </p>
           {selectedTodos.length === 0 ? (
-            <p style={{ fontSize: 13, color: 'var(--text-muted)', padding: '12px 0' }}>
+            <p style={{ fontSize: 13, color: 'var(--text-muted)', padding: '0.75rem 0' }}>
               No to-dos on this day.
             </p>
           ) : (
@@ -989,7 +989,7 @@ function CalendarView({
                         borderRadius: '50%',
                         flexShrink: 0,
                         marginTop: 2,
-                        border: t.completed ? 'none' : '2px solid var(--border)',
+                        border: t.completed ? 'none' : '0.125rem solid var(--border)',
                         background: t.completed ? 'var(--sage)' : 'transparent',
                         display: 'flex',
                         alignItems: 'center',
@@ -1027,7 +1027,7 @@ function CalendarView({
                           style={{
                             fontSize: 10,
                             color: 'var(--blue)',
-                            padding: '1px 6px',
+                            padding: '0.0625rem 0.375rem',
                             borderRadius: 'var(--radius-pill)',
                             background: 'var(--blue-light)',
                             fontWeight: 500,
@@ -1084,7 +1084,7 @@ function TodoSection({
           display: 'flex',
           alignItems: 'center',
           gap: 6,
-          padding: '4px 0',
+          padding: '0.25rem 0',
           marginBottom: open ? 8 : 0,
           background: 'none',
           border: 'none',
@@ -1140,7 +1140,7 @@ function TodoSection({
                     borderRadius: '50%',
                     flexShrink: 0,
                     marginTop: 2,
-                    border: t.completed ? 'none' : '2px solid var(--border)',
+                    border: t.completed ? 'none' : '0.125rem solid var(--border)',
                     background: t.completed ? 'var(--sage)' : 'transparent',
                     display: 'flex',
                     alignItems: 'center',
@@ -1203,7 +1203,7 @@ function TodoSection({
                         style={{
                           fontSize: 10,
                           color: 'var(--blue)',
-                          padding: '1px 6px',
+                          padding: '0.0625rem 0.375rem',
                           borderRadius: 'var(--radius-pill)',
                           background: 'var(--blue-light)',
                           fontWeight: 500,
@@ -1218,7 +1218,7 @@ function TodoSection({
                         style={{
                           fontSize: 10,
                           color: 'var(--blue)',
-                          padding: '1px 6px',
+                          padding: '0.0625rem 0.375rem',
                           borderRadius: 'var(--radius-pill)',
                           background: 'var(--blue-light)',
                           fontWeight: 500,

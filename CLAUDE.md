@@ -102,6 +102,7 @@ Key mutations: `addPerson` · `updatePerson` · `deletePerson` · `addFamily` ·
 - **No comments** unless WHY is non-obvious
 - **All shared types** → `src/lib/types.ts`; never widen types to silence errors; no `@ts-ignore` without explanation
 - **Explicit return types** on context mutations
+- **`rem` units only** — use `rem` for all size/spacing/radius values; `px` is allowed only for `1px` borders (e.g. `border: '1px solid …'`)
 
 ---
 

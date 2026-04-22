@@ -66,7 +66,7 @@ export default function PhotoAvatar({ photo, name, onPhotoChange, onPhotoRemove 
               height: 72,
               borderRadius: '50%',
               background: 'var(--sage-light)',
-              border: '2px dashed var(--sage)',
+              border: '0.125rem dashed var(--sage)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -87,7 +87,7 @@ export default function PhotoAvatar({ photo, name, onPhotoChange, onPhotoRemove 
             height: 22,
             borderRadius: '50%',
             background: 'var(--sage)',
-            border: '2px solid var(--bg)',
+            border: '0.125rem solid var(--bg)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -137,7 +137,7 @@ export default function PhotoAvatar({ photo, name, onPhotoChange, onPhotoRemove 
                 borderRadius: SHEET_BORDER_RADIUS,
                 width: '100%',
                 maxWidth: SHEET_MAX_WIDTH,
-                padding: '0 20px 36px',
+                padding: '0 1.25rem 2.25rem',
                 overflow: 'hidden',
               }}
               onClick={(e) => e.stopPropagation()}
@@ -148,7 +148,7 @@ export default function PhotoAvatar({ photo, name, onPhotoChange, onPhotoRemove 
                   height: 4,
                   background: 'var(--border)',
                   borderRadius: 2,
-                  margin: '14px auto 20px',
+                  margin: '0.875rem auto 1.25rem',
                 }}
               />
               <p
@@ -174,7 +174,7 @@ export default function PhotoAvatar({ photo, name, onPhotoChange, onPhotoRemove 
                   display: 'flex',
                   alignItems: 'center',
                   gap: 14,
-                  padding: '14px 4px',
+                  padding: '0.875rem 0.25rem',
                   background: 'none',
                   border: 'none',
                   borderBottom: photo ? '1px solid var(--border-light)' : 'none',
@@ -211,7 +211,7 @@ export default function PhotoAvatar({ photo, name, onPhotoChange, onPhotoRemove 
                     display: 'flex',
                     alignItems: 'center',
                     gap: 14,
-                    padding: '14px 4px',
+                    padding: '0.875rem 0.25rem',
                     background: 'none',
                     border: 'none',
                     cursor: 'pointer',
