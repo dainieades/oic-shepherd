@@ -7,43 +7,27 @@ import {
   CaretRight,
   EnvelopeSimple,
   Lock,
-  Question,
   SignOut,
   HandHeart,
   ShieldStar,
   Users,
   MapPin,
-  Check,
   GoogleLogo,
-  Sun,
-  Moon,
   CircleHalf,
 } from '@phosphor-icons/react';
-import type { ThemePreference } from '@/lib/types';
 import { useApp } from '@/lib/context';
 import { createClient } from '@/utils/supabase/client';
 import type { User } from '@supabase/supabase-js';
 import { type MapProvider, MAP_PROVIDER_LABELS, MAP_PROVIDERS_STORAGE_KEY } from '@/lib/utils';
 import { BACKDROP_COLOR } from '@/lib/constants';
 
-type PasswordStatus =
-  | { type: 'idle' }
-  | { type: 'loading' }
-  | { type: 'error'; message: string }
-  | { type: 'success' };
-
 export default function SettingsPage() {
-  const { data, currentPersona, switchPersona, themePreference, setThemePreference } = useApp();
+  const { data, currentPersona, switchPersona, themePreference } = useApp();
   const router = useRouter();
   const [scrolled, setScrolled] = React.useState(false);
   const [showSignOutConfirm, setShowSignOutConfirm] = React.useState(false);
-  const [showMapPicker, setShowMapPicker] = React.useState(false);
   const [mapProvider, setMapProvider] = React.useState<MapProvider>('apple');
   const [supabaseUser, setSupabaseUser] = React.useState<User | null>(null);
-  const [showChangePassword, setShowChangePassword] = React.useState(false);
-  const [newPassword, setNewPassword] = React.useState('');
-  const [confirmPassword, setConfirmPassword] = React.useState('');
-  const [passwordStatus, setPasswordStatus] = React.useState<PasswordStatus>({ type: 'idle' });
   const [linkingGoogle, setLinkingGoogle] = React.useState(false);
 
   React.useEffect(() => {
@@ -61,12 +45,6 @@ export default function SettingsPage() {
     const stored = localStorage.getItem(MAP_PROVIDERS_STORAGE_KEY) as MapProvider | null;
     if (stored && stored in MAP_PROVIDER_LABELS) setMapProvider(stored);
   }, []);
-
-  const handleMapProviderSelect = (provider: MapProvider) => {
-    setMapProvider(provider);
-    localStorage.setItem(MAP_PROVIDERS_STORAGE_KEY, provider);
-    setShowMapPicker(false);
-  };
 
   const person = currentPersona.personId
     ? data.people.find((p) => p.id === currentPersona.personId)
@@ -104,36 +82,6 @@ export default function SettingsPage() {
     await supabase.auth.signOut();
     switchPersona(data.personas[0].id);
     router.push('/signin');
-  };
-
-  const handleChangePassword = async () => {
-    if (!newPassword) {
-      setPasswordStatus({ type: 'error', message: 'Please enter a new password.' });
-      return;
-    }
-    if (newPassword.length < 8) {
-      setPasswordStatus({ type: 'error', message: 'Password must be at least 8 characters.' });
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      setPasswordStatus({ type: 'error', message: 'Passwords do not match.' });
-      return;
-    }
-    setPasswordStatus({ type: 'loading' });
-    const supabase = createClient();
-    const { error } = await supabase.auth.updateUser({ password: newPassword });
-    if (error) {
-      setPasswordStatus({ type: 'error', message: error.message });
-    } else {
-      setPasswordStatus({ type: 'success' });
-    }
-  };
-
-  const closeChangePassword = () => {
-    setShowChangePassword(false);
-    setNewPassword('');
-    setConfirmPassword('');
-    setPasswordStatus({ type: 'idle' });
   };
 
   const handleLinkGoogle = async () => {
@@ -293,24 +241,13 @@ export default function SettingsPage() {
           value={displayEmail}
         />
         {hasPassword && (
-          <button
-            onClick={() => setShowChangePassword(true)}
-            style={{
-              width: '100%',
-              background: 'none',
-              border: 'none',
-              padding: 0,
-              cursor: 'pointer',
-              textAlign: 'left',
-              display: 'block',
-            }}
-          >
+          <Link href="/settings/password" style={{ textDecoration: 'none', display: 'block' }}>
             <SettingsRow
               icon={<Lock size={18} color="var(--text-muted)" />}
               label="Change Password"
               chevron
             />
-          </button>
+          </Link>
         )}
         {hasPassword && !hasGoogle && (
           <button
@@ -339,86 +276,22 @@ export default function SettingsPage() {
       {/* ── Preferences ── */}
       <SectionLabel>Preferences</SectionLabel>
       <SettingsCard>
-        {/* Appearance — theme segmented control */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 14,
-            padding: '12px 16px',
-            borderBottom: '1px solid var(--border-light)',
-          }}
-        >
-          <span style={{ flexShrink: 0 }}>
-            <CircleHalf size={18} color="var(--text-muted)" />
-          </span>
-          <span style={{ flex: 1, fontSize: 15, fontWeight: 500, color: 'var(--text-primary)' }}>
-            Appearance
-          </span>
-          <div
-            style={{
-              display: 'flex',
-              background: 'var(--sage-light)',
-              borderRadius: 'var(--radius-sm)',
-              padding: 3,
-              gap: 2,
-            }}
-          >
-            {(
-              [
-                { value: 'light', icon: <Sun size={15} weight="bold" />, label: 'Light' },
-                { value: 'system', icon: <CircleHalf size={15} weight="bold" />, label: 'Auto' },
-                { value: 'dark', icon: <Moon size={15} weight="bold" />, label: 'Dark' },
-              ] as { value: ThemePreference; icon: React.ReactNode; label: string }[]
-            ).map(({ value, icon, label }) => {
-              const active = themePreference === value;
-              return (
-                <button
-                  key={value}
-                  onClick={() => setThemePreference(value)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 5,
-                    padding: '5px 10px',
-                    borderRadius: 7,
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontSize: 13,
-                    fontWeight: active ? 600 : 500,
-                    background: active ? 'var(--surface)' : 'transparent',
-                    color: active ? 'var(--sage)' : 'var(--text-muted)',
-                    boxShadow: active ? 'var(--shadow-card)' : 'none',
-                    transition: 'background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease',
-                    filter: 'none',
-                  }}
-                >
-                  {icon}
-                  {label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-        <button
-          onClick={() => setShowMapPicker(true)}
-          style={{
-            width: '100%',
-            background: 'none',
-            border: 'none',
-            padding: 0,
-            cursor: 'pointer',
-            textAlign: 'left',
-            display: 'block',
-          }}
-        >
+        <Link href="/settings/appearance" style={{ textDecoration: 'none', display: 'block' }}>
+          <SettingsRow
+            icon={<CircleHalf size={18} color="var(--text-muted)" />}
+            label="Appearance"
+            value={themePreference === 'light' ? 'Light' : themePreference === 'dark' ? 'Dark' : 'System'}
+            chevron
+          />
+        </Link>
+        <Link href="/settings/maps" style={{ textDecoration: 'none', display: 'block' }}>
           <SettingsRow
             icon={<MapPin size={18} color="var(--text-muted)" />}
             label="Maps App"
             value={MAP_PROVIDER_LABELS[mapProvider]}
             chevron
           />
-        </button>
+        </Link>
       </SettingsCard>
 
       {/* ── Admin ── */}
@@ -457,292 +330,6 @@ export default function SettingsPage() {
         <SignOut size={18} color="var(--red)" />
         <span style={{ fontSize: 15, fontWeight: 500, color: 'var(--red)' }}>Sign Out</span>
       </button>
-
-      {showMapPicker && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 80,
-            background: BACKDROP_COLOR,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '0 32px',
-          }}
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setShowMapPicker(false);
-          }}
-        >
-          <div
-            style={{
-              background: 'var(--surface)',
-              borderRadius: 16,
-              width: '100%',
-              maxWidth: 320,
-              overflow: 'hidden',
-            }}
-          >
-            <div style={{ padding: '20px 20px 12px', textAlign: 'center' }}>
-              <p
-                style={{
-                  fontSize: 16,
-                  fontWeight: 600,
-                  color: 'var(--text-primary)',
-                  margin: '0 0 4px',
-                }}
-              >
-                Maps App
-              </p>
-              <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: 0 }}>
-                Choose which app opens when you tap an address.
-              </p>
-            </div>
-            <div style={{ borderTop: '1px solid var(--border-light)' }}>
-              {(['apple', 'google', 'waze'] as MapProvider[]).map((provider, i, arr) => (
-                <button
-                  key={provider}
-                  onClick={() => handleMapProviderSelect(provider)}
-                  style={{
-                    width: '100%',
-                    height: 50,
-                    background: 'none',
-                    border: 'none',
-                    borderBottom: i < arr.length - 1 ? '1px solid var(--border-light)' : 'none',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '0 20px',
-                    cursor: 'pointer',
-                    fontSize: 15,
-                    color: 'var(--text-primary)',
-                    fontWeight: mapProvider === provider ? 600 : 400,
-                  }}
-                >
-                  <span>{MAP_PROVIDER_LABELS[provider]}</span>
-                  {mapProvider === provider && (
-                    <Check size={17} color="var(--sage)" weight="bold" />
-                  )}
-                </button>
-              ))}
-            </div>
-            <div style={{ borderTop: '1px solid var(--border-light)' }}>
-              <button
-                onClick={() => setShowMapPicker(false)}
-                style={{
-                  width: '100%',
-                  height: 50,
-                  background: 'none',
-                  border: 'none',
-                  fontSize: 15,
-                  color: 'var(--text-muted)',
-                  cursor: 'pointer',
-                }}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showChangePassword && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 80,
-            background: BACKDROP_COLOR,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '0 32px',
-          }}
-          onClick={(e) => {
-            if (e.target === e.currentTarget && passwordStatus.type !== 'loading')
-              closeChangePassword();
-          }}
-        >
-          <div
-            style={{
-              background: 'var(--surface)',
-              borderRadius: 16,
-              width: '100%',
-              maxWidth: 340,
-              overflow: 'hidden',
-            }}
-          >
-            {passwordStatus.type === 'success' ? (
-              <>
-                <div style={{ padding: '28px 24px 20px', textAlign: 'center' }}>
-                  <p
-                    style={{
-                      fontSize: 16,
-                      fontWeight: 600,
-                      color: 'var(--text-primary)',
-                      margin: '0 0 6px',
-                    }}
-                  >
-                    Password updated
-                  </p>
-                  <p style={{ fontSize: 14, color: 'var(--text-muted)', margin: 0 }}>
-                    Your new password is active.
-                  </p>
-                </div>
-                <div style={{ borderTop: '1px solid var(--border-light)' }}>
-                  <button
-                    onClick={closeChangePassword}
-                    style={{
-                      width: '100%',
-                      height: 50,
-                      background: 'none',
-                      border: 'none',
-                      fontSize: 15,
-                      color: 'var(--sage)',
-                      cursor: 'pointer',
-                      fontWeight: 600,
-                    }}
-                  >
-                    Done
-                  </button>
-                </div>
-              </>
-            ) : (
-              <>
-                <div style={{ padding: '24px 20px 16px' }}>
-                  <p
-                    style={{
-                      fontSize: 16,
-                      fontWeight: 600,
-                      color: 'var(--text-primary)',
-                      margin: '0 0 16px',
-                      textAlign: 'center',
-                    }}
-                  >
-                    Change Password
-                  </p>
-                  {passwordStatus.type === 'error' && (
-                    <div
-                      style={{
-                        background: 'var(--red-light)',
-                        border: '1px solid var(--red-border)',
-                        borderRadius: 10,
-                        padding: '9px 13px',
-                        marginBottom: 14,
-                        fontSize: 13,
-                        color: 'var(--red)',
-                      }}
-                    >
-                      {passwordStatus.message}
-                    </div>
-                  )}
-                  <div style={{ marginBottom: 12 }}>
-                    <label
-                      style={{
-                        display: 'block',
-                        fontSize: 13,
-                        fontWeight: 600,
-                        color: 'var(--text-primary)',
-                        marginBottom: 5,
-                      }}
-                    >
-                      New password
-                    </label>
-                    <input
-                      type="password"
-                      placeholder="At least 8 characters"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      disabled={passwordStatus.type === 'loading'}
-                      autoFocus
-                      style={{
-                        width: '100%',
-                        padding: '11px 13px',
-                        borderRadius: 10,
-                        border: '1.5px solid var(--border)',
-                        fontSize: 15,
-                        color: 'var(--text-primary)',
-                        background: 'var(--bg)',
-                        outline: 'none',
-                        boxSizing: 'border-box',
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <label
-                      style={{
-                        display: 'block',
-                        fontSize: 13,
-                        fontWeight: 600,
-                        color: 'var(--text-primary)',
-                        marginBottom: 5,
-                      }}
-                    >
-                      Confirm new password
-                    </label>
-                    <input
-                      type="password"
-                      placeholder="••••••••"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      disabled={passwordStatus.type === 'loading'}
-                      onKeyDown={(e) => e.key === 'Enter' && handleChangePassword()}
-                      style={{
-                        width: '100%',
-                        padding: '11px 13px',
-                        borderRadius: 10,
-                        border: '1.5px solid var(--border)',
-                        fontSize: 15,
-                        color: 'var(--text-primary)',
-                        background: 'var(--bg)',
-                        outline: 'none',
-                        boxSizing: 'border-box',
-                      }}
-                    />
-                  </div>
-                </div>
-                <div style={{ borderTop: '1px solid var(--border-light)', display: 'flex' }}>
-                  <button
-                    onClick={closeChangePassword}
-                    disabled={passwordStatus.type === 'loading'}
-                    style={{
-                      flex: 1,
-                      height: 50,
-                      background: 'none',
-                      border: 'none',
-                      borderRight: '1px solid var(--border-light)',
-                      fontSize: 15,
-                      color: 'var(--text-secondary)',
-                      cursor: passwordStatus.type === 'loading' ? 'not-allowed' : 'pointer',
-                      fontWeight: 500,
-                      opacity: passwordStatus.type === 'loading' ? 0.5 : 1,
-                    }}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleChangePassword}
-                    disabled={passwordStatus.type === 'loading'}
-                    style={{
-                      flex: 1,
-                      height: 50,
-                      background: 'none',
-                      border: 'none',
-                      fontSize: 15,
-                      color: 'var(--sage)',
-                      cursor: passwordStatus.type === 'loading' ? 'not-allowed' : 'pointer',
-                      fontWeight: 600,
-                      opacity: passwordStatus.type === 'loading' ? 0.6 : 1,
-                    }}
-                  >
-                    {passwordStatus.type === 'loading' ? 'Saving…' : 'Save'}
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
 
       {showSignOutConfirm && (
         <div
