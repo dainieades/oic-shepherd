@@ -11,13 +11,11 @@ export async function deleteApprovedEmail(email: string): Promise<{ error?: stri
   } = await supabase.auth.getUser();
   if (!user) return { error: 'Not authenticated.' };
 
-  // Allow if the caller's uid is linked to an admin persona, OR if an
-  // unclaimed admin persona exists (setup phase before the admin has logged in).
   const { data: adminPersona } = await supabase
     .from('personas')
     .select('id')
     .eq('role', 'admin')
-    .or(`user_id.eq.${user.id},user_id.is.null`)
+    .eq('user_id', user.id)
     .maybeSingle();
 
   if (!adminPersona) return { error: 'Admin access required.' };
