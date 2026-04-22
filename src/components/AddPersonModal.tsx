@@ -210,9 +210,10 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
 
   return (
     <>
-      <BottomSheet onClose={onClose} dragHandle>
+      <BottomSheet onClose={onClose} dragHandle aria-labelledby="add-person-title">
           <ModalHeader
             title="Add person"
+            titleId="add-person-title"
             onCancel={onClose}
             onAction={handleSave}
             actionLabel="Save"

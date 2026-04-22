@@ -31,7 +31,7 @@ export function CheckRow({ checked, onToggle, children }: CheckRowProps) {
           height: 18,
           borderRadius: 5,
           flexShrink: 0,
-          border: checked ? 'none' : '1.5px solid var(--border)',
+          border: checked ? 'none' : '1.5px solid var(--text-secondary)',
           background: checked ? 'var(--sage)' : 'transparent',
           display: 'flex',
           alignItems: 'center',

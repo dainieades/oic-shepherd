@@ -465,8 +465,15 @@ a:not(.row-hover):not(.row-hover-flex):not(.row-card-hover):not(.nav-tab):hover 
 input:focus,
 textarea:focus {
   border-color: var(--sage-mid) !important;
-  box-shadow: 0 0 0 3px var(--sage-light) !important;
+  box-shadow: 0 0 0 3px var(--sage-mid) !important;
   transition:
     border-color 0.12s ease,
     box-shadow 0.12s ease;
+}
+
+/* Button / link focus ring for keyboard navigation */
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--sage);
+  outline-offset: 2px;
 }

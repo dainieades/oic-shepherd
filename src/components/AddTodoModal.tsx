@@ -115,7 +115,7 @@ export default function AddTodoModal({
 
   return (
     <>
-      <BottomSheet onClose={onClose}>
+      <BottomSheet onClose={onClose} aria-labelledby="add-todo-title">
           {/* Floating delete button */}
           {isEditing && todo && !showWhoPicker && (
             <button
@@ -163,6 +163,7 @@ export default function AddTodoModal({
             <>
               <ModalHeader
                 title={isEditing ? 'Edit to-do' : 'Add to-do'}
+                titleId="add-todo-title"
                 onCancel={onClose}
                 onAction={handleSave}
                 actionLabel="Save"

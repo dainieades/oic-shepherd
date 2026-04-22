@@ -85,13 +85,14 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
   const selectedPeople = data.people.filter((p) => selectedIds.includes(p.id));
 
   return (
-    <BottomSheet onClose={onClose} dragHandle>
+    <BottomSheet onClose={onClose} dragHandle aria-labelledby="add-family-title">
 
         {/* ── Step: members ── */}
         {step === 'members' && (
           <>
             <ModalHeader
               title="Select members"
+              titleId="add-family-title"
               onCancel={onClose}
               onAction={() => setStep('name')}
               actionLabel={selectedIds.length > 0 ? `Next (${selectedIds.length})` : 'Next'}
@@ -237,6 +238,7 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
           <>
             <ModalHeader
               title="Name family"
+              titleId="add-family-title"
               onCancel={() => setStep('members')}
               cancelLabel="Back"
               onAction={handleCreate}

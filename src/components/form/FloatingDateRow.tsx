@@ -30,6 +30,14 @@ function FloatingCalendar({
   const [viewYear, setViewYear] = React.useState(() => parseInt(initDate.slice(0, 4)));
   const [viewMonth, setViewMonth] = React.useState(() => parseInt(initDate.slice(5, 7)) - 1);
 
+  React.useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') onClose();
+    }
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
   const CALENDAR_HEIGHT = 415;
   const screenW = document.documentElement.clientWidth;
   const screenH = document.documentElement.clientHeight;
@@ -90,17 +98,18 @@ function FloatingCalendar({
     background: 'var(--bg)', border: '1px solid var(--border-light)',
     color: 'var(--text-secondary)', cursor: 'pointer',
     display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+    outline: 'none',
   };
 
   return (
     <>
-      <div style={{ position: 'fixed', inset: 0, zIndex: Z_FLOAT }} onClick={onClose} />
+      <div role="presentation" style={{ position: 'fixed', inset: 0, zIndex: Z_FLOAT }} onClick={onClose} />
       <div
         style={{
           position: 'fixed', top, left, width: calWidth, zIndex: Z_FLOAT + 1,
           background: 'var(--surface)', borderRadius: 16,
           boxShadow: 'var(--shadow-elevated)',
-          border: '1px solid var(--border-light)', overflow: 'hidden',
+          border: '1px solid var(--border)', overflow: 'hidden',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px 10px', borderBottom: '1px solid var(--border-light)' }}>
@@ -137,10 +146,10 @@ function FloatingCalendar({
             {MONTH_NAMES[viewMonth]} {viewYear}
           </span>
           <div style={{ display: 'flex', gap: 6 }}>
-            <button style={navBtnStyle} onClick={prevMonth}>
+            <button style={navBtnStyle} aria-label="Previous month" onClick={prevMonth}>
               <CaretLeft size={12} weight="bold" />
             </button>
-            <button style={navBtnStyle} onClick={nextMonth}>
+            <button style={navBtnStyle} aria-label="Next month" onClick={nextMonth}>
               <CaretRight size={12} weight="bold" />
             </button>
           </div>

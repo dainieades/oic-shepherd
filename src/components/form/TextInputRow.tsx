@@ -35,6 +35,7 @@ export function TextInputRow({
         borderBottom: '1px solid var(--border-light)',
         cursor: 'text',
       }}
+      tabIndex={-1}
       onClick={() => inputRef.current?.focus()}
     >
       <span style={{ width: 8, fontSize: 14, color: 'var(--red)', flexShrink: 0, lineHeight: 1 }}>
@@ -44,6 +45,7 @@ export function TextInputRow({
       <span style={labelStyle}>{label}</span>
       <input
         ref={inputRef}
+        aria-label={label}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         type={type}

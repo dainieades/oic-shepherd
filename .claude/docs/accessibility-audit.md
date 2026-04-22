@@ -3,12 +3,13 @@
 
 ## Summary
 **Issues found:** 17 | **Critical:** 1 | **Major:** 13 | **Minor:** 3
+**Fixed 2026-04-22:** Issues 1–15 (all Critical + Major)
 
 ---
 
 ## Critical
 
-### [ ] 1. No `Escape` key handler on `BottomSheet` (keyboard trap)
+### [x] 1. No `Escape` key handler on `BottomSheet` (keyboard trap)
 - **WCAG:** 2.1.1 Keyboard
 - **File:** `src/components/BottomSheet.tsx`
 - **Fix:** Add `useEffect` that listens for `keydown` and calls `onClose()` on `Escape`

@@ -29,6 +29,7 @@ export default function SearchBar({ search, setSearch, show, inputRef }: SearchB
       <input
         ref={inputRef}
         type="text"
+        aria-label="Search people by name"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Search by name…"

@@ -10,6 +10,7 @@ interface BottomSheetProps {
   dragHandle?: boolean;
   compact?: boolean;
   children: React.ReactNode;
+  'aria-labelledby'?: string;
 }
 
 export function BottomSheet({
@@ -18,12 +19,21 @@ export function BottomSheet({
   dragHandle = false,
   compact = false,
   children,
+  'aria-labelledby': ariaLabelledby,
 }: BottomSheetProps) {
   React.useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = prev; };
   }, []);
+
+  React.useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') onClose();
+    }
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [onClose]);
 
   return (
     <div
@@ -41,6 +51,9 @@ export function BottomSheet({
       }}
     >
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={ariaLabelledby}
         className="animate-slide-up"
         style={{
           background: 'var(--surface)',
@@ -73,6 +86,7 @@ export function BottomSheet({
 
 interface ModalHeaderProps {
   title: string;
+  titleId?: string;
   onCancel: () => void;
   cancelLabel?: string;
   onAction: () => void;
@@ -83,6 +97,7 @@ interface ModalHeaderProps {
 
 export function ModalHeader({
   title,
+  titleId,
   onCancel,
   cancelLabel = 'Cancel',
   onAction,
@@ -104,7 +119,7 @@ export function ModalHeader({
       <Button variant="ghost" size="sm" onClick={onCancel}>
         {cancelLabel}
       </Button>
-      <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>{title}</span>
+      <span id={titleId} style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>{title}</span>
       <Button
         variant={actionVariant === 'text' ? 'text' : 'primary'}
         size="sm"

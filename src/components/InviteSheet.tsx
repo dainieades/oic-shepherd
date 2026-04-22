@@ -232,7 +232,7 @@ export default function InviteSheet({
                 }}
               />
               {errorMsg && (
-                <p style={{ fontSize: 12, color: 'var(--red)', marginTop: 4 }}>{errorMsg}</p>
+                <p role="alert" style={{ fontSize: 12, color: 'var(--red)', marginTop: 4 }}>{errorMsg}</p>
               )}
             </div>
 

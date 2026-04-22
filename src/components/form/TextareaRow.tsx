@@ -35,6 +35,7 @@ export function TextareaRow({
         borderBottom: '1px solid var(--border-light)',
         cursor: 'text',
       }}
+      tabIndex={-1}
       onClick={() => inputRef.current?.focus()}
     >
       <span style={{ width: 8, flexShrink: 0 }} />
@@ -42,6 +43,7 @@ export function TextareaRow({
       <span style={{ ...labelStyle, paddingTop: 2 }}>{label}</span>
       <textarea
         ref={inputRef}
+        aria-label={label}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}

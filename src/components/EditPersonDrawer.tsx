@@ -23,9 +23,10 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
 
   return (
     <>
-      <BottomSheet onClose={onClose} dragHandle>
+      <BottomSheet onClose={onClose} dragHandle aria-labelledby="edit-person-title">
         <ModalHeader
           title="Edit person"
+          titleId="edit-person-title"
           onCancel={onClose}
           onAction={() => formRef.current?.save()}
           actionLabel="Save"

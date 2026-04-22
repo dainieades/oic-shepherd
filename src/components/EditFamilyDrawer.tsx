@@ -88,9 +88,10 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
 
   return (
     <>
-      <BottomSheet onClose={onClose} dragHandle>
+      <BottomSheet onClose={onClose} dragHandle aria-labelledby="edit-family-title">
           <ModalHeader
             title="Edit family"
+            titleId="edit-family-title"
             onCancel={onClose}
             onAction={handleSave}
             actionLabel="Save"

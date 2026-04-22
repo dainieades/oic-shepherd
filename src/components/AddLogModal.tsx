@@ -111,7 +111,7 @@ export default function AddLogModal({
 
   return (
     <>
-      <BottomSheet onClose={onClose}>
+      <BottomSheet onClose={onClose} aria-labelledby="add-log-title">
           {showWhoPicker && (
             <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
               <PersonFamilyPicker
@@ -159,6 +159,7 @@ export default function AddLogModal({
             <>
               <ModalHeader
                 title={isEditing ? 'Edit log' : 'Add log'}
+                titleId="add-log-title"
                 onCancel={onClose}
                 onAction={handleSave}
                 actionLabel="Save"

@@ -378,6 +378,7 @@ const [showSearch, setShowSearch] = React.useState(false);
       {/* Search button */}
       <Button
         variant="ghost"
+        aria-label={searchActive ? 'Close search' : 'Search'}
         onClick={() => {
           if (showSearch) {
             setShowSearch(false);
@@ -403,6 +404,7 @@ const [showSearch, setShowSearch] = React.useState(false);
       <div style={{ position: 'relative', flexShrink: 0 }}>
         <Button
           variant="ghost"
+          aria-label="Filter people"
           onClick={() => setShowFilter(true)}
           style={{
             width: btnSize,
@@ -549,7 +551,7 @@ const [showSearch, setShowSearch] = React.useState(false);
               }}
             >
               {chip.label}
-              <X size={9} />
+              <X size={14} aria-hidden="true" />
             </button>
           ))}
         </div>
