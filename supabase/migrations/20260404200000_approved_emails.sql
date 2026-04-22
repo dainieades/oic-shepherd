@@ -9,12 +9,11 @@ CREATE TABLE IF NOT EXISTS public.approved_emails (
 
 ALTER TABLE public.approved_emails ENABLE ROW LEVEL SECURITY;
 
--- Any authenticated user can check whether their own email is approved.
--- (They can't see other rows — the .eq('email', user.email) filter ensures that.)
+DROP POLICY IF EXISTS "select_authenticated" ON public.approved_emails;
 CREATE POLICY "select_authenticated" ON public.approved_emails
   FOR SELECT USING (auth.uid() IS NOT NULL);
 
--- Only personas with role='admin' can add or remove emails.
+DROP POLICY IF EXISTS "admin_write" ON public.approved_emails;
 CREATE POLICY "admin_write" ON public.approved_emails
   FOR ALL USING (
     EXISTS (
