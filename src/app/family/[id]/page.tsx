@@ -50,6 +50,8 @@ import EditFamilyDrawer from '@/components/EditFamilyDrawer';
 import GroupPreviewModal from '@/components/GroupPreviewModal';
 import ImageCropModal from '@/components/ImageCropModal';
 import { SHEPHERD_AVATAR_PALETTE } from '@/lib/constants';
+import { InfoRow } from '@/components/InfoRow';
+import { AvatarBadge } from '@/components/AvatarBadge';
 
 type Tab = 'logs' | 'todos' | 'notices' | 'info';
 
@@ -820,12 +822,6 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
             >
               {members.map((m, i) => {
                 const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
-                const inits = m.englishName
-                  .split(' ')
-                  .map((n) => n[0])
-                  .join('')
-                  .toUpperCase()
-                  .slice(0, 2);
                 return (
                   <Link
                     key={m.id}
@@ -840,23 +836,13 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                       borderBottom: '1px solid var(--border-light)',
                     }}
                   >
-                    <div
-                      style={{
-                        width: 38,
-                        height: 38,
-                        borderRadius: '50%',
-                        background: palette.bg,
-                        color: palette.color,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: 13,
-                        fontWeight: 700,
-                        flexShrink: 0,
-                      }}
-                    >
-                      {inits}
-                    </div>
+                    <AvatarBadge
+                      name={m.englishName}
+                      photo={m.photo}
+                      size={38}
+                      bg={palette.bg}
+                      color={palette.color}
+                    />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <p
                         style={{
@@ -1020,46 +1006,9 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                     >
                       {familyShepherds.map((s) => {
                         const sp = s.personId ? data.people.find((p) => p.id === s.personId) : null;
-                        const initials = s.name
-                          .split(' ')
-                          .map((n) => n[0])
-                          .join('')
-                          .toUpperCase()
-                          .slice(0, 2);
                         const inner = (
                           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                            {sp?.photo ? (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img
-                                src={sp.photo}
-                                alt={s.name}
-                                style={{
-                                  width: 24,
-                                  height: 24,
-                                  borderRadius: '50%',
-                                  objectFit: 'cover',
-                                  flexShrink: 0,
-                                }}
-                              />
-                            ) : (
-                              <div
-                                style={{
-                                  width: 24,
-                                  height: 24,
-                                  borderRadius: '50%',
-                                  background: 'var(--sage-light)',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  fontSize: 9,
-                                  fontWeight: 700,
-                                  color: 'var(--sage)',
-                                  flexShrink: 0,
-                                }}
-                              >
-                                {initials}
-                              </div>
-                            )}
+                            <AvatarBadge name={s.name} photo={sp?.photo} size={24} />
                             <span
                               style={{
                                 fontSize: 13,
@@ -1455,43 +1404,3 @@ function TodoSection({
   );
 }
 
-function InfoRow({
-  icon,
-  label,
-  value,
-}: {
-  icon?: React.ReactNode;
-  label: string;
-  value: React.ReactNode;
-}) {
-  return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'flex-start',
-        justifyContent: 'space-between',
-        padding: '11px 16px',
-        borderBottom: '1px solid var(--border-light)',
-        gap: 12,
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, paddingTop: 1 }}>
-        {icon && (
-          <span style={{ color: 'var(--text-muted)', display: 'flex', flexShrink: 0 }}>{icon}</span>
-        )}
-        <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>{label}</span>
-      </div>
-      <span
-        style={{
-          fontSize: 13,
-          color: 'var(--text-primary)',
-          fontWeight: 500,
-          textAlign: 'right',
-          lineHeight: 1.5,
-        }}
-      >
-        {value}
-      </span>
-    </div>
-  );
-}

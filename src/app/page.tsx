@@ -28,7 +28,10 @@ import {
   X,
   House,
 } from '@phosphor-icons/react';
-import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS } from '@/lib/constants';
+import { Button } from '@/components/Button';
+import { BottomSheet } from '@/components/BottomSheet';
+import { AvatarBadge } from '@/components/AvatarBadge';
+import { StatusBadge } from '@/components/StatusBadge';
 const AddPersonModal = React.lazy(() => import('@/components/AddPersonModal'));
 const AddFamilyModal = React.lazy(() => import('@/components/AddFamilyModal'));
 const InviteSheet = React.lazy(() => import('@/components/InviteSheet'));
@@ -367,10 +370,14 @@ const [showSearch, setShowSearch] = React.useState(false);
   const btnFont = scrolled ? 13 : 14;
   const btnPad = scrolled ? '0 12px' : '0 14px';
 
+  const searchActive = showSearch || !!search;
+  const filterActive = activeFilterCount > 0;
+
   const ActionButtons = () => (
     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
       {/* Search button */}
-      <button
+      <Button
+        variant="ghost"
         onClick={() => {
           if (showSearch) {
             setShowSearch(false);
@@ -383,39 +390,32 @@ const [showSearch, setShowSearch] = React.useState(false);
         style={{
           width: btnSize,
           height: btnSize,
-          borderRadius: 8,
-          background: showSearch || search ? 'var(--sage-light)' : 'transparent',
-          border: showSearch || search ? '1px solid var(--sage-mid)' : '1px solid var(--border)',
-          color: showSearch || search ? 'var(--sage)' : 'var(--text-secondary)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer',
+          background: searchActive ? 'var(--sage-light)' : 'transparent',
+          border: searchActive ? '1px solid var(--sage-mid)' : '1px solid var(--border)',
+          color: searchActive ? 'var(--sage)' : 'var(--text-secondary)',
           flexShrink: 0,
+          padding: 0,
         }}
       >
         <MagnifyingGlass size={14} />
-      </button>
+      </Button>
       {/* Filter button */}
       <div style={{ position: 'relative', flexShrink: 0 }}>
-        <button
+        <Button
+          variant="ghost"
           onClick={() => setShowFilter(true)}
           style={{
             width: btnSize,
             height: btnSize,
-            borderRadius: 8,
-            background: activeFilterCount > 0 ? 'var(--sage-light)' : 'transparent',
-            border: activeFilterCount > 0 ? '1px solid var(--sage-mid)' : '1px solid var(--border)',
-            color: activeFilterCount > 0 ? 'var(--sage)' : 'var(--text-secondary)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
+            background: filterActive ? 'var(--sage-light)' : 'transparent',
+            border: filterActive ? '1px solid var(--sage-mid)' : '1px solid var(--border)',
+            color: filterActive ? 'var(--sage)' : 'var(--text-secondary)',
+            padding: 0,
           }}
         >
           <Funnel size={14} />
-        </button>
-        {activeFilterCount > 0 && (
+        </Button>
+        {filterActive && (
           <span
             style={{
               position: 'absolute',
@@ -439,26 +439,14 @@ const [showSearch, setShowSearch] = React.useState(false);
         )}
       </div>
       {/* Add button */}
-      <button
+      <Button
+        variant="primary"
         onClick={() => setShowAddChoice(true)}
-        style={{
-          height: btnSize,
-          padding: btnPad,
-          borderRadius: 8,
-          background: 'var(--sage)',
-          color: 'var(--on-sage)',
-          fontSize: btnFont,
-          fontWeight: 600,
-          border: 'none',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 4,
-        }}
+        style={{ height: btnSize, padding: btnPad, fontSize: btnFont }}
       >
         <Plus size={16} weight="bold" />
         People
-      </button>
+      </Button>
     </div>
   );
 
@@ -606,12 +594,6 @@ const [showSearch, setShowSearch] = React.useState(false);
             className="no-scrollbar"
           >
             {newPeople.map((p) => {
-              const initials = p.englishName
-                .split(' ')
-                .map((w) => w[0])
-                .join('')
-                .slice(0, 2)
-                .toUpperCase();
               const createdAt = parseISO(p.createdAt);
               const hoursAgo = differenceInHours(new Date(), createdAt);
               const daysAgo = differenceInCalendarDays(new Date(), createdAt);
@@ -635,33 +617,14 @@ const [showSearch, setShowSearch] = React.useState(false);
                     width: 64,
                   }}
                 >
-                  <div
-                    style={{
-                      width: 44,
-                      height: 44,
-                      borderRadius: '50%',
-                      background: '#fef3c7',
-                      border: '2px solid #fcd34d',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: 13,
-                      fontWeight: 700,
-                      color: '#92400e',
-                      overflow: 'hidden',
-                      flexShrink: 0,
-                    }}
-                  >
-                    {p.photo ? (
-                      <img
-                        src={p.photo}
-                        alt={p.englishName}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
-                    ) : (
-                      initials
-                    )}
-                  </div>
+                  <AvatarBadge
+                    name={p.englishName}
+                    photo={p.photo}
+                    size={44}
+                    bg="#fef3c7"
+                    color="#92400e"
+                    border="2px solid #fcd34d"
+                  />
                   <span
                     style={{
                       fontSize: 10,
@@ -755,205 +718,151 @@ const [showSearch, setShowSearch] = React.useState(false);
 
       {/* ── Add type choice sheet ── */}
       {showAddChoice && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: BACKDROP_COLOR,
-            zIndex: 60,
-            display: 'flex',
-            alignItems: 'flex-end',
-            justifyContent: 'center',
-          }}
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setShowAddChoice(false);
-          }}
-        >
-          <div
-            className="animate-slide-up"
+        <BottomSheet onClose={() => setShowAddChoice(false)} compact dragHandle>
+          <p
             style={{
-              background: 'var(--surface)',
-              borderRadius: SHEET_BORDER_RADIUS,
-              width: '100%',
-              maxWidth: SHEET_MAX_WIDTH,
-              paddingBottom: 'env(safe-area-inset-bottom, 24px)',
+              fontSize: 12,
+              fontWeight: 600,
+              color: 'var(--text-muted)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.06em',
+              textAlign: 'center',
+              paddingBottom: 12,
+              borderBottom: '1px solid var(--border-light)',
             }}
           >
-            <div
-              style={{
-                width: 36,
-                height: 4,
-                background: 'var(--border)',
-                borderRadius: 2,
-                margin: '14px auto 10px',
+            Add
+          </p>
+          <div
+            style={{
+              padding: '12px 16px 16px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 10,
+            }}
+          >
+            <button
+              onClick={() => {
+                setShowAddChoice(false);
+                setShowAddPerson(true);
               }}
-            />
-            <p
               style={{
-                fontSize: 12,
-                fontWeight: 600,
-                color: 'var(--text-muted)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.06em',
-                textAlign: 'center',
-                paddingBottom: 12,
-                borderBottom: '1px solid var(--border-light)',
-              }}
-            >
-              Add
-            </p>
-            <div
-              style={{
-                padding: '12px 16px 16px',
                 display: 'flex',
-                flexDirection: 'column',
-                gap: 10,
+                alignItems: 'center',
+                gap: 14,
+                padding: '14px 16px',
+                background: 'var(--bg)',
+                borderRadius: 12,
+                border: '1px solid var(--border-light)',
+                cursor: 'pointer',
+                textAlign: 'left',
               }}
             >
-              <button
-                onClick={() => {
-                  setShowAddChoice(false);
-                  setShowAddPerson(true);
-                }}
+              <div
                 style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 10,
+                  background: 'var(--sage-light)',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 14,
-                  padding: '14px 16px',
-                  background: 'var(--bg)',
-                  borderRadius: 12,
-                  border: '1px solid var(--border-light)',
-                  cursor: 'pointer',
-                  textAlign: 'left',
+                  justifyContent: 'center',
+                  flexShrink: 0,
                 }}
               >
-                <div
-                  style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 10,
-                    background: 'var(--sage-light)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                  }}
-                >
-                  <Plus size={20} color="var(--sage)" />
-                </div>
-                <div>
-                  <p
-                    style={{
-                      fontSize: 15,
-                      fontWeight: 600,
-                      color: 'var(--text-primary)',
-                      margin: 0,
-                    }}
-                  >
-                    Individual
-                  </p>
-                  <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: '2px 0 0' }}>
-                    Add a single person to the directory
-                  </p>
-                </div>
-              </button>
-              <button
-                onClick={() => {
-                  setShowAddChoice(false);
-                  setShowAddFamily(true);
-                }}
+                <Plus size={20} color="var(--sage)" />
+              </div>
+              <div>
+                <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
+                  Individual
+                </p>
+                <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: '2px 0 0' }}>
+                  Add a single person to the directory
+                </p>
+              </div>
+            </button>
+            <button
+              onClick={() => {
+                setShowAddChoice(false);
+                setShowAddFamily(true);
+              }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 14,
+                padding: '14px 16px',
+                background: 'var(--bg)',
+                borderRadius: 12,
+                border: '1px solid var(--border-light)',
+                cursor: 'pointer',
+                textAlign: 'left',
+              }}
+            >
+              <div
                 style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 10,
+                  background: 'var(--sage-light)',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 14,
-                  padding: '14px 16px',
-                  background: 'var(--bg)',
-                  borderRadius: 12,
-                  border: '1px solid var(--border-light)',
-                  cursor: 'pointer',
-                  textAlign: 'left',
+                  justifyContent: 'center',
+                  flexShrink: 0,
                 }}
               >
-                <div
-                  style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 10,
-                    background: 'var(--sage-light)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                  }}
-                >
-                  <UsersThree size={20} color="var(--sage)" />
-                </div>
-                <div>
-                  <p
-                    style={{
-                      fontSize: 15,
-                      fontWeight: 600,
-                      color: 'var(--text-primary)',
-                      margin: 0,
-                    }}
-                  >
-                    Family
-                  </p>
-                  <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: '2px 0 0' }}>
-                    Group existing individuals into a family
-                  </p>
-                </div>
-              </button>
-              <button
-                onClick={() => {
-                  setShowAddChoice(false);
-                  setShowInvite(true);
-                }}
+                <UsersThree size={20} color="var(--sage)" />
+              </div>
+              <div>
+                <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
+                  Family
+                </p>
+                <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: '2px 0 0' }}>
+                  Group existing individuals into a family
+                </p>
+              </div>
+            </button>
+            <button
+              onClick={() => {
+                setShowAddChoice(false);
+                setShowInvite(true);
+              }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 14,
+                padding: '14px 16px',
+                background: 'var(--bg)',
+                borderRadius: 12,
+                border: '1px solid var(--border-light)',
+                cursor: 'pointer',
+                textAlign: 'left',
+              }}
+            >
+              <div
                 style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 10,
+                  background: 'var(--sage-light)',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 14,
-                  padding: '14px 16px',
-                  background: 'var(--bg)',
-                  borderRadius: 12,
-                  border: '1px solid var(--border-light)',
-                  cursor: 'pointer',
-                  textAlign: 'left',
+                  justifyContent: 'center',
+                  flexShrink: 0,
                 }}
               >
-                <div
-                  style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 10,
-                    background: 'var(--sage-light)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                  }}
-                >
-                  <PaperPlaneTilt size={20} color="var(--sage)" />
-                </div>
-                <div>
-                  <p
-                    style={{
-                      fontSize: 15,
-                      fontWeight: 600,
-                      color: 'var(--text-primary)',
-                      margin: 0,
-                    }}
-                  >
-                    Invite to app
-                  </p>
-                  <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: '2px 0 0' }}>
-                    Give someone access to sign in
-                  </p>
-                </div>
-              </button>
-            </div>
+                <PaperPlaneTilt size={20} color="var(--sage)" />
+              </div>
+              <div>
+                <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
+                  Invite to app
+                </p>
+                <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: '2px 0 0' }}>
+                  Give someone access to sign in
+                </p>
+              </div>
+            </button>
           </div>
-        </div>
+        </BottomSheet>
       )}
 
       {/* ── Filter panel (bottom sheet) ────── */}
@@ -974,38 +883,16 @@ function LogStatusTag({
   lastNoteTs: number | null;
 }) {
   if (lastNoteTs === null) {
-    return (
-      <span
-        style={{
-          fontSize: 11,
-          padding: '1px 7px',
-          borderRadius: '999px',
-          background: 'var(--border-light)',
-          color: 'var(--text-muted)',
-          fontWeight: 500,
-          flexShrink: 0,
-        }}
-      >
-        Never logged
-      </span>
-    );
+    return <StatusBadge label="Never logged" bg="var(--border-light)" color="var(--text-muted)" />;
   }
   if (daysSince !== null && daysSince >= 7) {
     return (
-      <span
-        style={{
-          fontSize: 11,
-          padding: '1px 7px',
-          borderRadius: '999px',
-          background: 'var(--amber-light)',
-          color: 'var(--amber)',
-          border: '1px solid var(--amber-border)',
-          fontWeight: 500,
-          flexShrink: 0,
-        }}
-      >
-        {daysSince}d ago
-      </span>
+      <StatusBadge
+        label={`${daysSince}d ago`}
+        bg="var(--amber-light)"
+        color="var(--amber)"
+        border="1px solid var(--amber-border)"
+      />
     );
   }
   return (
@@ -1037,30 +924,14 @@ const FamilyRow = React.memo(function FamilyRow({
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0' }}>
         {/* Family avatar — single circle with photo or house icon */}
-        <div
-          style={{
-            width: 44,
-            height: 44,
-            borderRadius: '50%',
-            flexShrink: 0,
-            overflow: 'hidden',
-            background: 'var(--sage)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          {family.photo ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={family.photo}
-              alt={family.label}
-              style={{ width: 44, height: 44, objectFit: 'cover' }}
-            />
-          ) : (
-            <House size={22} color="var(--sage-light)" />
-          )}
-        </div>
+        <AvatarBadge
+          name={family.label}
+          photo={family.photo}
+          size={44}
+          bg="var(--sage)"
+          color="var(--sage-light)"
+          icon={<House size={22} color="var(--sage-light)" />}
+        />
 
         {/* Info */}
         <div style={{ flex: 1, minWidth: 0 }}>
@@ -1165,12 +1036,6 @@ const IndividualRow = React.memo(function IndividualRow({
   lastNoteTs: number | null;
   group: Group | null;
 }) {
-  const initials = person.englishName
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
   const daysSinceNote =
     lastNoteTs !== null ? differenceInCalendarDays(new Date(), new Date(lastNoteTs)) : null;
 
@@ -1182,33 +1047,7 @@ const IndividualRow = React.memo(function IndividualRow({
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0' }}>
         {/* Avatar */}
-        <div
-          style={{
-            width: 44,
-            height: 44,
-            borderRadius: '50%',
-            background: 'var(--sage-light)',
-            color: 'var(--sage)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 13,
-            fontWeight: 700,
-            flexShrink: 0,
-            overflow: 'hidden',
-          }}
-        >
-          {person.photo ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={person.photo}
-              alt={person.englishName}
-              style={{ width: 44, height: 44, objectFit: 'cover' }}
-            />
-          ) : (
-            initials
-          )}
-        </div>
+        <AvatarBadge name={person.englishName} photo={person.photo} size={44} />
 
         {/* Info */}
         <div style={{ flex: 1, minWidth: 0 }}>

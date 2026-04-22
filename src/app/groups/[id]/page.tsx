@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { SectionLabel } from '@/components/SectionLabel';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/lib/context';
@@ -1112,19 +1113,3 @@ function DrawerSection({ label, children }: { label: string; children: React.Rea
   );
 }
 
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <p
-      style={{
-        fontSize: 10,
-        fontWeight: 600,
-        color: 'var(--text-muted)',
-        textTransform: 'uppercase',
-        letterSpacing: '0.06em',
-        marginBottom: 10,
-      }}
-    >
-      {children}
-    </p>
-  );
-}

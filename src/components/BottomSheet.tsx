@@ -8,6 +8,7 @@ interface BottomSheetProps {
   onClose: () => void;
   zIndex?: number;
   dragHandle?: boolean;
+  compact?: boolean;
   children: React.ReactNode;
 }
 
@@ -15,6 +16,7 @@ export function BottomSheet({
   onClose,
   zIndex = 60,
   dragHandle = false,
+  compact = false,
   children,
 }: BottomSheetProps) {
   React.useEffect(() => {
@@ -45,10 +47,9 @@ export function BottomSheet({
           borderRadius: SHEET_BORDER_RADIUS,
           width: '100%',
           maxWidth: SHEET_MAX_WIDTH,
-          height: 'calc(100dvh - 48px)',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
+          ...(compact
+            ? { paddingBottom: 'env(safe-area-inset-bottom, 24px)' }
+            : { height: 'calc(100dvh - 48px)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }),
           position: 'relative',
         }}
       >

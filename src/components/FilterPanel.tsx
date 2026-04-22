@@ -4,8 +4,10 @@ import React from 'react';
 import { useApp, type HomeFilters, type HomeSortKey, HOME_DEFAULT_FILTERS } from '@/lib/context';
 import { getMembershipLabel } from '@/lib/utils';
 import { type MembershipStatus, type ChurchAttendance, type AppRole, CHURCH_POSITIONS } from '@/lib/types';
-import { MagnifyingGlass, X, ArrowsDownUp, Check } from '@phosphor-icons/react';
+import { MagnifyingGlass, X, ArrowsDownUp } from '@phosphor-icons/react';
 import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, SORT_OPTIONS } from '@/lib/constants';
+import { CheckRow } from './CheckRow';
+import { RadioRow } from './RadioRow';
 
 type FilterCategory = 'sort' | 'shepherd' | 'membership' | 'discipleship' | 'group' | 'app-role' | 'archive' | 'position' | 'language';
 
@@ -724,101 +726,5 @@ export default function FilterPanel({ show, onClose }: { show: boolean; onClose:
         </div>
       </div>
     </div>
-  );
-}
-
-function CheckRow({
-  checked,
-  onToggle,
-  children,
-}: {
-  checked: boolean;
-  onToggle: () => void;
-  children: React.ReactNode;
-}): React.ReactNode {
-  return (
-    <button
-      onClick={onToggle}
-      style={{
-        width: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        gap: 10,
-        padding: '7px 2px',
-        background: 'none',
-        border: 'none',
-        cursor: 'pointer',
-        textAlign: 'left',
-      }}
-    >
-      <div
-        style={{
-          width: 18,
-          height: 18,
-          borderRadius: 5,
-          flexShrink: 0,
-          border: checked ? 'none' : '1.5px solid var(--border)',
-          background: checked ? 'var(--sage)' : 'transparent',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        {checked && <Check size={10} color="#fff" weight="bold" />}
-      </div>
-      <span style={{ fontSize: 14, color: 'var(--text-primary)', fontWeight: checked ? 500 : 400 }}>
-        {children}
-      </span>
-    </button>
-  );
-}
-
-function RadioRow({
-  selected,
-  onSelect,
-  children,
-}: {
-  selected: boolean;
-  onSelect: () => void;
-  children: React.ReactNode;
-}): React.ReactNode {
-  return (
-    <button
-      onClick={onSelect}
-      style={{
-        width: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        gap: 12,
-        padding: '10px 0',
-        background: 'none',
-        border: 'none',
-        borderBottom: '1px solid var(--border-light)',
-        cursor: 'pointer',
-        textAlign: 'left',
-      }}
-    >
-      <div
-        style={{
-          width: 20,
-          height: 20,
-          borderRadius: '50%',
-          flexShrink: 0,
-          border: selected ? '2px solid var(--sage)' : '1.5px solid var(--border)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        {selected && (
-          <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--sage)' }} />
-        )}
-      </div>
-      <span
-        style={{ fontSize: 14, fontWeight: selected ? 600 : 400, color: 'var(--text-primary)' }}
-      >
-        {children}
-      </span>
-    </button>
   );
 }

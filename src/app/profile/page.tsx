@@ -139,7 +139,7 @@ export default function ProfilePage() {
       {/* ── Settings ─────────────────────────────── */}
       <Card label="Settings" style={{ marginBottom: 14 }}>
         {settingRows.map((row, i) => (
-          <SettingRow
+          <SettingsRow
             key={row.label}
             label={row.label}
             value={row.value}
@@ -278,7 +278,7 @@ function Card({
   );
 }
 
-function SettingRow({
+function SettingsRow({
   label,
   value,
   active,

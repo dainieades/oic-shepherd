@@ -8,6 +8,7 @@ interface ButtonProps {
   disabled?: boolean;
   onClick?: () => void;
   type?: 'button' | 'submit' | 'reset';
+  style?: React.CSSProperties;
   children: React.ReactNode;
 }
 
@@ -17,6 +18,7 @@ export function Button({
   disabled = false,
   onClick,
   type = 'button',
+  style: styleProp,
   children,
 }: ButtonProps) {
   const height = size === 'sm' ? 32 : 40;
@@ -66,7 +68,7 @@ export function Button({
       type={type}
       onClick={disabled ? undefined : onClick}
       disabled={disabled}
-      style={{ ...base, ...variants[variant] }}
+      style={{ ...base, ...variants[variant], ...styleProp }}
     >
       {children}
     </button>

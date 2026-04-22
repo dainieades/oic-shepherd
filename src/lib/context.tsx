@@ -325,21 +325,31 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const savedPersonaId = localStorage.getItem('shepherd-app-persona');
       if (savedPersonaId) {
         const persona = personas.find((p) => p.id === savedPersonaId);
-        if (persona) setCurrentPersona(persona);
-        else setCurrentPersona(personas[0] ?? initialData.personas[0]);
-      } else {
-        // No stored preference — resolve from the active session so we don't
-        // briefly show the wrong persona before loginWithSupabaseUser runs.
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-        const sessionPersona = session?.user
-          ? personas.find((p) => p.userId === session.user.id)
-          : undefined;
-        setCurrentPersona(sessionPersona ?? personas[0] ?? initialData.personas[0]);
+        if (persona) {
+          setCurrentPersona(persona);
+          setLoaded(true);
+          return;
+        }
+        // Stored ID no longer valid — fall through to session check
+        localStorage.removeItem('shepherd-app-persona');
       }
 
-      setLoaded(true);
+      // No valid stored persona — resolve from the active session.
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (session?.user) {
+        const sessionPersona = personas.find((p) => p.userId === session.user.id);
+        if (sessionPersona) {
+          setCurrentPersona(sessionPersona);
+          setLoaded(true);
+        }
+        // No matching persona yet — loginWithSupabaseUser (via AuthSync) will
+        // verify approval, set the correct persona, and call setLoaded(true).
+      } else {
+        setLoaded(true);
+      }
     }
 
     load();
@@ -416,6 +426,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         if (avatarUrl && persona.personId) {
           syncGoogleAvatar(supabase, persona.personId, avatarUrl, setData);
         }
+        setLoaded(true);
         return;
       }
 
@@ -455,6 +466,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
             if (avatarUrl && persona.personId) {
               syncGoogleAvatar(supabase, persona.personId, avatarUrl, setData);
             }
+            setLoaded(true);
             return;
           }
         }
@@ -471,6 +483,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setCurrentPersona(persona);
         localStorage.setItem('shepherd-app-persona', persona.id);
         setData((prev) => ({ ...prev, personas: [...prev.personas, persona] }));
+        setLoaded(true);
       }
     },
     []

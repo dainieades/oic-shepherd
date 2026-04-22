@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { SectionLabel } from '@/components/SectionLabel';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -411,23 +412,6 @@ export default function SettingsPage() {
   );
 }
 
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <p
-      style={{
-        fontSize: 10,
-        fontWeight: 600,
-        color: 'var(--text-muted)',
-        textTransform: 'uppercase',
-        letterSpacing: '0.07em',
-        marginBottom: 8,
-        marginTop: 0,
-      }}
-    >
-      {children}
-    </p>
-  );
-}
 
 function SettingsCard({ children }: { children: React.ReactNode }) {
   return (
