@@ -21,7 +21,7 @@ import PickerMenu from './PickerMenu';
 import DatePickerSheet from './DatePickerSheet';
 import { BottomSheet, ModalHeader } from './BottomSheet';
 import { fmtDateTime, truncateWhoLabel } from '@/lib/utils';
-import { BACKDROP_COLOR } from '@/lib/constants';
+import { BACKDROP_COLOR, Z_NESTED } from '@/lib/constants';
 
 interface AddLogModalProps {
   onClose: () => void;
@@ -406,7 +406,7 @@ export function DeleteConfirmDialog({
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 'var(--z-nested)',
+        zIndex: Z_NESTED,
         background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'center',

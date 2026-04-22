@@ -16,11 +16,12 @@ import PhotoAvatar from './PhotoAvatar';
 import AppRolePickerSheet from './AppRolePickerSheet';
 import LanguagePickerSheet from './LanguagePickerSheet';
 import InviteSheet from './InviteSheet';
-import { GroupPickerSheet, SheepPickerSheet, ShepherdPickerSheet, PositionPickerSheet } from './PersonPickerSheets';
+import { GroupPickerSheet, SheepPickerSheet, ShepherdPickerSheet, PositionPickerSheet, FamilyPickerSheet } from './PersonPickerSheets';
 import {
   User,
   TextT,
   Globe,
+  UsersThree,
   Pulse,
   GenderIntersex,
   Cake,
@@ -45,6 +46,7 @@ import {
   BACKDROP_COLOR,
   SHEET_BORDER_RADIUS,
 } from '@/lib/constants';
+import DatePickerSheet from './DatePickerSheet';
 import { TextInputRow, TextareaRow, PickerRow, DateRow, FloatingDateRow } from '@/components/form';
 import { rowBtnStyle, spacerStyle, labelStyle } from '@/components/form/formStyles';
 
@@ -89,7 +91,7 @@ interface Props {
 
 const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
   function PersonFormBody({ person, onSaved, showPhotoUpload, showInviteRow, onValidityChange }, ref) {
-    const { data, currentPersona, updatePerson, assignShepherds, assignGroupsToPerson } = useApp();
+    const { data, currentPersona, updatePerson, updateFamilyMembers, assignShepherds, assignGroupsToPerson } = useApp();
 
     const _nameParts = person.englishName.trim().split(/\s+/);
     const [firstName, setFirstName] = React.useState(_nameParts[0] ?? '');
@@ -132,7 +134,6 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
     const homePhoneRef = React.useRef<HTMLInputElement>(null);
     const emailRef = React.useRef<HTMLInputElement>(null);
     const addressRef = React.useRef<HTMLTextAreaElement>(null);
-    const anniversaryRef = React.useRef<HTMLInputElement>(null);
     const membershipDateRef = React.useRef<HTMLInputElement>(null);
 
     const statusBtnRef = React.useRef<HTMLButtonElement>(null);
@@ -149,11 +150,14 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
     const [showGroupPicker, setShowGroupPicker] = React.useState(false);
     const [showShepherdPicker, setShowShepherdPicker] = React.useState(false);
     const [showSheepPicker, setShowSheepPicker] = React.useState(false);
+    const [showAnniversaryPicker, setShowAnniversaryPicker] = React.useState(false);
+    const [showFamilyPicker, setShowFamilyPicker] = React.useState(false);
+    const [familyId, setFamilyId] = React.useState<string | undefined>(person.familyId);
 
     const initShepherdPersona = person.isShepherd
       ? data.personas.find((p) => p.personId === person.id)
       : null;
-    const shepherdId = initShepherdPersona?.id ?? (person.isShepherd ? person.id : null);
+    const shepherdId = initShepherdPersona?.id ?? (isShepherd ? person.id : null);
     const [sheepIds, setSheepIds] = React.useState<string[]>(() =>
       shepherdId ? data.people.filter((p) => p.assignedShepherdIds.includes(shepherdId)).map((p) => p.id) : []
     );
@@ -196,6 +200,21 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
     React.useImperativeHandle(ref, () => ({
       save: async () => {
         if (!firstName.trim()) return;
+        const originalFamilyId = person.familyId;
+        if (familyId !== originalFamilyId) {
+          if (originalFamilyId) {
+            const oldFamily = data.families.find((f) => f.id === originalFamilyId);
+            if (oldFamily) {
+              await updateFamilyMembers(originalFamilyId, oldFamily.memberIds.filter((id) => id !== person.id));
+            }
+          }
+          if (familyId) {
+            const newFamily = data.families.find((f) => f.id === familyId);
+            if (newFamily && !newFamily.memberIds.includes(person.id)) {
+              await updateFamilyMembers(familyId, [...newFamily.memberIds, person.id]);
+            }
+          }
+        }
         await assignGroupsToPerson(person.id, groupIds);
         await assignShepherds(person.id, shepherdIds);
         if (shepherdId) {
@@ -357,6 +376,12 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
           </FormSection>
 
           <FormSection label="Personal">
+            <PickerRow
+              icon={<UsersThree size={16} color="var(--text-muted)" />}
+              label="Family"
+              value={familyId ? (data.families.find((f) => f.id === familyId)?.label ?? 'Unknown') : 'None'}
+              onClick={() => setShowFamilyPicker(true)}
+            />
             <button
               className="field-row-hover"
               onClick={() => setShowLanguagePicker(true)}
@@ -391,12 +416,11 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
               onClick={() => setOpenPicker('marital')}
             />
             {maritalStatus === 'married' && (
-              <DateRow
+              <PickerRow
                 icon={<Sparkle size={16} color="var(--text-muted)" />}
                 label="Anniversary"
-                value={anniversary}
-                inputRef={anniversaryRef}
-                onChange={setAnniversary}
+                value={anniversary ? fmtDate(anniversary) : 'Not set'}
+                onClick={() => setShowAnniversaryPicker(true)}
               />
             )}
           </FormSection>
@@ -700,6 +724,30 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
             initialRole="shepherd"
             personName={person.englishName}
             personId={person.id}
+          />
+        )}
+        {showFamilyPicker && (
+          <FamilyPickerSheet
+            families={data.families}
+            people={data.people}
+            currentFamilyId={familyId}
+            onConfirm={(id) => {
+              setFamilyId(id);
+              setShowFamilyPicker(false);
+            }}
+            onBack={() => setShowFamilyPicker(false)}
+          />
+        )}
+        {showAnniversaryPicker && (
+          <DatePickerSheet
+            date={anniversary || new Date().toISOString().slice(0, 10)}
+            time="09:00"
+            includeTime={false}
+            onConfirm={(date) => {
+              setAnniversary(date);
+              setShowAnniversaryPicker(false);
+            }}
+            onClose={() => setShowAnniversaryPicker(false)}
           />
         )}
       </>

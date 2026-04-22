@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useFloating, autoUpdate, offset, flip, size } from '@floating-ui/react';
 import { Check } from '@phosphor-icons/react';
+import { Z_NESTED } from '@/lib/constants';
 
 interface PickerOption {
   value: string;
@@ -94,7 +95,7 @@ export default function PickerMenu({
         border: '1px solid var(--border-light)',
         maxHeight: 300,
         overflowY: 'auto',
-        zIndex: 'var(--z-nested)',
+        zIndex: Z_NESTED,
       }}
     >
       {showSearch && (

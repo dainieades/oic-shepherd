@@ -4,7 +4,7 @@ import React from 'react';
 import { format, getDaysInMonth, getDay } from 'date-fns';
 import { CaretLeft, CaretRight } from '@phosphor-icons/react';
 import { fmtDate } from '@/lib/utils';
-import { SHEET_MAX_WIDTH } from '@/lib/constants';
+import { SHEET_MAX_WIDTH, Z_FLOAT } from '@/lib/constants';
 import { rowBtnStyle, spacerStyle, labelStyle } from './formStyles';
 
 const MONTH_NAMES = [
@@ -94,10 +94,10 @@ function FloatingCalendar({
 
   return (
     <>
-      <div style={{ position: 'fixed', inset: 0, zIndex: 'var(--z-float)' }} onClick={onClose} />
+      <div style={{ position: 'fixed', inset: 0, zIndex: Z_FLOAT }} onClick={onClose} />
       <div
         style={{
-          position: 'fixed', top, left, width: calWidth, zIndex: 'calc(var(--z-float) + 1)',
+          position: 'fixed', top, left, width: calWidth, zIndex: Z_FLOAT + 1,
           background: 'var(--surface)', borderRadius: 16,
           boxShadow: 'var(--shadow-elevated)',
           border: '1px solid var(--border-light)', overflow: 'hidden',

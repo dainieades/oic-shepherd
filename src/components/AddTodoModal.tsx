@@ -1,6 +1,7 @@
 'use client';
 
 import { addHours, format } from 'date-fns';
+import { Z_NESTED } from '@/lib/constants';
 import { BottomSheet, ModalHeader } from './BottomSheet';
 import { fmtDateTime, truncateWhoLabel } from '@/lib/utils';
 import React from 'react';
@@ -445,7 +446,7 @@ function CalendarPickerMenu({
         borderRadius: 'var(--radius-md)',
         boxShadow: 'var(--shadow-elevated)',
         border: '1px solid var(--border-light)',
-        zIndex: 'var(--z-nested)',
+        zIndex: Z_NESTED,
         overflow: 'hidden',
       }}
     >

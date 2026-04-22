@@ -45,7 +45,7 @@ export default function AppearancePage() {
                 onClick={() => setThemePreference(value)}
                 style={{
                   width: '100%',
-                  background: 'none',
+                  background: active ? 'color-mix(in srgb, var(--sage) 10%, transparent)' : 'none',
                   border: 'none',
                   borderBottom: i < OPTIONS.length - 1 ? '1px solid var(--border-light)' : 'none',
                   padding: '16px',
@@ -56,14 +56,28 @@ export default function AppearancePage() {
                   textAlign: 'left',
                 }}
               >
-                <span style={{ color: 'var(--text-muted)', flexShrink: 0 }}>{icon}</span>
+                <span
+                  style={{
+                    color: active ? 'var(--sage)' : 'var(--text-muted)',
+                    flexShrink: 0,
+                    width: 36,
+                    height: 36,
+                    borderRadius: 'var(--radius-sm)',
+                    background: active ? 'color-mix(in srgb, var(--sage) 15%, transparent)' : 'var(--surface-raised, var(--border-light))',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  {icon}
+                </span>
                 <span style={{ flex: 1 }}>
                   <span
                     style={{
                       display: 'block',
                       fontSize: 15,
-                      fontWeight: 500,
-                      color: 'var(--text-primary)',
+                      fontWeight: active ? 600 : 500,
+                      color: active ? 'var(--sage)' : 'var(--text-primary)',
                       letterSpacing: '-0.01em',
                     }}
                   >
@@ -80,7 +94,22 @@ export default function AppearancePage() {
                     {description}
                   </span>
                 </span>
-                {active && <Check size={17} color="var(--sage)" weight="bold" />}
+                <span
+                  style={{
+                    width: 22,
+                    height: 22,
+                    borderRadius: '50%',
+                    border: `2px solid ${active ? 'var(--sage)' : 'var(--border-light)'}`,
+                    background: active ? 'var(--sage)' : 'transparent',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                    transition: 'background 0.15s, border-color 0.15s',
+                  }}
+                >
+                  {active && <Check size={13} color="white" weight="bold" />}
+                </span>
               </button>
             );
           })}

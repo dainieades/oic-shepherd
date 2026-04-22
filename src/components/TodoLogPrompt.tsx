@@ -1,7 +1,7 @@
 'use client';
 
 import { type Todo } from '@/lib/types';
-import { BACKDROP_COLOR } from '@/lib/constants';
+import { BACKDROP_COLOR, Z_SHEET } from '@/lib/constants';
 
 interface TodoLogPromptProps {
   todo: Todo;
@@ -15,7 +15,7 @@ export default function TodoLogPrompt({ todo, onAddLog, onSkip }: TodoLogPromptP
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 'var(--z-sheet)',
+        zIndex: Z_SHEET,
         background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'center',

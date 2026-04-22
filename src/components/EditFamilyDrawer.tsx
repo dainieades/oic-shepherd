@@ -17,7 +17,7 @@ import {
   Check,
 } from '@phosphor-icons/react';
 import PickerMenu from './PickerMenu';
-import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, SHEPHERD_AVATAR_PALETTE } from '@/lib/constants';
+import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, SHEPHERD_AVATAR_PALETTE, Z_SHEET } from '@/lib/constants';
 
 interface Props {
   family: Family;
@@ -492,7 +492,7 @@ function MemberPickerSheet({
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 'var(--z-sheet)',
+        zIndex: Z_SHEET,
         display: 'flex',
         alignItems: 'flex-end',
         justifyContent: 'center',
@@ -763,7 +763,7 @@ function GroupPickerSheet({
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 'var(--z-sheet)',
+        zIndex: Z_SHEET,
         background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',
@@ -971,7 +971,7 @@ function ShepherdPickerSheet({
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 'var(--z-sheet)',
+        zIndex: Z_SHEET,
         background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',

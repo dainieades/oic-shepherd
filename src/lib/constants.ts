@@ -12,6 +12,15 @@ export const SHEET_MAX_WIDTH = 430;
 export const SHEET_BORDER_RADIUS = '20px 20px 0 0';
 export const BACKDROP_COLOR = 'var(--backdrop)';
 
+export const Z_SUBHEADER = 39;
+export const Z_HEADER = 40;
+export const Z_DROPDOWN = 50;
+export const Z_MODAL = 60;
+export const Z_SHEET = 70;
+export const Z_NESTED = 80;
+export const Z_FLOAT = 90;
+export const Z_TOAST = 200;
+
 export const MEMBER_AVATAR_PALETTE: Array<{ bg: string; color: string }> = [
   { bg: 'var(--avatar-m1-bg)', color: 'var(--avatar-m1-text)' },
   { bg: 'var(--avatar-m2-bg)', color: 'var(--avatar-m2-text)' },

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { MagnifyingGlass, Check } from '@phosphor-icons/react';
-import { BACKDROP_COLOR, SHEET_BORDER_RADIUS, SHEET_MAX_WIDTH, SHEPHERD_AVATAR_PALETTE } from '@/lib/constants';
+import { BACKDROP_COLOR, SHEET_BORDER_RADIUS, SHEET_MAX_WIDTH, SHEPHERD_AVATAR_PALETTE, Z_SHEET } from '@/lib/constants';
 import { CHURCH_POSITIONS } from '@/lib/types';
 
 export function GroupPickerSheet({
@@ -34,7 +34,7 @@ export function GroupPickerSheet({
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 'var(--z-sheet)',
+        zIndex: Z_SHEET,
         background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',
@@ -263,7 +263,7 @@ export function SheepPickerSheet({
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 'var(--z-sheet)',
+        zIndex: Z_SHEET,
         background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',
@@ -513,7 +513,7 @@ export function ShepherdPickerSheet({
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 'var(--z-sheet)',
+        zIndex: Z_SHEET,
         background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',
@@ -761,7 +761,7 @@ export function PositionPickerSheet({
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 'var(--z-sheet)',
+        zIndex: Z_SHEET,
         background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',
@@ -949,6 +949,310 @@ export function PositionPickerSheet({
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+export function FamilyPickerSheet({
+  families,
+  people,
+  currentFamilyId,
+  onConfirm,
+  onBack,
+}: {
+  families: { id: string; label: string; memberIds: string[] }[];
+  people: { id: string; englishName: string }[];
+  currentFamilyId: string | undefined;
+  onConfirm: (familyId: string | undefined) => void;
+  onBack: () => void;
+}) {
+  const [search, setSearch] = React.useState('');
+  const [selectedId, setSelectedId] = React.useState<string | undefined>(currentFamilyId);
+  const searchRef = React.useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    searchRef.current?.focus();
+  }, []);
+
+  const q = search.toLowerCase();
+  const filtered = families.filter((f) => {
+    if (!q) return true;
+    if (f.label.toLowerCase().includes(q)) return true;
+    return people
+      .filter((p) => f.memberIds.includes(p.id))
+      .some((m) => m.englishName.toLowerCase().includes(q));
+  });
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: Z_SHEET,
+        background: BACKDROP_COLOR,
+        display: 'flex',
+        alignItems: 'flex-end',
+        justifyContent: 'center',
+      }}
+    >
+      <div
+        className="animate-slide-up"
+        style={{
+          background: 'var(--surface)',
+          borderRadius: SHEET_BORDER_RADIUS,
+          width: '100%',
+          maxWidth: SHEET_MAX_WIDTH,
+          height: 'calc(100dvh - 48px)',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+        }}
+      >
+        <div
+          style={{
+            width: 36,
+            height: 4,
+            background: 'var(--border)',
+            borderRadius: 2,
+            margin: '14px auto 0',
+            flexShrink: 0,
+          }}
+        />
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '14px 20px 12px',
+            flexShrink: 0,
+            borderBottom: '1px solid var(--border-light)',
+          }}
+        >
+          <button
+            onClick={onBack}
+            style={{
+              fontSize: 14,
+              color: 'var(--text-secondary)',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 0,
+            }}
+          >
+            Back
+          </button>
+          <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
+            Family
+          </span>
+          <button
+            onClick={() => onConfirm(selectedId)}
+            style={{
+              fontSize: 14,
+              fontWeight: 600,
+              color: 'var(--sage)',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 0,
+            }}
+          >
+            Done
+          </button>
+        </div>
+        <div
+          style={{
+            padding: '12px 20px',
+            flexShrink: 0,
+            borderBottom: '1px solid var(--border-light)',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              background: 'var(--bg)',
+              border: '1px solid var(--border)',
+              borderRadius: 'var(--radius-sm)',
+              padding: '9px 12px',
+            }}
+          >
+            <MagnifyingGlass size={14} color="var(--text-muted)" />
+            <input
+              ref={searchRef}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search families…"
+              style={{
+                flex: 1,
+                fontSize: 14,
+                color: 'var(--text-primary)',
+                background: 'none',
+                border: 'none',
+                outline: 'none',
+              }}
+            />
+            {search && (
+              <button
+                onClick={() => setSearch('')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'var(--text-muted)',
+                  fontSize: 18,
+                  lineHeight: 1,
+                  padding: 0,
+                }}
+              >
+                ×
+              </button>
+            )}
+          </div>
+        </div>
+        <div style={{ flex: 1, overflowY: 'auto' }}>
+          {!q && (
+            <button
+              onClick={() => setSelectedId(undefined)}
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                padding: '12px 20px',
+                background: !selectedId ? 'var(--sage-light)' : 'none',
+                border: 'none',
+                borderBottom: '1px solid var(--border-light)',
+                cursor: 'pointer',
+                textAlign: 'left' as const,
+              }}
+            >
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p
+                  style={{
+                    fontSize: 14,
+                    fontWeight: !selectedId ? 600 : 400,
+                    color: !selectedId ? 'var(--sage)' : 'var(--text-muted)',
+                    margin: 0,
+                    fontStyle: 'italic',
+                  }}
+                >
+                  None
+                </p>
+              </div>
+              <RadioDot selected={!selectedId} />
+            </button>
+          )}
+          {filtered.map((f, fi) => {
+            const isSel = selectedId === f.id;
+            const palette = SHEPHERD_AVATAR_PALETTE[fi % SHEPHERD_AVATAR_PALETTE.length];
+            const initials = f.label
+              .split(' ')
+              .map((w) => w[0])
+              .join('')
+              .toUpperCase()
+              .slice(0, 2);
+            const members = people.filter((p) => f.memberIds.includes(p.id));
+            return (
+              <button
+                key={f.id}
+                onClick={() => setSelectedId(f.id)}
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
+                  padding: '12px 20px',
+                  background: isSel ? 'var(--sage-light)' : 'none',
+                  border: 'none',
+                  borderBottom: '1px solid var(--border-light)',
+                  cursor: 'pointer',
+                  textAlign: 'left' as const,
+                }}
+              >
+                <div
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: '50%',
+                    flexShrink: 0,
+                    background: isSel ? 'var(--sage)' : palette.bg,
+                    color: isSel ? 'var(--on-sage)' : palette.color,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 12,
+                    fontWeight: 700,
+                  }}
+                >
+                  {initials}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p
+                    style={{
+                      fontSize: 14,
+                      fontWeight: isSel ? 600 : 400,
+                      color: isSel ? 'var(--sage)' : 'var(--text-primary)',
+                      margin: 0,
+                    }}
+                  >
+                    {f.label}
+                  </p>
+                  {members.length > 0 && (
+                    <p
+                      style={{
+                        fontSize: 11,
+                        color: 'var(--text-muted)',
+                        margin: 0,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {members.map((m) => m.englishName.split(' ')[0]).join(', ')}
+                    </p>
+                  )}
+                </div>
+                <RadioDot selected={isSel} />
+              </button>
+            );
+          })}
+          {filtered.length === 0 && (
+            <p
+              style={{
+                padding: '24px 20px',
+                fontSize: 13,
+                color: 'var(--text-muted)',
+                textAlign: 'center',
+                fontStyle: 'italic',
+              }}
+            >
+              No families found.
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RadioDot({ selected }: { selected: boolean }) {
+  return (
+    <div
+      style={{
+        width: 20,
+        height: 20,
+        borderRadius: '50%',
+        flexShrink: 0,
+        border: selected ? 'none' : '1.5px solid var(--border)',
+        background: selected ? 'var(--sage)' : 'transparent',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        transition: 'background 0.15s',
+      }}
+    >
+      {selected && <Check size={11} color="var(--on-sage)" weight="bold" />}
     </div>
   );
 }

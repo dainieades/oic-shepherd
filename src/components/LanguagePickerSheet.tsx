@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { MagnifyingGlass, Check } from '@phosphor-icons/react';
-import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS } from '@/lib/constants';
+import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, Z_SHEET } from '@/lib/constants';
 
 const PRIORITY_LANGUAGES = ['English', 'Mandarin Chinese', 'Cantonese', 'Spanish'];
 
@@ -90,7 +90,7 @@ export default function LanguagePickerSheet({ currentLanguages, onConfirm, onBac
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 'var(--z-sheet)',
+        zIndex: Z_SHEET,
         background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',

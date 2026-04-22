@@ -47,6 +47,7 @@ import {
   House,
   HandHeart,
   UsersFour,
+  UsersThree,
   PencilSimpleIcon,
   Bell,
   CaretLeft,
@@ -60,7 +61,7 @@ import {
   CaretDown,
   Plus,
 } from '@phosphor-icons/react';
-import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, SHEPHERD_AVATAR_PALETTE } from '@/lib/constants';
+import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, SHEPHERD_AVATAR_PALETTE, Z_SHEET, Z_SUBHEADER } from '@/lib/constants';
 import { InfoRow } from '@/components/InfoRow';
 import { AvatarBadge } from '@/components/AvatarBadge';
 
@@ -577,7 +578,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
           style={{
             position: 'sticky',
             top: 54,
-            zIndex: 'var(--z-subheader)',
+            zIndex: Z_SUBHEADER,
             background: 'var(--bg)',
             display: 'flex',
             borderBottom: '2px solid var(--border-light)',
@@ -792,7 +793,8 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
           {(person.gender ||
             person.birthday ||
             person.maritalStatus ||
-            (person.language && person.language.length > 0)) && (
+            (person.language && person.language.length > 0) ||
+            family) && (
             <InfoSection title="Personal">
               {person.language && person.language.length > 0 && (
                 <InfoRow
@@ -829,6 +831,27 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                   icon={<Sparkle size={15} />}
                   label="Anniversary"
                   value={fmtShortDate(person.anniversary)}
+                />
+              )}
+              {family && (
+                <InfoRow
+                  icon={<UsersThree size={15} />}
+                  label="Family"
+                  value={
+                    <Link
+                      href={`/family/${family.id}`}
+                      style={{
+                        color: 'var(--blue)',
+                        textDecoration: 'none',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 4,
+                      }}
+                    >
+                      {family.label}
+                      <CaretRight size={13} />
+                    </Link>
+                  }
                 />
               )}
             </InfoSection>
@@ -1069,26 +1092,6 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                 }
               />
             )}
-            {family && (
-              <InfoRow
-                label="Family"
-                value={
-                  <Link
-                    href={`/family/${family.id}`}
-                    style={{
-                      color: 'var(--blue)',
-                      textDecoration: 'none',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 4,
-                    }}
-                  >
-                    {family.label}
-                    <CaretRight size={13} />
-                  </Link>
-                }
-              />
-            )}
           </InfoSection>
 
           {/* CONTACT */}
@@ -1232,7 +1235,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
             position: 'fixed',
             inset: 0,
             background: BACKDROP_COLOR,
-            zIndex: 'var(--z-sheet)',
+            zIndex: Z_SHEET,
             display: 'flex',
             alignItems: 'flex-end',
             justifyContent: 'center',

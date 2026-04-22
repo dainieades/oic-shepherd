@@ -3,6 +3,7 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
 import { X, Check } from '@phosphor-icons/react';
+import { Z_FLOAT } from '@/lib/constants';
 
 interface Props {
   imageSrc: string;
@@ -96,7 +97,8 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
 
   const handleWheel = (e: React.WheelEvent) => {
     e.preventDefault();
-    setScale((s) => Math.max(MIN_SCALE, Math.min(MAX_SCALE, s - e.deltaY * 0.001 * s)));
+    const clamped = Math.max(-30, Math.min(30, e.deltaY));
+    setScale((s) => Math.max(MIN_SCALE, Math.min(MAX_SCALE, s * (1 - clamped * 0.01))));
   };
 
   const handleConfirm = () => {
@@ -142,7 +144,7 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 'var(--z-float)',
+        zIndex: Z_FLOAT,
         background: '#111',
         display: 'flex',
         flexDirection: 'column',
@@ -233,14 +235,31 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
 
       <div
         style={{
-          padding: '14px 20px',
-          textAlign: 'center',
-          color: 'rgba(255,255,255,0.45)',
-          fontSize: 12,
+          padding: '16px 28px 24px',
           flexShrink: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 10,
         }}
       >
-        Drag to reposition · Pinch or scroll to zoom
+        <input
+          type="range"
+          min={0}
+          max={100}
+          value={Math.round(
+            ((Math.log(scale) - Math.log(MIN_SCALE)) / (Math.log(MAX_SCALE) - Math.log(MIN_SCALE))) * 100
+          )}
+          onChange={(e) => {
+            const t = Number(e.target.value) / 100;
+            setScale(Math.exp(Math.log(MIN_SCALE) + t * (Math.log(MAX_SCALE) - Math.log(MIN_SCALE))));
+          }}
+          style={{ width: '100%', accentColor: '#fff', cursor: 'pointer' }}
+          aria-label="Zoom"
+        />
+        <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11 }}>
+          Drag to reposition · Pinch or scroll to zoom
+        </span>
       </div>
     </div>,
     document.body

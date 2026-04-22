@@ -20,7 +20,7 @@ import { useApp } from '@/lib/context';
 import { createClient } from '@/utils/supabase/client';
 import type { User } from '@supabase/supabase-js';
 import { type MapProvider, MAP_PROVIDER_LABELS, MAP_PROVIDERS_STORAGE_KEY } from '@/lib/utils';
-import { BACKDROP_COLOR } from '@/lib/constants';
+import { BACKDROP_COLOR, Z_NESTED } from '@/lib/constants';
 
 export default function SettingsPage() {
   const { data, currentPersona, switchPersona, themePreference } = useApp();
@@ -337,7 +337,7 @@ export default function SettingsPage() {
           style={{
             position: 'fixed',
             inset: 0,
-            zIndex: 'var(--z-nested)',
+            zIndex: Z_NESTED,
             background: BACKDROP_COLOR,
             display: 'flex',
             alignItems: 'center',

@@ -4,7 +4,7 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 import { Camera, Trash } from '@phosphor-icons/react';
 import ImageCropModal from './ImageCropModal';
-import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS } from '@/lib/constants';
+import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, Z_NESTED } from '@/lib/constants';
 
 interface Props {
   photo?: string;
@@ -123,7 +123,7 @@ export default function PhotoAvatar({ photo, name, onPhotoChange, onPhotoRemove 
               position: 'fixed',
               inset: 0,
               background: BACKDROP_COLOR,
-              zIndex: 'var(--z-nested)',
+              zIndex: Z_NESTED,
               display: 'flex',
               alignItems: 'flex-end',
               justifyContent: 'center',

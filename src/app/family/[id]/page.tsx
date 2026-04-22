@@ -44,7 +44,7 @@ import TodoLogPrompt from '@/components/TodoLogPrompt';
 import EditFamilyDrawer from '@/components/EditFamilyDrawer';
 import GroupPreviewModal from '@/components/GroupPreviewModal';
 import ImageCropModal from '@/components/ImageCropModal';
-import { SHEPHERD_AVATAR_PALETTE } from '@/lib/constants';
+import { SHEPHERD_AVATAR_PALETTE, Z_SUBHEADER } from '@/lib/constants';
 import { InfoRow } from '@/components/InfoRow';
 import { AvatarBadge } from '@/components/AvatarBadge';
 
@@ -431,7 +431,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
         style={{
           position: 'sticky',
           top: 54,
-          zIndex: 'var(--z-subheader)',
+          zIndex: Z_SUBHEADER,
           background: 'var(--bg)',
           display: 'flex',
           borderBottom: '2px solid var(--border-light)',

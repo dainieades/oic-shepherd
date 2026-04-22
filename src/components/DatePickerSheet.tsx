@@ -3,7 +3,7 @@
 import { format, getDaysInMonth, getDay, parseISO, isValid } from 'date-fns';
 import React from 'react';
 import { CaretLeft, CaretRight } from '@phosphor-icons/react';
-import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS } from '@/lib/constants';
+import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, Z_SHEET } from '@/lib/constants';
 
 const MONTH_NAMES = [
   'January',
@@ -22,6 +22,92 @@ const MONTH_NAMES = [
 const DAY_HEADERS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
 type ActiveField = 'start' | 'end';
+
+function parseTimeInput(raw: string): string | null {
+  const s = raw.trim().toLowerCase();
+  // HH:MM or H:MM
+  const hhmm = s.match(/^(\d{1,2}):(\d{2})\s*(am|pm)?$/);
+  if (hhmm) {
+    let h = parseInt(hhmm[1]);
+    const m = parseInt(hhmm[2]);
+    if (m > 59) return null;
+    const meridiem = hhmm[3];
+    if (meridiem === 'pm' && h < 12) h += 12;
+    else if (meridiem === 'am' && h === 12) h = 0;
+    if (h > 23) return null;
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+  }
+  // Plain number like "9" or "14"
+  const plain = s.match(/^(\d{1,2})\s*(am|pm)?$/);
+  if (plain) {
+    let h = parseInt(plain[1]);
+    const meridiem = plain[2];
+    if (meridiem === 'pm' && h < 12) h += 12;
+    else if (meridiem === 'am' && h === 12) h = 0;
+    if (h > 23) return null;
+    return `${String(h).padStart(2, '0')}:00`;
+  }
+  return null;
+}
+
+function TimeButton({
+  timeVal,
+  fmtTime,
+  onFocus,
+  onChange,
+}: {
+  timeVal: string;
+  fmtTime: (t: string) => string;
+  onFocus: () => void;
+  onChange: (val: string) => void;
+}) {
+  const [editing, setEditing] = React.useState(false);
+  const [draft, setDraft] = React.useState('');
+
+  function handleFocus() {
+    setDraft(fmtTime(timeVal));
+    setEditing(true);
+    onFocus();
+  }
+
+  function handleBlur() {
+    setEditing(false);
+    const parsed = parseTimeInput(draft);
+    if (parsed) onChange(parsed);
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === 'Enter') e.currentTarget.blur();
+    if (e.key === 'Escape') {
+      setEditing(false);
+      setDraft('');
+    }
+  }
+
+  return (
+    <input
+      type="text"
+      value={editing ? draft : fmtTime(timeVal)}
+      onChange={(e) => setDraft(e.target.value)}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+      onKeyDown={handleKeyDown}
+      style={{
+        flex: 1,
+        padding: '10px 14px',
+        background: 'none',
+        border: 'none',
+        outline: 'none',
+        fontSize: 15,
+        color: 'var(--text-secondary)',
+        whiteSpace: 'nowrap',
+        textAlign: 'right',
+        cursor: 'text',
+        minWidth: 0,
+      }}
+    />
+  );
+}
 
 export interface DatePickerSheetProps {
   /** YYYY-MM-DD */
@@ -248,44 +334,15 @@ export default function DatePickerSheet({
                 flexShrink: 0,
               }}
             />
-            <div
-              style={{
-                flex: 1,
-                position: 'relative',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'flex-end',
+            <TimeButton
+              timeVal={timeVal}
+              fmtTime={fmtTime}
+              onFocus={() => setActive(field)}
+              onChange={(val) => {
+                setActive(field);
+                field === 'start' ? setStartTime(val) : setEndTime(val);
               }}
-            >
-              <span
-                style={{
-                  padding: '10px 14px',
-                  fontSize: 15,
-                  color: 'var(--text-secondary)',
-                  whiteSpace: 'nowrap',
-                  pointerEvents: 'none',
-                }}
-              >
-                {fmtTime(timeVal)}
-              </span>
-              <input
-                type="time"
-                value={timeVal}
-                onChange={(e) => {
-                  setActive(field);
-                  field === 'start' ? setStartTime(e.target.value) : setEndTime(e.target.value);
-                }}
-                onFocus={() => setActive(field)}
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  opacity: 0,
-                  cursor: 'pointer',
-                  width: '100%',
-                  height: '100%',
-                }}
-              />
-            </div>
+            />
           </>
         )}
       </div>
@@ -295,7 +352,7 @@ export default function DatePickerSheet({
   return (
     <>
       <div
-        style={{ position: 'fixed', inset: 0, background: BACKDROP_COLOR, zIndex: 'var(--z-sheet)' }}
+        style={{ position: 'fixed', inset: 0, background: BACKDROP_COLOR, zIndex: Z_SHEET }}
         onClick={onClose}
       />
       <div
@@ -304,7 +361,7 @@ export default function DatePickerSheet({
           bottom: 0,
           left: 0,
           right: 0,
-          zIndex: 'calc(var(--z-sheet) + 1)',
+          zIndex: Z_SHEET + 1,
           display: 'flex',
           justifyContent: 'center',
         }}
