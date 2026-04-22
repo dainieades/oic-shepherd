@@ -42,11 +42,11 @@ _Last audited: 2026-04-22_
 - [x] Enforce `<Button>` usage — search/filter/add buttons in `page.tsx` now use `<Button>` ✅
 - [x] Enforce `<BottomSheet>` usage — `showAddChoice` sheet in `page.tsx` now uses `<BottomSheet compact>` ✅
 
-**Sprint 6 — Form component library**
-- [ ] Promote `TextInputRow`, `TextareaRow`, `DateRow`, `PickerRow` out of `PersonFormBody` into `src/components/form/`
-- [ ] Extract `<EmptyState>` — 4 variants with title + description + optional icon
-- [ ] Extract `<LogItem>` — log card with type badge, content, timestamp, creator
-- [ ] Extract `<NoticeCard>` — notice card with urgency left-border, badge, content
+**Sprint 6 — Form component library** ✅ Complete 2026-04-22
+- [x] Promote `TextInputRow`, `TextareaRow`, `DateRow`, `PickerRow` out of `PersonFormBody` into `src/components/form/` ✅
+- [x] Extract `<EmptyState>` — 4 variants with title + description + optional icon ✅
+- [x] Extract `<LogItem>` — log card with type badge, content, timestamp, creator ✅
+- [x] Extract `<NoticeCard>` — notice card with urgency left-border, badge, content ✅
 
 **Sprint 7 — Design token sweep**
 - [ ] Replace hardcoded hex values (`#b45309`, `#fcd34d`, `#e8f0fe`, etc.) with CSS vars (`--amber`, `--sage`, etc.)

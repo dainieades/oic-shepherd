@@ -6,21 +6,22 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useApp } from '@/lib/context';
 import {
-  getTimeAgo,
   getMembershipLabel,
   getChurchAttendanceLabel,
   getPersonNotes,
-  getNoteTypeLabel,
   groupByMonth,
   categorizeTodos,
   getMapUrl,
   type MapProvider,
   MAP_PROVIDERS_STORAGE_KEY,
 } from '@/lib/utils';
-import { type Todo, type Note, type AppData, type AppRole } from '@/lib/types';
+import { type Todo, type Note, type AppData, type AppRole, type Notice } from '@/lib/types';
 import AddLogModal from '@/components/AddLogModal';
+import { EmptyState } from '@/components/EmptyState';
+import { LogItem } from '@/components/LogItem';
 import AddTodoModal from '@/components/AddTodoModal';
-import AddNoticeModal, { URGENCY_STYLE } from '@/components/AddNoticeModal';
+import AddNoticeModal from '@/components/AddNoticeModal';
+import { NoticeCard } from '@/components/NoticeCard';
 import TodoLogPrompt from '@/components/TodoLogPrompt';
 import EditPersonDrawer from '@/components/EditPersonDrawer';
 import GroupPreviewModal from '@/components/GroupPreviewModal';
@@ -51,7 +52,6 @@ import {
   CaretLeft,
   CaretRight,
   DotsThreeVertical,
-  DotsThree,
   Trash,
   Archive,
   Check,
@@ -59,13 +59,7 @@ import {
   ArrowsClockwise,
   CaretDown,
   Plus,
-  FirstAid,
-  HandsPraying,
-  UsersThree,
-  Brain,
-  Eye,
 } from '@phosphor-icons/react';
-import { type Notice } from '@/lib/types';
 import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, SHEPHERD_AVATAR_PALETTE } from '@/lib/constants';
 import { InfoRow } from '@/components/InfoRow';
 import { AvatarBadge } from '@/components/AvatarBadge';
@@ -90,13 +84,6 @@ function TabIcon({ tab, active }: { tab: Tab; active: boolean }) {
 function fmtDue(iso: string) {
   return format(parseISO(iso), 'M/d/yyyy h:mm a');
 }
-
-const noteTypeColors: Record<string, { bg: string; color: string }> = {
-  'check-in': { bg: 'var(--sage-light)', color: 'var(--sage)' },
-  'prayer-request': { bg: 'var(--sage-light)', color: 'var(--sage)' },
-  event: { bg: 'var(--sage-light)', color: 'var(--sage)' },
-  general: { bg: 'var(--sage-light)', color: 'var(--sage)' },
-};
 
 export default function PersonPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = React.use(params);
@@ -660,108 +647,22 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
       {activeTab === 'logs' && (
         <div className="tab-fade">
           {notes.length === 0 && (
-            <div style={{ textAlign: 'center', padding: '32px 20px' }}>
-              <p
-                style={{
-                  fontSize: 14,
-                  fontWeight: 600,
-                  color: 'var(--text-secondary)',
-                  marginBottom: 6,
-                }}
-              >
-                No logs yet
-              </p>
-              <p
-                style={{
-                  fontSize: 13,
-                  color: 'var(--text-muted)',
-                  lineHeight: 1.6,
-                  maxWidth: 240,
-                  margin: '0 auto',
-                }}
-              >
-                Logs capture past interactions — a conversation, a check-in, a prayer request, or a
-                moment you shared together.
-              </p>
-              <p
-                style={{
-                  fontSize: 12,
-                  color: 'var(--text-muted)',
-                  lineHeight: 1.5,
-                  maxWidth: 240,
-                  margin: '10px auto 0',
-                  fontWeight: 600,
-                }}
-              >
-                Only assigned shepherds and pastors can see these.
-              </p>
-            </div>
+            <EmptyState
+              title="No logs yet"
+              description="Logs capture past interactions — a conversation, a check-in, a prayer request, or a moment you shared together."
+              subtext="Only assigned shepherds and pastors can see these."
+            />
           )}
           {groupByMonth(notes).map((group) => {
             const rows = group.items.map((note) => {
-              const typeStyle = noteTypeColors[note.type] || noteTypeColors.general;
               const creator = data.personas.find((p) => p.id === note.createdBy);
               return (
-                <button
+                <LogItem
                   key={note.id}
+                  note={note}
                   onClick={() => setEditingNote(note)}
-                  className="row-card-hover"
-                  style={{
-                    textAlign: 'left',
-                    cursor: 'pointer',
-                    border: 'none',
-                    paddingTop: 10,
-                    paddingBottom: 10,
-                    borderBottom: '1px solid var(--border-light)',
-                  }}
-                >
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      marginBottom: 4,
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span
-                        style={{
-                          fontSize: 10,
-                          fontWeight: 600,
-                          padding: '2px 7px',
-                          borderRadius: '999px',
-                          background: typeStyle.bg,
-                          color: typeStyle.color,
-                        }}
-                      >
-                        {getNoteTypeLabel(note.type).toUpperCase()}
-                      </span>
-                    </div>
-                    <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-                      {getTimeAgo(note.createdAt)}
-                    </span>
-                  </div>
-                  {note.content && (
-                    <p
-                      style={{
-                        fontSize: 13,
-                        color: 'var(--text-primary)',
-                        lineHeight: 1.5,
-                        marginBottom: 4,
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                      }}
-                    >
-                      {note.content}
-                    </p>
-                  )}
-                  <p style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-                    by {creator?.name ?? 'Unknown'}
-                  </p>
-                </button>
+                  creatorName={creator?.name}
+                />
               );
             });
             return (
@@ -824,42 +725,11 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
             />
           )}
           {todos.length === 0 && (
-            <div style={{ textAlign: 'center', padding: '32px 20px' }}>
-              <p
-                style={{
-                  fontSize: 14,
-                  fontWeight: 600,
-                  color: 'var(--text-secondary)',
-                  marginBottom: 6,
-                }}
-              >
-                No to-dos yet
-              </p>
-              <p
-                style={{
-                  fontSize: 13,
-                  color: 'var(--text-muted)',
-                  lineHeight: 1.6,
-                  maxWidth: 240,
-                  margin: '0 auto',
-                }}
-              >
-                To-dos are upcoming things to act on — a call to make, a visit to plan, or anything
-                you want to follow up on.
-              </p>
-              <p
-                style={{
-                  fontSize: 12,
-                  color: 'var(--text-muted)',
-                  lineHeight: 1.5,
-                  maxWidth: 240,
-                  margin: '10px auto 0',
-                  fontWeight: 600,
-                }}
-              >
-                Only assigned shepherds and pastors can see these.
-              </p>
-            </div>
+            <EmptyState
+              title="No to-dos yet"
+              description="To-dos are upcoming things to act on — a call to make, a visit to plan, or anything you want to follow up on."
+              subtext="Only assigned shepherds and pastors can see these."
+            />
           )}
         </div>
       )}
@@ -868,30 +738,10 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
       {activeTab === 'notices' && (
         <div className="tab-fade">
           {notices.length === 0 && (
-            <div style={{ textAlign: 'center', padding: '32px 20px' }}>
-              <p
-                style={{
-                  fontSize: 14,
-                  fontWeight: 600,
-                  color: 'var(--text-secondary)',
-                  marginBottom: 6,
-                }}
-              >
-                No notices yet
-              </p>
-              <p
-                style={{
-                  fontSize: 13,
-                  color: 'var(--text-muted)',
-                  lineHeight: 1.6,
-                  maxWidth: 260,
-                  margin: '0 auto',
-                }}
-              >
-                Notices are things worth flagging for your shepherds or pastor — a health condition,
-                a difficult season, or anything that calls for collective awareness.
-              </p>
-            </div>
+            <EmptyState
+              title="No notices yet"
+              description="Notices are things worth flagging for your shepherds or pastor — a health condition, a difficult season, or anything that calls for collective awareness."
+            />
           )}
           {notices.length > 0 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -1691,119 +1541,6 @@ function TodoSection({
   );
 }
 
-
-const URGENCY_LABEL: Record<string, string> = {
-  urgent: 'Urgent',
-  moderate: 'Moderate',
-  ongoing: 'Ongoing',
-};
-const CATEGORY_LABEL: Record<string, string> = {
-  'physical-need': 'Physical Need',
-  'spiritual-need': 'Spiritual Need',
-  'social-need': 'Social Need',
-  'psychological-need': 'Psychological Need',
-  other: 'Other',
-};
-const CATEGORY_STYLE: Record<string, { bg: string; color: string }> = {
-  'physical-need': { bg: 'var(--sage-light)', color: 'var(--sage)' },
-  'spiritual-need': { bg: 'var(--sage-light)', color: 'var(--sage)' },
-  'social-need': { bg: 'var(--sage-light)', color: 'var(--sage)' },
-  'psychological-need': { bg: 'var(--sage-light)', color: 'var(--sage)' },
-  other: { bg: 'var(--sage-light)', color: 'var(--sage)' },
-};
-const CATEGORY_ICON: Record<string, React.ReactNode> = {
-  'physical-need': <FirstAid size={11} />,
-  'spiritual-need': <HandsPraying size={11} />,
-  'social-need': <UsersThree size={11} />,
-  'psychological-need': <Brain size={11} />,
-  other: <DotsThree size={11} />,
-};
-const PRIVACY_LABEL: Record<string, string> = {
-  'pastor-only': 'Pastor only',
-  'pastor-and-shepherds': 'Shepherds & pastor',
-  everyone: 'Everyone',
-};
-
-function NoticeCard({
-  notice,
-  onClick,
-}: {
-  notice: Notice;
-  onClick: () => void;
-}) {
-  const style = URGENCY_STYLE[notice.urgency as import('@/lib/types').NoticeUrgency];
-  return (
-    <button
-      onClick={onClick}
-      className="row-card-hover"
-      style={{
-        textAlign: 'left',
-        cursor: 'pointer',
-        border: '1px solid var(--border-light)',
-        borderRadius: 12,
-        padding: '12px 14px',
-        background: style.bg,
-        width: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 6,
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-        <span
-          style={{
-            fontSize: 11,
-            fontWeight: 700,
-            padding: '2px 8px',
-            borderRadius: '999px',
-            background: style.pillBg,
-            color: style.color,
-            letterSpacing: '0.03em',
-          }}
-        >
-          {URGENCY_LABEL[notice.urgency]}
-        </span>
-        {notice.categories.map((cat) => (
-          <span
-            key={cat}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 3,
-              fontSize: 11,
-              fontWeight: 500,
-              padding: '2px 8px',
-              borderRadius: '999px',
-              background: CATEGORY_STYLE[cat]?.bg,
-              color: CATEGORY_STYLE[cat]?.color,
-            }}
-          >
-            {CATEGORY_ICON[cat]}
-            {CATEGORY_LABEL[cat]}
-          </span>
-        ))}
-      </div>
-      <p
-        style={{
-          fontSize: 14,
-          color: 'var(--text-primary)',
-          lineHeight: 1.5,
-          margin: 0,
-          overflow: 'hidden',
-          display: '-webkit-box',
-          WebkitLineClamp: 3,
-          WebkitBoxOrient: 'vertical',
-        }}
-      >
-        {notice.content}
-      </p>
-      <p style={{ fontSize: 11, color: 'var(--text-muted)', margin: 0, display: 'flex', alignItems: 'center', gap: 4 }}>
-        <Eye size={11} />
-        {PRIVACY_LABEL[notice.privacy] ?? notice.privacy}
-      </p>
-    </button>
-  );
-}
 
 function LogSection({
   label,

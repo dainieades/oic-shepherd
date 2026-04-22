@@ -31,6 +31,7 @@ import { useApp } from '@/lib/context';
 import { useToast } from './Toast';
 import { formatPhone, fmtDate } from '@/lib/utils';
 import { BottomSheet, ModalHeader } from './BottomSheet';
+import { PickerRow, DateRow } from '@/components/form';
 import {
   type MembershipStatus,
   type ChurchAttendance,
@@ -913,108 +914,6 @@ function DrawerSection({ label, children }: { label: string; children: React.Rea
         {children}
       </div>
     </div>
-  );
-}
-
-const PickerRow = React.forwardRef<
-  HTMLButtonElement,
-  {
-    icon: React.ReactNode;
-    label: string;
-    value: string;
-    onClick: () => void;
-  }
->(function PickerRow({ icon, label, value, onClick }, ref) {
-  return (
-    <button
-      ref={ref}
-      className="field-row-hover"
-      onClick={onClick}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 10,
-        paddingTop: 12,
-        paddingBottom: 12,
-        border: 'none',
-        borderBottom: '1px solid var(--border-light)',
-        background: 'none',
-        cursor: 'pointer',
-        textAlign: 'left' as const,
-      }}
-    >
-      <span style={spacerStyle} />
-      {icon}
-      <span style={labelStyle}>{label}</span>
-      <span style={{ flex: 1, fontSize: 14, color: 'var(--text-primary)', textAlign: 'left' }}>
-        {value}
-      </span>
-      <CaretRight size={14} color="var(--text-muted)" />
-    </button>
-  );
-});
-
-function DateRow({
-  icon,
-  label,
-  value,
-  inputRef,
-  onChange,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  inputRef: { current: HTMLInputElement | null };
-  onChange: (v: string) => void;
-}) {
-  return (
-    <button
-      className="field-row-hover"
-      onClick={() => inputRef.current?.showPicker()}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 10,
-        paddingTop: 12,
-        paddingBottom: 12,
-        border: 'none',
-        borderBottom: '1px solid var(--border-light)',
-        background: 'none',
-        cursor: 'pointer',
-        textAlign: 'left' as const,
-        position: 'relative',
-      }}
-    >
-      <span style={spacerStyle} />
-      {icon}
-      <span style={labelStyle}>{label}</span>
-      <span
-        style={{
-          flex: 1,
-          fontSize: 14,
-          color: value ? 'var(--text-primary)' : 'var(--text-muted)',
-          textAlign: 'left',
-        }}
-      >
-        {value ? fmtDate(value) : 'Not set'}
-      </span>
-      <CaretRight size={14} color="var(--text-muted)" />
-      <input
-        ref={inputRef}
-        type="date"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        style={{
-          position: 'absolute',
-          left: 0,
-          top: '50%',
-          width: '100%',
-          opacity: 0,
-          pointerEvents: 'none',
-          height: 1,
-        }}
-      />
-    </button>
   );
 }
 

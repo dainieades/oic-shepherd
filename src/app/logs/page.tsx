@@ -18,21 +18,17 @@ import {
 import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '@/lib/context';
 import { type Note } from '@/lib/types';
-import { getTimeAgo, getNoteTypeLabel, groupByMonth } from '@/lib/utils';
+import { groupByMonth, getNoteTypeLabel } from '@/lib/utils';
 import {
   MagnifyingGlass,
   Funnel,
   X,
   CaretDown,
   Plus,
-  CheckCircle,
-  HandsPraying,
-  CalendarBlank,
-  NotePencil,
-  User,
-  House,
 } from '@phosphor-icons/react';
 import AddLogModal from '@/components/AddLogModal';
+import { EmptyState } from '@/components/EmptyState';
+import { LogItem } from '@/components/LogItem';
 import LogsFilterPanel, {
   type LogsFilters,
   type DatePreset,
@@ -446,42 +442,12 @@ export default function LogsPage() {
       )}
 
       {visibleNotes.length === 0 && (
-        <div style={{ textAlign: 'center', padding: '64px 32px 32px' }}>
-          <p
-            style={{
-              fontSize: 15,
-              fontWeight: 600,
-              color: 'var(--text-secondary)',
-              marginBottom: 8,
-            }}
-          >
-            No logs yet
-          </p>
-          <p
-            style={{
-              fontSize: 13,
-              color: 'var(--text-muted)',
-              lineHeight: 1.6,
-              maxWidth: 260,
-              margin: '0 auto',
-            }}
-          >
-            Logs capture past interactions — a conversation, a check-in, a prayer request, or a
-            moment you shared together.
-          </p>
-          <p
-            style={{
-              fontSize: 12,
-              color: 'var(--text-muted)',
-              lineHeight: 1.5,
-              maxWidth: 260,
-              margin: '10px auto 0',
-              fontWeight: 600,
-            }}
-          >
-            Only assigned shepherds and pastors can see these.
-          </p>
-        </div>
+        <EmptyState
+          title="No logs yet"
+          description="Logs capture past interactions — a conversation, a check-in, a prayer request, or a moment you shared together."
+          subtext="Only assigned shepherds and pastors can see these."
+          padding="64px 32px 32px"
+        />
       )}
 
       {grouped.map((group) => {
@@ -494,123 +460,13 @@ export default function LogsPage() {
             ...(person ? [{ label: person.englishName, isFamily: false }] : []),
           ];
           return (
-            <button
+            <LogItem
               key={note.id}
-              className="row-card-hover"
+              note={note}
               onClick={() => setEditingNote(note)}
-              style={{
-                paddingTop: 10,
-                paddingBottom: 10,
-                borderBottom: '1px solid var(--border-light)',
-                border: 'none',
-                borderBottomStyle: 'solid',
-                borderBottomWidth: 1,
-                borderBottomColor: 'var(--border-light)',
-                cursor: 'pointer',
-                textAlign: 'left' as const,
-              }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginBottom: 4,
-                }}
-              >
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    flexWrap: 'nowrap',
-                    flex: 1,
-                    minWidth: 0,
-                    overflow: 'hidden',
-                  }}
-                >
-                  <span
-                    style={{
-                      fontSize: 10,
-                      fontWeight: 600,
-                      padding: '2px 7px',
-                      borderRadius: '999px',
-                      background: 'var(--sage-light)',
-                      color: 'var(--sage)',
-                      flexShrink: 0,
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 4,
-                    }}
-                  >
-                    {note.type === 'check-in' && <CheckCircle size={11} weight="bold" />}
-                    {note.type === 'prayer-request' && <HandsPraying size={11} weight="bold" />}
-                    {note.type === 'event' && <CalendarBlank size={11} weight="bold" />}
-                    {note.type === 'general' && <NotePencil size={11} weight="bold" />}
-                    {getNoteTypeLabel(note.type)}
-                  </span>
-                  {targetChips.length > 0 && (
-                    <span
-                      style={{
-                        fontSize: 10,
-                        color: 'var(--blue)',
-                        fontWeight: 500,
-                        padding: '1px 6px',
-                        borderRadius: '999px',
-                        background: 'var(--blue-light)',
-                        flexShrink: 0,
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: 3,
-                      }}
-                    >
-                      {targetChips[0].isFamily ? <House size={10} weight="bold" /> : <User size={10} weight="bold" />}
-                      {targetChips[0].label}
-                    </span>
-                  )}
-                  {targetChips.length > 1 && (
-                    <span
-                      style={{
-                        fontSize: 10,
-                        color: 'var(--blue)',
-                        fontWeight: 500,
-                        padding: '1px 6px',
-                        borderRadius: '999px',
-                        background: 'var(--blue-light)',
-                        flexShrink: 0,
-                      }}
-                    >
-                      +{targetChips.length - 1}
-                    </span>
-                  )}
-                </div>
-                <span
-                  style={{ fontSize: 11, color: 'var(--text-muted)', flexShrink: 0, marginLeft: 8 }}
-                >
-                  {getTimeAgo(note.createdAt)}
-                </span>
-              </div>
-              {note.content && (
-                <p
-                  style={{
-                    fontSize: 13,
-                    color: 'var(--text-primary)',
-                    lineHeight: 1.5,
-                    marginBottom: 4,
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    display: '-webkit-box',
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: 'vertical',
-                  }}
-                >
-                  {note.content}
-                </p>
-              )}
-              <p style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-                by {creator?.name ?? 'Unknown'}
-              </p>
-            </button>
+              creatorName={creator?.name}
+              targetChips={targetChips}
+            />
           );
         });
         return (

@@ -6,6 +6,7 @@ import { ArrowLeft, Plus, Trash, EnvelopeSimple } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { createClient } from '@/utils/supabase/client';
 import { BACKDROP_COLOR } from '@/lib/constants';
+import { EmptyState } from '@/components/EmptyState';
 
 type ApprovedEmail = { email: string; label: string | null; created_at: string };
 
@@ -272,14 +273,12 @@ export default function AccessManagementPage() {
             background: 'var(--surface)',
             borderRadius: 'var(--radius)',
             border: '1px solid var(--border-light)',
-            padding: '24px 16px',
-            textAlign: 'center',
           }}
         >
-          <EnvelopeSimple size={28} color="var(--text-muted)" style={{ marginBottom: 8 }} />
-          <p style={{ fontSize: 14, color: 'var(--text-muted)', margin: 0 }}>
-            No approved emails yet.
-          </p>
+          <EmptyState
+            title="No approved emails yet."
+            icon={<EnvelopeSimple size={28} color="var(--text-muted)" />}
+          />
         </div>
       ) : (
         <div
