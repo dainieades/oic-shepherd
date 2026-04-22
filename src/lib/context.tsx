@@ -328,7 +328,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
         if (persona) setCurrentPersona(persona);
         else setCurrentPersona(personas[0] ?? initialData.personas[0]);
       } else {
-        setCurrentPersona(personas[0] ?? initialData.personas[0]);
+        // No stored preference — resolve from the active session so we don't
+        // briefly show the wrong persona before loginWithSupabaseUser runs.
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        const sessionPersona = session?.user
+          ? personas.find((p) => p.userId === session.user.id)
+          : undefined;
+        setCurrentPersona(sessionPersona ?? personas[0] ?? initialData.personas[0]);
       }
 
       setLoaded(true);
