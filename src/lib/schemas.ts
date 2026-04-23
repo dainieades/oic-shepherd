@@ -62,6 +62,8 @@ export const PersonaRowSchema = z.object({
   role: z.enum(['admin', 'shepherd', 'welcome-team']),
   person_id: nullStr,
   user_id: nullStr,
+  theme_preference: z.enum(['light', 'dark', 'system']).nullable().optional(),
+  map_provider: z.enum(['apple', 'google', 'waze']).nullable().optional(),
 });
 
 export type PersonaRow = z.infer<typeof PersonaRowSchema>;

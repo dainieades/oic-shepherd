@@ -19,15 +19,14 @@ import {
 import { useApp } from '@/lib/context';
 import { createClient } from '@/utils/supabase/client';
 import type { User } from '@supabase/supabase-js';
-import { type MapProvider, MAP_PROVIDER_LABELS, MAP_PROVIDERS_STORAGE_KEY } from '@/lib/utils';
+import { MAP_PROVIDER_LABELS } from '@/lib/utils';
 import { BACKDROP_COLOR, Z_NESTED } from '@/lib/constants';
 
 export default function SettingsPage() {
-  const { data, currentPersona, switchPersona, themePreference } = useApp();
+  const { data, currentPersona, switchPersona, themePreference, mapProvider } = useApp();
   const router = useRouter();
   const [scrolled, setScrolled] = React.useState(false);
   const [showSignOutConfirm, setShowSignOutConfirm] = React.useState(false);
-  const [mapProvider, setMapProvider] = React.useState<MapProvider>('apple');
   const [supabaseUser, setSupabaseUser] = React.useState<User | null>(null);
   const [linkingGoogle, setLinkingGoogle] = React.useState(false);
 
@@ -40,11 +39,6 @@ export default function SettingsPage() {
   React.useEffect(() => {
     const supabase = createClient();
     supabase.auth.getUser().then(({ data }) => setSupabaseUser(data.user));
-  }, []);
-
-  React.useEffect(() => {
-    const stored = localStorage.getItem(MAP_PROVIDERS_STORAGE_KEY) as MapProvider | null;
-    if (stored && stored in MAP_PROVIDER_LABELS) setMapProvider(stored);
   }, []);
 
   const person = currentPersona.personId
@@ -209,17 +203,24 @@ export default function SettingsPage() {
             </div>
           )}
           <div style={{ flex: 1, minWidth: 0 }}>
-            <p
-              style={{
-                fontSize: 16,
-                fontWeight: 700,
-                color: 'var(--text-primary)',
-                margin: 0,
-                letterSpacing: '-0.01em',
-              }}
-            >
-              {displayName}
-            </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+              <p
+                style={{
+                  fontSize: 16,
+                  fontWeight: 700,
+                  color: 'var(--text-primary)',
+                  margin: 0,
+                  letterSpacing: '-0.01em',
+                }}
+              >
+                {displayName}
+              </p>
+              {person?.chineseName && (
+                <span style={{ fontSize: 13, color: 'var(--text-muted)', fontWeight: 400 }}>
+                  {person.chineseName}
+                </span>
+              )}
+            </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 3 }}>
               {currentPersona.role === 'admin' ? (
                 <ShieldStar size={13} color="var(--sage)" weight="fill" />

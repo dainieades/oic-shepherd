@@ -3,7 +3,8 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { CaretLeft, Check } from '@phosphor-icons/react';
-import { type MapProvider, MAP_PROVIDER_LABELS, MAP_PROVIDERS_STORAGE_KEY } from '@/lib/utils';
+import { type MapProvider, MAP_PROVIDER_LABELS } from '@/lib/utils';
+import { useApp } from '@/lib/context';
 
 const PROVIDERS: { value: MapProvider; description: string }[] = [
   { value: 'apple', description: 'Default on iPhone and Mac' },
@@ -13,16 +14,10 @@ const PROVIDERS: { value: MapProvider; description: string }[] = [
 
 export default function MapsAppPage() {
   const router = useRouter();
-  const [mapProvider, setMapProvider] = React.useState<MapProvider>('apple');
-
-  React.useEffect(() => {
-    const stored = localStorage.getItem(MAP_PROVIDERS_STORAGE_KEY) as MapProvider | null;
-    if (stored && stored in MAP_PROVIDER_LABELS) setMapProvider(stored);
-  }, []);
+  const { mapProvider, setMapProvider } = useApp();
 
   const handleSelect = (provider: MapProvider) => {
     setMapProvider(provider);
-    localStorage.setItem(MAP_PROVIDERS_STORAGE_KEY, provider);
   };
 
   return (

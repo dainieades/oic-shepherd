@@ -10,6 +10,8 @@ export interface Persona {
   assignedPeopleIds: string[];
   personId?: string; // links to a Person in data
   userId?: string; // Supabase auth user ID
+  themePreference?: ThemePreference;
+  mapProvider?: 'apple' | 'google' | 'waze';
 }
 
 export type MembershipStatus = 'member' | 'non-member' | 'membership-track';

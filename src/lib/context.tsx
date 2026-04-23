@@ -56,7 +56,7 @@ export const HOME_DEFAULT_FILTERS: HomeFilters = {
   languages: [],
 };
 import { initialData } from './data';
-import { generateId } from './utils';
+import { generateId, MAP_PROVIDERS_STORAGE_KEY } from './utils';
 import { createClient } from '@/utils/supabase/client';
 import { useToast } from '@/components/Toast';
 import { DEFAULT_FOLLOW_UP_DAYS, SAVE_ERROR_MSG } from '@/lib/constants';
@@ -160,6 +160,8 @@ interface AppContextType {
   setLogsShepherdFilter: Dispatch<SetStateAction<string[]>>;
   themePreference: ThemePreference;
   setThemePreference: (pref: ThemePreference) => void;
+  mapProvider: 'apple' | 'google' | 'waze';
+  setMapProvider: (provider: 'apple' | 'google' | 'waze') => void;
   fullPageModalOpen: boolean;
   setFullPageModalOpen: Dispatch<SetStateAction<boolean>>;
 }
@@ -179,11 +181,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // ── Theme preference ─────────────────────────────────────────────────
   const [themePreference, setThemePreferenceState] = useState<ThemePreference>('system');
+  const [mapProvider, setMapProviderState] = useState<'apple' | 'google' | 'waze'>('apple');
 
   useEffect(() => {
     const stored = localStorage.getItem('shepherd-app-theme') as ThemePreference | null;
     if (stored === 'light' || stored === 'dark' || stored === 'system') {
       setThemePreferenceState(stored);
+    }
+    const storedMap = localStorage.getItem(MAP_PROVIDERS_STORAGE_KEY) as 'apple' | 'google' | 'waze' | null;
+    if (storedMap === 'apple' || storedMap === 'google' || storedMap === 'waze') {
+      setMapProviderState(storedMap);
     }
   }, []);
 
@@ -201,7 +208,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const setThemePreference = useCallback((pref: ThemePreference): void => {
     setThemePreferenceState(pref);
     localStorage.setItem('shepherd-app-theme', pref);
-  }, []);
+    createClient()
+      .from('personas')
+      .update({ theme_preference: pref })
+      .eq('id', currentPersona.id)
+      .then(() => {});
+  }, [currentPersona.id]);
+
+  const setMapProvider = useCallback((provider: 'apple' | 'google' | 'waze'): void => {
+    setMapProviderState(provider);
+    localStorage.setItem(MAP_PROVIDERS_STORAGE_KEY, provider);
+    createClient()
+      .from('personas')
+      .update({ map_provider: provider })
+      .eq('id', currentPersona.id)
+      .then(() => {});
+  }, [currentPersona.id]);
 
   const personaByPersonId = useMemo(
     () => new Map(data.personas.filter((p) => p.personId).map((p) => [p.personId as string, p])),
@@ -321,12 +343,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const loadedData: AppData = { people, families, groups, notes, todos, notices, personas };
       setData(loadedData);
 
+      function applyPersonaSettings(persona: Persona) {
+        if (persona.themePreference) {
+          setThemePreferenceState(persona.themePreference);
+          localStorage.setItem('shepherd-app-theme', persona.themePreference);
+        }
+        if (persona.mapProvider) {
+          setMapProviderState(persona.mapProvider);
+          localStorage.setItem(MAP_PROVIDERS_STORAGE_KEY, persona.mapProvider);
+        }
+      }
+
       // Restore last active persona from localStorage (just the ID, not the data)
       const savedPersonaId = localStorage.getItem('shepherd-app-persona');
       if (savedPersonaId) {
         const persona = personas.find((p) => p.id === savedPersonaId);
         if (persona) {
           setCurrentPersona(persona);
+          applyPersonaSettings(persona);
           setLoaded(true);
           return;
         }
@@ -343,6 +377,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         const sessionPersona = personas.find((p) => p.userId === session.user.id);
         if (sessionPersona) {
           setCurrentPersona(sessionPersona);
+          applyPersonaSettings(sessionPersona);
           setLoaded(true);
         }
         // No matching persona yet — loginWithSupabaseUser (via AuthSync) will
@@ -1408,6 +1443,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setLogsShepherdFilter,
         themePreference,
         setThemePreference,
+        mapProvider,
+        setMapProvider,
         fullPageModalOpen,
         setFullPageModalOpen,
       }}

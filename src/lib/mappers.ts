@@ -101,6 +101,8 @@ export function mapPersona(row: Record<string, unknown>, assignedPeopleIds: stri
     personId: r.person_id ?? undefined,
     userId: r.user_id ?? undefined,
     assignedPeopleIds,
+    themePreference: r.theme_preference ?? undefined,
+    mapProvider: r.map_provider ?? undefined,
   };
 }
 
