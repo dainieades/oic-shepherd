@@ -446,10 +446,7 @@ describe('getMapUrl', () => {
     const url = getMapUrl('123 Main St', 'google');
     expect(url).toContain('google.com/maps');
   });
-  it('builds Waze URL', () => {
-    const url = getMapUrl('123 Main St', 'waze');
-    expect(url).toContain('waze.com');
-  });
+
   it('encodes the address', () => {
     const url = getMapUrl('123 Main St, City', 'apple');
     expect(url).toContain(encodeURIComponent('123 Main St, City'));

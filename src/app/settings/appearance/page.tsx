@@ -94,21 +94,8 @@ export default function AppearancePage() {
                     {description}
                   </span>
                 </span>
-                <span
-                  style={{
-                    width: 22,
-                    height: 22,
-                    borderRadius: '50%',
-                    border: `0.125rem solid ${active ? 'var(--sage)' : 'var(--border-light)'}`,
-                    background: active ? 'var(--sage)' : 'transparent',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                    transition: 'background 0.15s, border-color 0.15s',
-                  }}
-                >
-                  {active && <Check size={13} color="white" weight="bold" />}
+                <span style={{ width: 22, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  {active && <Check size={20} color="var(--sage)" weight="bold" />}
                 </span>
               </button>
             );

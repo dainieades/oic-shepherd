@@ -6,11 +6,7 @@ import { CaretLeft, Check } from '@phosphor-icons/react';
 import { type MapProvider, MAP_PROVIDER_LABELS } from '@/lib/utils';
 import { useApp } from '@/lib/context';
 
-const PROVIDERS: { value: MapProvider; description: string }[] = [
-  { value: 'apple', description: 'Default on iPhone and Mac' },
-  { value: 'google', description: 'Works on iPhone, Android, and web' },
-  { value: 'waze', description: 'Community-based navigation' },
-];
+const PROVIDERS: MapProvider[] = ['google', 'apple'];
 
 export default function MapsAppPage() {
   const router = useRouter();
@@ -44,7 +40,7 @@ export default function MapsAppPage() {
           overflow: 'hidden',
         }}
       >
-        {PROVIDERS.map(({ value, description }, i) => {
+        {PROVIDERS.map((value, i) => {
           const active = mapProvider === value;
           return (
             <button
@@ -63,28 +59,16 @@ export default function MapsAppPage() {
                 textAlign: 'left',
               }}
             >
-              <span style={{ flex: 1 }}>
-                <span
-                  style={{
-                    display: 'block',
-                    fontSize: 15,
-                    fontWeight: 500,
-                    color: 'var(--text-primary)',
-                    letterSpacing: '-0.01em',
-                  }}
-                >
-                  {MAP_PROVIDER_LABELS[value]}
-                </span>
-                <span
-                  style={{
-                    display: 'block',
-                    fontSize: 13,
-                    color: 'var(--text-muted)',
-                    marginTop: 2,
-                  }}
-                >
-                  {description}
-                </span>
+              <span
+                style={{
+                  flex: 1,
+                  fontSize: 15,
+                  fontWeight: 500,
+                  color: 'var(--text-primary)',
+                  letterSpacing: '-0.01em',
+                }}
+              >
+                {MAP_PROVIDER_LABELS[value]}
               </span>
               {active && <Check size={17} color="var(--sage)" weight="bold" />}
             </button>

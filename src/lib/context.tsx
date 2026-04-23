@@ -56,7 +56,7 @@ export const HOME_DEFAULT_FILTERS: HomeFilters = {
   languages: [],
 };
 import { initialData } from './data';
-import { generateId, MAP_PROVIDERS_STORAGE_KEY } from './utils';
+import { generateId, MAP_PROVIDERS_STORAGE_KEY, type MapProvider } from './utils';
 import { createClient } from '@/utils/supabase/client';
 import { useToast } from '@/components/Toast';
 import { DEFAULT_FOLLOW_UP_DAYS, SAVE_ERROR_MSG } from '@/lib/constants';
@@ -99,6 +99,7 @@ interface AppContextType {
         | 'englishName'
         | 'chineseName'
         | 'photo'
+        | 'originalPhoto'
         | 'phone'
         | 'homePhone'
         | 'email'
@@ -123,7 +124,7 @@ interface AppContextType {
   assignShepherds: (personId: string, shepherdIds: string[]) => Promise<void>;
   updateFamily: (
     familyId: string,
-    updates: Partial<Pick<Family, 'label' | 'photo' | 'primaryContactId' | 'childCount'>>
+    updates: Partial<Pick<Family, 'label' | 'photo' | 'originalPhoto' | 'primaryContactId' | 'childCount'>>
   ) => Promise<void>;
   updateFamilyMembers: (familyId: string, memberIds: string[]) => Promise<void>;
   addGroup: (name: string, description?: string) => void;
@@ -159,8 +160,8 @@ interface AppContextType {
   setLogsShepherdFilter: Dispatch<SetStateAction<string[]>>;
   themePreference: ThemePreference;
   setThemePreference: (pref: ThemePreference) => void;
-  mapProvider: 'apple' | 'google' | 'waze';
-  setMapProvider: (provider: 'apple' | 'google' | 'waze') => void;
+  mapProvider: MapProvider;
+  setMapProvider: (provider: MapProvider) => void;
   fullPageModalOpen: boolean;
   setFullPageModalOpen: Dispatch<SetStateAction<boolean>>;
 }
@@ -196,15 +197,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // ── Theme preference ─────────────────────────────────────────────────
   const [themePreference, setThemePreferenceState] = useState<ThemePreference>('system');
-  const [mapProvider, setMapProviderState] = useState<'apple' | 'google' | 'waze'>('apple');
+  const [mapProvider, setMapProviderState] = useState<MapProvider>('google');
 
   useEffect(() => {
     const stored = localStorage.getItem('shepherd-app-theme') as ThemePreference | null;
     if (stored === 'light' || stored === 'dark' || stored === 'system') {
       setThemePreferenceState(stored);
     }
-    const storedMap = localStorage.getItem(MAP_PROVIDERS_STORAGE_KEY) as 'apple' | 'google' | 'waze' | null;
-    if (storedMap === 'apple' || storedMap === 'google' || storedMap === 'waze') {
+    const storedMap = localStorage.getItem(MAP_PROVIDERS_STORAGE_KEY) as MapProvider | null;
+    if (storedMap === 'apple' || storedMap === 'google') {
       setMapProviderState(storedMap);
     }
   }, []);
@@ -230,7 +231,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       .then(() => {});
   }, [currentPersona.id]);
 
-  const setMapProvider = useCallback((provider: 'apple' | 'google' | 'waze'): void => {
+  const setMapProvider = useCallback((provider: MapProvider): void => {
     setMapProviderState(provider);
     localStorage.setItem(MAP_PROVIDERS_STORAGE_KEY, provider);
     createClient()
@@ -368,7 +369,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           setThemePreferenceState(persona.themePreference);
           localStorage.setItem('shepherd-app-theme', persona.themePreference);
         }
-        if (persona.mapProvider) {
+        if (persona.mapProvider === 'apple' || persona.mapProvider === 'google') {
           setMapProviderState(persona.mapProvider);
           localStorage.setItem(MAP_PROVIDERS_STORAGE_KEY, persona.mapProvider);
         }
@@ -848,6 +849,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           | 'englishName'
           | 'chineseName'
           | 'photo'
+          | 'originalPhoto'
           | 'phone'
           | 'homePhone'
           | 'email'
@@ -881,6 +883,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (updates.englishName !== undefined) dbUpdates.english_name = updates.englishName;
       if (updates.chineseName !== undefined) dbUpdates.chinese_name = updates.chineseName;
       if ('photo' in updates) dbUpdates.photo = updates.photo ?? null;
+      if ('originalPhoto' in updates) dbUpdates.original_photo = updates.originalPhoto ?? null;
       if (updates.phone !== undefined) dbUpdates.phone = updates.phone;
       if (updates.homePhone !== undefined) dbUpdates.home_phone = updates.homePhone;
       if (updates.email !== undefined) dbUpdates.email = updates.email;
@@ -1045,7 +1048,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const updateFamily = useCallback(
     async (
       familyId: string,
-      updates: Partial<Pick<Family, 'label' | 'photo' | 'primaryContactId' | 'childCount'>>
+      updates: Partial<Pick<Family, 'label' | 'photo' | 'originalPhoto' | 'primaryContactId' | 'childCount'>>
     ): Promise<void> => {
       let snapshot: AppData | undefined;
       setData((prev) => {
@@ -1056,6 +1059,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const dbUpdates: Partial<FamilyRow> = {};
       if (updates.label !== undefined) dbUpdates.label = updates.label;
       if ('photo' in updates) dbUpdates.photo = updates.photo ?? null;
+      if ('originalPhoto' in updates) dbUpdates.original_photo = updates.originalPhoto ?? null;
       if (updates.primaryContactId !== undefined)
         dbUpdates.primary_contact_id = updates.primaryContactId;
       if (updates.childCount !== undefined) dbUpdates.child_count = updates.childCount;

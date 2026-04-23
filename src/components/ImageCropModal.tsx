@@ -7,7 +7,7 @@ import { Z_FLOAT } from '@/lib/constants';
 
 interface Props {
   imageSrc: string;
-  onConfirm: (croppedDataUrl: string) => void;
+  onConfirm: (blob: Blob) => void;
   onCancel: () => void;
 }
 
@@ -121,6 +121,7 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
     const cropRadius_img = cropRadius / scale;
 
     const img = new Image();
+    img.crossOrigin = 'anonymous';
     img.onload = () => {
       ctx.drawImage(
         img,
@@ -133,7 +134,7 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
         OUTPUT_SIZE,
         OUTPUT_SIZE
       );
-      onConfirm(canvas.toDataURL('image/jpeg', 0.9));
+      canvas.toBlob((blob) => { if (blob) onConfirm(blob); }, 'image/jpeg', 0.9);
     };
     img.src = imageSrc;
   };

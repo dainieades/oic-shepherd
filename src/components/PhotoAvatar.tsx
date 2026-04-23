@@ -2,20 +2,34 @@
 
 import React from 'react';
 import { createPortal } from 'react-dom';
-import { Camera, Trash } from '@phosphor-icons/react';
+import { Camera, Trash, PencilSimple, X, SpinnerGap } from '@phosphor-icons/react';
 import ImageCropModal from './ImageCropModal';
-import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, Z_NESTED } from '@/lib/constants';
+import { Z_FLOAT } from '@/lib/constants';
+import { uploadPhoto, deletePhotos, resizeImageBlob } from '@/utils/supabase/storage';
 
 interface Props {
   photo?: string;
+  originalPhoto?: string;
   name: string;
-  onPhotoChange: (dataUrl: string) => void;
+  entityPath?: string; // e.g. 'people/abc123' — if omitted, falls back to data URL
+  placeholder?: React.ReactNode;
+  onPhotoChange: (photoUrl: string, originalUrl: string) => void;
   onPhotoRemove: () => void;
 }
 
-export default function PhotoAvatar({ photo, name, onPhotoChange, onPhotoRemove }: Props) {
-  const [showMenu, setShowMenu] = React.useState(false);
+export default function PhotoAvatar({
+  photo,
+  originalPhoto,
+  name,
+  entityPath,
+  placeholder,
+  onPhotoChange,
+  onPhotoRemove,
+}: Props) {
+  const [showPreview, setShowPreview] = React.useState(false);
   const [cropSrc, setCropSrc] = React.useState<string | null>(null);
+  const [originalSrc, setOriginalSrc] = React.useState<string | null>(null);
+  const [uploading, setUploading] = React.useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const initials = name
@@ -30,16 +44,69 @@ export default function PhotoAvatar({ photo, name, onPhotoChange, onPhotoRemove 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => setCropSrc(reader.result as string);
-    reader.readAsDataURL(file);
     e.target.value = '';
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result as string;
+      setOriginalSrc(dataUrl);
+      setCropSrc(dataUrl);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleEditPhoto = () => {
+    // Prefer session-local original (full res), then stored original, then current photo
+    setCropSrc(originalSrc ?? originalPhoto ?? photo!);
+  };
+
+  const handleCropConfirm = async (blob: Blob) => {
+    setCropSrc(null);
+    if (!entityPath) {
+      // No storage path — fall back to data URL (add-person flow)
+      const reader = new FileReader();
+      reader.onload = () => {
+        const url = reader.result as string;
+        onPhotoChange(url, url);
+      };
+      reader.readAsDataURL(blob);
+      setOriginalSrc(null);
+      setShowPreview(false);
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const [photoUrl, origUrl] = await Promise.all([
+        uploadPhoto(`${entityPath}/photo.jpg`, blob),
+        // Only upload original if we don't already have one stored
+        !originalPhoto && originalSrc
+          ? fetch(originalSrc)
+              .then((r) => r.blob())
+              .then((b) => resizeImageBlob(b, 1500))
+              .then((b) => uploadPhoto(`${entityPath}/original.jpg`, b))
+          : Promise.resolve(originalPhoto ?? null),
+      ]);
+      onPhotoChange(photoUrl, origUrl ?? photoUrl);
+    } finally {
+      setUploading(false);
+      setOriginalSrc(null);
+      setShowPreview(false);
+    }
+  };
+
+  const handleRemove = async () => {
+    if (entityPath) {
+      await deletePhotos([`${entityPath}/photo.jpg`, `${entityPath}/original.jpg`]);
+    }
+    setOriginalSrc(null);
+    setShowPreview(false);
+    onPhotoRemove();
   };
 
   return (
     <>
       <button
-        onClick={() => (photo ? setShowMenu(true) : fileInputRef.current?.click())}
+        onClick={() => (photo ? setShowPreview(true) : fileInputRef.current?.click())}
         style={{
           position: 'relative',
           width: 72,
@@ -75,7 +142,7 @@ export default function PhotoAvatar({ photo, name, onPhotoChange, onPhotoRemove 
               color: 'var(--sage)',
             }}
           >
-            {initials}
+            {placeholder ?? initials}
           </div>
         )}
         <div
@@ -108,139 +175,94 @@ export default function PhotoAvatar({ photo, name, onPhotoChange, onPhotoRemove 
       {cropSrc && (
         <ImageCropModal
           imageSrc={cropSrc}
-          onConfirm={(croppedUrl) => {
-            onPhotoChange(croppedUrl);
-            setCropSrc(null);
-          }}
+          onConfirm={handleCropConfirm}
           onCancel={() => setCropSrc(null)}
         />
       )}
 
-      {showMenu &&
+      {showPreview && photo &&
         createPortal(
           <div
             style={{
               position: 'fixed',
               inset: 0,
-              background: BACKDROP_COLOR,
-              zIndex: Z_NESTED,
+              background: 'rgba(0,0,0,0.92)',
+              zIndex: Z_FLOAT,
               display: 'flex',
-              alignItems: 'flex-end',
+              flexDirection: 'column',
+              alignItems: 'center',
               justifyContent: 'center',
             }}
-            onClick={() => setShowMenu(false)}
+            onClick={() => !uploading && setShowPreview(false)}
           >
-            <div
-              className="animate-slide-up"
+            <button
+              onClick={() => !uploading && setShowPreview(false)}
               style={{
-                background: 'var(--surface)',
-                borderRadius: SHEET_BORDER_RADIUS,
-                width: '100%',
-                maxWidth: SHEET_MAX_WIDTH,
-                padding: '0 1.25rem 2.25rem',
-                overflow: 'hidden',
+                position: 'absolute',
+                top: '1.25rem',
+                right: '1.25rem',
+                background: 'rgba(255,255,255,0.15)',
+                border: 'none',
+                borderRadius: '50%',
+                width: 36,
+                height: 36,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: uploading ? 'default' : 'pointer',
+                opacity: uploading ? 0.4 : 1,
               }}
-              onClick={(e) => e.stopPropagation()}
             >
-              <div
-                style={{
-                  width: 36,
-                  height: 4,
-                  background: 'var(--border)',
-                  borderRadius: 2,
-                  margin: '0.875rem auto 1.25rem',
-                }}
-              />
-              <p
-                style={{
-                  fontSize: 12,
-                  fontWeight: 600,
-                  color: 'var(--text-muted)',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
-                  textAlign: 'center',
-                  marginBottom: 16,
-                }}
-              >
-                Profile Photo
-              </p>
-              <button
-                onClick={() => {
-                  setShowMenu(false);
-                  fileInputRef.current?.click();
-                }}
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 14,
-                  padding: '0.875rem 0.25rem',
-                  background: 'none',
-                  border: 'none',
-                  borderBottom: photo ? '1px solid var(--border-light)' : 'none',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                }}
-              >
+              <X size={20} color="#fff" weight="bold" />
+            </button>
+
+            {uploading ? (
+              <SpinnerGap size={48} color="#fff" style={{ animation: 'spin 0.8s linear infinite' }} />
+            ) : (
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={photo}
+                  alt={name}
+                  style={{ maxWidth: '90vw', maxHeight: '65vh', borderRadius: '0.75rem', objectFit: 'contain' }}
+                  onClick={(e) => e.stopPropagation()}
+                />
                 <div
-                  style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: '50%',
-                    background: 'var(--sage-light)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                  }}
+                  style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem' }}
+                  onClick={(e) => e.stopPropagation()}
                 >
-                  <Camera size={18} color="var(--sage)" />
-                </div>
-                <span style={{ fontSize: 16, color: 'var(--text-primary)', fontWeight: 500 }}>
-                  {photo ? 'Replace photo' : 'Upload photo'}
-                </span>
-              </button>
-              {photo && (
-                <button
-                  onClick={() => {
-                    onPhotoRemove();
-                    setShowMenu(false);
-                  }}
-                  style={{
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 14,
-                    padding: '0.875rem 0.25rem',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    textAlign: 'left',
-                  }}
-                >
-                  <div
+                  <button
+                    onClick={handleEditPhoto}
                     style={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: '50%',
-                      background: 'var(--red-light)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0,
+                      display: 'flex', alignItems: 'center', gap: '0.5rem',
+                      background: 'rgba(255,255,255,0.15)', border: 'none',
+                      borderRadius: '2rem', padding: '0.625rem 1.25rem',
+                      cursor: 'pointer', color: '#fff', fontSize: '0.9375rem', fontWeight: 500,
                     }}
                   >
-                    <Trash size={18} color="var(--red)" />
-                  </div>
-                  <span style={{ fontSize: 16, color: 'var(--red)', fontWeight: 500 }}>
-                    Remove photo
-                  </span>
-                </button>
-              )}
-            </div>
+                    <PencilSimple size={16} color="#fff" weight="bold" />
+                    Edit photo
+                  </button>
+                  <button
+                    onClick={handleRemove}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '0.5rem',
+                      background: 'rgba(220,53,69,0.25)', border: 'none',
+                      borderRadius: '2rem', padding: '0.625rem 1.25rem',
+                      cursor: 'pointer', color: '#ff6b6b', fontSize: '0.9375rem', fontWeight: 500,
+                    }}
+                  >
+                    <Trash size={16} color="#ff6b6b" weight="bold" />
+                    Remove
+                  </button>
+                </div>
+              </>
+            )}
           </div>,
           document.body
         )}
+
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </>
   );
 }

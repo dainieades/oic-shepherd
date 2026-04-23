@@ -491,9 +491,11 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
         {/* Avatar */}
         <PhotoAvatar
           photo={person.photo}
+          originalPhoto={person.originalPhoto}
           name={person.englishName}
-          onPhotoChange={(url) => updatePerson(person.id, { photo: url })}
-          onPhotoRemove={() => updatePerson(person.id, { photo: undefined })}
+          entityPath={`people/${person.id}`}
+          onPhotoChange={(photoUrl, originalUrl) => updatePerson(person.id, { photo: photoUrl, originalPhoto: originalUrl })}
+          onPhotoRemove={() => updatePerson(person.id, { photo: undefined, originalPhoto: undefined })}
         />
 
         {/* Name + meta */}

@@ -244,21 +244,19 @@ export function getNoteTypeLabel(type: Note['type']): string {
   return labels[type] || type;
 }
 
-export type MapProvider = 'apple' | 'google' | 'waze';
+export type MapProvider = 'apple' | 'google';
 
 export const MAP_PROVIDER_LABELS: Record<MapProvider, string> = {
   apple: 'Apple Maps',
   google: 'Google Maps',
-  waze: 'Waze',
 };
 
 export const MAP_PROVIDERS_STORAGE_KEY = 'shepherd-app-map-provider';
 
-export function getMapUrl(address: string, provider: MapProvider = 'apple'): string {
+export function getMapUrl(address: string, provider: MapProvider = 'google'): string {
   const q = encodeURIComponent(address);
-  if (provider === 'google') return `https://www.google.com/maps/search/?api=1&query=${q}`;
-  if (provider === 'waze') return `https://waze.com/ul?q=${q}`;
-  return `https://maps.apple.com/?q=${q}`;
+  if (provider === 'apple') return `https://maps.apple.com/?q=${q}`;
+  return `https://www.google.com/maps/search/?api=1&query=${q}`;
 }
 
 export function generateId(): string {

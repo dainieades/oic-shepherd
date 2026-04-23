@@ -46,6 +46,7 @@ export interface Person {
   englishName: string;
   chineseName?: string;
   photo?: string;
+  originalPhoto?: string;
   gender?: Gender;
   maritalStatus?: MaritalStatus;
   birthday?: string; // YYYY-MM-DD
@@ -81,6 +82,7 @@ export interface Family {
   id: string;
   label: string;
   photo?: string;
+  originalPhoto?: string;
   tags: string[];
   memberIds: string[]; // adult members
   childCount?: number; // number of children — names are never stored

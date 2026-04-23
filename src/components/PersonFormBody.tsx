@@ -305,7 +305,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
             <PhotoAvatar
               photo={photo || undefined}
               name={fullName || 'Your Name'}
-              onPhotoChange={setPhoto}
+              onPhotoChange={(url) => setPhoto(url)}
               onPhotoRemove={() => setPhoto('')}
             />
             <div style={{ flex: 1, minWidth: 0 }}>

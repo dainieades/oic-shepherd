@@ -14,7 +14,6 @@ import {
   CaretLeft,
   CaretRight,
   DotsThreeVertical,
-  Camera,
   Check,
   Clock,
   ArrowsClockwise,
@@ -43,7 +42,7 @@ import { NoticeCard } from '@/components/NoticeCard';
 import TodoLogPrompt from '@/components/TodoLogPrompt';
 import EditFamilyDrawer from '@/components/EditFamilyDrawer';
 import GroupPreviewModal from '@/components/GroupPreviewModal';
-import ImageCropModal from '@/components/ImageCropModal';
+import PhotoAvatar from '@/components/PhotoAvatar';
 import { SHEPHERD_AVATAR_PALETTE, Z_SUBHEADER } from '@/lib/constants';
 import { InfoRow } from '@/components/InfoRow';
 import { AvatarBadge } from '@/components/AvatarBadge';
@@ -86,9 +85,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
   const [previewGroupId, setPreviewGroupId] = React.useState<string | null>(null);
   const [showKebab, setShowKebab] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
-  const [cropSrc, setCropSrc] = React.useState<string | null>(null);
   const kebabRef = React.useRef<HTMLDivElement>(null);
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -134,17 +131,6 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
     }
   };
 
-  const handlePhotoFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      setCropSrc(reader.result as string);
-    };
-    reader.readAsDataURL(file);
-    e.target.value = '';
-  };
-
   const memberCountText = (() => {
     const adultCount = members.length;
     const parts = [`${adultCount} adult${adultCount !== 1 ? 's' : ''}`];
@@ -155,16 +141,6 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
 
   return (
     <div style={{ paddingBottom: 40 }}>
-      {cropSrc && (
-        <ImageCropModal
-          imageSrc={cropSrc}
-          onConfirm={(croppedUrl) => {
-            updateFamily(family.id, { photo: croppedUrl });
-            setCropSrc(null);
-          }}
-          onCancel={() => setCropSrc(null)}
-        />
-      )}
       {/* ── Nav bar ── */}
       <div
         style={{
@@ -315,68 +291,17 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
       {/* ── Page header — scrolls away ── */}
       <div style={{ padding: '1.75rem 0 1.25rem', display: 'flex', alignItems: 'center', gap: 16 }}>
         {/* Avatar / Photo */}
-        <button
-          onClick={() => fileInputRef.current?.click()}
-          style={{
-            flexShrink: 0,
-            width: 72,
-            height: 72,
-            borderRadius: '50%',
-            padding: 0,
-            border: 'none',
-            cursor: 'pointer',
-            position: 'relative',
-            background: 'none',
-          }}
-        >
-          {family.photo ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={family.photo}
-              alt={family.label}
-              style={{
-                width: 72,
-                height: 72,
-                borderRadius: '50%',
-                objectFit: 'cover',
-                display: 'block',
-              }}
-            />
-          ) : (
-            <div
-              style={{
-                width: 72,
-                height: 72,
-                borderRadius: '50%',
-                background: 'var(--sage-light)',
-                border: '0.125rem dashed var(--sage)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <House size={30} color="var(--sage)" />
-            </div>
-          )}
-          {/* Camera badge */}
-          <div
-            style={{
-              position: 'absolute',
-              bottom: 0,
-              right: 0,
-              width: 22,
-              height: 22,
-              borderRadius: '50%',
-              background: 'var(--sage)',
-              border: '0.125rem solid var(--bg)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Camera size={11} color="var(--on-sage)" weight="fill" />
-          </div>
-        </button>
+        <PhotoAvatar
+          photo={family.photo}
+          originalPhoto={family.originalPhoto}
+          name={family.label}
+          entityPath={`families/${family.id}`}
+          placeholder={<House size={30} color="var(--sage)" />}
+          onPhotoChange={(photoUrl, originalUrl) =>
+            updateFamily(family.id, { photo: photoUrl, originalPhoto: originalUrl })
+          }
+          onPhotoRemove={() => updateFamily(family.id, { photo: undefined, originalPhoto: undefined })}
+        />
 
         {/* Name + meta */}
         <div style={{ flex: 1, minWidth: 0 }}>
@@ -418,14 +343,6 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
         </div>
       </div>
 
-      {/* Hidden file input */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        style={{ display: 'none' }}
-        onChange={handlePhotoFile}
-      />
 
       {/* ── Tabs — sticky below nav bar ── */}
       <div
