@@ -2,16 +2,25 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { CaretLeft, Plus, Trash, EnvelopeSimple } from '@phosphor-icons/react';
+import { CaretLeft, Plus, Trash, EnvelopeSimple, CaretRight } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { createClient } from '@/utils/supabase/client';
 import { BACKDROP_COLOR, Z_NESTED } from '@/lib/constants';
 import { EmptyState } from '@/components/EmptyState';
 import InviteSheet from '@/components/InviteSheet';
 import { Button } from '@/components/Button';
+import AppRolePickerSheet from '@/components/AppRolePickerSheet';
+import { type AppRole } from '@/lib/types';
 import { deleteApprovedEmail } from './actions';
 
 type ApprovedEmail = { email: string; label: string | null; created_at: string };
+
+const ROLE_LABEL: Record<AppRole, string> = {
+  admin: 'Admin',
+  shepherd: 'Shepherd',
+  'welcome-team': 'Welcome Team',
+  'no-access': 'No Access',
+};
 
 const navBarStyle: React.CSSProperties = {
   position: 'sticky',
@@ -48,7 +57,7 @@ const navTitleStyle: React.CSSProperties = {
 };
 
 export default function AccessManagementPage() {
-  const { currentPersona } = useApp();
+  const { data, currentPersona, updatePerson } = useApp();
   const router = useRouter();
 
   const [emails, setEmails] = React.useState<ApprovedEmail[]>([]);
@@ -57,8 +66,17 @@ export default function AccessManagementPage() {
   const [confirmDelete, setConfirmDelete] = React.useState<string | null>(null);
   const [deleteError, setDeleteError] = React.useState('');
   const [deleting, setDeleting] = React.useState(false);
+  const [roleEditEmail, setRoleEditEmail] = React.useState<string | null>(null);
   const [titleVisible, setTitleVisible] = React.useState(true);
   const titleRef = React.useRef<HTMLHeadingElement>(null);
+
+  const personByEmail = React.useMemo(() => {
+    const map = new Map<string, typeof data.people[number]>();
+    for (const p of data.people) {
+      if (p.email) map.set(p.email.toLowerCase(), p);
+    }
+    return map;
+  }, [data.people]);
 
   React.useEffect(() => {
     const el = titleRef.current;
@@ -197,61 +215,95 @@ export default function AccessManagementPage() {
             overflow: 'hidden',
           }}
         >
-          {emails.map((e) => (
-            <div
-              key={e.email}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
-                padding: '0.75rem 1rem',
-                borderBottom: '1px solid var(--border-light)',
-              }}
-            >
-              <EnvelopeSimple size={16} color="var(--text-muted)" style={{ flexShrink: 0 }} />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <p
-                  style={{
-                    fontSize: 14,
-                    fontWeight: 500,
-                    color: 'var(--text-primary)',
-                    margin: 0,
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  {e.label ?? e.email}
-                </p>
-                {e.label && (
-                  <p
-                    style={{
-                      fontSize: 12,
-                      color: 'var(--text-muted)',
-                      margin: 0,
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    {e.email}
-                  </p>
-                )}
-              </div>
-              <button
-                onClick={() => setConfirmDelete(e.email)}
+          {emails.map((e) => {
+            const linkedPerson = personByEmail.get(e.email.toLowerCase());
+            const role: AppRole = linkedPerson?.appRole ?? 'no-access';
+            return (
+              <div
+                key={e.email}
                 style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  padding: 4,
-                  flexShrink: 0,
+                  display: 'flex',
+                  alignItems: 'stretch',
+                  borderBottom: '1px solid var(--border-light)',
                 }}
               >
-                <Trash size={16} color="var(--red)" />
-              </button>
-            </div>
-          ))}
+                <button
+                  className={linkedPerson ? 'field-row-hover' : undefined}
+                  onClick={() => linkedPerson && setRoleEditEmail(e.email)}
+                  disabled={!linkedPerson}
+                  style={{
+                    flex: 1,
+                    minWidth: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 12,
+                    padding: '0.75rem 0.5rem 0.75rem 1rem',
+                    background: 'none',
+                    border: 'none',
+                    cursor: linkedPerson ? 'pointer' : 'default',
+                    textAlign: 'left',
+                  }}
+                >
+                  <EnvelopeSimple size={16} color="var(--text-muted)" style={{ flexShrink: 0 }} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p
+                      style={{
+                        fontSize: 14,
+                        fontWeight: 500,
+                        color: 'var(--text-primary)',
+                        margin: 0,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {e.label ?? e.email}
+                    </p>
+                    {e.label && (
+                      <p
+                        style={{
+                          fontSize: 12,
+                          color: 'var(--text-muted)',
+                          margin: 0,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {e.email}
+                      </p>
+                    )}
+                  </div>
+                  <span
+                    style={{
+                      fontSize: 13,
+                      color: linkedPerson ? 'var(--text-secondary)' : 'var(--text-muted)',
+                      fontStyle: linkedPerson ? 'normal' : 'italic',
+                      flexShrink: 0,
+                    }}
+                  >
+                    {linkedPerson ? ROLE_LABEL[role] : 'Not linked'}
+                  </span>
+                  {linkedPerson && (
+                    <CaretRight size={14} color="var(--text-muted)" style={{ flexShrink: 0 }} />
+                  )}
+                </button>
+                <button
+                  onClick={() => setConfirmDelete(e.email)}
+                  aria-label={`Remove ${e.email}`}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    padding: '0 1rem',
+                    flexShrink: 0,
+                  }}
+                >
+                  <Trash size={16} color="var(--red)" />
+                </button>
+              </div>
+            );
+          })}
         </div>
       )}
 
@@ -261,6 +313,27 @@ export default function AccessManagementPage() {
           onSuccess={() => load()}
         />
       )}
+
+      {roleEditEmail && (() => {
+        const linkedPerson = personByEmail.get(roleEditEmail.toLowerCase());
+        if (!linkedPerson) return null;
+        return (
+          <AppRolePickerSheet
+            currentRole={linkedPerson.appRole ?? 'no-access'}
+            onSelect={async (newRole) => {
+              await updatePerson(linkedPerson.id, { appRole: newRole });
+              setRoleEditEmail(null);
+            }}
+            onRemove={async () => {
+              await updatePerson(linkedPerson.id, { appRole: 'no-access' });
+              setRoleEditEmail(null);
+            }}
+            onClose={() => setRoleEditEmail(null)}
+            isAdmin
+            personName={linkedPerson.englishName.split(' ')[0]}
+          />
+        );
+      })()}
 
       {/* Delete confirm modal */}
       {confirmDelete && (
