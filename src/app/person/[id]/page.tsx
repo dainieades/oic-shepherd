@@ -109,11 +109,14 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
   const initialTab: Tab = _canManageCheck
     ? ((searchParams.get('tab') as Tab | null) ?? 'logs')
     : 'info';
+  const fromParam = searchParams.get('from');
   const [tab, setTabState] = React.useState<Tab>(initialTab);
 
   const setTab = (t: Tab) => {
     setTabState(t);
-    router.replace(`/person/${id}?tab=${t}`, { scroll: false });
+    const qs = new URLSearchParams({ tab: t });
+    if (fromParam) qs.set('from', fromParam);
+    router.replace(`/person/${id}?${qs.toString()}`, { scroll: false });
   };
   const [showAddLog, setShowAddLog] = React.useState(false);
   const [showAddTodo, setShowAddTodo] = React.useState(false);
@@ -263,7 +266,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
         }}
       >
         <button
-          onClick={() => router.push('/')}
+          onClick={() => router.push(fromParam ?? '/')}
           style={{
             display: 'inline-flex',
             alignItems: 'center',
@@ -917,7 +920,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                       return sp ? (
                         <Link
                           key={s.id}
-                          href={`/person/${sp.id}`}
+                          href={`/person/${sp.id}?from=/person/${id}`}
                           style={{ textDecoration: 'none' }}
                         >
                           {inner}
@@ -1021,7 +1024,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                       return (
                         <Link
                           key={s.id}
-                          href={`/person/${s.id}`}
+                          href={`/person/${s.id}?from=/person/${id}`}
                           style={{
                             display: 'flex',
                             alignItems: 'center',

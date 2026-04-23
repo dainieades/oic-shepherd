@@ -20,8 +20,6 @@ export const PersonRowSchema = z.object({
   home_phone: nullStr,
   email: nullStr,
   home_address: nullStr,
-  spiritual_needs: nullStr,
-  physical_needs: nullStr,
   is_shepherd: nullBool,
   is_being_discipled: nullBool,
   app_role: z.enum(['admin', 'shepherd', 'welcome-team', 'no-access']).nullish(),

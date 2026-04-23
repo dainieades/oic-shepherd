@@ -57,7 +57,7 @@ export default function FilterPanel({ show, onClose }: { show: boolean; onClose:
     draft.memberships.length +
     draft.attendances.length +
     draft.groups.length +
-    (draft.archiveFilter !== 'hide' ? 1 : 0) +
+    (draft.archiveFilter !== 'include' ? 1 : 0) +
     draft.discipleship.length +
     draft.appRoles.length +
     draft.positions.length +
@@ -66,7 +66,7 @@ export default function FilterPanel({ show, onClose }: { show: boolean; onClose:
   const FILTER_CATEGORIES: Array<{ key: FilterCategory; label: string; count: number }> = [
     { key: 'shepherd', label: 'Shepherd by', count: draft.shepherds.length },
     { key: 'membership', label: 'Status', count: draft.memberships.length + draft.attendances.length },
-    { key: 'archive', label: 'Archive', count: draft.archiveFilter !== 'hide' ? 1 : 0 },
+    { key: 'archive', label: 'Archive', count: draft.archiveFilter !== 'include' ? 1 : 0 },
     { key: 'discipleship', label: 'Discipleship', count: draft.discipleship.length },
     { key: 'group', label: 'Group', count: draft.groups.length },
     { key: 'position', label: 'Church Position', count: draft.positions.length },

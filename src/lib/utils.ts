@@ -196,7 +196,6 @@ export function searchFamiliesAndPeople(
   for (const p of matchedPeople) {
     if (p.familyId) {
       matchedFamilyIds.add(p.familyId);
-      matchedIndividuals.push(p);
     } else {
       matchedIndividuals.push(p);
     }

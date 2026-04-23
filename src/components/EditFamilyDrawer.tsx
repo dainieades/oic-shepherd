@@ -690,32 +690,23 @@ function MemberPickerSheet({
 }
 
 function MemberCheckCircle({ selected }: { selected: boolean }) {
-  return selected ? (
+  return (
     <div
       style={{
-        width: 22,
-        height: 22,
-        borderRadius: '50%',
+        width: 20,
+        height: 20,
+        borderRadius: 5,
         flexShrink: 0,
-        background: 'var(--sage)',
+        border: selected ? 'none' : '0.09375rem solid var(--border)',
+        background: selected ? 'var(--sage)' : 'transparent',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        transition: 'background 0.15s',
       }}
     >
-      <Check size={12} color="var(--on-sage)" weight="bold" />
+      {selected && <Check size={11} color="var(--on-sage)" weight="bold" />}
     </div>
-  ) : (
-    <div
-      style={{
-        width: 22,
-        height: 22,
-        borderRadius: '50%',
-        flexShrink: 0,
-        border: '0.125rem solid var(--border)',
-        background: 'transparent',
-      }}
-    />
   );
 }
 

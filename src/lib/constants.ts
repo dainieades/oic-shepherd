@@ -5,8 +5,10 @@ export const DEFAULT_FOLLOW_UP_DAYS = 14;
 export const SORT_OPTIONS: Array<{ key: HomeSortKey; label: string }> = [
   { key: 'last-contacted', label: 'Logged longest ago' },
   { key: 'last-contacted-recent', label: 'Logged most recently' },
-  { key: 'name', label: 'Name A → Z' },
-  { key: 'name-desc', label: 'Name Z → A' },
+  { key: 'name', label: 'First Name A → Z' },
+  { key: 'name-desc', label: 'First Name Z → A' },
+  { key: 'last-name', label: 'Last Name A → Z' },
+  { key: 'last-name-desc', label: 'Last Name Z → A' },
 ];
 export const SHEET_MAX_WIDTH = 430;
 export const SHEET_BORDER_RADIUS = '1.25rem 1.25rem 0 0';

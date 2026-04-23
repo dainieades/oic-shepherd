@@ -645,7 +645,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                 return (
                   <Link
                     key={m.id}
-                    href={`/person/${m.id}`}
+                    href={`/person/${m.id}?from=/family/${id}`}
                     className="row-card-hover"
                     style={{
                       display: 'flex',
@@ -844,7 +844,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                         return sp ? (
                           <Link
                             key={s.id}
-                            href={`/person/${sp.id}`}
+                            href={`/person/${sp.id}?from=/family/${id}`}
                             style={{ textDecoration: 'none' }}
                           >
                             {inner}

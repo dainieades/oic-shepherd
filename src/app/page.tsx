@@ -45,6 +45,7 @@ export default function PeoplePage() {
     homeFilters: filters,
     setHomeFilters: setFilters,
     homeSortKey: sortKey,
+    setFullPageModalOpen,
   } = useApp();
   const [search, setSearch] = React.useState('');
   const deferredSearch = React.useDeferredValue(search);
@@ -234,26 +235,41 @@ const [showSearch, setShowSearch] = React.useState(false);
       const bMembers = b.type === 'family' ? b.members : [b.person];
       const aName = a.type === 'family' ? a.family.label : a.person.englishName;
       const bName = b.type === 'family' ? b.family.label : b.person.englishName;
+      const lastName = (n: string) => n.trim().split(/\s+/).slice(-1)[0] ?? n;
+      const aLast = lastName(aName);
+      const bLast = lastName(bName);
 
       switch (sortKey) {
-        case 'name':
-          return aName.localeCompare(bName);
+        case 'name': {
+          const cmp = aName.localeCompare(bName);
+          return cmp !== 0 ? cmp : aLast.localeCompare(bLast);
+        }
+        case 'name-desc': {
+          const cmp = bName.localeCompare(aName);
+          return cmp !== 0 ? cmp : bLast.localeCompare(aLast);
+        }
+        case 'last-name': {
+          const cmp = aLast.localeCompare(bLast);
+          return cmp !== 0 ? cmp : aName.localeCompare(bName);
+        }
+        case 'last-name-desc': {
+          const cmp = bLast.localeCompare(aLast);
+          return cmp !== 0 ? cmp : bName.localeCompare(aName);
+        }
         case 'last-contacted': {
           // Oldest / never-logged first (needs follow-up most urgently)
           const aTime = Math.max(0, ...aMembers.map((m) => lastNoteTime[m.id] ?? 0));
           const bTime = Math.max(0, ...bMembers.map((m) => lastNoteTime[m.id] ?? 0));
           if (aTime !== bTime) return aTime - bTime;
-          return aName.localeCompare(bName);
+          return aLast.localeCompare(bLast);
         }
         case 'last-contacted-recent': {
           // Most recently logged first
           const aTime = Math.max(0, ...aMembers.map((m) => lastNoteTime[m.id] ?? 0));
           const bTime = Math.max(0, ...bMembers.map((m) => lastNoteTime[m.id] ?? 0));
           if (aTime !== bTime) return bTime - aTime;
-          return aName.localeCompare(bName);
+          return aLast.localeCompare(bLast);
         }
-        case 'name-desc':
-          return bName.localeCompare(aName);
         default: // priority
           return getFamilyPriorityScore(bMembers) - getFamilyPriorityScore(aMembers);
       }
@@ -284,7 +300,7 @@ const [showSearch, setShowSearch] = React.useState(false);
     filters.memberships.length +
     filters.attendances.length +
     filters.groups.length +
-    (filters.archiveFilter !== 'hide' ? 1 : 0) +
+    (filters.archiveFilter !== 'include' ? 1 : 0) +
     filters.discipleship.length +
     filters.appRoles.length +
     filters.positions.length +
@@ -324,12 +340,12 @@ const [showSearch, setShowSearch] = React.useState(false);
       clear: () => setFilters((f) => ({ ...f, groups: f.groups.filter((g) => g !== gid) })),
     });
   });
-  if (filters.archiveFilter !== 'hide') {
-    const archiveLabel = filters.archiveFilter === 'only' ? 'Only archived' : 'Include archived';
+  if (filters.archiveFilter !== 'include') {
+    const archiveLabel = filters.archiveFilter === 'only' ? 'Only archived' : 'Hiding archived';
     chips.push({
       key: 'archive-filter',
       label: archiveLabel,
-      clear: () => setFilters((f) => ({ ...f, archiveFilter: 'hide' })),
+      clear: () => setFilters((f) => ({ ...f, archiveFilter: 'include' })),
     });
   }
   const DISCIPLESHIP_LABELS: Record<'in' | 'not-in', string> = {
@@ -417,7 +433,7 @@ const [showSearch, setShowSearch] = React.useState(false);
         <Button
           variant="ghost"
           aria-label="Filter people"
-          onClick={() => setShowFilter(true)}
+          onClick={() => { setShowFilter(true); setFullPageModalOpen(true); }}
           style={{
             width: btnSize,
             height: btnSize,
@@ -790,7 +806,7 @@ const [showSearch, setShowSearch] = React.useState(false);
 
       {/* ── Filter panel (bottom sheet) ────── */}
       <React.Suspense fallback={null}>
-        <FilterPanel show={showFilter} onClose={() => setShowFilter(false)} />
+        <FilterPanel show={showFilter} onClose={() => { setShowFilter(false); setFullPageModalOpen(false); }} />
       </React.Suspense>
       </main>
     </div>

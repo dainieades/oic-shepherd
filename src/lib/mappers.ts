@@ -39,8 +39,6 @@ export function mapPerson(
     homePhone: r.home_phone ?? undefined,
     email: r.email ?? undefined,
     homeAddress: r.home_address ?? undefined,
-    spiritualNeeds: r.spiritual_needs ?? undefined,
-    physicalNeeds: r.physical_needs ?? undefined,
     isShepherd: r.is_shepherd ?? undefined,
     isBeingDiscipled: r.is_being_discipled ?? undefined,
     appRole: r.app_role ?? 'no-access',

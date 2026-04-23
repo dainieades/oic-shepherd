@@ -56,8 +56,6 @@ export interface Person {
   homePhone?: string;
   email?: string;
   homeAddress?: string;
-  spiritualNeeds?: string;
-  physicalNeeds?: string;
   isShepherd?: boolean;
   isBeingDiscipled?: boolean;
   appRole?: AppRole;

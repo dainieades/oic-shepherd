@@ -46,7 +46,6 @@ import {
   BACKDROP_COLOR,
   SHEET_BORDER_RADIUS,
 } from '@/lib/constants';
-import DatePickerSheet from './DatePickerSheet';
 import { TextInputRow, TextareaRow, PickerRow, DateRow, FloatingDateRow } from '@/components/form';
 import { rowBtnStyle, spacerStyle, labelStyle } from '@/components/form/formStyles';
 
@@ -82,7 +81,7 @@ export interface PersonFormBodyHandle {
 }
 
 interface Props {
-  person: Person;
+  person?: Person;
   onSaved: () => void;
   showPhotoUpload?: boolean;
   showInviteRow?: boolean;
@@ -91,41 +90,41 @@ interface Props {
 
 const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
   function PersonFormBody({ person, onSaved, showPhotoUpload, showInviteRow, onValidityChange }, ref) {
-    const { data, currentPersona, updatePerson, updateFamilyMembers, assignShepherds, assignGroupsToPerson } = useApp();
+    const { data, currentPersona, addPerson, updatePerson, updateFamilyMembers, assignShepherds, assignGroupsToPerson } = useApp();
 
-    const _nameParts = person.englishName.trim().split(/\s+/);
+    const _nameParts = (person?.englishName ?? '').trim().split(/\s+/);
     const [firstName, setFirstName] = React.useState(_nameParts[0] ?? '');
     const [lastName, setLastName] = React.useState(_nameParts.slice(1).join(' '));
-    const [chineseName, setChineseName] = React.useState(person.chineseName ?? '');
-    const [photo, setPhoto] = React.useState(person.photo ?? '');
+    const [chineseName, setChineseName] = React.useState(person?.chineseName ?? '');
+    const [photo, setPhoto] = React.useState(person?.photo ?? '');
 
-    const [language, setLanguage] = React.useState<string[]>(person.language ?? []);
-    const [gender, setGender] = React.useState<Gender | ''>(person.gender ?? '');
-    const [birthday, setBirthday] = React.useState(person.birthday ?? '');
+    const [language, setLanguage] = React.useState<string[]>(person?.language ?? []);
+    const [gender, setGender] = React.useState<Gender | ''>(person?.gender ?? '');
+    const [birthday, setBirthday] = React.useState(person?.birthday ?? '');
     const [maritalStatus, setMaritalStatus] = React.useState<MaritalStatus | ''>(
-      person.maritalStatus ?? ''
+      person?.maritalStatus ?? ''
     );
-    const [anniversary, setAnniversary] = React.useState(person.anniversary ?? '');
+    const [anniversary, setAnniversary] = React.useState(person?.anniversary ?? '');
 
-    const [groupIds, setGroupIds] = React.useState<string[]>(person.groupIds ?? []);
-    const [shepherdIds, setShepherdIds] = React.useState<string[]>(person.assignedShepherdIds ?? []);
-    const [status, setStatus] = React.useState<MembershipStatus>(person.membershipStatus);
-    const [attendance, setAttendance] = React.useState<ChurchAttendance>(person.churchAttendance);
-    const [membershipDate, setMembershipDate] = React.useState(person.membershipDate ?? '');
-    const [baptismDate, setBaptismDate] = React.useState(person.baptismDate ?? '');
-    const [isShepherd, setIsShepherd] = React.useState(person.isShepherd ?? false);
-    const [isBeingDiscipled, setIsBeingDiscipled] = React.useState(person.isBeingDiscipled ?? false);
-    const [appRole, setAppRole] = React.useState<AppRole>(person.appRole ?? 'no-access');
+    const [groupIds, setGroupIds] = React.useState<string[]>(person?.groupIds ?? []);
+    const [shepherdIds, setShepherdIds] = React.useState<string[]>(person?.assignedShepherdIds ?? []);
+    const [status, setStatus] = React.useState<MembershipStatus>(person?.membershipStatus ?? 'non-member');
+    const [attendance, setAttendance] = React.useState<ChurchAttendance>(person?.churchAttendance ?? 'first-time-visitor');
+    const [membershipDate, setMembershipDate] = React.useState(person?.membershipDate ?? '');
+    const [baptismDate, setBaptismDate] = React.useState(person?.baptismDate ?? '');
+    const [isShepherd, setIsShepherd] = React.useState(person?.isShepherd ?? false);
+    const [isBeingDiscipled, setIsBeingDiscipled] = React.useState(person?.isBeingDiscipled ?? false);
+    const [appRole, setAppRole] = React.useState<AppRole>(person?.appRole ?? 'no-access');
     const [churchPositions, setChurchPositions] = React.useState<string[]>(
-      person.churchPositions ?? []
+      person?.churchPositions ?? []
     );
 
-    const [phone, setPhone] = React.useState(person.phone ? formatPhone(person.phone) : '');
+    const [phone, setPhone] = React.useState(person?.phone ? formatPhone(person.phone) : '');
     const [homePhone, setHomePhone] = React.useState(
-      person.homePhone ? formatPhone(person.homePhone) : ''
+      person?.homePhone ? formatPhone(person.homePhone) : ''
     );
-    const [email, setEmail] = React.useState(person.email ?? '');
-    const [homeAddress, setHomeAddress] = React.useState(person.homeAddress ?? '');
+    const [email, setEmail] = React.useState(person?.email ?? '');
+    const [homeAddress, setHomeAddress] = React.useState(person?.homeAddress ?? '');
 
     const firstNameRef = React.useRef<HTMLInputElement>(null);
     const lastNameRef = React.useRef<HTMLInputElement>(null);
@@ -150,14 +149,13 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
     const [showGroupPicker, setShowGroupPicker] = React.useState(false);
     const [showShepherdPicker, setShowShepherdPicker] = React.useState(false);
     const [showSheepPicker, setShowSheepPicker] = React.useState(false);
-    const [showAnniversaryPicker, setShowAnniversaryPicker] = React.useState(false);
     const [showFamilyPicker, setShowFamilyPicker] = React.useState(false);
-    const [familyId, setFamilyId] = React.useState<string | undefined>(person.familyId);
+    const [familyId, setFamilyId] = React.useState<string | undefined>(person?.familyId);
 
-    const initShepherdPersona = person.isShepherd
-      ? data.personas.find((p) => p.personId === person.id)
+    const initShepherdPersona = person?.isShepherd
+      ? data.personas.find((p) => p.personId === person!.id)
       : null;
-    const shepherdId = initShepherdPersona?.id ?? (isShepherd ? person.id : null);
+    const shepherdId = initShepherdPersona?.id ?? (isShepherd && person ? person.id : null);
     const [sheepIds, setSheepIds] = React.useState<string[]>(() =>
       shepherdId ? data.people.filter((p) => p.assignedShepherdIds.includes(shepherdId)).map((p) => p.id) : []
     );
@@ -201,6 +199,45 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
     React.useImperativeHandle(ref, () => ({
       save: async () => {
         if (!firstName.trim()) return;
+
+        if (!person) {
+          const newId = await addPerson({
+            englishName: fullName,
+            chineseName: chineseName.trim() || undefined,
+            language: language.length > 0 ? language : ['English'],
+            gender: gender || undefined,
+            birthday: birthday || undefined,
+            maritalStatus: maritalStatus || undefined,
+            anniversary: maritalStatus === 'married' && anniversary ? anniversary : undefined,
+            membershipStatus: status,
+            churchAttendance: attendance,
+            membershipDate: status === 'member' && membershipDate ? membershipDate : undefined,
+            baptismDate: baptismDate || undefined,
+            isShepherd: isShepherd || undefined,
+            isBeingDiscipled: isBeingDiscipled || undefined,
+            appRole,
+            churchPositions: churchPositions.length > 0 ? churchPositions : undefined,
+            phone: phone.trim() || undefined,
+            homePhone: homePhone.trim() || undefined,
+            email: email.trim() || undefined,
+            homeAddress: homeAddress.trim() || undefined,
+          });
+          if (familyId) {
+            const fam = data.families.find((f) => f.id === familyId);
+            if (fam) await updateFamilyMembers(familyId, [...fam.memberIds, newId]);
+          }
+          await assignGroupsToPerson(newId, groupIds);
+          await assignShepherds(newId, shepherdIds);
+          if (isShepherd && sheepIds.length > 0) {
+            for (const sheepId of sheepIds) {
+              const sheep = data.people.find((p) => p.id === sheepId);
+              if (sheep) await assignShepherds(sheepId, [...sheep.assignedShepherdIds, newId]);
+            }
+          }
+          onSaved();
+          return;
+        }
+
         const originalFamilyId = person.familyId;
         if (familyId !== originalFamilyId) {
           if (originalFamilyId) {
@@ -417,11 +454,11 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
               onClick={() => setOpenPicker('marital')}
             />
             {maritalStatus === 'married' && (
-              <PickerRow
+              <FloatingDateRow
                 icon={<Sparkle size={16} color="var(--text-muted)" />}
                 label="Anniversary"
-                value={anniversary ? fmtDate(anniversary) : 'Not set'}
-                onClick={() => setShowAnniversaryPicker(true)}
+                value={anniversary}
+                onChange={setAnniversary}
               />
             )}
           </FormSection>
@@ -504,7 +541,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
               <span style={{ ...labelStyle, flex: 1 }}>Is Shepherd?</span>
               <Toggle on={isShepherd} />
             </button>
-            {isShepherd && shepherdId && (
+            {isShepherd && (shepherdId || !person) && (
               <button
                 className="field-row-hover"
                 onClick={() => setShowSheepPicker(true)}
@@ -607,6 +644,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
               resizable
             />
           </FormSection>
+
         </div>
 
         {openPicker === 'status' && (
@@ -662,7 +700,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
             }}
             onClose={() => setOpenPicker(null)}
             isAdmin={currentPersona.role === 'admin'}
-            personName={person.englishName.split(' ')[0]}
+            personName={(person?.englishName ?? fullName).split(' ')[0]}
           />
         )}
         {showLanguagePicker && (
@@ -707,9 +745,9 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
             onBack={() => setShowShepherdPicker(false)}
           />
         )}
-        {showSheepPicker && shepherdId && (
+        {showSheepPicker && (shepherdId || !person) && (
           <SheepPickerSheet
-            people={data.people.filter((p) => p.id !== person.id)}
+            people={data.people.filter((p) => !person || p.id !== person.id)}
             currentIds={sheepIds}
             onConfirm={(ids) => {
               setSheepIds(ids);
@@ -718,7 +756,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
             onBack={() => setShowSheepPicker(false)}
           />
         )}
-        {showInviteRow && showInvite && (
+        {showInviteRow && showInvite && person && (
           <InviteSheet
             onClose={() => setShowInvite(false)}
             initialEmail={person.email ?? ''}
@@ -737,18 +775,6 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
               setShowFamilyPicker(false);
             }}
             onBack={() => setShowFamilyPicker(false)}
-          />
-        )}
-        {showAnniversaryPicker && (
-          <DatePickerSheet
-            date={anniversary || new Date().toISOString().slice(0, 10)}
-            time="09:00"
-            includeTime={false}
-            onConfirm={(date) => {
-              setAnniversary(date);
-              setShowAnniversaryPicker(false);
-            }}
-            onClose={() => setShowAnniversaryPicker(false)}
           />
         )}
       </>

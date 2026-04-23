@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { MagnifyingGlass, CheckCircle, Check } from '@phosphor-icons/react';
+import { useRouter } from 'next/navigation';
+import { MagnifyingGlass, Check } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { BottomSheet, ModalHeader } from './BottomSheet';
 import { MEMBER_AVATAR_PALETTE } from '@/lib/constants';
@@ -33,6 +34,7 @@ function suggestFamilyName(
 
 export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
   const { data, addFamily, setFullPageModalOpen } = useApp();
+  const router = useRouter();
   React.useEffect(() => {
     setFullPageModalOpen(true);
     return () => setFullPageModalOpen(false);
@@ -79,11 +81,14 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
     }
   }, [step]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (!familyName.trim() || selectedIds.length === 0) return;
-    addFamily(`${familyName.trim()} Family`, selectedIds);
+    const familyId = await addFamily(`${familyName.trim()} Family`, selectedIds);
     setSubmitted(true);
-    setTimeout(() => onClose(), 1600);
+    setTimeout(() => {
+      onClose();
+      router.push(`/family/${familyId}`);
+    }, 1600);
   };
 
   const selectedPeople = data.people.filter((p) => selectedIds.includes(p.id));
@@ -212,24 +217,22 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
                         </p>
                       )}
                     </div>
-                    {isSelected ? (
-                      <CheckCircle
-                        size={22}
-                        weight="fill"
-                        color="var(--sage)"
-                        style={{ flexShrink: 0 }}
-                      />
-                    ) : (
-                      <div
-                        style={{
-                          width: 22,
-                          height: 22,
-                          borderRadius: '50%',
-                          border: '0.09375rem solid var(--border)',
-                          flexShrink: 0,
-                        }}
-                      />
-                    )}
+                    <div
+                      style={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: 5,
+                        flexShrink: 0,
+                        border: isSelected ? 'none' : '0.09375rem solid var(--border)',
+                        background: isSelected ? 'var(--sage)' : 'transparent',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        transition: 'background 0.15s',
+                      }}
+                    >
+                      {isSelected && <Check size={11} color="var(--on-sage)" weight="bold" />}
+                    </div>
                   </button>
                 );
               })}

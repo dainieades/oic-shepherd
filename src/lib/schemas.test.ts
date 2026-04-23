@@ -40,8 +40,6 @@ describe('PersonRowSchema', () => {
       home_phone: '6269876543',
       email: 'john@example.com',
       home_address: '123 Main St',
-      spiritual_needs: 'Prayer for work',
-      physical_needs: null,
       is_shepherd: true,
       is_being_discipled: false,
       app_role: 'shepherd',

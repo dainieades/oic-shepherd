@@ -30,7 +30,7 @@ import { mapPerson, mapFamily, mapPersona, syncGoogleAvatar, mapNote, mapNotice,
 
 // ── Shared filter types (exported so pages can import them) ──────────────────
 
-export type HomeSortKey = 'last-contacted' | 'last-contacted-recent' | 'name' | 'name-desc';
+export type HomeSortKey = 'last-contacted' | 'last-contacted-recent' | 'name' | 'name-desc' | 'last-name' | 'last-name-desc';
 
 export interface HomeFilters {
   shepherds: string[];
@@ -90,7 +90,7 @@ interface AppContextType {
     >
   ) => Promise<string>;
   deletePerson: (personId: string) => void;
-  addFamily: (label: string, memberIds: string[]) => void;
+  addFamily: (label: string, memberIds: string[]) => Promise<string>;
   updatePerson: (
     personId: string,
     updates: Partial<
@@ -113,8 +113,6 @@ interface AppContextType {
         | 'baptismDate'
         | 'anniversary'
         | 'followUpFrequencyDays'
-        | 'spiritualNeeds'
-        | 'physicalNeeds'
         | 'isShepherd'
         | 'isBeingDiscipled'
         | 'churchPositions'
@@ -294,10 +292,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
 
       const membersByFamily: Record<string, string[]> = {};
+      const familyByPerson: Record<string, string> = {};
       for (const r of familyMemberRows ?? []) {
         const row = r as { family_id: string; person_id: string };
         if (!membersByFamily[row.family_id]) membersByFamily[row.family_id] = [];
         membersByFamily[row.family_id].push(row.person_id);
+        familyByPerson[row.person_id] = row.family_id;
       }
 
       const membersByGroup: Record<string, string[]> = {};
@@ -314,9 +314,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
         assignedByPersona[row.persona_id].push(row.person_id);
       }
 
-      const people = (peopleRows as Record<string, unknown>[]).map((r) =>
-        mapPerson(r, shepherdsByPerson[r.id as string] ?? [], groupsByPerson[r.id as string] ?? [])
-      );
+      const people = (peopleRows as Record<string, unknown>[]).map((r) => {
+        const person = mapPerson(r, shepherdsByPerson[r.id as string] ?? [], groupsByPerson[r.id as string] ?? []);
+        const derivedFamilyId = familyByPerson[r.id as string];
+        if (derivedFamilyId) person.familyId = derivedFamilyId;
+        return person;
+      });
 
       const families = (familyRows as Record<string, unknown>[]).map((r) =>
         mapFamily(r, membersByFamily[r.id as string] ?? [])
@@ -799,8 +802,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
           home_phone: person.homePhone ?? null,
           email: person.email ?? null,
           home_address: person.homeAddress ?? null,
-          spiritual_needs: person.spiritualNeeds ?? null,
-          physical_needs: person.physicalNeeds ?? null,
           is_shepherd: person.isShepherd ?? false,
           church_positions: person.churchPositions ?? [],
           membership_status: person.membershipStatus,
@@ -844,8 +845,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
           | 'baptismDate'
           | 'anniversary'
           | 'followUpFrequencyDays'
-          | 'spiritualNeeds'
-          | 'physicalNeeds'
           | 'isShepherd'
           | 'isBeingDiscipled'
           | 'churchPositions'
@@ -880,8 +879,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (updates.anniversary !== undefined) dbUpdates.anniversary = updates.anniversary;
       if (updates.followUpFrequencyDays !== undefined)
         dbUpdates.follow_up_frequency_days = updates.followUpFrequencyDays;
-      if (updates.spiritualNeeds !== undefined) dbUpdates.spiritual_needs = updates.spiritualNeeds;
-      if (updates.physicalNeeds !== undefined) dbUpdates.physical_needs = updates.physicalNeeds;
       if (updates.isShepherd !== undefined) dbUpdates.is_shepherd = updates.isShepherd;
       if (updates.isBeingDiscipled !== undefined)
         dbUpdates.is_being_discipled = updates.isBeingDiscipled;
@@ -952,7 +949,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // ── Families ──────────────────────────────────────────────────────────
-  const addFamily = useCallback(async (label: string, memberIds: string[]): Promise<void> => {
+  const addFamily = useCallback(async (label: string, memberIds: string[]): Promise<string> => {
     const familyId = generateId();
     const family: Family = { id: familyId, label, tags: [], memberIds };
     let snapshot: AppData | undefined;
@@ -977,6 +974,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (snapshot) setData(snapshot);
       showToast(SAVE_ERROR_MSG, 'error');
     }
+    return familyId;
   }, []);
 
   const updateFamily = useCallback(
