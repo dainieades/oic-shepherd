@@ -295,6 +295,21 @@ export default function FilterPanel({ show, onClose }: { show: boolean; onClose:
                       My Sheep
                     </CheckRow>
                   )}
+                {'no shepherd'.includes(shepherdSearch.toLowerCase()) && (
+                  <CheckRow
+                    checked={draft.shepherds.includes('none')}
+                    onToggle={() =>
+                      setDraft((d) => ({
+                        ...d,
+                        shepherds: d.shepherds.includes('none')
+                          ? d.shepherds.filter((s) => s !== 'none')
+                          : [...d.shepherds, 'none'],
+                      }))
+                    }
+                  >
+                    No shepherd
+                  </CheckRow>
+                )}
                 {(() => {
                   const personaPersonIds = new Set(
                     data.personas.map((p) => p.personId).filter(Boolean)
@@ -509,6 +524,19 @@ export default function FilterPanel({ show, onClose }: { show: boolean; onClose:
                 >
                   Group
                 </p>
+                <CheckRow
+                  checked={draft.groups.includes('none')}
+                  onToggle={() =>
+                    setDraft((d) => ({
+                      ...d,
+                      groups: d.groups.includes('none')
+                        ? d.groups.filter((id) => id !== 'none')
+                        : [...d.groups, 'none'],
+                    }))
+                  }
+                >
+                  No group
+                </CheckRow>
                 {data.groups.map((g) => (
                   <CheckRow
                     key={g.id}
@@ -583,6 +611,19 @@ export default function FilterPanel({ show, onClose }: { show: boolean; onClose:
                 >
                   Church Position
                 </p>
+                <CheckRow
+                  checked={draft.positions.includes('none')}
+                  onToggle={() =>
+                    setDraft((d) => ({
+                      ...d,
+                      positions: d.positions.includes('none')
+                        ? d.positions.filter((x) => x !== 'none')
+                        : [...d.positions, 'none'],
+                    }))
+                  }
+                >
+                  No church position
+                </CheckRow>
                 {CHURCH_POSITIONS.map((pos) => (
                   <CheckRow
                     key={pos}

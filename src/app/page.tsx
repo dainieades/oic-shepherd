@@ -94,7 +94,9 @@ const [showSearch, setShowSearch] = React.useState(false);
     const entries: Entry[] = [];
 
     const includesMine = filters.shepherds.includes('mine');
-    const specificShepherdIds = filters.shepherds.filter((s) => s !== 'mine');
+    const includesNoShepherd = filters.shepherds.includes('none');
+    const specificShepherdIds = filters.shepherds.filter((s) => s !== 'mine' && s !== 'none');
+    const includesNoGroup = filters.groups.includes('none');
 
     // Pre-compute last note timestamp per person (for sort)
     const lastNoteTime: Record<string, number> = {};
@@ -120,7 +122,9 @@ const [showSearch, setShowSearch] = React.useState(false);
         const matchesSpecific = specificShepherdIds.some((sid) =>
           members.some((m) => m.assignedShepherdIds.includes(sid))
         );
-        if (!matchesMine && !matchesSpecific) continue;
+        const matchesNone =
+          includesNoShepherd && members.every((m) => m.assignedShepherdIds.length === 0);
+        if (!matchesMine && !matchesSpecific && !matchesNone) continue;
       }
       if (
         filters.archiveFilter === 'hide' &&
@@ -145,11 +149,12 @@ const [showSearch, setShowSearch] = React.useState(false);
       )
         continue;
       // Group filter (OR across selected)
-      if (
-        filters.groups.length > 0 &&
-        !members.some((m) => filters.groups.some((gid) => m.groupIds.includes(gid)))
-      )
-        continue;
+      if (filters.groups.length > 0) {
+        const specificGroupIds = filters.groups.filter((g) => g !== 'none');
+        const matchesGroup = specificGroupIds.length > 0 && members.some((m) => specificGroupIds.some((gid) => m.groupIds.includes(gid)));
+        const matchesNoGroup = includesNoGroup && members.every((m) => m.groupIds.length === 0);
+        if (!matchesGroup && !matchesNoGroup) continue;
+      }
       // Discipleship filter — OR logic: family passes if any member matches at least one selected state
       if (filters.discipleship.length > 0) {
         const passes = members.some(
@@ -166,13 +171,12 @@ const [showSearch, setShowSearch] = React.useState(false);
       )
         continue;
       // Position filter (OR across selected)
-      if (
-        filters.positions.length > 0 &&
-        !members.some((m) =>
-          filters.positions.some((pos) => (m.churchPositions ?? []).includes(pos))
-        )
-      )
-        continue;
+      if (filters.positions.length > 0) {
+        const specificPositions = filters.positions.filter((p) => p !== 'none');
+        const matchesPosition = specificPositions.length > 0 && members.some((m) => specificPositions.some((pos) => (m.churchPositions ?? []).includes(pos)));
+        const matchesNoPosition = filters.positions.includes('none') && members.every((m) => (m.churchPositions ?? []).length === 0);
+        if (!matchesPosition && !matchesNoPosition) continue;
+      }
       // Language filter (OR across selected)
       if (
         filters.languages.length > 0 &&
@@ -196,7 +200,8 @@ const [showSearch, setShowSearch] = React.useState(false);
         const matchesSpecific = specificShepherdIds.some((sid) =>
           p.assignedShepherdIds.includes(sid)
         );
-        if (!matchesMine && !matchesSpecific) continue;
+        const matchesNone = includesNoShepherd && p.assignedShepherdIds.length === 0;
+        if (!matchesMine && !matchesSpecific && !matchesNone) continue;
       }
       if (filters.archiveFilter === 'hide' && p.churchAttendance === 'archived') continue;
       if (filters.archiveFilter === 'only' && p.churchAttendance !== 'archived') continue;
@@ -204,8 +209,12 @@ const [showSearch, setShowSearch] = React.useState(false);
         continue;
       if (filters.attendances.length > 0 && !filters.attendances.includes(p.churchAttendance))
         continue;
-      if (filters.groups.length > 0 && !filters.groups.some((gid) => p.groupIds.includes(gid)))
-        continue;
+      if (filters.groups.length > 0) {
+        const specificGroupIds = filters.groups.filter((g) => g !== 'none');
+        const matchesGroup = specificGroupIds.length > 0 && specificGroupIds.some((gid) => p.groupIds.includes(gid));
+        const matchesNoGroup = includesNoGroup && p.groupIds.length === 0;
+        if (!matchesGroup && !matchesNoGroup) continue;
+      }
       if (filters.discipleship.length > 0) {
         const passes =
           (filters.discipleship.includes('in') && p.isBeingDiscipled) ||
@@ -214,11 +223,12 @@ const [showSearch, setShowSearch] = React.useState(false);
       }
       if (filters.appRoles.length > 0 && !filters.appRoles.includes(p.appRole ?? 'no-access'))
         continue;
-      if (
-        filters.positions.length > 0 &&
-        !filters.positions.some((pos) => (p.churchPositions ?? []).includes(pos))
-      )
-        continue;
+      if (filters.positions.length > 0) {
+        const specificPositions = filters.positions.filter((pos) => pos !== 'none');
+        const matchesPosition = specificPositions.length > 0 && specificPositions.some((pos) => (p.churchPositions ?? []).includes(pos));
+        const matchesNoPosition = filters.positions.includes('none') && (p.churchPositions ?? []).length === 0;
+        if (!matchesPosition && !matchesNoPosition) continue;
+      }
       if (
         filters.languages.length > 0 &&
         !filters.languages.some((lang) => p.language.includes(lang))
@@ -309,7 +319,7 @@ const [showSearch, setShowSearch] = React.useState(false);
   const chips: { key: string; label: string; clear: () => void }[] = [];
   filters.shepherds.forEach((sid) => {
     const label =
-      sid === 'mine' ? 'My Sheep' : (data.personas.find((p) => p.id === sid)?.name ?? sid);
+      sid === 'mine' ? 'My Sheep' : sid === 'none' ? 'No shepherd' : (data.personas.find((p) => p.id === sid)?.name ?? sid);
     chips.push({
       key: `s-${sid}`,
       label,
@@ -336,7 +346,7 @@ const [showSearch, setShowSearch] = React.useState(false);
     const g = data.groups.find((g) => g.id === gid);
     chips.push({
       key: `g-${gid}`,
-      label: g?.name ?? gid,
+      label: gid === 'none' ? 'No group' : (g?.name ?? gid),
       clear: () => setFilters((f) => ({ ...f, groups: f.groups.filter((g) => g !== gid) })),
     });
   });
@@ -376,7 +386,7 @@ const [showSearch, setShowSearch] = React.useState(false);
   filters.positions.forEach((pos) => {
     chips.push({
       key: `pos-${pos}`,
-      label: pos,
+      label: pos === 'none' ? 'No church position' : pos,
       clear: () =>
         setFilters((f) => ({ ...f, positions: f.positions.filter((x) => x !== pos) })),
     });

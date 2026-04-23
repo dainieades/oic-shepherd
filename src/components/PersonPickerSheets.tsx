@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { MagnifyingGlass, Check } from '@phosphor-icons/react';
+import { CheckboxMark } from './CheckRow';
 import { SHEPHERD_AVATAR_PALETTE, Z_SHEET } from '@/lib/constants';
 import { CHURCH_POSITIONS } from '@/lib/types';
 import { AvatarBadge } from './AvatarBadge';
@@ -124,22 +125,7 @@ export function GroupPickerSheet({
                     {g.name}
                   </p>
                 </div>
-                <div
-                  style={{
-                    width: 20,
-                    height: 20,
-                    borderRadius: 5,
-                    flexShrink: 0,
-                    border: isSel ? 'none' : '0.09375rem solid var(--border)',
-                    background: isSel ? 'var(--blue)' : 'transparent',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transition: 'background 0.15s',
-                  }}
-                >
-                  {isSel && <Check size={11} color="var(--on-sage)" weight="bold" />}
-                </div>
+                <CheckboxMark checked={isSel} />
               </button>
             );
           })}
@@ -312,22 +298,7 @@ export function SheepPickerSheet({
                     </p>
                   )}
                 </div>
-                <div
-                  style={{
-                    width: 20,
-                    height: 20,
-                    borderRadius: 5,
-                    flexShrink: 0,
-                    border: isSel ? 'none' : '0.09375rem solid var(--border)',
-                    background: isSel ? 'var(--sage)' : 'transparent',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transition: 'background 0.15s',
-                  }}
-                >
-                  {isSel && <Check size={11} color="var(--on-sage)" weight="bold" />}
-                </div>
+                <CheckboxMark checked={isSel} />
               </button>
             );
           })}
@@ -464,22 +435,7 @@ export function ShepherdPickerSheet({
                     {entry.subtitle}
                   </p>
                 </div>
-                <div
-                  style={{
-                    width: 20,
-                    height: 20,
-                    borderRadius: 5,
-                    flexShrink: 0,
-                    border: isSel ? 'none' : '0.09375rem solid var(--border)',
-                    background: isSel ? 'var(--sage)' : 'transparent',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transition: 'background 0.15s',
-                  }}
-                >
-                  {isSel && <Check size={11} color="var(--on-sage)" weight="bold" />}
-                </div>
+                <CheckboxMark checked={isSel} />
               </button>
             );
           })}
@@ -618,22 +574,7 @@ export function PositionPickerSheet({
                     {pos}
                   </p>
                 </div>
-                <div
-                  style={{
-                    width: 20,
-                    height: 20,
-                    borderRadius: 5,
-                    flexShrink: 0,
-                    border: isSel ? 'none' : '0.09375rem solid var(--border)',
-                    background: isSel ? 'var(--sage)' : 'transparent',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transition: 'background 0.15s',
-                  }}
-                >
-                  {isSel && <Check size={11} color="var(--on-sage)" weight="bold" />}
-                </div>
+                <CheckboxMark checked={isSel} />
               </button>
             );
           })}

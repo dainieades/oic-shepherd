@@ -9,6 +9,27 @@ interface CheckRowProps {
   children: React.ReactNode;
 }
 
+export function CheckboxMark({ checked }: { checked: boolean }) {
+  return (
+    <div
+      style={{
+        width: 20,
+        height: 20,
+        borderRadius: 5,
+        flexShrink: 0,
+        border: checked ? 'none' : '0.09375rem solid var(--border)',
+        background: checked ? 'var(--sage)' : 'transparent',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        transition: 'background 0.15s',
+      }}
+    >
+      {checked && <Check size={11} color="var(--on-sage)" weight="bold" />}
+    </div>
+  );
+}
+
 export function CheckRow({ checked, onToggle, children }: CheckRowProps) {
   return (
     <button

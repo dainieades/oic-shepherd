@@ -2,9 +2,10 @@
 
 import React from 'react';
 import { type AppData } from '@/lib/types';
-import { CaretLeft, MagnifyingGlass, Check, House } from '@phosphor-icons/react';
+import { CaretLeft, MagnifyingGlass, House } from '@phosphor-icons/react';
 import { SHEPHERD_AVATAR_PALETTE } from '@/lib/constants';
 import { AvatarBadge } from './AvatarBadge';
+import { CheckboxMark } from './CheckRow';
 
 interface PersonFamilyPickerProps {
   data: AppData;
@@ -14,6 +15,10 @@ interface PersonFamilyPickerProps {
   onConfirm: (familyIds: string[], personIds: string[]) => void;
   onBack: () => void;
 }
+
+type PickerItem =
+  | { kind: 'family'; id: string; label: string; subtitle: string; photo?: string; paletteIndex: number }
+  | { kind: 'person'; id: string; label: string; subtitle?: string; photo?: string; paletteIndex: number };
 
 export default function PersonFamilyPicker({
   data,
@@ -40,24 +45,67 @@ export default function PersonFamilyPicker({
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
 
-  const families = data.families.filter((f) => {
-    if (allowedPersonIds && !f.memberIds.some((id) => allowedPersonIds.includes(id))) return false;
-    if (!q) return true;
-    if (f.label.toLowerCase().includes(q)) return true;
-    return data.people
-      .filter((p) => f.memberIds.includes(p.id))
-      .some(
-        (m) =>
-          m.englishName.toLowerCase().includes(q) || (m.chineseName && m.chineseName.includes(q))
-      );
-  });
+  const familyItems: PickerItem[] = data.families
+    .filter((f) => {
+      if (allowedPersonIds && !f.memberIds.some((id) => allowedPersonIds.includes(id))) return false;
+      if (!q) return true;
+      if (f.label.toLowerCase().includes(q)) return true;
+      return data.people
+        .filter((p) => f.memberIds.includes(p.id))
+        .some(
+          (m) =>
+            m.englishName.toLowerCase().includes(q) || (m.chineseName && m.chineseName.includes(q))
+        );
+    })
+    .map((f, fi) => ({
+      kind: 'family' as const,
+      id: f.id,
+      label: f.label,
+      subtitle: data.people
+        .filter((p) => f.memberIds.includes(p.id))
+        .map((m) => m.englishName.split(' ')[0])
+        .join(', '),
+      photo: f.photo,
+      paletteIndex: fi,
+    }));
 
-  const individuals = data.people.filter((p) => {
-    if (p.familyId) return false;
-    if (allowedPersonIds && !allowedPersonIds.includes(p.id)) return false;
-    if (!q) return true;
-    return p.englishName.toLowerCase().includes(q) || (p.chineseName && p.chineseName.includes(q));
-  });
+  const personItems: PickerItem[] = data.people
+    .filter((p) => {
+      if (p.familyId) return false;
+      if (allowedPersonIds && !allowedPersonIds.includes(p.id)) return false;
+      if (!q) return true;
+      return (
+        p.englishName.toLowerCase().includes(q) ||
+        (p.chineseName && p.chineseName.includes(q))
+      );
+    })
+    .map((p, pi) => ({
+      kind: 'person' as const,
+      id: p.id,
+      label: p.englishName,
+      subtitle: p.chineseName,
+      photo: p.photo,
+      paletteIndex: pi,
+    }));
+
+  const items: PickerItem[] = [...familyItems, ...personItems];
+
+  const allFamilyIds = familyItems.map((f) => f.id);
+  const allPersonIds = personItems.map((p) => p.id);
+  const allSelected =
+    items.length > 0 &&
+    allFamilyIds.every((id) => selectedFamilyIds.includes(id)) &&
+    allPersonIds.every((id) => selectedPersonIds.includes(id));
+
+  const toggleAll = () => {
+    if (allSelected) {
+      setSelectedFamilyIds((prev) => prev.filter((id) => !allFamilyIds.includes(id)));
+      setSelectedPersonIds((prev) => prev.filter((id) => !allPersonIds.includes(id)));
+    } else {
+      setSelectedFamilyIds((prev) => [...new Set([...prev, ...allFamilyIds])]);
+      setSelectedPersonIds((prev) => [...new Set([...prev, ...allPersonIds])]);
+    }
+  };
 
   return (
     <div
@@ -123,7 +171,7 @@ export default function PersonFamilyPicker({
           border: '1px solid var(--border)',
           borderRadius: 'var(--radius-sm)',
           padding: '0.5625rem 0.75rem',
-          marginBottom: 16,
+          marginBottom: 8,
           flexShrink: 0,
         }}
       >
@@ -155,159 +203,106 @@ export default function PersonFamilyPicker({
               padding: 0,
             }}
           >
-            x
+            ×
           </button>
         )}
       </div>
 
+      {items.length > 0 && (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            marginBottom: 6,
+            flexShrink: 0,
+          }}
+        >
+          <button
+            onClick={toggleAll}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: 12,
+              fontWeight: 600,
+              color: 'var(--sage)',
+              padding: 0,
+            }}
+          >
+            {allSelected ? 'Deselect all' : 'Select all'}
+          </button>
+        </div>
+      )}
+
       <div style={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
-        {families.length > 0 && (
-          <div style={{ marginBottom: 8 }}>
-            <p
+        {items.map((item) => {
+          const palette = SHEPHERD_AVATAR_PALETTE[item.paletteIndex % SHEPHERD_AVATAR_PALETTE.length];
+          const selected =
+            item.kind === 'family'
+              ? selectedFamilyIds.includes(item.id)
+              : selectedPersonIds.includes(item.id);
+          const onToggle = item.kind === 'family'
+            ? () => toggleFamily(item.id)
+            : () => togglePerson(item.id);
+
+          return (
+            <button
+              key={`${item.kind}-${item.id}`}
+              onClick={onToggle}
               style={{
-                fontSize: 10,
-                fontWeight: 600,
-                color: 'var(--text-muted)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.06em',
-                marginBottom: 6,
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                padding: '0.625rem 0',
+                borderBottom: '1px solid var(--border-light)',
+                background: selected ? 'var(--sage-light)' : 'none',
+                border: 'none',
+                borderBottomColor: 'var(--border-light)',
+                cursor: 'pointer',
+                textAlign: 'left',
               }}
             >
-              Families
-            </p>
-            {families.map((f, fi) => {
-              const members = data.people.filter((p) => f.memberIds.includes(p.id));
-              const palette = SHEPHERD_AVATAR_PALETTE[fi % SHEPHERD_AVATAR_PALETTE.length];
-              const selected = selectedFamilyIds.includes(f.id);
-              return (
-                <button
-                  key={f.id}
-                  onClick={() => toggleFamily(f.id)}
-                  className="picker-row"
+              <AvatarBadge
+                name={item.label}
+                photo={item.photo}
+                size={36}
+                bg={selected ? 'var(--sage)' : palette.bg}
+                color={selected ? 'var(--on-sage)' : palette.color}
+                icon={item.kind === 'family' ? <House size={18} /> : undefined}
+              />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p
                   style={{
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 12,
-                    paddingTop: 10,
-                    paddingBottom: 10,
-                    paddingLeft: 14,
-                    paddingRight: 14,
-                    borderBottom: '1px solid var(--border-light)',
-                    background: selected ? 'var(--sage-light)' : 'none',
-                    border: 'none',
-                    borderBottomColor: 'var(--border-light)',
-                    cursor: 'pointer',
-                    textAlign: 'left',
+                    fontSize: 14,
+                    fontWeight: selected ? 600 : 400,
+                    color: selected ? 'var(--sage)' : 'var(--text-primary)',
+                    margin: 0,
                   }}
                 >
-                  <AvatarBadge
-                    name={f.label}
-                    photo={f.photo}
-                    size={36}
-                    bg={palette.bg}
-                    color={palette.color}
-                    icon={<House size={18} />}
-                  />
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <p
-                      style={{
-                        fontSize: 14,
-                        fontWeight: 600,
-                        color: 'var(--text-primary)',
-                        marginBottom: 1,
-                      }}
-                    >
-                      {f.label}
-                    </p>
-                    <p
-                      style={{
-                        fontSize: 12,
-                        color: 'var(--text-muted)',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {members.map((m) => m.englishName.split(' ')[0]).join(', ')}
-                    </p>
-                  </div>
-                  <CheckCircle selected={selected} />
-                </button>
-              );
-            })}
-          </div>
-        )}
+                  {item.label}
+                </p>
+                {item.subtitle && (
+                  <p
+                    style={{
+                      fontSize: 12,
+                      color: 'var(--text-muted)',
+                      margin: 0,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {item.subtitle}
+                  </p>
+                )}
+              </div>
+              <CheckboxMark checked={selected} />
+            </button>
+          );
+        })}
 
-        {individuals.length > 0 && (
-          <div>
-            <p
-              style={{
-                fontSize: 10,
-                fontWeight: 600,
-                color: 'var(--text-muted)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.06em',
-                marginBottom: 6,
-              }}
-            >
-              Individuals
-            </p>
-            {individuals.map((p, pi) => {
-              const palette = SHEPHERD_AVATAR_PALETTE[pi % SHEPHERD_AVATAR_PALETTE.length];
-              const selected = selectedPersonIds.includes(p.id);
-              return (
-                <button
-                  key={p.id}
-                  onClick={() => togglePerson(p.id)}
-                  className="picker-row"
-                  style={{
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 12,
-                    paddingTop: 10,
-                    paddingBottom: 10,
-                    paddingLeft: 14,
-                    paddingRight: 14,
-                    borderBottom: '1px solid var(--border-light)',
-                    background: selected ? 'var(--sage-light)' : 'none',
-                    border: 'none',
-                    borderBottomColor: 'var(--border-light)',
-                    cursor: 'pointer',
-                    textAlign: 'left',
-                  }}
-                >
-                  <AvatarBadge
-                    name={p.englishName}
-                    photo={p.photo}
-                    size={36}
-                    bg={palette.bg}
-                    color={palette.color}
-                  />
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <p
-                      style={{
-                        fontSize: 14,
-                        fontWeight: 600,
-                        color: 'var(--text-primary)',
-                        marginBottom: 1,
-                      }}
-                    >
-                      {p.englishName}
-                    </p>
-                    {p.chineseName && (
-                      <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>{p.chineseName}</p>
-                    )}
-                  </div>
-                  <CheckCircle selected={selected} />
-                </button>
-              );
-            })}
-          </div>
-        )}
-
-        {families.length === 0 && individuals.length === 0 && (
+        {items.length === 0 && (
           <p
             style={{
               fontSize: 13,
@@ -321,34 +316,5 @@ export default function PersonFamilyPicker({
         )}
       </div>
     </div>
-  );
-}
-
-function CheckCircle({ selected }: { selected: boolean }) {
-  return selected ? (
-    <div
-      style={{
-        width: 22,
-        height: 22,
-        borderRadius: '50%',
-        flexShrink: 0,
-        background: 'var(--sage)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <Check size={12} color="var(--on-sage)" weight="bold" />
-    </div>
-  ) : (
-    <div
-      style={{
-        width: 22,
-        height: 22,
-        borderRadius: '50%',
-        flexShrink: 0,
-        border: '0.09375rem solid var(--border)',
-      }}
-    />
   );
 }

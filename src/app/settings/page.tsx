@@ -17,6 +17,7 @@ import {
   CircleHalf,
 } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
+import { useToast } from '@/components/Toast';
 import { createClient } from '@/utils/supabase/client';
 import type { User } from '@supabase/supabase-js';
 import { MAP_PROVIDER_LABELS } from '@/lib/utils';
@@ -24,6 +25,7 @@ import { BACKDROP_COLOR, Z_NESTED } from '@/lib/constants';
 
 export default function SettingsPage() {
   const { data, currentPersona, switchPersona, themePreference, mapProvider } = useApp();
+  const { showToast } = useToast();
   const router = useRouter();
   const [scrolled, setScrolled] = React.useState(false);
   const [showSignOutConfirm, setShowSignOutConfirm] = React.useState(false);
@@ -90,7 +92,7 @@ export default function SettingsPage() {
     });
     if (error) {
       setLinkingGoogle(false);
-      // error will be visible briefly before redirect — no need to show in UI
+      showToast('Could not link Google account. Try again.', 'error');
       console.error('Link Google error:', error.message);
     }
   };
