@@ -194,6 +194,7 @@ export default function TodosPage() {
             setSearch('');
           } else {
             setShowSearch(true);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             setTimeout(() => searchInputRef.current?.focus(), 50);
           }
         }}

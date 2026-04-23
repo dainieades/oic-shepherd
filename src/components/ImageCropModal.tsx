@@ -13,12 +13,12 @@ interface Props {
 
 const CROP_DIAMETER = 280;
 const OUTPUT_SIZE = 400;
-const MIN_SCALE = 0.3;
 const MAX_SCALE = 8;
 
 export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props) {
   const [offset, setOffset] = React.useState({ x: 0, y: 0 });
   const [scale, setScale] = React.useState(1);
+  const [minScale, setMinScale] = React.useState(0.01);
   const [naturalSize, setNaturalSize] = React.useState({ w: 0, h: 0 });
 
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
@@ -35,8 +35,9 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
     img.onload = () => {
       const { naturalWidth: w, naturalHeight: h } = img;
       setNaturalSize({ w, h });
-      const minDim = Math.min(w, h);
-      setScale(Math.max(MIN_SCALE, CROP_DIAMETER / minDim));
+      const fitScale = CROP_DIAMETER / Math.min(w, h);
+      setMinScale(fitScale);
+      setScale(fitScale);
       setOffset({ x: 0, y: 0 });
     };
     img.src = imageSrc;
@@ -85,7 +86,7 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
       const dy = e.touches[0].clientY - e.touches[1].clientY;
       const dist = Math.sqrt(dx * dx + dy * dy);
       setScale(
-        Math.max(MIN_SCALE, Math.min(MAX_SCALE, pinchRef.current.initialScale * (dist / pinchRef.current.initialDist)))
+        Math.max(minScale, Math.min(MAX_SCALE, pinchRef.current.initialScale * (dist / pinchRef.current.initialDist)))
       );
     }
   };
@@ -99,7 +100,7 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
   const handleWheel = (e: React.WheelEvent) => {
     e.preventDefault();
     const clamped = Math.max(-30, Math.min(30, e.deltaY));
-    setScale((s) => Math.max(MIN_SCALE, Math.min(MAX_SCALE, s * (1 - clamped * 0.01))));
+    setScale((s) => Math.max(minScale, Math.min(MAX_SCALE, s * (1 - clamped * 0.01))));
   };
 
   const handleConfirm = () => {
@@ -251,11 +252,11 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
           min={0}
           max={100}
           value={Math.round(
-            ((Math.log(scale) - Math.log(MIN_SCALE)) / (Math.log(MAX_SCALE) - Math.log(MIN_SCALE))) * 100
+            ((Math.log(scale) - Math.log(minScale)) / (Math.log(MAX_SCALE) - Math.log(minScale))) * 100
           )}
           onChange={(e) => {
             const t = Number(e.target.value) / 100;
-            setScale(Math.exp(Math.log(MIN_SCALE) + t * (Math.log(MAX_SCALE) - Math.log(MIN_SCALE))));
+            setScale(Math.exp(Math.log(minScale) + t * (Math.log(MAX_SCALE) - Math.log(minScale))));
           }}
           style={{ width: '100%', accentColor: '#fff', cursor: 'pointer' }}
           aria-label="Zoom"

@@ -216,6 +216,7 @@ export default function LogsPage() {
             setSearch('');
           } else {
             setShowSearch(true);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             setTimeout(() => searchInputRef.current?.focus(), 50);
           }
         }}
