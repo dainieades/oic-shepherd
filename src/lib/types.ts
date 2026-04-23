@@ -73,6 +73,8 @@ export interface Person {
   isChild?: boolean;
   createdAt: string;
   createdBy?: string; // persona ID
+  lastEditedAt?: string;
+  lastEditedByName?: string;
 }
 
 export interface Family {
@@ -143,6 +145,17 @@ export interface Notice {
   content: string;
   createdBy: string; // persona ID
   createdAt: string; // ISO datetime
+}
+
+export interface AuditLog {
+  id: string;
+  personId: string;
+  changedByPersonaId: string;
+  changedByName: string;
+  fieldName: string;
+  oldValue: string | null;
+  newValue: string | null;
+  createdAt: string;
 }
 
 export interface AppData {

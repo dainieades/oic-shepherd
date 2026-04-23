@@ -240,21 +240,15 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
 
         const originalFamilyId = person.familyId;
         if (familyId !== originalFamilyId) {
-          if (originalFamilyId) {
-            const oldFamily = data.families.find((f) => f.id === originalFamilyId);
-            if (oldFamily) {
-              await updateFamilyMembers(originalFamilyId, oldFamily.memberIds.filter((id) => id !== person.id));
-            }
-          }
-          if (familyId) {
-            const newFamily = data.families.find((f) => f.id === familyId);
-            if (newFamily && !newFamily.memberIds.includes(person.id)) {
-              await updateFamilyMembers(familyId, [...newFamily.memberIds, person.id]);
-            }
-          }
+          const oldFamily = originalFamilyId ? data.families.find((f) => f.id === originalFamilyId) : undefined;
+          const newFamily = familyId ? data.families.find((f) => f.id === familyId) : undefined;
+          await Promise.all([
+            oldFamily ? updateFamilyMembers(originalFamilyId!, oldFamily.memberIds.filter((id) => id !== person.id)) : Promise.resolve(),
+            newFamily && !newFamily.memberIds.includes(person.id) ? updateFamilyMembers(familyId!, [...newFamily.memberIds, person.id]) : Promise.resolve(),
+          ]);
         }
-        await assignGroupsToPerson(person.id, groupIds);
-        await assignShepherds(person.id, shepherdIds);
+
+        const sheepAssignments: Promise<void>[] = [];
         if (shepherdId) {
           const originalSheepIds = data.people
             .filter((p) => p.assignedShepherdIds.includes(shepherdId))
@@ -263,35 +257,41 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
           const removed = originalSheepIds.filter((id) => !sheepIds.includes(id));
           for (const id of added) {
             const p = data.people.find((p) => p.id === id);
-            if (p) await assignShepherds(id, [...p.assignedShepherdIds, shepherdId]);
+            if (p) sheepAssignments.push(assignShepherds(id, [...p.assignedShepherdIds, shepherdId]));
           }
           for (const id of removed) {
             const p = data.people.find((p) => p.id === id);
-            if (p) await assignShepherds(id, p.assignedShepherdIds.filter((sid) => sid !== shepherdId));
+            if (p) sheepAssignments.push(assignShepherds(id, p.assignedShepherdIds.filter((sid) => sid !== shepherdId)));
           }
         }
-        await updatePerson(person.id, {
-          englishName: fullName,
-          chineseName: chineseName.trim() || undefined,
-          ...(showPhotoUpload ? { photo: photo || undefined } : {}),
-          language,
-          gender: gender || undefined,
-          birthday: birthday || undefined,
-          maritalStatus: maritalStatus || undefined,
-          anniversary: maritalStatus === 'married' && anniversary ? anniversary : undefined,
-          membershipStatus: status,
-          churchAttendance: attendance,
-          membershipDate: status === 'member' && membershipDate ? membershipDate : undefined,
-          baptismDate: baptismDate || undefined,
-          isShepherd: isShepherd || undefined,
-          isBeingDiscipled: isBeingDiscipled || undefined,
-          appRole,
-          churchPositions: churchPositions.length > 0 ? churchPositions : undefined,
-          phone: phone.trim() || undefined,
-          homePhone: homePhone.trim() || undefined,
-          email: email.trim() || undefined,
-          homeAddress: homeAddress.trim() || undefined,
-        });
+
+        await Promise.all([
+          assignGroupsToPerson(person.id, groupIds),
+          assignShepherds(person.id, shepherdIds),
+          ...sheepAssignments,
+          updatePerson(person.id, {
+            englishName: fullName,
+            chineseName: chineseName.trim() || undefined,
+            ...(showPhotoUpload ? { photo: photo || undefined } : {}),
+            language,
+            gender: gender || undefined,
+            birthday: birthday || undefined,
+            maritalStatus: maritalStatus || undefined,
+            anniversary: maritalStatus === 'married' && anniversary ? anniversary : undefined,
+            membershipStatus: status,
+            churchAttendance: attendance,
+            membershipDate: status === 'member' && membershipDate ? membershipDate : undefined,
+            baptismDate: baptismDate || undefined,
+            isShepherd: isShepherd || undefined,
+            isBeingDiscipled: isBeingDiscipled || undefined,
+            appRole,
+            churchPositions: churchPositions.length > 0 ? churchPositions : undefined,
+            phone: phone.trim() || undefined,
+            homePhone: homePhone.trim() || undefined,
+            email: email.trim() || undefined,
+            homeAddress: homeAddress.trim() || undefined,
+          }),
+        ]);
         onSaved();
       },
     }));

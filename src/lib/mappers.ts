@@ -1,5 +1,5 @@
 import React from 'react';
-import { type AppData, type Persona, type Person, type Family, type Note, type Todo, type Notice } from './types';
+import { type AppData, type Persona, type Person, type Family, type Note, type Todo, type Notice, type AuditLog } from './types';
 import {
   PersonRowSchema,
   FamilyRowSchema,
@@ -7,6 +7,7 @@ import {
   NoteRowSchema,
   NoticeRowSchema,
   TodoRowSchema,
+  AuditLogRowSchema,
   type PersonRow,
   type FamilyRow,
   type NoteRow,
@@ -72,6 +73,8 @@ export function mapPerson(
     groupIds,
     createdAt: r.created_at,
     createdBy: r.created_by ?? undefined,
+    lastEditedAt: r.last_edited_at ?? undefined,
+    lastEditedByName: r.last_edited_by_name ?? undefined,
   };
 }
 
@@ -161,6 +164,20 @@ export function mapNotice(row: Record<string, unknown>): Notice {
     privacy: r.privacy ?? 'pastor-and-shepherds',
     content: r.content,
     createdBy: r.created_by,
+    createdAt: r.created_at,
+  };
+}
+
+export function mapAuditLog(row: Record<string, unknown>): AuditLog {
+  const r = AuditLogRowSchema.parse(row);
+  return {
+    id: r.id,
+    personId: r.person_id,
+    changedByPersonaId: r.changed_by_persona_id,
+    changedByName: r.changed_by_name,
+    fieldName: r.field_name,
+    oldValue: r.old_value ?? null,
+    newValue: r.new_value ?? null,
     createdAt: r.created_at,
   };
 }

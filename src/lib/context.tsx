@@ -26,7 +26,7 @@ import {
   type ThemePreference,
 } from './types';
 import { type PersonRow, type FamilyRow, type NoteRow, type NoticeRow, type TodoRow, type GroupRow } from './schemas';
-import { mapPerson, mapFamily, mapPersona, syncGoogleAvatar, mapNote, mapNotice, mapTodo } from './mappers';
+import { mapPerson, mapFamily, mapPersona, syncGoogleAvatar, mapNote, mapNotice, mapTodo, mapAuditLog } from './mappers';
 
 // ── Shared filter types (exported so pages can import them) ──────────────────
 
@@ -138,6 +138,7 @@ interface AppContextType {
   assignGroupsToFamily: (familyId: string, groupIds: string[]) => Promise<void>;
   assignShepherdsToFamily: (familyId: string, shepherdIds: string[]) => Promise<void>;
   setFollowUpFrequency: (personId: string, days: number) => void;
+  fetchAuditLogs: (personId: string) => Promise<import('./types').AuditLog[]>;
   canViewNote: (note: Note) => boolean;
   addNotice: (notice: Omit<Notice, 'id' | 'createdBy' | 'createdAt'>) => void;
   updateNotice: (
@@ -165,6 +166,22 @@ interface AppContextType {
 }
 
 const AppContext = createContext<AppContextType | null>(null);
+
+// ── Audit log helpers ─────────────────────────────────────────────────────
+
+const AUDIT_FIELD_KEYS = [
+  'englishName', 'chineseName', 'photo', 'phone', 'homePhone', 'email', 'homeAddress',
+  'membershipStatus', 'churchAttendance', 'membershipDate', 'language', 'gender',
+  'maritalStatus', 'birthday', 'baptismDate', 'anniversary', 'followUpFrequencyDays',
+  'isShepherd', 'isBeingDiscipled', 'churchPositions', 'appRole',
+] as const;
+
+function serializeAuditValue(field: string, value: unknown): string {
+  if (value === undefined || value === null || value === '') return '';
+  if (Array.isArray(value)) return value.join(', ') || '';
+  if (typeof value === 'boolean') return value ? 'Yes' : 'No';
+  return String(value);
+}
 
 // ── AppProvider ───────────────────────────────────────────────────────────
 
@@ -853,8 +870,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       >
     ): Promise<void> => {
       let snapshot: AppData | undefined;
+      let currentPerson: Person | undefined;
       setData((prev) => {
         snapshot = prev;
+        currentPerson = prev.people.find((p) => p.id === personId);
         return { ...prev, people: prev.people.map((p) => (p.id === personId ? { ...p, ...updates } : p)) };
       });
       const supabase = createClient();
@@ -885,15 +904,61 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (updates.churchPositions !== undefined)
         dbUpdates.church_positions = updates.churchPositions;
       if (updates.appRole !== undefined) dbUpdates.app_role = updates.appRole;
+      const now = new Date().toISOString();
+      dbUpdates.last_edited_at = now;
+      dbUpdates.last_edited_by_name = currentPersona.name;
+      const auditRows = currentPerson
+        ? AUDIT_FIELD_KEYS
+            .filter((field) => field in updates)
+            .flatMap((field) => {
+              const oldRaw = currentPerson![field as keyof Person];
+              const newRaw = updates[field as keyof typeof updates];
+              const oldStr = serializeAuditValue(field, oldRaw);
+              const newStr = serializeAuditValue(field, newRaw);
+              if (oldStr === newStr) return [];
+              return [{
+                person_id: personId,
+                changed_by_persona_id: currentPersona.id,
+                changed_by_name: currentPersona.name,
+                field_name: field,
+                old_value: oldStr,
+                new_value: newStr,
+                created_at: now,
+              }];
+            })
+        : [];
       try {
-        await supabase.from('people').update(dbUpdates).eq('id', personId);
+        await Promise.all([
+          supabase.from('people').update(dbUpdates).eq('id', personId),
+          auditRows.length > 0 ? supabase.from('audit_logs').insert(auditRows) : Promise.resolve(),
+        ]);
+        if (auditRows.length > 0) {
+          setData((prev) => ({
+            ...prev,
+            people: prev.people.map((p) =>
+              p.id === personId
+                ? { ...p, lastEditedAt: now, lastEditedByName: currentPersona.name }
+                : p
+            ),
+          }));
+        }
       } catch {
         if (snapshot) setData(snapshot);
         showToast(SAVE_ERROR_MSG, 'error');
       }
     },
-    []
+    [currentPersona.id, currentPersona.name]
   );
+
+  const fetchAuditLogs = useCallback(async (personId: string): Promise<import('./types').AuditLog[]> => {
+    const supabase = createClient();
+    const { data: rows } = await supabase
+      .from('audit_logs')
+      .select('*')
+      .eq('person_id', personId)
+      .order('created_at', { ascending: false });
+    return (rows ?? []).map(mapAuditLog);
+  }, []);
 
   const deletePerson = useCallback(async (personId: string): Promise<void> => {
     let snapshot: AppData | undefined;
@@ -1430,6 +1495,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         assignGroupsToFamily,
         assignShepherdsToFamily,
         setFollowUpFrequency,
+        fetchAuditLogs,
         canViewNote,
         homeFilters,
         setHomeFilters,

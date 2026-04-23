@@ -37,6 +37,8 @@ export const PersonRowSchema = z.object({
   is_child: nullBool,
   created_at: z.string(),
   created_by: nullStr,
+  last_edited_at: nullStr,
+  last_edited_by_name: nullStr,
 });
 
 export type PersonRow = z.infer<typeof PersonRowSchema>;
@@ -110,6 +112,19 @@ export const TodoRowSchema = z.object({
 });
 
 export type TodoRow = z.infer<typeof TodoRowSchema>;
+
+export const AuditLogRowSchema = z.object({
+  id: z.string(),
+  person_id: z.string(),
+  changed_by_persona_id: z.string(),
+  changed_by_name: z.string(),
+  field_name: z.string(),
+  old_value: nullStr,
+  new_value: nullStr,
+  created_at: z.string(),
+});
+
+export type AuditLogRow = z.infer<typeof AuditLogRowSchema>;
 
 export const GroupRowSchema = z.object({
   id: z.string(),

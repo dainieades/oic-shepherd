@@ -1184,8 +1184,26 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
             {person.createdBy &&
               (() => {
                 const creator = data.personas.find((p) => p.id === person.createdBy);
-                return creator ? <InfoRow label="Created by" value={creator.name} muted /> : null;
+                return creator ? <InfoRow label="Added by" value={creator.name} muted /> : null;
               })()}
+            <InfoRow
+              label="Last edited"
+              muted
+              value={
+                person.lastEditedAt ? (
+                  currentPersona.role === 'admin' ? (
+                    <Link
+                      href={`/person/${person.id}/audit`}
+                      style={{ color: 'var(--sage)', textDecoration: 'underline', textUnderlineOffset: '0.2em' }}
+                    >
+                      {format(parseISO(person.lastEditedAt), 'MMM d, yyyy')}
+                    </Link>
+                  ) : (
+                    format(parseISO(person.lastEditedAt), 'MMM d, yyyy')
+                  )
+                ) : '—'
+              }
+            />
           </InfoSection>
         </div>
       )}
