@@ -12,8 +12,6 @@ import {
   groupByMonth,
   categorizeTodos,
   getMapUrl,
-  type MapProvider,
-  MAP_PROVIDERS_STORAGE_KEY,
 } from '@/lib/utils';
 import { type Todo, type Note, type AppData, type AppRole, type Notice } from '@/lib/types';
 import AddLogModal from '@/components/AddLogModal';
@@ -98,6 +96,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
     updatePerson,
     deletePerson,
     assignShepherds,
+    mapProvider,
   } = useApp();
   // Compute permission early so we can pick the correct initial tab
   const _personCheck = data.people.find((p) => p.id === id);
@@ -132,18 +131,12 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
   const [showKebab, setShowKebab] = React.useState(false);
   const [confirmAction, setConfirmAction] = React.useState<'archive' | 'delete' | null>(null);
   const [scrolled, setScrolled] = React.useState(false);
-  const [mapProvider, setMapProvider] = React.useState<MapProvider>('apple');
   const kebabRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  React.useEffect(() => {
-    const stored = localStorage.getItem(MAP_PROVIDERS_STORAGE_KEY) as MapProvider | null;
-    if (stored) setMapProvider(stored);
   }, []);
 
   React.useEffect(() => {
