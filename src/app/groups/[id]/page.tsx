@@ -7,7 +7,7 @@ import { AvatarBadge } from '@/components/AvatarBadge';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/lib/context';
-import { getTimeAgo, getDueLabel, getMembershipLabel } from '@/lib/utils';
+import { getTimeAgo, getDueLabel } from '@/lib/utils';
 import {
   PencilSimpleIcon,
   TextT,
@@ -306,9 +306,6 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
                         </span>
                       )}
                     </div>
-                    <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                      {getMembershipLabel(leader.membershipStatus)}
-                    </span>
                   </div>
                   <CaretRight size={14} color="var(--text-muted)" />
                 </Link>
@@ -367,9 +364,6 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
                         </span>
                       )}
                     </div>
-                    <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                      {getMembershipLabel(shepherd.membershipStatus)}
-                    </span>
                   </div>
                   <CaretRight size={14} color="var(--text-muted)" />
                 </Link>
@@ -381,7 +375,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
 
       {/* ── Members ── */}
       <div>
-        <SectionLabel>Members · {members.length}</SectionLabel>
+        <SectionLabel>Group members · {members.length}</SectionLabel>
         {members.length === 0 ? (
           <p style={{ fontSize: 13, color: 'var(--text-muted)', fontStyle: 'italic' }}>
             No members yet. Tap Edit to add members.
@@ -436,9 +430,6 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
                       )}
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
-                      <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                        {getMembershipLabel(m.membershipStatus)}
-                      </span>
                       {m.lastContactDate && (
                         <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
                           &nbsp;· {getTimeAgo(m.lastContactDate)}

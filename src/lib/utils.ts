@@ -182,20 +182,22 @@ export function searchFamiliesAndPeople(
   query: string,
   families: Family[],
   people: Person[]
-): { families: Family[]; individuals: Person[] } {
+): { families: Family[]; individuals: Person[]; familyMembers: Person[] } {
   const q = query.toLowerCase().trim();
   if (!q) {
     const individualsWithoutFamily = people.filter((p) => !p.familyId);
-    return { families, individuals: individualsWithoutFamily };
+    return { families, individuals: individualsWithoutFamily, familyMembers: [] };
   }
 
   const matchedPeople = searchPeople(query, people);
   const matchedFamilyIds = new Set<string>();
   const matchedIndividuals: Person[] = [];
+  const matchedFamilyMembers: Person[] = [];
 
   for (const p of matchedPeople) {
     if (p.familyId) {
       matchedFamilyIds.add(p.familyId);
+      matchedFamilyMembers.push(p);
     } else {
       matchedIndividuals.push(p);
     }
@@ -211,6 +213,7 @@ export function searchFamiliesAndPeople(
   return {
     families: families.filter((f) => matchedFamilyIds.has(f.id)),
     individuals: matchedIndividuals,
+    familyMembers: matchedFamilyMembers,
   };
 }
 

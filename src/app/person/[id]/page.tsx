@@ -197,8 +197,8 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
     ? data.people.filter((p) => p.assignedShepherdIds.includes(shepherdId))
     : [];
 
-  // Notices are visible to all shepherds/admins, not just assigned shepherds
-  const canSeeNotices = canEdit; // admin or shepherd role
+  // Notices are visible to all shepherds/admins/welcome-team, not just assigned shepherds
+  const canSeeNotices = canEdit || currentPersona.role === 'welcome-team';
 
   // Build the visible tabs — non-managers see Info + Notices (if shepherd/admin); managers see all
   const visibleTabs: Tab[] = !canManage

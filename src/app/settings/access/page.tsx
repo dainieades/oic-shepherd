@@ -78,6 +78,14 @@ export default function AccessManagementPage() {
     return map;
   }, [data.people]);
 
+  const roleByPersonId = React.useMemo(() => {
+    const map = new Map<string, AppRole>();
+    for (const p of data.personas) {
+      if (p.personId) map.set(p.personId, p.role);
+    }
+    return map;
+  }, [data.personas]);
+
   React.useEffect(() => {
     const el = titleRef.current;
     if (!el) return;
@@ -217,7 +225,10 @@ export default function AccessManagementPage() {
         >
           {emails.map((e) => {
             const linkedPerson = personByEmail.get(e.email.toLowerCase());
-            const role: AppRole = linkedPerson?.appRole ?? 'no-access';
+            const role: AppRole =
+              linkedPerson?.appRole && linkedPerson.appRole !== 'no-access'
+                ? linkedPerson.appRole
+                : (linkedPerson ? roleByPersonId.get(linkedPerson.id) : undefined) ?? 'no-access';
             return (
               <div
                 key={e.email}

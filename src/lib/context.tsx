@@ -835,9 +835,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
         showToast(SAVE_ERROR_MSG, 'error');
         throw new Error('Failed to add person');
       }
+      const oneWeekFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+      await addTodo({
+        title: `Contact ${person.englishName}`,
+        personId: person.id,
+        dueDate: oneWeekFromNow,
+      });
       return person.id;
     },
-    [currentPersona.id]
+    [currentPersona.id, addTodo]
   );
 
   const updatePerson = useCallback(

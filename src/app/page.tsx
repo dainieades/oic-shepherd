@@ -82,7 +82,7 @@ const [showSearch, setShowSearch] = React.useState(false);
 
   // Build the list: families + solo individuals
   const entries = React.useMemo(() => {
-    const { families: matchedFamilies, individuals } = searchFamiliesAndPeople(
+    const { families: matchedFamilies, individuals, familyMembers } = searchFamiliesAndPeople(
       deferredSearch,
       data.families,
       data.people
@@ -90,7 +90,7 @@ const [showSearch, setShowSearch] = React.useState(false);
 
     type Entry =
       | { type: 'family'; family: Family; members: Person[]; lastNoteTs: number | null; group: Group | null }
-      | { type: 'individual'; person: Person; lastNoteTs: number | null; group: Group | null };
+      | { type: 'individual'; person: Person; lastNoteTs: number | null; group: Group | null; fromFamilySearch?: true };
     const entries: Entry[] = [];
 
     const includesMine = filters.shepherds.includes('mine');
@@ -237,6 +237,38 @@ const [showSearch, setShowSearch] = React.useState(false);
       const personLastNoteTs = lastNoteTime[p.id] ?? null;
       const personGroup = p.groupIds[0] ? (data.groups.find((g) => g.id === p.groupIds[0]) ?? null) : null;
       entries.push({ type: 'individual', person: p, lastNoteTs: personLastNoteTs, group: personGroup });
+    }
+
+    // When searching, also surface family members as individual entries so users can navigate directly to them.
+    // These are not counted in the summary totals (fromFamilySearch: true).
+    for (const p of familyMembers) {
+      if (filters.archiveFilter === 'hide' && p.churchAttendance === 'archived') continue;
+      if (filters.archiveFilter === 'only' && p.churchAttendance !== 'archived') continue;
+      if (filters.memberships.length > 0 && !filters.memberships.includes(p.membershipStatus)) continue;
+      if (filters.attendances.length > 0 && !filters.attendances.includes(p.churchAttendance)) continue;
+      if (filters.groups.length > 0) {
+        const specificGroupIds = filters.groups.filter((g) => g !== 'none');
+        const matchesGroup = specificGroupIds.length > 0 && specificGroupIds.some((gid) => p.groupIds.includes(gid));
+        const matchesNoGroup = includesNoGroup && p.groupIds.length === 0;
+        if (!matchesGroup && !matchesNoGroup) continue;
+      }
+      if (filters.discipleship.length > 0) {
+        const passes =
+          (filters.discipleship.includes('in') && p.isBeingDiscipled) ||
+          (filters.discipleship.includes('not-in') && !p.isBeingDiscipled);
+        if (!passes) continue;
+      }
+      if (filters.appRoles.length > 0 && !filters.appRoles.includes(p.appRole ?? 'no-access')) continue;
+      if (filters.positions.length > 0) {
+        const specificPositions = filters.positions.filter((pos) => pos !== 'none');
+        const matchesPosition = specificPositions.length > 0 && specificPositions.some((pos) => (p.churchPositions ?? []).includes(pos));
+        const matchesNoPosition = filters.positions.includes('none') && (p.churchPositions ?? []).length === 0;
+        if (!matchesPosition && !matchesNoPosition) continue;
+      }
+      if (filters.languages.length > 0 && !filters.languages.some((lang) => p.language.includes(lang))) continue;
+      const personLastNoteTs = lastNoteTime[p.id] ?? null;
+      const personGroup = p.groupIds[0] ? (data.groups.find((g) => g.id === p.groupIds[0]) ?? null) : null;
+      entries.push({ type: 'individual', person: p, lastNoteTs: personLastNoteTs, group: personGroup, fromFamilySearch: true });
     }
 
     // Sort
@@ -401,7 +433,7 @@ const [showSearch, setShowSearch] = React.useState(false);
   });
 
   const familyCount = entries.filter((e) => e.type === 'family').length;
-  const individualCount = entries.filter((e) => e.type === 'individual').length;
+  const individualCount = entries.filter((e) => e.type === 'individual' && !e.fromFamilySearch).length;
   const totalEntries = familyCount + individualCount;
   const btnSize = scrolled ? 30 : 36;
   const btnFont = scrolled ? 13 : 14;
@@ -750,7 +782,9 @@ const [showSearch, setShowSearch] = React.useState(false);
       {/* ── Count + Sort ──────────────────── */}
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
         <span style={{ fontSize: 12, color: 'var(--text-muted)', flex: 1 }}>
-          {totalEntries} {familyCount > 0 ? `families` : 'people'}
+          {familyCount > 0
+            ? `${familyCount} ${familyCount === 1 ? 'family' : 'families'}`
+            : `${individualCount} people`}
           {individualCount > 0 && familyCount > 0
             ? ` + ${individualCount} individual${individualCount !== 1 ? 's' : ''}`
             : ''}
@@ -783,7 +817,7 @@ const [showSearch, setShowSearch] = React.useState(false);
             />
           ) : (
             <IndividualRow
-              key={entry.person.id}
+              key={entry.fromFamilySearch ? `${entry.person.id}-search` : entry.person.id}
               person={entry.person}
               lastNoteTs={entry.lastNoteTs}
               group={entry.group}

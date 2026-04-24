@@ -71,7 +71,7 @@ function fmtDue(iso: string) {
 export default function FamilyDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = React.use(params);
   const { data, toggleTodo, canViewNote, updateFamily, currentPersona } = useApp();
-  const canSeeNotices = currentPersona.role === 'admin' || currentPersona.role === 'shepherd';
+  const canSeeNotices = currentPersona.role === 'admin' || currentPersona.role === 'shepherd' || currentPersona.role === 'welcome-team';
   const [tab, setTab] = React.useState<Tab>('logs');
   const [showAddLog, setShowAddLog] = React.useState(false);
   const [showAddTodo, setShowAddTodo] = React.useState(false);

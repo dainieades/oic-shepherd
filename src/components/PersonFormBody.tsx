@@ -41,6 +41,7 @@ import {
   HandHeart,
   UsersFour,
   PaperPlaneTilt,
+  ArrowsOutSimple,
 } from '@phosphor-icons/react';
 import {
   BACKDROP_COLOR,
@@ -92,14 +93,18 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
   function PersonFormBody({ person, onSaved, showPhotoUpload, showInviteRow, onValidityChange }, ref) {
     const { data, currentPersona, addPerson, updatePerson, updateFamilyMembers, assignShepherds, assignGroupsToPerson } = useApp();
 
+    const isWelcomeTeam: boolean = currentPersona.role === 'welcome-team';
+    const isAddMode: boolean = !person;
+    const [simplified, setSimplified] = React.useState<boolean>(isWelcomeTeam && isAddMode);
+
     const _nameParts = (person?.englishName ?? '').trim().split(/\s+/);
     const [firstName, setFirstName] = React.useState(_nameParts[0] ?? '');
     const [lastName, setLastName] = React.useState(_nameParts.slice(1).join(' '));
     const [chineseName, setChineseName] = React.useState(person?.chineseName ?? '');
     const [photo, setPhoto] = React.useState(person?.photo ?? '');
 
-    const [language, setLanguage] = React.useState<string[]>(person?.language ?? []);
-    const [gender, setGender] = React.useState<Gender | ''>(person?.gender ?? '');
+    const [language, setLanguage] = React.useState<string[]>(person?.language ?? ['English']);
+    const [gender, setGender] = React.useState<Gender | ''>(person?.gender ?? 'male');
     const [birthday, setBirthday] = React.useState(person?.birthday ?? '');
     const [maritalStatus, setMaritalStatus] = React.useState<MaritalStatus | ''>(
       person?.maritalStatus ?? ''
@@ -328,6 +333,23 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
         )}
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+          {isWelcomeTeam && isAddMode && (
+            <button
+              className="field-row-hover"
+              onClick={() => setSimplified((v) => !v)}
+              style={{
+                ...rowBtnStyle,
+                marginBottom: '1rem',
+                borderRadius: 0,
+              }}
+              aria-pressed={!simplified}
+            >
+              <span style={spacerStyle} />
+              <span style={{ ...labelStyle, flex: 1 }}>Show full form</span>
+              <Toggle on={!simplified} />
+            </button>
+          )}
+
           {(currentPersona.role === 'admin' ||
             (currentPersona.role === 'shepherd' &&
               (appRole === 'shepherd' || appRole === 'no-access'))) && (
@@ -414,12 +436,14 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
           </FormSection>
 
           <FormSection label="Personal">
-            <PickerRow
-              icon={<UsersThree size={16} color="var(--text-muted)" />}
-              label="Family"
-              value={familyId ? (data.families.find((f) => f.id === familyId)?.label ?? 'Unknown') : 'None'}
-              onClick={() => setShowFamilyPicker(true)}
-            />
+            {!simplified && (
+              <PickerRow
+                icon={<UsersThree size={16} color="var(--text-muted)" />}
+                label="Family"
+                value={familyId ? (data.families.find((f) => f.id === familyId)?.label ?? 'Unknown') : 'None'}
+                onClick={() => setShowFamilyPicker(true)}
+              />
+            )}
             <button
               className="field-row-hover"
               onClick={() => setShowLanguagePicker(true)}
@@ -440,37 +464,43 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
               value={genderLabel}
               onClick={() => setOpenPicker('gender')}
             />
-            <FloatingDateRow
-              icon={<Cake size={16} color="var(--text-muted)" />}
-              label="Birthday"
-              value={birthday}
-              onChange={setBirthday}
-            />
-            <PickerRow
-              ref={maritalBtnRef}
-              icon={<Heart size={16} color="var(--text-muted)" />}
-              label="Marital"
-              value={maritalLabel}
-              onClick={() => setOpenPicker('marital')}
-            />
-            {maritalStatus === 'married' && (
-              <FloatingDateRow
-                icon={<Sparkle size={16} color="var(--text-muted)" />}
-                label="Anniversary"
-                value={anniversary}
-                onChange={setAnniversary}
-              />
+            {!simplified && (
+              <>
+                <FloatingDateRow
+                  icon={<Cake size={16} color="var(--text-muted)" />}
+                  label="Birthday"
+                  value={birthday}
+                  onChange={setBirthday}
+                />
+                <PickerRow
+                  ref={maritalBtnRef}
+                  icon={<Heart size={16} color="var(--text-muted)" />}
+                  label="Marital"
+                  value={maritalLabel}
+                  onClick={() => setOpenPicker('marital')}
+                />
+                {maritalStatus === 'married' && (
+                  <FloatingDateRow
+                    icon={<Sparkle size={16} color="var(--text-muted)" />}
+                    label="Anniversary"
+                    value={anniversary}
+                    onChange={setAnniversary}
+                  />
+                )}
+              </>
             )}
           </FormSection>
 
           <FormSection label="Church">
-            <PickerRow
-              ref={statusBtnRef}
-              icon={<IdentificationCard size={16} color="var(--text-muted)" />}
-              label="Status"
-              value={statusLabel}
-              onClick={() => setOpenPicker('status')}
-            />
+            {!simplified && (
+              <PickerRow
+                ref={statusBtnRef}
+                icon={<IdentificationCard size={16} color="var(--text-muted)" />}
+                label="Status"
+                value={statusLabel}
+                onClick={() => setOpenPicker('status')}
+              />
+            )}
             <PickerRow
               ref={attendanceBtnRef}
               icon={<Pulse size={16} color="var(--text-muted)" />}
@@ -478,7 +508,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
               value={attendanceLabel}
               onClick={() => setOpenPicker('attendance')}
             />
-            {status === 'member' && (
+            {!simplified && status === 'member' && (
               <DateRow
                 icon={<CalendarCheck size={16} color="var(--text-muted)" />}
                 label="Member Since"
@@ -487,122 +517,126 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
                 onChange={setMembershipDate}
               />
             )}
-            <button
-              className="field-row-hover"
-              onClick={() => setShowGroupPicker(true)}
-              style={rowBtnStyle}
-            >
-              <span style={spacerStyle} />
-              <UsersFour size={16} color="var(--text-muted)" />
-              <span style={labelStyle}>Groups</span>
-              <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                {selectedGroups.length > 0 ? (
-                  selectedGroups.map((g) => (
-                    <span key={g.id} style={blueChipStyle}>
-                      {g.name}
-                    </span>
-                  ))
-                ) : (
-                  <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>None</span>
-                )}
-              </div>
-              <CaretRight size={14} color="var(--text-muted)" />
-            </button>
-            <button
-              className="field-row-hover"
-              onClick={() => setShowShepherdPicker(true)}
-              style={rowBtnStyle}
-            >
-              <span style={spacerStyle} />
-              <HandHeart size={16} color="var(--text-muted)" />
-              <span style={labelStyle}>Shepherd by</span>
-              <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                {shepherdIds.length > 0 ? (
-                  shepherdEntries
-                    .filter((e) => shepherdIds.includes(e.id))
-                    .map((e) => (
-                      <span key={e.id} style={sageChipStyle}>
-                        {e.name}
-                      </span>
-                    ))
-                ) : (
-                  <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>None</span>
-                )}
-              </div>
-              <CaretRight size={14} color="var(--text-muted)" />
-            </button>
-            <button
-              className="field-row-hover"
-              onClick={() => setIsShepherd((v) => !v)}
-              style={rowBtnStyle}
-            >
-              <span style={spacerStyle} />
-              <Compass size={16} color="var(--text-muted)" />
-              <span style={{ ...labelStyle, flex: 1 }}>Is Shepherd?</span>
-              <Toggle on={isShepherd} />
-            </button>
-            {isShepherd && (shepherdId || !person) && (
-              <button
-                className="field-row-hover"
-                onClick={() => setShowSheepPicker(true)}
-                style={rowBtnStyle}
-              >
-                <span style={spacerStyle} />
-                <HandHeart size={16} color="var(--text-muted)" />
-                <span style={labelStyle}>Sheep</span>
-                <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                  {sheepIds.length > 0 ? (
-                    <>
-                      {data.people
-                        .filter((p) => sheepIds.includes(p.id))
-                        .slice(0, 5)
-                        .map((p) => (
-                          <span key={p.id} style={sageChipStyle}>
-                            {p.englishName}
-                          </span>
-                        ))}
-                      {sheepIds.length > 5 && (
-                        <span style={{ fontSize: 13, color: 'var(--text-muted)', alignSelf: 'center' }}>
-                          +{sheepIds.length - 5} more
+            {!simplified && (
+              <>
+                <button
+                  className="field-row-hover"
+                  onClick={() => setShowGroupPicker(true)}
+                  style={rowBtnStyle}
+                >
+                  <span style={spacerStyle} />
+                  <UsersFour size={16} color="var(--text-muted)" />
+                  <span style={labelStyle}>Groups</span>
+                  <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                    {selectedGroups.length > 0 ? (
+                      selectedGroups.map((g) => (
+                        <span key={g.id} style={blueChipStyle}>
+                          {g.name}
                         </span>
+                      ))
+                    ) : (
+                      <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>None</span>
+                    )}
+                  </div>
+                  <CaretRight size={14} color="var(--text-muted)" />
+                </button>
+                <button
+                  className="field-row-hover"
+                  onClick={() => setShowShepherdPicker(true)}
+                  style={rowBtnStyle}
+                >
+                  <span style={spacerStyle} />
+                  <HandHeart size={16} color="var(--text-muted)" />
+                  <span style={labelStyle}>Shepherd by</span>
+                  <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                    {shepherdIds.length > 0 ? (
+                      shepherdEntries
+                        .filter((e) => shepherdIds.includes(e.id))
+                        .map((e) => (
+                          <span key={e.id} style={sageChipStyle}>
+                            {e.name}
+                          </span>
+                        ))
+                    ) : (
+                      <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>None</span>
+                    )}
+                  </div>
+                  <CaretRight size={14} color="var(--text-muted)" />
+                </button>
+                <button
+                  className="field-row-hover"
+                  onClick={() => setIsShepherd((v) => !v)}
+                  style={rowBtnStyle}
+                >
+                  <span style={spacerStyle} />
+                  <Compass size={16} color="var(--text-muted)" />
+                  <span style={{ ...labelStyle, flex: 1 }}>Is Shepherd?</span>
+                  <Toggle on={isShepherd} />
+                </button>
+                {isShepherd && (shepherdId || !person) && (
+                  <button
+                    className="field-row-hover"
+                    onClick={() => setShowSheepPicker(true)}
+                    style={rowBtnStyle}
+                  >
+                    <span style={spacerStyle} />
+                    <HandHeart size={16} color="var(--text-muted)" />
+                    <span style={labelStyle}>Sheep</span>
+                    <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                      {sheepIds.length > 0 ? (
+                        <>
+                          {data.people
+                            .filter((p) => sheepIds.includes(p.id))
+                            .slice(0, 5)
+                            .map((p) => (
+                              <span key={p.id} style={sageChipStyle}>
+                                {p.englishName}
+                              </span>
+                            ))}
+                          {sheepIds.length > 5 && (
+                            <span style={{ fontSize: 13, color: 'var(--text-muted)', alignSelf: 'center' }}>
+                              +{sheepIds.length - 5} more
+                            </span>
+                          )}
+                        </>
+                      ) : (
+                        <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>None</span>
                       )}
-                    </>
-                  ) : (
-                    <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>None</span>
-                  )}
-                </div>
-                <CaretRight size={14} color="var(--text-muted)" />
-              </button>
+                    </div>
+                    <CaretRight size={14} color="var(--text-muted)" />
+                  </button>
+                )}
+                <button
+                  className="field-row-hover"
+                  onClick={() => setIsBeingDiscipled((v) => !v)}
+                  style={rowBtnStyle}
+                >
+                  <span style={spacerStyle} />
+                  <BookOpenText size={16} color="var(--text-muted)" />
+                  <span style={{ ...labelStyle, flex: 1 }}>Being discipled?</span>
+                  <Toggle on={isBeingDiscipled} />
+                </button>
+                <button
+                  className="field-row-hover"
+                  onClick={() => setShowPositionPicker(true)}
+                  style={rowBtnStyle}
+                >
+                  <span style={spacerStyle} />
+                  <Buildings size={16} color="var(--text-muted)" />
+                  <span style={labelStyle}>Position</span>
+                  <span style={{ flex: 1, fontSize: 14, color: churchPositions.length > 0 ? 'var(--text-primary)' : 'var(--text-muted)', textAlign: 'right' }}>
+                    {churchPositions.length > 0 ? churchPositions.join(', ') : 'None'}
+                  </span>
+                  <CaretRight size={14} color="var(--text-muted)" />
+                </button>
+                <FloatingDateRow
+                  icon={<Drop size={16} color="var(--text-muted)" />}
+                  label="Baptism Date"
+                  value={baptismDate}
+                  onChange={setBaptismDate}
+                />
+              </>
             )}
-            <button
-              className="field-row-hover"
-              onClick={() => setIsBeingDiscipled((v) => !v)}
-              style={rowBtnStyle}
-            >
-              <span style={spacerStyle} />
-              <BookOpenText size={16} color="var(--text-muted)" />
-              <span style={{ ...labelStyle, flex: 1 }}>Being discipled?</span>
-              <Toggle on={isBeingDiscipled} />
-            </button>
-            <button
-              className="field-row-hover"
-              onClick={() => setShowPositionPicker(true)}
-              style={rowBtnStyle}
-            >
-              <span style={spacerStyle} />
-              <Buildings size={16} color="var(--text-muted)" />
-              <span style={labelStyle}>Position</span>
-              <span style={{ flex: 1, fontSize: 14, color: churchPositions.length > 0 ? 'var(--text-primary)' : 'var(--text-muted)', textAlign: 'right' }}>
-                {churchPositions.length > 0 ? churchPositions.join(', ') : 'None'}
-              </span>
-              <CaretRight size={14} color="var(--text-muted)" />
-            </button>
-            <FloatingDateRow
-              icon={<Drop size={16} color="var(--text-muted)" />}
-              label="Baptism Date"
-              value={baptismDate}
-              onChange={setBaptismDate}
-            />
           </FormSection>
 
           <FormSection label="Contact">
