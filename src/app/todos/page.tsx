@@ -44,11 +44,6 @@ export default function TodosPage() {
   const [showAddTodo, setShowAddTodo] = useState(false);
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
   const [showAddLog, setShowAddLog] = useState(false);
-
-  React.useEffect(() => {
-    setFullPageModalOpen(!!(showAddTodo || editingTodo || showFilter));
-    return () => setFullPageModalOpen(false);
-  }, [showAddTodo, editingTodo, showFilter, setFullPageModalOpen]);
   const [todoLogPrompt, setTodoLogPrompt] = useState<Todo | null>(null);
   const [pendingLogTodo, setPendingLogTodo] = useState<Todo | null>(null);
   const [scrolled, setScrolled] = useState(false);
@@ -62,6 +57,11 @@ export default function TodosPage() {
 
   // Shepherd filter (admin only)
   const [showFilter, setShowFilter] = useState(false);
+
+  React.useEffect(() => {
+    setFullPageModalOpen(!!(showAddTodo || editingTodo || showFilter));
+    return () => setFullPageModalOpen(false);
+  }, [showAddTodo, editingTodo, showFilter, setFullPageModalOpen]);
   const [draftFilter, setDraftFilter] = useState<string[]>(['mine']);
   const [shepherdSearch, setShepherdSearch] = useState('');
 
