@@ -280,7 +280,8 @@ export default function FilterPanel({ show, onClose }: { show: boolean; onClose:
                   />
                 </div>
                 {(currentPersona.role === 'admin' || currentPersona.role === 'shepherd') &&
-                  'my sheep'.includes(shepherdSearch.toLowerCase()) && (
+                  ('my sheep'.includes(shepherdSearch.toLowerCase()) ||
+                    currentPersona.name.toLowerCase().includes(shepherdSearch.toLowerCase())) && (
                     <CheckRow
                       checked={draft.shepherds.includes('mine')}
                       onToggle={() =>
@@ -292,7 +293,7 @@ export default function FilterPanel({ show, onClose }: { show: boolean; onClose:
                         }))
                       }
                     >
-                      My Sheep
+                      My Sheep ({currentPersona.name})
                     </CheckRow>
                   )}
                 {'no shepherd'.includes(shepherdSearch.toLowerCase()) && (
@@ -316,10 +317,10 @@ export default function FilterPanel({ show, onClose }: { show: boolean; onClose:
                   );
                   const shepherdEntries: Array<{ id: string; name: string }> = [
                     ...data.personas
-                      .filter((p) => p.role === 'shepherd' || p.role === 'admin')
+                      .filter((p) => (p.role === 'shepherd' || p.role === 'admin') && p.id !== currentPersona.id)
                       .map((p) => ({ id: p.id, name: p.name })),
                     ...data.people
-                      .filter((p) => p.isShepherd && !personaPersonIds.has(p.id))
+                      .filter((p) => p.isShepherd && !personaPersonIds.has(p.id) && p.id !== currentPersona.personId)
                       .map((p) => ({ id: p.id, name: p.englishName })),
                   ];
                   return shepherdEntries

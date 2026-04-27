@@ -94,7 +94,7 @@ export default function LanguagePickerSheet({ currentLanguages, onConfirm, onBac
         cancelLabel="Back"
         onAction={() => onConfirm(selected)}
         actionLabel={doneLabel}
-        actionVariant="text"
+        actionVariant="pill"
       />
 
         <div

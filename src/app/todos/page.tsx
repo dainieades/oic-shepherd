@@ -46,9 +46,9 @@ export default function TodosPage() {
   const [showAddLog, setShowAddLog] = useState(false);
 
   React.useEffect(() => {
-    setFullPageModalOpen(!!(showAddTodo || editingTodo));
+    setFullPageModalOpen(!!(showAddTodo || editingTodo || showFilter));
     return () => setFullPageModalOpen(false);
-  }, [showAddTodo, editingTodo, setFullPageModalOpen]);
+  }, [showAddTodo, editingTodo, showFilter, setFullPageModalOpen]);
   const [todoLogPrompt, setTodoLogPrompt] = useState<Todo | null>(null);
   const [pendingLogTodo, setPendingLogTodo] = useState<Todo | null>(null);
   const [scrolled, setScrolled] = useState(false);
@@ -640,7 +640,8 @@ export default function TodosPage() {
                   }}
                 />
               </div>
-              {'my sheep'.includes(shepherdSearch.toLowerCase()) && (
+              {('my sheep'.includes(shepherdSearch.toLowerCase()) ||
+                currentPersona.name.toLowerCase().includes(shepherdSearch.toLowerCase())) && (
                 <CheckRow
                   checked={draftFilter.includes('mine')}
                   onToggle={() =>
@@ -649,7 +650,7 @@ export default function TodosPage() {
                     )
                   }
                 >
-                  My Sheep
+                  My Sheep ({currentPersona.name})
                 </CheckRow>
               )}
               {shepherdEntries

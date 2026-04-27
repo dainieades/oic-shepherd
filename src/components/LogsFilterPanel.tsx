@@ -62,6 +62,7 @@ interface Props {
   isAdmin: boolean;
   shepherdEntries: ShepherdEntry[];
   currentPersonaId: string;
+  currentPersonaName: string;
 }
 
 export default function LogsFilterPanel({
@@ -72,6 +73,7 @@ export default function LogsFilterPanel({
   isAdmin,
   shepherdEntries,
   currentPersonaId,
+  currentPersonaName,
 }: Props): React.ReactNode {
   const [draft, setDraft] = React.useState<LogsFilters>(filters);
   const [activeCategory, setActiveCategory] = React.useState<FilterCategory>('type');
@@ -367,7 +369,8 @@ export default function LogsFilterPanel({
                     }}
                   />
                 </div>
-                {'my sheep'.includes(shepherdSearch.toLowerCase()) && (
+                {('my sheep'.includes(shepherdSearch.toLowerCase()) ||
+                  currentPersonaName.toLowerCase().includes(shepherdSearch.toLowerCase())) && (
                   <CheckRow
                     checked={draft.shepherds.includes('mine')}
                     onToggle={() =>
@@ -379,7 +382,7 @@ export default function LogsFilterPanel({
                       }))
                     }
                   >
-                    My Sheep
+                    My Sheep ({currentPersonaName})
                   </CheckRow>
                 )}
                 {shepherdEntries

@@ -40,7 +40,7 @@ export function GroupPickerSheet({
         cancelLabel="Back"
         onAction={() => onConfirm(selectedIds)}
         actionLabel={selectedIds.length > 0 ? `Done (${selectedIds.length})` : 'Done'}
-        actionVariant="text"
+        actionVariant="pill"
       />
         <div
           style={{
@@ -187,7 +187,7 @@ export function SheepPickerSheet({
         cancelLabel="Back"
         onAction={() => onConfirm(selectedIds)}
         actionLabel={selectedIds.length > 0 ? `Done (${selectedIds.length})` : 'Done'}
-        actionVariant="text"
+        actionVariant="pill"
       />
         <div
           style={{
@@ -339,7 +339,7 @@ export function ShepherdPickerSheet({
         cancelLabel="Back"
         onAction={() => onConfirm(selectedIds)}
         actionLabel={selectedIds.length > 0 ? `Done (${selectedIds.length})` : 'Done'}
-        actionVariant="text"
+        actionVariant="pill"
       />
         <div
           style={{
@@ -489,7 +489,7 @@ export function PositionPickerSheet({
         cancelLabel="Back"
         onAction={() => onConfirm(selectedPositions)}
         actionLabel={selectedPositions.length > 0 ? `Done (${selectedPositions.length})` : 'Done'}
-        actionVariant="text"
+        actionVariant="pill"
       />
         <div
           style={{
@@ -634,7 +634,7 @@ export function FamilyPickerSheet({
         cancelLabel="Back"
         onAction={() => onConfirm(selectedId)}
         actionLabel="Done"
-        actionVariant="text"
+        actionVariant="pill"
       />
         <div
           style={{

@@ -106,7 +106,7 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
               onAction={() => setStep('name')}
               actionLabel={selectedIds.length > 0 ? `Next (${selectedIds.length})` : 'Next'}
               actionDisabled={selectedIds.length === 0}
-              actionVariant="text"
+              actionVariant="pill"
             />
 
             {/* Search */}

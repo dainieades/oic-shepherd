@@ -651,12 +651,8 @@ function EditGroupDrawer({
           title="Leaders"
           people={data.people}
           selected={leaderIds}
-          onToggle={(pid) =>
-            setLeaderIds((prev) =>
-              prev.includes(pid) ? prev.filter((x) => x !== pid) : [...prev, pid]
-            )
-          }
-          onDone={() => setShowLeaderPicker(false)}
+          onConfirm={(ids) => { setLeaderIds(ids); setShowLeaderPicker(false); }}
+          onBack={() => setShowLeaderPicker(false)}
         />
       )}
 
@@ -666,12 +662,8 @@ function EditGroupDrawer({
           title="Shepherds"
           people={data.people}
           selected={shepherdIds}
-          onToggle={(pid) =>
-            setShepherdIds((prev) =>
-              prev.includes(pid) ? prev.filter((x) => x !== pid) : [...prev, pid]
-            )
-          }
-          onDone={() => setShowShepherdPicker(false)}
+          onConfirm={(ids) => { setShepherdIds(ids); setShowShepherdPicker(false); }}
+          onBack={() => setShowShepherdPicker(false)}
         />
       )}
 
@@ -680,12 +672,8 @@ function EditGroupDrawer({
         <PeoplePickerSheet
           people={data.people}
           selected={memberIds}
-          onToggle={(pid) =>
-            setMemberIds((prev) =>
-              prev.includes(pid) ? prev.filter((x) => x !== pid) : [...prev, pid]
-            )
-          }
-          onDone={() => setShowMemberPicker(false)}
+          onConfirm={(ids) => { setMemberIds(ids); setShowMemberPicker(false); }}
+          onBack={() => setShowMemberPicker(false)}
         />
       )}
     </>
@@ -698,16 +686,18 @@ function PeoplePickerSheet({
   title,
   people,
   selected,
-  onToggle,
-  onDone,
+  onConfirm,
+  onBack,
 }: {
   title?: string;
   people: import('@/lib/types').Person[];
   selected: string[];
-  onToggle: (id: string) => void;
-  onDone: () => void;
+  onConfirm: (ids: string[]) => void;
+  onBack: () => void;
 }) {
   const [search, setSearch] = React.useState('');
+  const [selectedIds, setSelectedIds] = React.useState<string[]>(selected);
+
   const filtered = people.filter(
     (p) =>
       search === '' ||
@@ -715,209 +705,128 @@ function PeoplePickerSheet({
       (p.chineseName ?? '').includes(search)
   );
 
+  const toggle = (id: string) =>
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: Z_SHEET,
-        display: 'flex',
-        alignItems: 'flex-end',
-        justifyContent: 'center',
-        overflow: 'hidden',
-      }}
-    >
+    <BottomSheet onClose={onBack} zIndex={Z_SHEET}>
+      <ModalHeader
+        title={title ?? 'Members'}
+        onCancel={onBack}
+        cancelLabel="Back"
+        onAction={() => onConfirm(selectedIds)}
+        actionLabel={selectedIds.length > 0 ? `Done (${selectedIds.length})` : 'Done'}
+        actionVariant="pill"
+      />
+
+      {/* Search */}
       <div
-        className="animate-slide-in-right"
         style={{
-          background: 'var(--surface)',
-          borderRadius: SHEET_BORDER_RADIUS,
-          width: '100%',
-          maxWidth: SHEET_MAX_WIDTH,
-          height: 'calc(100dvh - 3rem)',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
+          padding: '0.625rem 1rem',
+          borderBottom: '1px solid var(--border-light)',
+          flexShrink: 0,
         }}
       >
-        {/* Header with back button */}
-        <div
+        <input
+          autoFocus
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search…"
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            padding: '0.875rem 1.25rem 0.75rem',
-            flexShrink: 0,
-            borderBottom: '1px solid var(--border-light)',
+            width: '100%',
+            padding: '0.5rem 0.75rem',
+            borderRadius: 'var(--radius-xs)',
+            border: '1px solid var(--border)',
+            fontSize: 14,
+            background: 'var(--bg)',
+            color: 'var(--text-primary)',
+            outline: 'none',
+            boxSizing: 'border-box',
           }}
-        >
-          <button
-            onClick={onDone}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 4,
-              fontSize: 14,
-              color: 'var(--sage)',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              flexShrink: 0,
-            }}
-          >
-            <CaretLeft size={16} />
-            Back
-          </button>
-          <span
-            style={{
-              flex: 1,
-              textAlign: 'center',
-              fontSize: 15,
-              fontWeight: 600,
-              color: 'var(--text-primary)',
-            }}
-          >
-            {title ?? 'Members'}
-            {selected.length > 0 && (
-              <span
-                style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-muted)', marginLeft: 6 }}
-              >
-                · {selected.length}
-              </span>
-            )}
-          </span>
-          {/* Spacer to visually center the title */}
-          <span style={{ width: 52, flexShrink: 0 }} />
-        </div>
+        />
+      </div>
 
-        {/* Search */}
-        <div
-          style={{
-            padding: '0.625rem 1rem',
-            borderBottom: '1px solid var(--border-light)',
-            flexShrink: 0,
-          }}
-        >
-          <input
-            autoFocus
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search…"
-            style={{
-              width: '100%',
-              padding: '0.5rem 0.75rem',
-              borderRadius: 'var(--radius-xs)',
-              border: '1px solid var(--border)',
-              fontSize: 14,
-              background: 'var(--bg)',
-              color: 'var(--text-primary)',
-              outline: 'none',
-              boxSizing: 'border-box',
-            }}
-          />
-        </div>
-
-        {/* People list */}
-        <div style={{ flex: 1, overflowY: 'auto' }}>
-          {filtered.map((p) => {
-            const isSel = selected.includes(p.id);
-            const initials = p.englishName
-              .split(' ')
-              .map((n) => n[0])
-              .join('')
-              .toUpperCase()
-              .slice(0, 2);
-            return (
-              <button
-                key={p.id}
-                onClick={() => onToggle(p.id)}
+      {/* People list */}
+      <div style={{ flex: 1, overflowY: 'auto' }}>
+        {filtered.map((p) => {
+          const isSel = selectedIds.includes(p.id);
+          const initials = p.englishName
+            .split(' ')
+            .map((n) => n[0])
+            .join('')
+            .toUpperCase()
+            .slice(0, 2);
+          return (
+            <button
+              key={p.id}
+              onClick={() => toggle(p.id)}
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                padding: '0.625rem 1.25rem',
+                background: isSel ? 'var(--sage-light)' : 'none',
+                border: 'none',
+                borderBottom: '1px solid var(--border-light)',
+                cursor: 'pointer',
+                textAlign: 'left',
+              }}
+            >
+              <div
                 style={{
-                  width: '100%',
+                  width: 36,
+                  height: 36,
+                  borderRadius: '50%',
+                  background: isSel ? 'var(--sage)' : 'var(--sage-light)',
+                  color: isSel ? 'var(--on-sage)' : 'var(--sage)',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 12,
-                  padding: '0.625rem 1.25rem',
-                  background: isSel ? 'var(--sage-light)' : 'none',
-                  border: 'none',
-                  borderBottom: '1px solid var(--border-light)',
-                  cursor: 'pointer',
-                  textAlign: 'left',
+                  justifyContent: 'center',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  flexShrink: 0,
                 }}
               >
-                <div
+                {initials}
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <span
                   style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: '50%',
-                    background: isSel ? 'var(--sage)' : 'var(--sage-light)',
-                    color: isSel ? 'var(--on-sage)' : 'var(--sage)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: 12,
-                    fontWeight: 700,
-                    flexShrink: 0,
+                    fontSize: 14,
+                    fontWeight: isSel ? 600 : 400,
+                    color: isSel ? 'var(--sage)' : 'var(--text-primary)',
                   }}
                 >
-                  {initials}
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <span
-                    style={{
-                      fontSize: 14,
-                      fontWeight: isSel ? 600 : 400,
-                      color: isSel ? 'var(--sage)' : 'var(--text-primary)',
-                    }}
-                  >
-                    {p.englishName}
+                  {p.englishName}
+                </span>
+                {p.chineseName && (
+                  <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 6 }}>
+                    {p.chineseName}
                   </span>
-                  {p.chineseName && (
-                    <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 6 }}>
-                      {p.chineseName}
-                    </span>
-                  )}
-                </div>
-                <div
-                  style={{
-                    width: 20,
-                    height: 20,
-                    borderRadius: 5,
-                    flexShrink: 0,
-                    border: isSel ? 'none' : '0.09375rem solid var(--border)',
-                    background: isSel ? 'var(--sage)' : 'transparent',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transition: 'background 0.15s',
-                  }}
-                >
-                  {isSel && <Check size={11} color="var(--on-sage)" weight="bold" />}
-                </div>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Done button */}
-        <div style={{ padding: '1rem 1.25rem', flexShrink: 0 }}>
-          <button
-            onClick={onDone}
-            style={{
-              width: '100%',
-              height: 44,
-              borderRadius: 'var(--radius-md)',
-              background: 'var(--sage)',
-              color: 'var(--on-sage)',
-              fontSize: 15,
-              fontWeight: 600,
-              border: 'none',
-              cursor: 'pointer',
-            }}
-          >
-            Done
-          </button>
-        </div>
+                )}
+              </div>
+              <div
+                style={{
+                  width: 20,
+                  height: 20,
+                  borderRadius: 5,
+                  flexShrink: 0,
+                  border: isSel ? 'none' : '0.09375rem solid var(--border)',
+                  background: isSel ? 'var(--sage)' : 'transparent',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'background 0.15s',
+                }}
+              >
+                {isSel && <Check size={11} color="var(--on-sage)" weight="bold" />}
+              </div>
+            </button>
+          );
+        })}
       </div>
-    </div>
+    </BottomSheet>
   );
 }
 

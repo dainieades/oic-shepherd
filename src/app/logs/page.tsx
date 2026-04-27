@@ -67,11 +67,12 @@ export default function LogsPage() {
   const [showAddLog, setShowAddLog] = useState(false);
   const [editingNote, setEditingNote] = useState<Note | null>(null);
   const [scrolled, setScrolled] = useState(false);
+  const [showFilter, setShowFilter] = useState(false);
 
   React.useEffect(() => {
-    setFullPageModalOpen(!!(showAddLog || editingNote));
+    setFullPageModalOpen(!!(showAddLog || editingNote || showFilter));
     return () => setFullPageModalOpen(false);
-  }, [showAddLog, editingNote, setFullPageModalOpen]);
+  }, [showAddLog, editingNote, showFilter, setFullPageModalOpen]);
   const isAdmin = currentPersona.role === 'admin';
 
   // Search
@@ -80,7 +81,6 @@ export default function LogsPage() {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Filter panel
-  const [showFilter, setShowFilter] = useState(false);
   const [filters, setFilters] = useState<LogsFilters>({
     ...LOGS_DEFAULT_FILTERS,
     shepherds: logsShepherdFilter,
@@ -497,6 +497,7 @@ export default function LogsPage() {
         isAdmin={isAdmin}
         shepherdEntries={shepherdEntries}
         currentPersonaId={currentPersona.id}
+        currentPersonaName={currentPersona.name}
       />
     </div>
   );
