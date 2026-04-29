@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
+import { createClient as createSupabaseAdmin } from '@supabase/supabase-js';
 import { createClient } from '@/utils/supabase/server';
 import type { NoticePrivacy, NoticeUrgency } from '@/lib/types';
 import {
@@ -7,10 +8,22 @@ import {
   noticeAddedEmail,
   shepherdAssignedEmail,
   personUpdatedEmail,
+  ownProfileUpdatedEmail,
 } from '@/lib/emails/templates';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM = process.env.RESEND_FROM_EMAIL ?? 'onboarding@resend.dev';
+function getResend() {
+  return new Resend(process.env.RESEND_API_KEY);
+}
+function getFrom() {
+  return process.env.RESEND_FROM_EMAIL ?? 'onboarding@resend.dev';
+}
+
+function getAdminClient() {
+  return createSupabaseAdmin(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  );
+}
 
 type NotifyPayload =
   | { type: 'person.added'; personName: string; addedByName: string; actorEmail: string }
@@ -34,9 +47,19 @@ type NotifyPayload =
       type: 'person.updated';
       personName: string;
       shepherdPersonaIds: string[];
+      personUserId?: string;
       updatedByName: string;
       actorEmail: string;
     };
+
+async function resolveEmailsForUserIds(userIds: string[], exclude: string): Promise<string[]> {
+  const admin = getAdminClient();
+  const { data: { users } } = await admin.auth.admin.listUsers({ perPage: 1000 });
+  const userIdSet = new Set(userIds);
+  return users
+    .filter((u) => userIdSet.has(u.id) && u.email && u.email !== exclude)
+    .map((u) => u.email as string);
+}
 
 async function getEmailsByRole(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -45,12 +68,11 @@ async function getEmailsByRole(
 ): Promise<string[]> {
   const { data } = await supabase
     .from('personas')
-    .select('email')
+    .select('user_id')
     .in('role', roles)
-    .not('email', 'is', null);
-  return (data ?? [])
-    .map((r: { email: string | null }) => r.email)
-    .filter((e): e is string => !!e && e !== exclude);
+    .not('user_id', 'is', null);
+  const userIds = (data ?? []).map((r: { user_id: string }) => r.user_id).filter(Boolean);
+  return resolveEmailsForUserIds(userIds, exclude);
 }
 
 async function getEmailsByPersonaIds(
@@ -61,19 +83,20 @@ async function getEmailsByPersonaIds(
   if (ids.length === 0) return [];
   const { data } = await supabase
     .from('personas')
-    .select('email')
+    .select('user_id')
     .in('id', ids)
-    .not('email', 'is', null);
-  return (data ?? [])
-    .map((r: { email: string | null }) => r.email)
-    .filter((e): e is string => !!e && e !== exclude);
+    .not('user_id', 'is', null);
+  const userIds = (data ?? []).map((r: { user_id: string }) => r.user_id).filter(Boolean);
+  return resolveEmailsForUserIds(userIds, exclude);
 }
 
 async function send(emails: string[], subject: string, html: string): Promise<void> {
   if (emails.length === 0) return;
+  const resend = getResend();
+  const from = getFrom();
   await Promise.all(
     emails.map((to) =>
-      resend.emails.send({ from: FROM, to, subject, html })
+      resend.emails.send({ from, to, subject, html })
     )
   );
 }
@@ -123,13 +146,18 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     }
 
     if (body.type === 'person.updated') {
-      const emails = await getEmailsByPersonaIds(
-        supabase,
-        body.shepherdPersonaIds,
-        body.actorEmail,
-      );
+      const [shepherdEmails, personEmails] = await Promise.all([
+        getEmailsByPersonaIds(supabase, body.shepherdPersonaIds, body.actorEmail),
+        body.personUserId
+          ? resolveEmailsForUserIds([body.personUserId], body.actorEmail)
+          : Promise.resolve([] as string[]),
+      ]);
       const { subject, html } = personUpdatedEmail(body.personName, body.updatedByName);
-      await send(emails, subject, html);
+      const { subject: selfSubject, html: selfHtml } = ownProfileUpdatedEmail(body.updatedByName);
+      await Promise.all([
+        send(shepherdEmails, subject, html),
+        send(personEmails, selfSubject, selfHtml),
+      ]);
     }
 
     return NextResponse.json({ ok: true });

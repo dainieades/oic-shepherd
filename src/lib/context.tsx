@@ -981,6 +981,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
             type: 'person.updated',
             personName: currentPerson.englishName,
             shepherdPersonaIds: currentPerson.assignedShepherdIds,
+            personUserId: currentPerson.userId,
             updatedByName: currentPersona.name,
             actorEmail: currentUserEmail,
           }),
