@@ -896,9 +896,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     ): Promise<void> => {
       let snapshot: AppData | undefined;
       let currentPerson: Person | undefined;
+      let linkedUserId: string | undefined;
       setData((prev) => {
         snapshot = prev;
         currentPerson = prev.people.find((p) => p.id === personId);
+        linkedUserId = prev.personas.find((p) => p.personId === personId)?.userId;
         return { ...prev, people: prev.people.map((p) => (p.id === personId ? { ...p, ...updates } : p)) };
       });
       const supabase = createClient();
@@ -981,7 +983,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
             type: 'person.updated',
             personName: currentPerson.englishName,
             shepherdPersonaIds: currentPerson.assignedShepherdIds,
-            personUserId: currentPerson.userId,
+            personUserId: linkedUserId,
             updatedByName: currentPersona.name,
             actorEmail: currentUserEmail,
           }),

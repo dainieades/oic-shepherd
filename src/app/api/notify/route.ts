@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Resend } from 'resend';
 import { createClient as createSupabaseAdmin } from '@supabase/supabase-js';
 import { createClient } from '@/utils/supabase/server';
 import type { NoticePrivacy, NoticeUrgency } from '@/lib/types';
@@ -11,7 +10,8 @@ import {
   ownProfileUpdatedEmail,
 } from '@/lib/emails/templates';
 
-function getResend() {
+async function getResend() {
+  const { Resend } = await import('resend');
   return new Resend(process.env.RESEND_API_KEY);
 }
 function getFrom() {
