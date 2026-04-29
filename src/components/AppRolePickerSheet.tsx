@@ -26,8 +26,9 @@ const ROLE_OPTIONS: { value: AppRole; label: string; description: string }[] = [
 
 interface Props {
   currentRole: AppRole | undefined;
+  noPersonLinked?: boolean;
   onSelect: (role: AppRole) => void;
-  onRemove: () => void; // called after warning is confirmed
+  onRemove: () => void;
   onClose: () => void;
   isAdmin: boolean;
   personName?: string;
@@ -35,6 +36,7 @@ interface Props {
 
 export default function AppRolePickerSheet({
   currentRole,
+  noPersonLinked,
   onSelect,
   onRemove,
   onClose,
@@ -61,7 +63,47 @@ export default function AppRolePickerSheet({
           App Role
         </p>
 
-        {confirmRemove ? (
+        {noPersonLinked ? (
+          /* ── No person record linked ── */
+          <div style={{ padding: '1.5rem 1.25rem 1.25rem', textAlign: 'center' }}>
+            <div
+              style={{
+                width: 44,
+                height: 44,
+                borderRadius: '50%',
+                background: 'var(--border-light)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 1rem',
+              }}
+            >
+              <Warning size={20} color="var(--text-muted)" />
+            </div>
+            <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 8 }}>
+              No person record linked
+            </p>
+            <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: 24 }}>
+              To manage this person&apos;s role, open their person record and add this email address to their profile.
+            </p>
+            <button
+              onClick={onClose}
+              style={{
+                width: '100%',
+                padding: '0.875rem',
+                background: 'var(--surface)',
+                border: '1px solid var(--border-light)',
+                color: 'var(--text-primary)',
+                borderRadius: 'var(--radius-md)',
+                fontSize: 15,
+                fontWeight: 500,
+                cursor: 'pointer',
+              }}
+            >
+              Done
+            </button>
+          </div>
+        ) : confirmRemove ? (
           /* ── Warning state ── */
           <div style={{ padding: '1.5rem 1.25rem 0.5rem' }}>
             <div

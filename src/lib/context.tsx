@@ -190,6 +190,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const { showToast } = useToast();
   const [data, setData] = useState<AppData>(initialData);
   const [currentPersona, setCurrentPersona] = useState<Persona>(initialData.personas[0]);
+  const [currentUserEmail, setCurrentUserEmail] = useState('');
   const [loaded, setLoaded] = useState(false);
   const [accessDenied, setAccessDenied] = useState(false);
 
@@ -474,11 +475,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
         const assignedPeopleIds = (ppRows ?? []).map((r: { person_id: string }) => r.person_id);
         const persona = mapPersona(existing as Record<string, unknown>, assignedPeopleIds);
         setCurrentPersona(persona);
+        setCurrentUserEmail(email);
         localStorage.setItem('shepherd-app-persona', persona.id);
         setData((prev) => {
           if (prev.personas.find((p) => p.id === persona.id)) return prev;
           return { ...prev, personas: [...prev.personas, persona] };
         });
+        if (existing.email !== email) {
+          void supabase.from('personas').update({ email }).eq('id', persona.id);
+        }
         if (avatarUrl && persona.personId) {
           syncGoogleAvatar(supabase, persona.personId, avatarUrl, setData);
         }
@@ -505,7 +510,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
           if (personaRow) {
             // Persona found — stamp it with the auth user_id so future logins are instant
-            await supabase.from('personas').update({ user_id: userId }).eq('id', personaRow.id);
+            await supabase.from('personas').update({ user_id: userId, email }).eq('id', personaRow.id);
             const linked = { ...personaRow, user_id: userId };
             const { data: ppRows } = await supabase
               .from('persona_people')
@@ -514,6 +519,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
             const assignedPeopleIds = (ppRows ?? []).map((r: { person_id: string }) => r.person_id);
             const persona = mapPersona(linked as Record<string, unknown>, assignedPeopleIds);
             setCurrentPersona(persona);
+            setCurrentUserEmail(email);
             localStorage.setItem('shepherd-app-persona', persona.id);
             setData((prev) => ({
               ...prev,
@@ -531,12 +537,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
       // 3. Truly new user — create a fresh shepherd persona
       const { data: inserted } = await supabase
         .from('personas')
-        .insert({ id: userId, user_id: userId, name, role: 'shepherd' })
+        .insert({ id: userId, user_id: userId, name, role: 'shepherd', email })
         .select()
         .single();
       if (inserted) {
         const persona = mapPersona(inserted as Record<string, unknown>, []);
         setCurrentPersona(persona);
+        setCurrentUserEmail(email);
         localStorage.setItem('shepherd-app-persona', persona.id);
         setData((prev) => ({ ...prev, personas: [...prev.personas, persona] }));
         setLoaded(true);
@@ -841,9 +848,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
         personId: person.id,
         dueDate: oneWeekFromNow,
       });
+      void fetch('/api/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'person.added',
+          personName: person.englishName,
+          addedByName: currentPersona.name,
+          actorEmail: currentUserEmail,
+        }),
+      });
       return person.id;
     },
-    [currentPersona.id, addTodo]
+    [currentPersona.id, currentPersona.name, currentUserEmail, addTodo]
   );
 
   const updatePerson = useCallback(
@@ -954,9 +971,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
       } catch {
         if (snapshot) setData(snapshot);
         showToast(SAVE_ERROR_MSG, 'error');
+        return;
+      }
+      if (currentPerson && currentPerson.assignedShepherdIds.length > 0) {
+        void fetch('/api/notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'person.updated',
+            personName: currentPerson.englishName,
+            shepherdPersonaIds: currentPerson.assignedShepherdIds,
+            updatedByName: currentPersona.name,
+            actorEmail: currentUserEmail,
+          }),
+        });
       }
     },
-    [currentPersona.id, currentPersona.name]
+    [currentPersona.id, currentPersona.name, currentUserEmail]
   );
 
   const fetchAuditLogs = useCallback(async (personId: string): Promise<import('./types').AuditLog[]> => {
@@ -999,8 +1030,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const assignShepherds = useCallback(async (personId: string, shepherdIds: string[]): Promise<void> => {
     let snapshot: AppData | undefined;
+    let personName = '';
     setData((prev) => {
       snapshot = prev;
+      personName = prev.people.find((p) => p.id === personId)?.englishName ?? '';
       return {
         ...prev,
         people: prev.people.map((p) =>
@@ -1019,8 +1052,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
     } catch {
       if (snapshot) setData(snapshot);
       showToast(SAVE_ERROR_MSG, 'error');
+      return;
     }
-  }, []);
+    if (shepherdIds.length > 0 && personName) {
+      void fetch('/api/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'shepherd.assigned',
+          personName,
+          shepherdPersonaIds: shepherdIds,
+          assignedByName: currentPersona.name,
+          actorEmail: currentUserEmail,
+        }),
+      });
+    }
+  }, [currentPersona.name, currentUserEmail]);
 
   // ── Families ──────────────────────────────────────────────────────────
   const addFamily = useCallback(async (label: string, memberIds: string[]): Promise<string> => {
@@ -1384,7 +1431,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
         createdAt: new Date().toISOString(),
       };
       let snapshot: AppData | undefined;
-      setData((prev) => { snapshot = prev; return { ...prev, notices: [notice, ...prev.notices] }; });
+      let aboutName = '';
+      setData((prev) => {
+        snapshot = prev;
+        if (notice.personId) {
+          aboutName = prev.people.find((p) => p.id === notice.personId)?.englishName ?? '';
+        } else if (notice.familyId) {
+          aboutName = prev.families.find((f) => f.id === notice.familyId)?.label ?? '';
+        }
+        return { ...prev, notices: [notice, ...prev.notices] };
+      });
       const supabase = createClient();
       try {
         await supabase.from('notices').insert({
@@ -1401,9 +1457,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
       } catch {
         if (snapshot) setData(snapshot);
         showToast(SAVE_ERROR_MSG, 'error');
+        return;
       }
+      void fetch('/api/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'notice.added',
+          aboutName: aboutName || 'General',
+          content: notice.content,
+          urgency: notice.urgency,
+          privacy: notice.privacy,
+          addedByName: currentPersona.name,
+          actorEmail: currentUserEmail,
+        }),
+      });
     },
-    [currentPersona.id]
+    [currentPersona.id, currentPersona.name, currentUserEmail]
   );
 
   const updateNotice = useCallback(

@@ -628,8 +628,8 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                   style={{
                     fontSize: 11,
                     fontWeight: 600,
-                    background: 'var(--red)',
-                    color: 'var(--on-red)',
+                    background: 'var(--sage)',
+                    color: 'var(--on-sage)',
                     borderRadius: 'var(--radius-sm)',
                     padding: '0.0625rem 0.375rem',
                     lineHeight: 1.5,

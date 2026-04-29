@@ -239,9 +239,8 @@ export default function AccessManagementPage() {
                 }}
               >
                 <button
-                  className={linkedPerson ? 'field-row-hover' : undefined}
-                  onClick={() => linkedPerson && setRoleEditEmail(e.email)}
-                  disabled={!linkedPerson}
+                  className="field-row-hover"
+                  onClick={() => setRoleEditEmail(e.email)}
                   style={{
                     flex: 1,
                     minWidth: 0,
@@ -251,7 +250,7 @@ export default function AccessManagementPage() {
                     padding: '0.75rem 0.5rem 0.75rem 1rem',
                     background: 'none',
                     border: 'none',
-                    cursor: linkedPerson ? 'pointer' : 'default',
+                    cursor: 'pointer',
                     textAlign: 'left',
                   }}
                 >
@@ -270,34 +269,20 @@ export default function AccessManagementPage() {
                     >
                       {e.label ?? e.email}
                     </p>
-                    {e.label && (
-                      <p
-                        style={{
-                          fontSize: 12,
-                          color: 'var(--text-muted)',
-                          margin: 0,
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
-                        {e.email}
-                      </p>
-                    )}
+                    <p
+                      style={{
+                        fontSize: 12,
+                        color: 'var(--text-muted)',
+                        margin: 0,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {e.label ? e.email : (linkedPerson ? ROLE_LABEL[role] : 'Tap to manage role')}
+                    </p>
                   </div>
-                  <span
-                    style={{
-                      fontSize: 13,
-                      color: linkedPerson ? 'var(--text-secondary)' : 'var(--text-muted)',
-                      fontStyle: linkedPerson ? 'normal' : 'italic',
-                      flexShrink: 0,
-                    }}
-                  >
-                    {linkedPerson ? ROLE_LABEL[role] : 'Not linked'}
-                  </span>
-                  {linkedPerson && (
-                    <CaretRight size={14} color="var(--text-muted)" style={{ flexShrink: 0 }} />
-                  )}
+                  <CaretRight size={14} color="var(--text-muted)" style={{ flexShrink: 0 }} />
                 </button>
                 <button
                   onClick={() => setConfirmDelete(e.email)}
@@ -327,21 +312,28 @@ export default function AccessManagementPage() {
 
       {roleEditEmail && (() => {
         const linkedPerson = personByEmail.get(roleEditEmail.toLowerCase());
-        if (!linkedPerson) return null;
+        const role: AppRole =
+          linkedPerson?.appRole && linkedPerson.appRole !== 'no-access'
+            ? linkedPerson.appRole
+            : (linkedPerson ? roleByPersonId.get(linkedPerson.id) : undefined) ?? 'no-access';
+        const emailEntry = emails.find(e => e.email === roleEditEmail);
         return (
           <AppRolePickerSheet
-            currentRole={linkedPerson.appRole ?? 'no-access'}
+            currentRole={linkedPerson ? role : undefined}
+            noPersonLinked={!linkedPerson}
             onSelect={async (newRole) => {
+              if (!linkedPerson) return;
               await updatePerson(linkedPerson.id, { appRole: newRole });
               setRoleEditEmail(null);
             }}
             onRemove={async () => {
+              if (!linkedPerson) return;
               await updatePerson(linkedPerson.id, { appRole: 'no-access' });
               setRoleEditEmail(null);
             }}
             onClose={() => setRoleEditEmail(null)}
             isAdmin
-            personName={linkedPerson.englishName.split(' ')[0]}
+            personName={linkedPerson?.englishName.split(' ')[0] ?? emailEntry?.label ?? roleEditEmail}
           />
         );
       })()}

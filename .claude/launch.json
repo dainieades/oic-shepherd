@@ -4,10 +4,8 @@
     {
       "name": "shepherd-app",
       "runtimeExecutable": "/bin/bash",
-      "runtimeArgs": ["/Users/dainieades/OIC Shepherd/shepherd-app/.claude/start-dev.sh"],
-      "port": 3000,
-      "autoPort": true,
-      "cwd": "/Users/dainieades/OIC Shepherd/shepherd-app"
+      "runtimeArgs": ["/Users/dainieades/Code_Projects/oic-shepherd/.claude/start-dev.sh"],
+      "port": 3000
     }
   ]
 }
