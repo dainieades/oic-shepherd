@@ -98,7 +98,7 @@ async function getEmailsByPersonaIds(
 
 async function send(emails: string[], subject: string, html: string): Promise<void> {
   if (emails.length === 0) return;
-  const resend = getResend();
+  const resend = await getResend();
   const from = getFrom();
   await Promise.all(
     emails.map((to) =>
