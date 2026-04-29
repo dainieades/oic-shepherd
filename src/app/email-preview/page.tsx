@@ -4,6 +4,7 @@ import {
   noticeAddedEmail,
   shepherdAssignedEmail,
   personUpdatedEmail,
+  inviteEmail,
 } from '@/lib/emails/templates';
 
 export default function EmailPreviewPage() {
@@ -23,6 +24,7 @@ export default function EmailPreviewPage() {
     },
     { label: 'Shepherd assigned', ...shepherdAssignedEmail('David Lim', 'Long Wei') },
     { label: 'Person profile updated', ...personUpdatedEmail('Sarah Wong', 'Long Wei') },
+    { label: 'Invite to app', ...inviteEmail('Long Wei') },
   ];
 
   return (

@@ -8,6 +8,7 @@ import {
   shepherdAssignedEmail,
   personUpdatedEmail,
   ownProfileUpdatedEmail,
+  inviteEmail,
 } from '@/lib/emails/templates';
 
 async function getResend() {
@@ -50,7 +51,8 @@ type NotifyPayload =
       personUserId?: string;
       updatedByName: string;
       actorEmail: string;
-    };
+    }
+  | { type: 'invite.sent'; invitedEmail: string; invitedByName: string };
 
 async function resolveEmailsForUserIds(userIds: string[], exclude: string): Promise<string[]> {
   const admin = getAdminClient();
@@ -158,6 +160,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         send(shepherdEmails, subject, html),
         send(personEmails, selfSubject, selfHtml),
       ]);
+    }
+
+    if (body.type === 'invite.sent') {
+      const { subject, html } = inviteEmail(body.invitedByName);
+      await send([body.invitedEmail], subject, html);
     }
 
     return NextResponse.json({ ok: true });

@@ -49,7 +49,7 @@ export function truncateWhoLabel(names: string[]): string | null {
   const hidden = names.length - shown.length;
   return shown.join(', ') + (hidden > 0 ? ` +${hidden}` : '');
 }
-import { type Person, type Note, type Todo, type Family, type ChurchAttendance, type Notice } from './types';
+import { type Person, type Note, type Todo, type Family, type ChurchAttendance, type Notice, type TodoRepeat, type TodoReminder } from './types';
 
 export function getTimeAgo(dateStr: string): string {
   const date = parseISO(dateStr);
@@ -312,12 +312,54 @@ function toIcsDateOnly(d: Date): string {
   return d.toISOString().slice(0, 10).replace(/-/g, '');
 }
 
-/** Returns a Google Calendar "Add event" URL (no OAuth required) */
+function repeatToRrule(repeat: TodoRepeat): string | null {
+  switch (repeat) {
+    case 'daily': return 'RRULE:FREQ=DAILY';
+    case 'weekly': return 'RRULE:FREQ=WEEKLY';
+    case 'biweekly': return 'RRULE:FREQ=WEEKLY;INTERVAL=2';
+    case 'monthly': return 'RRULE:FREQ=MONTHLY';
+    case 'yearly': return 'RRULE:FREQ=YEARLY';
+    default: return null;
+  }
+}
+
+// Returns iCal TRIGGER duration string for a reminder.
+// For timed events (allDay=false), triggers are relative to event start.
+// For all-day events, triggers target a specific clock time on a relative day
+// by computing hours offset from event's midnight DTSTART.
+function reminderToTrigger(reminder: TodoReminder, allDay: boolean): string | null {
+  if (reminder === 'none') return null;
+  if (!allDay) {
+    switch (reminder) {
+      case 'at_start': return 'TRIGGER:PT0S';
+      case '5_min_before': return 'TRIGGER:-PT5M';
+      case '10_min_before': return 'TRIGGER:-PT10M';
+      case '15_min_before': return 'TRIGGER:-PT15M';
+      case '30_min_before': return 'TRIGGER:-PT30M';
+      case '1_hour_before': return 'TRIGGER:-PT1H';
+      case '1_day_before': return 'TRIGGER:-P1D';
+      default: return null;
+    }
+  }
+  // All-day: DTSTART is midnight; compute offset to reach the target time
+  switch (reminder) {
+    case 'same_day_9am': return 'TRIGGER:PT9H';       // +9h from midnight
+    case 'day_before_9am': return 'TRIGGER:-PT15H';   // -15h from midnight
+    case 'day_before_5pm': return 'TRIGGER:-PT7H';    // -7h from midnight
+    case '2_days_before_9am': return 'TRIGGER:-PT39H'; // -39h from midnight
+    case '1_week_before_9am': return 'TRIGGER:-P6DT15H'; // 6d+15h before midnight
+    default: return null;
+  }
+}
+
+/** Returns a Google Calendar "Add event" URL (no OAuth required).
+ *  Repeat (RRULE) is included. Reminders are not supported by the GCal URL API. */
 export function buildGoogleCalendarUrl(
   title: string,
   start: Date,
   end: Date,
-  allDay = false
+  allDay = false,
+  repeat?: TodoRepeat
 ): string {
   const startStr = allDay ? toIcsDateOnly(start) : toIcsDate(start);
   const endStr = allDay ? toIcsDateOnly(addDays(start, 1)) : toIcsDate(end);
@@ -326,16 +368,23 @@ export function buildGoogleCalendarUrl(
     text: title,
     dates: `${startStr}/${endStr}`,
   });
+  if (repeat && repeat !== 'none') {
+    const rrule = repeatToRrule(repeat);
+    if (rrule) params.set('recur', rrule);
+  }
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
 }
 
-/** Returns a .ics (iCalendar) file string for download */
+/** Returns a .ics (iCalendar) file string for download.
+ *  Includes RRULE if repeat is set, and VALARM if reminder is set. */
 export function buildIcsContent(
   title: string,
   uid: string,
   start: Date,
   end: Date,
-  allDay = false
+  allDay = false,
+  repeat?: TodoRepeat,
+  reminder?: TodoReminder
 ): string {
   const dtStart = allDay
     ? `DTSTART;VALUE=DATE:${toIcsDateOnly(start)}`
@@ -343,7 +392,18 @@ export function buildIcsContent(
   const dtEnd = allDay
     ? `DTEND;VALUE=DATE:${toIcsDateOnly(addDays(start, 1))}`
     : `DTEND:${toIcsDate(end)}`;
-  return [
+
+  const rrule = repeat && repeat !== 'none' ? repeatToRrule(repeat) : null;
+
+  const valarm: string[] = [];
+  if (reminder && reminder !== 'none') {
+    const trigger = reminderToTrigger(reminder, allDay);
+    if (trigger) {
+      valarm.push('BEGIN:VALARM', trigger, 'ACTION:DISPLAY', 'DESCRIPTION:Reminder', 'END:VALARM');
+    }
+  }
+
+  const lines = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
     'PRODID:-//OIC Shepherd//EN',
@@ -353,9 +413,12 @@ export function buildIcsContent(
     `SUMMARY:${title}`,
     `UID:${uid}@oic-shepherd`,
     `DTSTAMP:${toIcsDate(new Date())}`,
+    ...(rrule ? [rrule] : []),
+    ...valarm,
     'END:VEVENT',
     'END:VCALENDAR',
-  ].join('\r\n');
+  ];
+  return lines.join('\r\n');
 }
 
 /** Categorize todos into overdue / today / upcoming / no due date / completed */

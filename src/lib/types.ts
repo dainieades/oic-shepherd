@@ -120,6 +120,23 @@ export interface Note {
 export type TodoType = 'check-in' | 'task' | 'meeting' | 'message' | 'birthday' | 'anniversary';
 export type TodoRepeat = 'none' | 'daily' | 'weekly' | 'biweekly' | 'monthly' | 'yearly';
 
+export type TodoReminder =
+  | 'none'
+  // Timed-event options (relative to event start)
+  | 'at_start'
+  | '5_min_before'
+  | '10_min_before'
+  | '15_min_before'
+  | '30_min_before'
+  | '1_hour_before'
+  | '1_day_before'
+  // Date-only options (specific time on a relative day)
+  | 'same_day_9am'
+  | 'day_before_9am'
+  | 'day_before_5pm'
+  | '2_days_before_9am'
+  | '1_week_before_9am';
+
 export interface Todo {
   id: string;
   personId?: string;
@@ -127,6 +144,7 @@ export interface Todo {
   title: string;
   dueDate?: string; // ISO datetime
   repeat?: TodoRepeat;
+  reminder?: TodoReminder;
   completed: boolean;
   completedAt?: string; // ISO datetime
   createdBy: string; // persona ID

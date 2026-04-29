@@ -15,10 +15,11 @@ import {
   UserPlus,
   PlusCircle,
   CalendarPlus,
+  Bell,
 } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { useToast } from './Toast';
-import { type TodoRepeat, type Todo } from '@/lib/types';
+import { type TodoRepeat, type TodoReminder, type Todo } from '@/lib/types';
 import PersonFamilyPicker from './PersonFamilyPicker';
 import PickerMenu from './PickerMenu';
 import DatePickerSheet from './DatePickerSheet';
@@ -39,6 +40,26 @@ const REPEAT_OPTIONS: { value: TodoRepeat; label: string }[] = [
   { value: 'biweekly', label: 'Every 2 weeks' },
   { value: 'monthly', label: 'Every month' },
   { value: 'yearly', label: 'Every year' },
+];
+
+const REMINDER_OPTIONS_TIMED: { value: TodoReminder; label: string }[] = [
+  { value: 'none', label: 'None' },
+  { value: 'at_start', label: 'When it starts' },
+  { value: '5_min_before', label: '5 minutes before' },
+  { value: '10_min_before', label: '10 minutes before' },
+  { value: '15_min_before', label: '15 minutes before' },
+  { value: '30_min_before', label: '30 minutes before' },
+  { value: '1_hour_before', label: '1 hour before' },
+  { value: '1_day_before', label: '1 day before' },
+];
+
+const REMINDER_OPTIONS_DATE_ONLY: { value: TodoReminder; label: string }[] = [
+  { value: 'none', label: 'None' },
+  { value: 'same_day_9am', label: 'Same day at 9 AM' },
+  { value: 'day_before_9am', label: 'Day before at 9 AM' },
+  { value: 'day_before_5pm', label: 'Day before at 5 PM' },
+  { value: '2_days_before_9am', label: '2 days before at 9 AM' },
+  { value: '1_week_before_9am', label: '1 week before at 9 AM' },
 ];
 
 export default function AddTodoModal({
@@ -73,11 +94,14 @@ export default function AddTodoModal({
   });
   const [showDatePicker, setShowDatePicker] = React.useState(false);
   const [repeat, setRepeat] = React.useState<TodoRepeat>(todo?.repeat ?? 'none');
+  const [reminder, setReminder] = React.useState<TodoReminder>(todo?.reminder ?? 'none');
 
   const [showWhoPicker, setShowWhoPicker] = React.useState(false);
   const [showRepeatPicker, setShowRepeatPicker] = React.useState(false);
+  const [showReminderPicker, setShowReminderPicker] = React.useState(false);
 
   const repeatBtnRef = React.useRef<HTMLButtonElement>(null);
+  const reminderBtnRef = React.useRef<HTMLButtonElement>(null);
   const calendarBtnRef = React.useRef<HTMLButtonElement>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
   const [showCalendarPicker, setShowCalendarPicker] = React.useState(false);
@@ -95,6 +119,7 @@ export default function AddTodoModal({
       title: title.trim(),
       dueDate: dueDateValue,
       repeat: repeat !== 'none' ? repeat : undefined,
+      reminder: reminder !== 'none' ? reminder : undefined,
     };
     if (isEditing && todo) {
       updateTodo(todo.id, { ...base, familyId: familyIds[0], personId: personIds[0] });
@@ -112,6 +137,8 @@ export default function AddTodoModal({
   };
 
   const repeatLabel = REPEAT_OPTIONS.find((r) => r.value === repeat)?.label ?? 'Never';
+  const reminderOptions = includeTime ? REMINDER_OPTIONS_TIMED : REMINDER_OPTIONS_DATE_ONLY;
+  const reminderLabel = reminderOptions.find((r) => r.value === reminder)?.label ?? 'None';
 
   return (
     <>
@@ -214,6 +241,16 @@ export default function AddTodoModal({
                       onClick={() => setShowDatePicker(true)}
                     />
 
+                    {/* Reminder */}
+                    <FieldRow
+                      btnRef={reminderBtnRef}
+                      icon={<Bell size={16} />}
+                      label="Reminder"
+                      value={reminderLabel}
+                      valueColor={reminder === 'none' ? 'var(--text-muted)' : undefined}
+                      onClick={() => setShowReminderPicker(true)}
+                    />
+
                     {/* Add to Calendar */}
                     <FieldRow
                       btnRef={calendarBtnRef}
@@ -313,6 +350,7 @@ export default function AddTodoModal({
           time={timeStr}
           includeTime={includeTime}
           onConfirm={(d, t, it) => {
+            if (it !== includeTime) setReminder('none');
             setDateStr(d);
             setTimeStr(t);
             setIncludeTime(it);
@@ -341,12 +379,24 @@ export default function AddTodoModal({
           }}
         />
       )}
+      {showReminderPicker && (
+        <PickerMenu
+          anchorRef={reminderBtnRef}
+          title="Reminder"
+          options={reminderOptions}
+          value={reminder}
+          onSelect={(v) => setReminder(v as TodoReminder)}
+          onClose={() => setShowReminderPicker(false)}
+        />
+      )}
       {showCalendarPicker && (
         <CalendarPickerMenu
           anchorRef={calendarBtnRef}
           title={title.trim() || 'To-do'}
           dueDate={`${dateStr}T${includeTime ? timeStr : '00:00'}:00`}
           allDay={!includeTime}
+          repeat={repeat !== 'none' ? repeat : undefined}
+          reminder={reminder !== 'none' ? reminder : undefined}
           onClose={() => setShowCalendarPicker(false)}
         />
       )}
@@ -359,12 +409,16 @@ function CalendarPickerMenu({
   title,
   dueDate,
   allDay,
+  repeat,
+  reminder,
   onClose,
 }: {
   anchorRef: React.RefObject<HTMLButtonElement | null>;
   title: string;
   dueDate: string;
   allDay: boolean;
+  repeat?: TodoRepeat;
+  reminder?: TodoReminder;
   onClose: () => void;
 }) {
   const start = new Date(dueDate);
@@ -386,13 +440,13 @@ function CalendarPickerMenu({
   }, [onClose, anchorRef]);
 
   function handleGoogleCalendar() {
-    window.open(buildGoogleCalendarUrl(title, start, end, allDay), '_blank', 'noopener,noreferrer');
+    window.open(buildGoogleCalendarUrl(title, start, end, allDay, repeat), '_blank', 'noopener,noreferrer');
     onClose();
   }
 
   function handleIcsDownload() {
     const uid = Date.now().toString(36);
-    const content = buildIcsContent(title, uid, start, end, allDay);
+    const content = buildIcsContent(title, uid, start, end, allDay, repeat, reminder);
     const blob = new Blob([content], { type: 'text/calendar;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');

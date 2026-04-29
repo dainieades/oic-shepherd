@@ -79,7 +79,7 @@ interface AppContextType {
   addTodo: (todo: Omit<Todo, 'id' | 'createdAt' | 'createdBy' | 'completed'>) => void;
   updateTodo: (
     todoId: string,
-    updates: Partial<Pick<Todo, 'title' | 'dueDate' | 'repeat' | 'familyId' | 'personId'>>
+    updates: Partial<Pick<Todo, 'title' | 'dueDate' | 'repeat' | 'reminder' | 'familyId' | 'personId'>>
   ) => void;
   deleteTodo: (todoId: string) => void;
   toggleTodo: (todoId: string) => void;
@@ -451,7 +451,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const { data: approved } = await supabase
         .from('approved_emails')
         .select('email')
-        .eq('email', email)
+        .eq('email', email.toLowerCase())
         .maybeSingle();
       if (!approved) {
         await supabase.auth.signOut();
@@ -498,7 +498,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         const { data: personRow } = await supabase
           .from('people')
           .select('id')
-          .eq('email', email)
+          .eq('email', email.toLowerCase())
           .maybeSingle();
 
         if (personRow) {
@@ -527,6 +527,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
             }));
             if (avatarUrl && persona.personId) {
               syncGoogleAvatar(supabase, persona.personId, avatarUrl, setData);
+            }
+            setLoaded(true);
+            return;
+          }
+
+          // Person record exists but no persona yet — first-time sign-in for an invited user.
+          // Create a persona linked to their person record so their profile is immediately visible.
+          const { data: inserted } = await supabase
+            .from('personas')
+            .insert({ id: userId, user_id: userId, name, role: 'shepherd', email, person_id: personRow.id })
+            .select()
+            .single();
+          if (inserted) {
+            const persona = mapPersona(inserted as Record<string, unknown>, []);
+            setCurrentPersona(persona);
+            setCurrentUserEmail(email);
+            localStorage.setItem('shepherd-app-persona', persona.id);
+            setData((prev) => ({ ...prev, personas: [...prev.personas, persona] }));
+            if (avatarUrl) {
+              syncGoogleAvatar(supabase, personRow.id, avatarUrl, setData);
             }
             setLoaded(true);
             return;
@@ -707,6 +727,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           title: todo.title,
           due_date: todo.dueDate ?? null,
           repeat: todo.repeat ?? null,
+          reminder: todo.reminder ?? null,
           completed: false,
           created_by: todo.createdBy,
           created_at: todo.createdAt,
@@ -722,7 +743,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const updateTodo = useCallback(
     async (
       todoId: string,
-      updates: Partial<Pick<Todo, 'title' | 'dueDate' | 'repeat' | 'familyId' | 'personId'>>
+      updates: Partial<Pick<Todo, 'title' | 'dueDate' | 'repeat' | 'reminder' | 'familyId' | 'personId'>>
     ): Promise<void> => {
       let snapshot: AppData | undefined;
       setData((prev) => {
@@ -734,6 +755,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (updates.title !== undefined) dbUpdates.title = updates.title;
       if (updates.dueDate !== undefined) dbUpdates.due_date = updates.dueDate;
       if (updates.repeat !== undefined) dbUpdates.repeat = updates.repeat;
+      if (updates.reminder !== undefined) dbUpdates.reminder = updates.reminder;
       if (updates.familyId !== undefined) dbUpdates.family_id = updates.familyId;
       if (updates.personId !== undefined) dbUpdates.person_id = updates.personId;
       try {

@@ -100,6 +100,16 @@ export default function InviteSheet({
 
     setStatus('success');
     onSuccess?.();
+
+    fetch('/api/notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'invite.sent',
+        invitedEmail: trimmed,
+        invitedByName: currentPersona.name,
+      }),
+    }).catch(() => {});
   }
 
   return (
@@ -171,7 +181,7 @@ export default function InviteSheet({
         {status === 'success' ? (
           /* ── Success state ── */
           <div style={{ padding: '2rem 1.5rem 1rem', textAlign: 'center' }}>
-            <CheckCircle size={48} color="var(--sage)" weight="fill" style={{ marginBottom: 14 }} />
+            <CheckCircle size={48} color="var(--sage)" weight="fill" style={{ display: 'block', margin: '0 auto 1rem' }} />
             <p
               style={{
                 fontSize: 17,
@@ -190,8 +200,8 @@ export default function InviteSheet({
                 marginBottom: 24,
               }}
             >
-              <strong>{email.trim()}</strong> has been approved. They can sign in with Google or a
-              magic link at any time.
+              <strong>{email.trim()}</strong> has been approved and they've been sent an invite
+              email. They can sign in with Google, or use their email to create a password.
             </p>
             <button
               onClick={onClose}

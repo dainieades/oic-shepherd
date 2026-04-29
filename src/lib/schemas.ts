@@ -107,6 +107,11 @@ export const TodoRowSchema = z.object({
   title: z.string(),
   due_date: nullStr,
   repeat: z.enum(['none', 'daily', 'weekly', 'biweekly', 'monthly', 'yearly']).nullish(),
+  reminder: z.enum([
+    'none', 'at_start', '5_min_before', '10_min_before', '15_min_before',
+    '30_min_before', '1_hour_before', '1_day_before',
+    'same_day_9am', 'day_before_9am', 'day_before_5pm', '2_days_before_9am', '1_week_before_9am',
+  ]).nullish(),
   completed: z.boolean().nullish(),
   completed_at: nullStr,
   created_by: z.string(),
