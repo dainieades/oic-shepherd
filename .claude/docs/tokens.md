@@ -10,6 +10,7 @@ All tokens are CSS custom properties defined in `src/app/globals.css` (`:root`).
 | `--surface`        | Cards, sheets, modals                  |
 | `--border`         | Normal borders                         |
 | `--border-light`   | Subtle dividers                        |
+| `--switch-off`     | Toggle/switch off-state track          |
 | `--text-primary`   | Main text                              |
 | `--text-secondary` | Secondary text                         |
 | `--text-muted`     | Muted/placeholder text                 |

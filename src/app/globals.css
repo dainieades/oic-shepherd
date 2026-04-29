@@ -13,6 +13,8 @@
   --border: #ded7e5;
   /* Subtle dividers: hsl(270 20% 93%) */
   --border-light: #edeaf1;
+  /* Switch off-state track — same as border in light, higher contrast in dark */
+  --switch-off: #ded7e5;
 
   /* ── Text — all pass WCAG AA on --bg (#FAF8FC) ── */
   /* Primary: hsl(224 25% 16%) — contrast 14.8:1 */
@@ -110,6 +112,7 @@
   --surface: #1a181e;
   --border: #2d2b32;
   --border-light: #221f27;
+  --switch-off: #504d5a;
 
   /* Text — WCAG AA on --bg: primary 16.9:1, secondary 9.5:1, muted 5.4:1 */
   --text-primary: #ede9f5;
@@ -164,6 +167,7 @@
     --surface: #1a181e;
     --border: #2d2b32;
     --border-light: #221f27;
+    --switch-off: #504d5a;
 
     --text-primary: #ede9f5;
     --text-secondary: #b5adc8;

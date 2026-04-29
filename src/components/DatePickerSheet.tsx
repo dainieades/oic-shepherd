@@ -119,6 +119,8 @@ export interface DatePickerSheetProps {
   endDate?: string;
   endTime?: string;
   includeEndDate?: boolean;
+  /** When true, past dates are disabled and future dates are selectable */
+  allowFuture?: boolean;
   onConfirm: (
     date: string,
     time: string,
@@ -136,6 +138,7 @@ export default function DatePickerSheet({
   endDate: endDateProp,
   endTime: endTimeProp,
   includeEndDate: includeEndDateProp,
+  allowFuture = false,
   onConfirm,
   onClose,
 }: DatePickerSheetProps) {
@@ -165,14 +168,24 @@ export default function DatePickerSheet({
 
   type Cell = { day: number; dateStr: string | null; inMonth: boolean };
   const cells: Cell[] = [];
-  for (let i = startDow - 1; i >= 0; i--)
-    cells.push({ day: prevMonthDays - i, dateStr: null, inMonth: false });
+  const prevM = viewMonth === 0 ? 11 : viewMonth - 1;
+  const prevY = viewMonth === 0 ? viewYear - 1 : viewYear;
+  for (let i = startDow - 1; i >= 0; i--) {
+    const d = prevMonthDays - i;
+    const ds = `${prevY}-${String(prevM + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    cells.push({ day: d, dateStr: ds, inMonth: false });
+  }
   for (let d = 1; d <= daysInMonth; d++) {
     const ds = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
     cells.push({ day: d, dateStr: ds, inMonth: true });
   }
   const remaining = cells.length % 7 === 0 ? 0 : 7 - (cells.length % 7);
-  for (let d = 1; d <= remaining; d++) cells.push({ day: d, dateStr: null, inMonth: false });
+  const nextM = viewMonth === 11 ? 0 : viewMonth + 1;
+  const nextY = viewMonth === 11 ? viewYear + 1 : viewYear;
+  for (let d = 1; d <= remaining; d++) {
+    const ds = `${nextY}-${String(nextM + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    cells.push({ day: d, dateStr: ds, inMonth: false });
+  }
 
   function prevMonth() {
     if (viewMonth === 0) {
@@ -187,10 +200,11 @@ export default function DatePickerSheet({
     } else setViewMonth((m) => m + 1);
   }
 
-  function handleDayClick(ds: string) {
-    if (ds > todayStr) return;
+  function handleDayClick(ds: string, inMonth: boolean) {
+    if (allowFuture ? ds < todayStr : ds > todayStr) return;
     if (active === 'start') setStartDate(ds);
     else setEndDate(ds);
+    if (!inMonth) navigateTo(ds);
   }
 
   function fmtDate(d: string) {
@@ -232,7 +246,7 @@ export default function DatePickerSheet({
           width: 44,
           height: 26,
           borderRadius: 13,
-          background: on ? 'var(--sage)' : 'var(--border)',
+          background: on ? 'var(--sage)' : 'var(--switch-off)',
           position: 'relative',
           cursor: 'pointer',
           border: 'none',
@@ -269,7 +283,9 @@ export default function DatePickerSheet({
     const isActive = active === field;
 
     function handleDateChange(val: string) {
-      const clamped = val > todayStr ? todayStr : val;
+      const clamped = allowFuture
+        ? (val < todayStr ? todayStr : val)
+        : (val > todayStr ? todayStr : val);
       setActive(field);
       if (field === 'start') {
         setStartDate(clamped);
@@ -478,14 +494,17 @@ export default function DatePickerSheet({
                   cell.dateStr > rangeStart &&
                   cell.dateStr < rangeEnd;
                 const isToday = cell.dateStr === todayStr;
-                const isFuture = cell.dateStr !== null && cell.dateStr > todayStr;
+                const isDisabledDate = cell.dateStr !== null && (
+                  allowFuture ? cell.dateStr < todayStr : cell.dateStr > todayStr
+                );
                 const isSelected = isStart || isEnd;
 
+                const isClickable = cell.dateStr !== null && !isDisabledDate;
                 return (
                   <button
                     key={i}
-                    disabled={!cell.inMonth || isFuture}
-                    onClick={() => cell.dateStr && handleDayClick(cell.dateStr)}
+                    disabled={!isClickable}
+                    onClick={() => cell.dateStr && handleDayClick(cell.dateStr, cell.inMonth)}
                     style={{
                       width: 44,
                       height: 44,
@@ -500,15 +519,17 @@ export default function DatePickerSheet({
                           : 'none',
                       color: isSelected
                         ? 'var(--on-sage)'
-                        : !cell.inMonth || isFuture
+                        : isDisabledDate
                           ? 'var(--text-muted)'
-                          : isToday
-                            ? 'var(--sage)'
-                            : 'var(--text-primary)',
+                          : !cell.inMonth
+                            ? 'var(--text-muted)'
+                            : isToday
+                              ? 'var(--sage)'
+                              : 'var(--text-primary)',
                       fontSize: 15,
                       fontWeight: isSelected || isToday ? 600 : 400,
-                      cursor: cell.inMonth && !isFuture ? 'pointer' : 'default',
-                      opacity: cell.inMonth && !isFuture ? 1 : 0.35,
+                      cursor: isClickable ? 'pointer' : 'default',
+                      opacity: isClickable ? 1 : 0.35,
                     }}
                   >
                     {cell.day}

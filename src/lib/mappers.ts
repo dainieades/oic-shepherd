@@ -192,6 +192,7 @@ export function mapTodo(row: Record<string, unknown>): Todo {
     familyId: r.family_id ?? undefined,
     title: r.title,
     dueDate: r.due_date ?? undefined,
+    endDate: r.end_date ?? undefined,
     repeat: r.repeat ?? undefined,
     reminder: r.reminder ?? undefined,
     completed: r.completed ?? false,

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient as createSupabaseAdmin } from '@supabase/supabase-js';
 import { createClient } from '@/utils/supabase/server';
-import type { NoticePrivacy, NoticeUrgency } from '@/lib/types';
+import type { NoticePrivacy, NoticeUrgency, TodoReminder } from '@/lib/types';
 import {
   personAddedEmail,
   noticeAddedEmail,
@@ -9,6 +9,8 @@ import {
   personUpdatedEmail,
   ownProfileUpdatedEmail,
   inviteEmail,
+  todoCreatedEmail,
+  type ProfileChange,
 } from '@/lib/emails/templates';
 
 async function getResend() {
@@ -51,8 +53,10 @@ type NotifyPayload =
       personUserId?: string;
       updatedByName: string;
       actorEmail: string;
+      changes?: ProfileChange[];
     }
-  | { type: 'invite.sent'; invitedEmail: string; invitedByName: string };
+  | { type: 'invite.sent'; invitedEmail: string; invitedByName: string }
+  | { type: 'todo.created'; creatorEmail: string; title: string; dueDate: string; reminder: TodoReminder };
 
 async function resolveEmailsForUserIds(userIds: string[], exclude: string): Promise<string[]> {
   const admin = getAdminClient();
@@ -154,8 +158,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
           ? resolveEmailsForUserIds([body.personUserId], body.actorEmail)
           : Promise.resolve([] as string[]),
       ]);
-      const { subject, html } = personUpdatedEmail(body.personName, body.updatedByName);
-      const { subject: selfSubject, html: selfHtml } = ownProfileUpdatedEmail(body.updatedByName);
+      const { subject, html } = personUpdatedEmail(body.personName, body.updatedByName, body.changes);
+      const { subject: selfSubject, html: selfHtml } = ownProfileUpdatedEmail(body.updatedByName, body.changes);
       await Promise.all([
         send(shepherdEmails, subject, html),
         send(personEmails, selfSubject, selfHtml),
@@ -165,6 +169,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     if (body.type === 'invite.sent') {
       const { subject, html } = inviteEmail(body.invitedByName);
       await send([body.invitedEmail], subject, html);
+    }
+
+    if (body.type === 'todo.created') {
+      const { subject, html } = todoCreatedEmail(body.title, body.dueDate, body.reminder);
+      await send([body.creatorEmail], subject, html);
     }
 
     return NextResponse.json({ ok: true });

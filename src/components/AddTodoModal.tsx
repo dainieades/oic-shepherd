@@ -92,6 +92,8 @@ export default function AddTodoModal({
     const t = todo.dueDate.slice(11, 16);
     return t !== '' && t !== '00:00';
   });
+  const [endDateStr, setEndDateStr] = React.useState(todo?.endDate?.slice(0, 10) ?? '');
+  const [includeEndDate, setIncludeEndDate] = React.useState(!!todo?.endDate);
   const [showDatePicker, setShowDatePicker] = React.useState(false);
   const [repeat, setRepeat] = React.useState<TodoRepeat>(todo?.repeat ?? 'none');
   const [reminder, setReminder] = React.useState<TodoReminder>(todo?.reminder ?? 'none');
@@ -118,6 +120,7 @@ export default function AddTodoModal({
     const base = {
       title: title.trim(),
       dueDate: dueDateValue,
+      endDate: includeEndDate && endDateStr ? `${endDateStr}T00:00:00` : undefined,
       repeat: repeat !== 'none' ? repeat : undefined,
       reminder: reminder !== 'none' ? reminder : undefined,
     };
@@ -237,7 +240,11 @@ export default function AddTodoModal({
                     <FieldRow
                       icon={<CalendarBlank size={16} />}
                       label="Date"
-                      value={fmtDateTime(dateStr, timeStr, includeTime)}
+                      value={
+                        includeEndDate && endDateStr
+                          ? `${fmtDateTime(dateStr, timeStr, includeTime)} → ${fmtDateTime(endDateStr, '00:00', false)}`
+                          : fmtDateTime(dateStr, timeStr, includeTime)
+                      }
                       onClick={() => setShowDatePicker(true)}
                     />
 
@@ -349,11 +356,16 @@ export default function AddTodoModal({
           date={dateStr}
           time={timeStr}
           includeTime={includeTime}
-          onConfirm={(d, t, it) => {
+          endDate={endDateStr || dateStr}
+          includeEndDate={includeEndDate}
+          allowFuture
+          onConfirm={(d, t, it, ed, _et) => {
             if (it !== includeTime) setReminder('none');
             setDateStr(d);
             setTimeStr(t);
             setIncludeTime(it);
+            setEndDateStr(ed ?? '');
+            setIncludeEndDate(!!ed);
             setShowDatePicker(false);
           }}
           onClose={() => setShowDatePicker(false)}

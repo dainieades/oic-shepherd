@@ -143,6 +143,7 @@ export interface Todo {
   familyId?: string;
   title: string;
   dueDate?: string; // ISO datetime
+  endDate?: string; // ISO datetime
   repeat?: TodoRepeat;
   reminder?: TodoReminder;
   completed: boolean;

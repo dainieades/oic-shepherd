@@ -106,6 +106,7 @@ export const TodoRowSchema = z.object({
   family_id: nullStr,
   title: z.string(),
   due_date: nullStr,
+  end_date: nullStr,
   repeat: z.enum(['none', 'daily', 'weekly', 'biweekly', 'monthly', 'yearly']).nullish(),
   reminder: z.enum([
     'none', 'at_start', '5_min_before', '10_min_before', '15_min_before',

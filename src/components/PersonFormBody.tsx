@@ -890,7 +890,7 @@ function Toggle({ on }: { on: boolean }) {
         width: 42,
         height: 24,
         borderRadius: 'var(--radius-md)',
-        background: on ? 'var(--sage)' : 'var(--border)',
+        background: on ? 'var(--sage)' : 'var(--switch-off)',
         position: 'relative',
         transition: 'background 0.2s',
         flexShrink: 0,

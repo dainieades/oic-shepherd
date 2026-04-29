@@ -726,24 +726,38 @@ export function AppProvider({ children }: { children: ReactNode }) {
           family_id: todo.familyId ?? null,
           title: todo.title,
           due_date: todo.dueDate ?? null,
+          end_date: todo.endDate ?? null,
           repeat: todo.repeat ?? null,
           reminder: todo.reminder ?? null,
           completed: false,
           created_by: todo.createdBy,
           created_at: todo.createdAt,
         });
+        if (todo.reminder && currentUserEmail) {
+          void fetch('/api/notify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: 'todo.created',
+              creatorEmail: currentUserEmail,
+              title: todo.title,
+              dueDate: todo.dueDate ?? '',
+              reminder: todo.reminder,
+            }),
+          });
+        }
       } catch {
         if (snapshot) setData(snapshot);
         showToast(SAVE_ERROR_MSG, 'error');
       }
     },
-    [currentPersona.id]
+    [currentPersona.id, currentUserEmail]
   );
 
   const updateTodo = useCallback(
     async (
       todoId: string,
-      updates: Partial<Pick<Todo, 'title' | 'dueDate' | 'repeat' | 'reminder' | 'familyId' | 'personId'>>
+      updates: Partial<Pick<Todo, 'title' | 'dueDate' | 'endDate' | 'repeat' | 'reminder' | 'familyId' | 'personId'>>
     ): Promise<void> => {
       let snapshot: AppData | undefined;
       setData((prev) => {
@@ -754,6 +768,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const dbUpdates: Partial<TodoRow> = {};
       if (updates.title !== undefined) dbUpdates.title = updates.title;
       if (updates.dueDate !== undefined) dbUpdates.due_date = updates.dueDate;
+      if (updates.endDate !== undefined) dbUpdates.end_date = updates.endDate;
       if (updates.repeat !== undefined) dbUpdates.repeat = updates.repeat;
       if (updates.reminder !== undefined) dbUpdates.reminder = updates.reminder;
       if (updates.familyId !== undefined) dbUpdates.family_id = updates.familyId;
@@ -1008,6 +1023,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
             personUserId: linkedUserId,
             updatedByName: currentPersona.name,
             actorEmail: currentUserEmail,
+            changes: auditRows.map((r) => ({ field: r.field_name, oldValue: r.old_value, newValue: r.new_value })),
           }),
         });
       }
