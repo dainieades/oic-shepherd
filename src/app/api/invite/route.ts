@@ -2,10 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 import { createClient as createSupabaseAdmin } from '@supabase/supabase-js';
 import { z } from 'zod';
+import { inviteEmail } from '@/lib/emails/templates';
 
 const BodySchema = z.object({
   email: z.string().email(),
   label: z.string().nullish(),
+  personId: z.string().nullish(),
 });
 
 function getAdminClient() {
@@ -28,35 +30,44 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
   }
 
-  const { email, label } = parseResult.data;
+  const { email, label, personId } = parseResult.data;
   const normalizedEmail = email.trim().toLowerCase();
 
   const admin = getAdminClient();
 
   const { error: approvedError } = await admin
     .from('approved_emails')
-    .upsert({ email: normalizedEmail, label: label ?? null }, { onConflict: 'email' });
+    .upsert(
+      { email: normalizedEmail, label: label ?? null, person_id: personId ?? null },
+      { onConflict: 'email' },
+    );
 
   if (approvedError) {
     return NextResponse.json({ error: approvedError.message }, { status: 500 });
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://oic-shepherd.vercel.app';
-  const { error: inviteError } = await admin.auth.admin.inviteUserByEmail(normalizedEmail, {
-    redirectTo: `${appUrl}/auth/callback`,
-  });
+  // Resolve inviter's display name for the email
+  const { data: persona } = await admin
+    .from('personas')
+    .select('english_name')
+    .eq('user_id', user.id)
+    .maybeSingle();
+  const invitedByName = (persona as { english_name?: string } | null)?.english_name ?? user.email ?? 'Your pastor';
 
-  if (inviteError) {
-    // User already has an auth account — they're approved and can just log in.
-    const alreadyExists =
-      inviteError.message?.toLowerCase().includes('already') ||
-      inviteError.message?.toLowerCase().includes('registered') ||
-      inviteError.status === 422;
-    if (alreadyExists) {
-      return NextResponse.json({ ok: true, existing: true });
+  // Send invite email via Resend
+  const resendKey = process.env.RESEND_API_KEY;
+  if (resendKey) {
+    try {
+      const { Resend } = await import('resend');
+      const resend = new Resend(resendKey);
+      const from = process.env.RESEND_FROM_EMAIL ?? 'onboarding@resend.dev';
+      const { subject, html } = inviteEmail(invitedByName);
+      await resend.emails.send({ from, to: normalizedEmail, subject, html });
+    } catch (err) {
+      console.error('[invite] Resend email failed', err);
     }
-    console.error('[invite] inviteUserByEmail failed', inviteError);
-    return NextResponse.json({ error: inviteError.message }, { status: 500 });
+  } else {
+    console.warn('[invite] RESEND_API_KEY not set — invite email not sent');
   }
 
   return NextResponse.json({ ok: true });

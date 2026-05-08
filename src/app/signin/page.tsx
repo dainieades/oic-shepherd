@@ -8,7 +8,8 @@ type Step =
   | { type: 'email' }
   | { type: 'create-password'; email: string }
   | { type: 'sign-in'; email: string }
-  | { type: 'signup-confirm'; email: string };
+  | { type: 'signup-confirm'; email: string }
+  | { type: 'reset-sent'; email: string };
 
 type Status = { type: 'idle' } | { type: 'loading' } | { type: 'error'; message: string };
 
@@ -126,6 +127,20 @@ export default function SignInPage() {
       setStatus({ type: 'error', message: error.message });
     } else {
       router.push('/');
+    }
+  }
+
+  async function handleForgotPassword() {
+    if (step.type !== 'sign-in') return;
+    setStatus({ type: 'loading' });
+    const { error } = await supabase.auth.resetPasswordForEmail(step.email, {
+      redirectTo: `${redirectTo.replace('/auth/callback', '')}/auth/callback?next=/reset-password`,
+    });
+    if (error) {
+      setStatus({ type: 'error', message: error.message });
+    } else {
+      setStatus({ type: 'idle' });
+      setStep({ type: 'reset-sent', email: step.email });
     }
   }
 
@@ -305,9 +320,50 @@ export default function SignInPage() {
             </button>
           </form>
 
+          <button
+            onClick={handleForgotPassword}
+            disabled={isLoading}
+            style={{ ...ghostButtonStyle, marginBottom: 4 }}
+          >
+            Forgot password?
+          </button>
+
           <button onClick={resetToEmail} style={ghostButtonStyle}>
             Back
           </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Reset password sent screen ─────────────────────────────────────────
+  if (step.type === 'reset-sent') {
+    return (
+      <div style={outerStyle}>
+        <div style={cardStyle}>
+          <div style={{ textAlign: 'center' }}>
+            <h2
+              className="font-display"
+              style={{ fontSize: 22, fontWeight: 700, marginBottom: 10 }}
+            >
+              Check your inbox
+            </h2>
+            <p
+              style={{
+                fontSize: 15,
+                color: 'var(--text-secondary)',
+                lineHeight: 1.6,
+                marginBottom: 24,
+              }}
+            >
+              We sent a password reset link to <strong>{step.email}</strong>.
+              <br />
+              Click the link in the email to set a new password.
+            </p>
+            <button onClick={resetToEmail} style={ghostButtonStyle}>
+              Back to sign in
+            </button>
+          </div>
         </div>
       </div>
     );

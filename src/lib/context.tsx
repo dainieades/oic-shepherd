@@ -521,65 +521,81 @@ export function AppProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      // 2. No user_id match — try to auto-link via email → people → persona chain.
-      //    This handles first-time sign-in for shepherds whose Person record already
-      //    has their email address in the system.
+      // 2. No user_id match — try to auto-link via approved_emails.person_id first,
+      //    then fall back to email matching in people. The explicit person_id stored
+      //    at invite time is authoritative and avoids false matches when two people
+      //    share the same email address (e.g. a joint family inbox).
       if (email) {
-        const { data: personRow } = await supabase
-          .from('people')
-          .select('id')
+        // Prefer the person_id recorded when the invite was sent.
+        const { data: approvedRow } = await supabase
+          .from('approved_emails')
+          .select('person_id')
           .eq('email', email.toLowerCase())
           .maybeSingle();
 
-        if (personRow) {
+        const resolvedPersonId: string | null =
+          approvedRow?.person_id ??
+          (await supabase
+            .from('people')
+            .select('id')
+            .eq('email', email.toLowerCase())
+            .maybeSingle()
+            .then(({ data }) => data?.id ?? null));
+
+        if (resolvedPersonId) {
           const { data: personaRow } = await supabase
             .from('personas')
             .select('*')
-            .eq('person_id', personRow.id)
+            .eq('person_id', resolvedPersonId)
             .maybeSingle();
 
           if (personaRow) {
-            // Persona found — stamp it with the auth user_id so future logins are instant
-            await supabase.from('personas').update({ user_id: userId, email }).eq('id', personaRow.id);
-            const linked = { ...personaRow, user_id: userId };
-            const { data: ppRows } = await supabase
-              .from('persona_people')
-              .select('person_id')
-              .eq('persona_id', personaRow.id);
-            const assignedPeopleIds = (ppRows ?? []).map((r: { person_id: string }) => r.person_id);
-            const persona = mapPersona(linked as Record<string, unknown>, assignedPeopleIds);
-            setCurrentPersona(persona);
-            setCurrentUserEmail(email);
-            localStorage.setItem('shepherd-app-persona', persona.id);
-            setData((prev) => ({
-              ...prev,
-              personas: prev.personas.map((p) => (p.id === persona.id ? persona : p)),
-            }));
-            if (avatarUrl && persona.personId) {
-              syncGoogleAvatar(supabase, persona.personId, avatarUrl, setData);
+            // Guard: never hijack a persona that already belongs to a different auth user.
+            if (personaRow.user_id && personaRow.user_id !== userId) {
+              // Fall through to step 3 — create a fresh persona for this auth user.
+            } else {
+              // Persona found — stamp it with the auth user_id so future logins are instant
+              await supabase.from('personas').update({ user_id: userId, email }).eq('id', personaRow.id);
+              const linked = { ...personaRow, user_id: userId };
+              const { data: ppRows } = await supabase
+                .from('persona_people')
+                .select('person_id')
+                .eq('persona_id', personaRow.id);
+              const assignedPeopleIds = (ppRows ?? []).map((r: { person_id: string }) => r.person_id);
+              const persona = mapPersona(linked as Record<string, unknown>, assignedPeopleIds);
+              setCurrentPersona(persona);
+              setCurrentUserEmail(email);
+              localStorage.setItem('shepherd-app-persona', persona.id);
+              setData((prev) => ({
+                ...prev,
+                personas: prev.personas.map((p) => (p.id === persona.id ? persona : p)),
+              }));
+              if (avatarUrl && persona.personId) {
+                syncGoogleAvatar(supabase, persona.personId, avatarUrl, setData);
+              }
+              setLoaded(true);
+              return;
             }
-            setLoaded(true);
-            return;
-          }
-
-          // Person record exists but no persona yet — first-time sign-in for an invited user.
-          // Create a persona linked to their person record so their profile is immediately visible.
-          const { data: inserted } = await supabase
-            .from('personas')
-            .insert({ id: userId, user_id: userId, name, role: 'shepherd', email, person_id: personRow.id })
-            .select()
-            .single();
-          if (inserted) {
-            const persona = mapPersona(inserted as Record<string, unknown>, []);
-            setCurrentPersona(persona);
-            setCurrentUserEmail(email);
-            localStorage.setItem('shepherd-app-persona', persona.id);
-            setData((prev) => ({ ...prev, personas: [...prev.personas, persona] }));
-            if (avatarUrl) {
-              syncGoogleAvatar(supabase, personRow.id, avatarUrl, setData);
+          } else {
+            // Person record exists but no persona yet — first-time sign-in for an invited user.
+            // Create a persona linked to their person record so their profile is immediately visible.
+            const { data: inserted } = await supabase
+              .from('personas')
+              .insert({ id: userId, user_id: userId, name, role: 'shepherd', email, person_id: resolvedPersonId })
+              .select()
+              .single();
+            if (inserted) {
+              const persona = mapPersona(inserted as Record<string, unknown>, []);
+              setCurrentPersona(persona);
+              setCurrentUserEmail(email);
+              localStorage.setItem('shepherd-app-persona', persona.id);
+              setData((prev) => ({ ...prev, personas: [...prev.personas, persona] }));
+              if (avatarUrl) {
+                syncGoogleAvatar(supabase, resolvedPersonId, avatarUrl, setData);
+              }
+              setLoaded(true);
+              return;
             }
-            setLoaded(true);
-            return;
           }
         }
       }

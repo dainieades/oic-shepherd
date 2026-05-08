@@ -90,7 +90,7 @@ export default function InviteSheet({
       res = await fetch('/api/invite', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: trimmed, label: personName ?? null }),
+        body: JSON.stringify({ email: trimmed, label: personName ?? null, personId: personId ?? null }),
       });
       data = await res.json();
     } catch {
