@@ -66,6 +66,11 @@ export const PersonaRowSchema = z.object({
   user_id: nullStr,
   theme_preference: z.enum(['light', 'dark', 'system']).nullable().optional(),
   map_provider: z.enum(['apple', 'google', 'waze']).nullable().optional(),
+  notify_person_added:      z.boolean().nullable().optional(),
+  notify_notice_added:      z.boolean().nullable().optional(),
+  notify_shepherd_assigned: z.boolean().nullable().optional(),
+  notify_person_updated:    z.boolean().nullable().optional(),
+  notify_todo_created:      z.boolean().nullable().optional(),
 });
 
 export type PersonaRow = z.infer<typeof PersonaRowSchema>;
@@ -109,10 +114,12 @@ export const TodoRowSchema = z.object({
   end_date: nullStr,
   repeat: z.enum(['none', 'daily', 'weekly', 'biweekly', 'monthly', 'yearly']).nullish(),
   reminder: z.enum([
-    'none', 'at_start', '5_min_before', '10_min_before', '15_min_before',
+    'none',
     '30_min_before', '1_hour_before', '1_day_before',
     'same_day_9am', 'day_before_9am', 'day_before_5pm', '2_days_before_9am', '1_week_before_9am',
   ]).nullish(),
+  reminder_due_at: nullStr,
+  reminder_sent_at: nullStr,
   completed: z.boolean().nullish(),
   completed_at: nullStr,
   created_by: z.string(),

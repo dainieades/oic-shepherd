@@ -139,53 +139,6 @@ export default function TodosPage() {
 
   const ActionButtons = () => (
     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-      {/* View toggle */}
-      <div
-        style={{
-          display: 'flex',
-          background: 'var(--surface)',
-          border: '1px solid var(--border)',
-          borderRadius: 'var(--radius-xs)',
-          overflow: 'hidden',
-          flexShrink: 0,
-        }}
-      >
-        <button
-          onClick={() => setViewMode('list')}
-          style={{
-            width: btnSize,
-            height: btnSize,
-            background: viewMode === 'list' ? 'var(--sage-light)' : 'transparent',
-            border: 'none',
-            borderRight: '1px solid var(--border)',
-            color: viewMode === 'list' ? 'var(--sage)' : 'var(--text-secondary)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-          }}
-          aria-label="List view"
-        >
-          <List size={14} />
-        </button>
-        <button
-          onClick={() => setViewMode('calendar')}
-          style={{
-            width: btnSize,
-            height: btnSize,
-            background: viewMode === 'calendar' ? 'var(--sage-light)' : 'transparent',
-            border: 'none',
-            color: viewMode === 'calendar' ? 'var(--sage)' : 'var(--text-secondary)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-          }}
-          aria-label="Calendar view"
-        >
-          <CalendarBlank size={14} />
-        </button>
-      </div>
       {/* Search */}
       <button
         onClick={() => {
@@ -382,10 +335,10 @@ export default function TodosPage() {
         </div>
       )}
 
-      {/* Active filter chips (admin only) */}
-      {isAdmin && shepherdFilter.length > 0 && (
-        <div style={{ display: 'flex', gap: 6, marginBottom: 10, flexWrap: 'wrap' }}>
-          {shepherdFilter.map((sid) => {
+      {/* Filter chips + view toggle row */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
+          {isAdmin && shepherdFilter.map((sid) => {
             const label =
               sid === 'mine' ? 'My Sheep' : (data.personas.find((p) => p.id === sid)?.name ?? sid);
             return (
@@ -412,7 +365,53 @@ export default function TodosPage() {
             );
           })}
         </div>
-      )}
+        <div
+          style={{
+            display: 'flex',
+            background: 'var(--surface)',
+            border: '1px solid var(--border)',
+            borderRadius: 'var(--radius-xs)',
+            overflow: 'hidden',
+            flexShrink: 0,
+          }}
+        >
+          <button
+            onClick={() => setViewMode('list')}
+            style={{
+              width: 30,
+              height: 30,
+              background: viewMode === 'list' ? 'var(--sage-light)' : 'transparent',
+              border: 'none',
+              borderRight: '1px solid var(--border)',
+              color: viewMode === 'list' ? 'var(--sage)' : 'var(--text-secondary)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+            }}
+            aria-label="List view"
+          >
+            <List size={14} />
+          </button>
+          <button
+            onClick={() => setViewMode('calendar')}
+            style={{
+              width: 30,
+              height: 30,
+              background: viewMode === 'calendar' ? 'var(--sage-light)' : 'transparent',
+              border: 'none',
+              color: viewMode === 'calendar' ? 'var(--sage)' : 'var(--text-secondary)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+            }}
+            aria-label="Calendar view"
+          >
+            <CalendarBlank size={14} />
+          </button>
+        </div>
+      </div>
 
       {viewMode === 'calendar' ? (
         <CalendarView todos={myTodos} onToggle={handleToggle} onEdit={setEditingTodo} data={data} />

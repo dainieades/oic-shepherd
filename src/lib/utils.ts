@@ -331,10 +331,6 @@ function reminderToTrigger(reminder: TodoReminder, allDay: boolean): string | nu
   if (reminder === 'none') return null;
   if (!allDay) {
     switch (reminder) {
-      case 'at_start': return 'TRIGGER:PT0S';
-      case '5_min_before': return 'TRIGGER:-PT5M';
-      case '10_min_before': return 'TRIGGER:-PT10M';
-      case '15_min_before': return 'TRIGGER:-PT15M';
       case '30_min_before': return 'TRIGGER:-PT30M';
       case '1_hour_before': return 'TRIGGER:-PT1H';
       case '1_day_before': return 'TRIGGER:-P1D';
@@ -463,4 +459,37 @@ export function categorizeTodos(todos: Todo[]): {
   );
 
   return { overdue, today, upcoming, noDueDate, completed };
+}
+
+const NOTIFICATION_TIMEZONE = process.env.NOTIFICATION_TIMEZONE ?? 'America/New_York';
+
+function dateAtTimeInTZ(date: Date, hours: number, minutes: number, tz: string): Date {
+  // Get the calendar date string in the target timezone (YYYY-MM-DD)
+  const localDateStr = date.toLocaleDateString('en-CA', { timeZone: tz });
+  // Treat that date + time as a UTC candidate, then shift by the TZ offset at that moment
+  const candidate = new Date(`${localDateStr}T${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00Z`);
+  const tzMs = new Date(candidate.toLocaleString('en-US', { timeZone: tz })).getTime();
+  const utcMs = new Date(candidate.toLocaleString('en-US', { timeZone: 'UTC' })).getTime();
+  return new Date(candidate.getTime() + (utcMs - tzMs));
+}
+
+export function calcReminderDueAt(
+  dueDate: string | undefined,
+  reminder: TodoReminder | undefined,
+  tz = NOTIFICATION_TIMEZONE,
+): string | null {
+  if (!dueDate || !reminder || reminder === 'none') return null;
+  const due = new Date(dueDate);
+  const DAY = 86_400_000;
+  switch (reminder) {
+    case '30_min_before':    return new Date(due.getTime() - 30 * 60_000).toISOString();
+    case '1_hour_before':    return new Date(due.getTime() - 60 * 60_000).toISOString();
+    case '1_day_before':     return new Date(due.getTime() - DAY).toISOString();
+    case 'same_day_9am':     return dateAtTimeInTZ(due, 9, 0, tz).toISOString();
+    case 'day_before_9am':   return dateAtTimeInTZ(new Date(due.getTime() - DAY), 9, 0, tz).toISOString();
+    case 'day_before_5pm':   return dateAtTimeInTZ(new Date(due.getTime() - DAY), 17, 0, tz).toISOString();
+    case '2_days_before_9am': return dateAtTimeInTZ(new Date(due.getTime() - 2 * DAY), 9, 0, tz).toISOString();
+    case '1_week_before_9am': return dateAtTimeInTZ(new Date(due.getTime() - 7 * DAY), 9, 0, tz).toISOString();
+    default: return null;
+  }
 }

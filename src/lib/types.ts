@@ -3,6 +3,14 @@ export type ThemePreference = 'light' | 'dark' | 'system';
 export type Role = 'admin' | 'shepherd' | 'welcome-team';
 export type AppRole = 'admin' | 'shepherd' | 'welcome-team' | 'no-access';
 
+export interface NotificationPreferences {
+  personAdded:      boolean;
+  noticeAdded:      boolean;
+  shepherdAssigned: boolean;
+  personUpdated:    boolean;
+  todoCreated:      boolean;
+}
+
 export interface Persona {
   id: string;
   name: string;
@@ -12,6 +20,7 @@ export interface Persona {
   userId?: string; // Supabase auth user ID
   themePreference?: ThemePreference;
   mapProvider?: 'apple' | 'google' | 'waze';
+  notificationPrefs?: NotificationPreferences;
 }
 
 export type MembershipStatus = 'member' | 'non-member' | 'membership-track';
@@ -123,10 +132,6 @@ export type TodoRepeat = 'none' | 'daily' | 'weekly' | 'biweekly' | 'monthly' | 
 export type TodoReminder =
   | 'none'
   // Timed-event options (relative to event start)
-  | 'at_start'
-  | '5_min_before'
-  | '10_min_before'
-  | '15_min_before'
   | '30_min_before'
   | '1_hour_before'
   | '1_day_before'
@@ -146,6 +151,8 @@ export interface Todo {
   endDate?: string; // ISO datetime
   repeat?: TodoRepeat;
   reminder?: TodoReminder;
+  reminderDueAt?: string | null;
+  reminderSentAt?: string | null;
   completed: boolean;
   completedAt?: string; // ISO datetime
   createdBy: string; // persona ID

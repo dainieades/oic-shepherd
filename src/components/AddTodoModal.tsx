@@ -44,13 +44,9 @@ const REPEAT_OPTIONS: { value: TodoRepeat; label: string }[] = [
 
 const REMINDER_OPTIONS_TIMED: { value: TodoReminder; label: string }[] = [
   { value: 'none', label: 'None' },
-  { value: 'at_start', label: 'When it starts' },
-  { value: '5_min_before', label: '5 minutes before' },
-  { value: '10_min_before', label: '10 minutes before' },
-  { value: '15_min_before', label: '15 minutes before' },
   { value: '30_min_before', label: '30 minutes before' },
   { value: '1_hour_before', label: '1 hour before' },
-  { value: '1_day_before', label: '1 day before' },
+  { value: '1_day_before', label: '24 hours before' },
 ];
 
 const REMINDER_OPTIONS_DATE_ONLY: { value: TodoReminder; label: string }[] = [

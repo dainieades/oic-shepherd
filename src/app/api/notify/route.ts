@@ -71,12 +71,14 @@ async function getEmailsByRole(
   supabase: Awaited<ReturnType<typeof createClient>>,
   roles: string[],
   exclude: string,
+  notifyColumn: string,
 ): Promise<string[]> {
   const { data } = await supabase
     .from('personas')
     .select('user_id')
     .in('role', roles)
-    .not('user_id', 'is', null);
+    .not('user_id', 'is', null)
+    .neq(notifyColumn, false);
   const userIds = (data ?? []).map((r: { user_id: string }) => r.user_id).filter(Boolean);
   return resolveEmailsForUserIds(userIds, exclude);
 }
@@ -85,13 +87,15 @@ async function getEmailsByPersonaIds(
   supabase: Awaited<ReturnType<typeof createClient>>,
   ids: string[],
   exclude: string,
+  notifyColumn: string,
 ): Promise<string[]> {
   if (ids.length === 0) return [];
   const { data } = await supabase
     .from('personas')
     .select('user_id')
     .in('id', ids)
-    .not('user_id', 'is', null);
+    .not('user_id', 'is', null)
+    .neq(notifyColumn, false);
   const userIds = (data ?? []).map((r: { user_id: string }) => r.user_id).filter(Boolean);
   return resolveEmailsForUserIds(userIds, exclude);
 }
@@ -119,7 +123,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   try {
     if (body.type === 'person.added') {
-      const emails = await getEmailsByRole(supabase, ['admin'], body.actorEmail);
+      const emails = await getEmailsByRole(supabase, ['admin'], body.actorEmail, 'notify_person_added');
       const { subject, html } = personAddedEmail(body.personName, body.addedByName);
       await send(emails, subject, html);
     }
@@ -130,7 +134,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       else if (body.privacy === 'pastor-and-shepherds') roles = ['admin', 'shepherd'];
       else roles = ['admin', 'shepherd', 'welcome-team'];
 
-      const emails = await getEmailsByRole(supabase, roles, body.actorEmail);
+      const emails = await getEmailsByRole(supabase, roles, body.actorEmail, 'notify_notice_added');
       const { subject, html } = noticeAddedEmail(
         body.aboutName,
         body.content,
@@ -146,6 +150,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         supabase,
         body.shepherdPersonaIds,
         body.actorEmail,
+        'notify_shepherd_assigned',
       );
       const { subject, html } = shepherdAssignedEmail(body.personName, body.assignedByName);
       await send(emails, subject, html);
@@ -153,7 +158,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
     if (body.type === 'person.updated') {
       const [shepherdEmails, personEmails] = await Promise.all([
-        getEmailsByPersonaIds(supabase, body.shepherdPersonaIds, body.actorEmail),
+        getEmailsByPersonaIds(supabase, body.shepherdPersonaIds, body.actorEmail, 'notify_person_updated'),
         body.personUserId
           ? resolveEmailsForUserIds([body.personUserId], body.actorEmail)
           : Promise.resolve([] as string[]),

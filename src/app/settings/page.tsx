@@ -15,6 +15,7 @@ import {
   MapPin,
   GoogleLogo,
   CircleHalf,
+  Bell,
 } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { useToast } from '@/components/Toast';
@@ -291,6 +292,13 @@ export default function SettingsPage() {
             icon={<MapPin size={18} color="var(--text-muted)" />}
             label="Maps App"
             value={MAP_PROVIDER_LABELS[mapProvider]}
+            chevron
+          />
+        </Link>
+        <Link href="/settings/notifications" style={{ textDecoration: 'none', display: 'block' }}>
+          <SettingsRow
+            icon={<Bell size={18} color="var(--text-muted)" />}
+            label="Notifications"
             chevron
           />
         </Link>

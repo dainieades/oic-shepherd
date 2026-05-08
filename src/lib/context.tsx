@@ -24,6 +24,7 @@ import {
   type ChurchAttendance,
   type MembershipStatus,
   type ThemePreference,
+  type NotificationPreferences,
 } from './types';
 import { type PersonRow, type FamilyRow, type NoteRow, type NoticeRow, type TodoRow, type GroupRow } from './schemas';
 import { mapPerson, mapFamily, mapPersona, syncGoogleAvatar, mapNote, mapNotice, mapTodo, mapAuditLog } from './mappers';
@@ -56,7 +57,7 @@ export const HOME_DEFAULT_FILTERS: HomeFilters = {
   languages: [],
 };
 import { initialData } from './data';
-import { generateId, MAP_PROVIDERS_STORAGE_KEY, type MapProvider } from './utils';
+import { generateId, MAP_PROVIDERS_STORAGE_KEY, calcReminderDueAt, type MapProvider } from './utils';
 import { createClient } from '@/utils/supabase/client';
 import { useToast } from '@/components/Toast';
 import { DEFAULT_FOLLOW_UP_DAYS, SAVE_ERROR_MSG } from '@/lib/constants';
@@ -162,6 +163,8 @@ interface AppContextType {
   setThemePreference: (pref: ThemePreference) => void;
   mapProvider: MapProvider;
   setMapProvider: (provider: MapProvider) => void;
+  notificationPrefs: NotificationPreferences;
+  setNotificationPreference: <K extends keyof NotificationPreferences>(key: K, value: boolean) => Promise<void>;
   fullPageModalOpen: boolean;
   setFullPageModalOpen: Dispatch<SetStateAction<boolean>>;
 }
@@ -199,6 +202,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // ── Theme preference ─────────────────────────────────────────────────
   const [themePreference, setThemePreferenceState] = useState<ThemePreference>('system');
   const [mapProvider, setMapProviderState] = useState<MapProvider>('google');
+  const [notificationPrefs, setNotificationPrefsState] = useState<NotificationPreferences>({
+    personAdded: true, noticeAdded: true, shepherdAssigned: true,
+    personUpdated: true, todoCreated: true,
+  });
 
   useEffect(() => {
     const stored = localStorage.getItem('shepherd-app-theme') as ThemePreference | null;
@@ -241,6 +248,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
       .eq('id', currentPersona.id)
       .then(() => {});
   }, [currentPersona.id]);
+
+  const NOTIFY_PREF_COLUMNS: Record<keyof NotificationPreferences, string> = {
+    personAdded:      'notify_person_added',
+    noticeAdded:      'notify_notice_added',
+    shepherdAssigned: 'notify_shepherd_assigned',
+    personUpdated:    'notify_person_updated',
+    todoCreated:      'notify_todo_created',
+  };
+
+  const setNotificationPreference = useCallback(
+    async <K extends keyof NotificationPreferences>(key: K, value: boolean): Promise<void> => {
+      setNotificationPrefsState((prev) => ({ ...prev, [key]: value }));
+      await createClient()
+        .from('personas')
+        .update({ [NOTIFY_PREF_COLUMNS[key]]: value })
+        .eq('id', currentPersona.id);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [currentPersona.id]
+  );
 
   const personaByPersonId = useMemo(
     () => new Map(data.personas.filter((p) => p.personId).map((p) => [p.personId as string, p])),
@@ -373,6 +400,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         if (persona.mapProvider === 'apple' || persona.mapProvider === 'google') {
           setMapProviderState(persona.mapProvider);
           localStorage.setItem(MAP_PROVIDERS_STORAGE_KEY, persona.mapProvider);
+        }
+        if (persona.notificationPrefs) {
+          setNotificationPrefsState(persona.notificationPrefs);
         }
       }
 
@@ -729,29 +759,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
           end_date: todo.endDate ?? null,
           repeat: todo.repeat ?? null,
           reminder: todo.reminder ?? null,
+          reminder_due_at: calcReminderDueAt(todo.dueDate, todo.reminder),
           completed: false,
           created_by: todo.createdBy,
           created_at: todo.createdAt,
         });
-        if (todo.reminder && currentUserEmail) {
-          void fetch('/api/notify', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              type: 'todo.created',
-              creatorEmail: currentUserEmail,
-              title: todo.title,
-              dueDate: todo.dueDate ?? '',
-              reminder: todo.reminder,
-            }),
-          });
-        }
       } catch {
         if (snapshot) setData(snapshot);
         showToast(SAVE_ERROR_MSG, 'error');
       }
     },
-    [currentPersona.id, currentUserEmail]
+    [currentPersona.id]
   );
 
   const updateTodo = useCallback(
@@ -760,8 +778,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       updates: Partial<Pick<Todo, 'title' | 'dueDate' | 'endDate' | 'repeat' | 'reminder' | 'familyId' | 'personId'>>
     ): Promise<void> => {
       let snapshot: AppData | undefined;
+      let existingTodo: Todo | undefined;
       setData((prev) => {
         snapshot = prev;
+        existingTodo = prev.todos.find((t) => t.id === todoId);
         return { ...prev, todos: prev.todos.map((t) => (t.id === todoId ? { ...t, ...updates } : t)) };
       });
       const supabase = createClient();
@@ -773,6 +793,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (updates.reminder !== undefined) dbUpdates.reminder = updates.reminder;
       if (updates.familyId !== undefined) dbUpdates.family_id = updates.familyId;
       if (updates.personId !== undefined) dbUpdates.person_id = updates.personId;
+      // Recalculate reminder_due_at and reset reminder_sent_at when schedule changes
+      if (updates.dueDate !== undefined || updates.reminder !== undefined) {
+        const newDueDate = updates.dueDate ?? existingTodo?.dueDate;
+        const newReminder = updates.reminder ?? existingTodo?.reminder;
+        dbUpdates.reminder_due_at = calcReminderDueAt(newDueDate, newReminder);
+        dbUpdates.reminder_sent_at = null;
+      }
       try {
         await supabase.from('todos').update(dbUpdates).eq('id', todoId);
       } catch {
@@ -1630,6 +1657,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setThemePreference,
         mapProvider,
         setMapProvider,
+        notificationPrefs,
+        setNotificationPreference,
         fullPageModalOpen,
         setFullPageModalOpen,
       }}

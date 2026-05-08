@@ -193,13 +193,9 @@ export function inviteEmail(invitedByName: string): EmailTemplate {
 
 const REMINDER_LABELS: Record<TodoReminder, string> = {
   none: 'None',
-  at_start: 'When it starts',
-  '5_min_before': '5 minutes before',
-  '10_min_before': '10 minutes before',
-  '15_min_before': '15 minutes before',
   '30_min_before': '30 minutes before',
   '1_hour_before': '1 hour before',
-  '1_day_before': '1 day before',
+  '1_day_before': '24 hours before',
   same_day_9am: 'Same day at 9 AM',
   day_before_9am: 'Day before at 9 AM',
   day_before_5pm: 'Day before at 5 PM',

@@ -106,6 +106,13 @@ export function mapPersona(row: Record<string, unknown>, assignedPeopleIds: stri
     assignedPeopleIds,
     themePreference: r.theme_preference ?? undefined,
     mapProvider: r.map_provider ?? undefined,
+    notificationPrefs: {
+      personAdded:      r.notify_person_added      ?? true,
+      noticeAdded:      r.notify_notice_added      ?? true,
+      shepherdAssigned: r.notify_shepherd_assigned ?? true,
+      personUpdated:    r.notify_person_updated    ?? true,
+      todoCreated:      r.notify_todo_created      ?? true,
+    },
   };
 }
 
@@ -195,6 +202,8 @@ export function mapTodo(row: Record<string, unknown>): Todo {
     endDate: r.end_date ?? undefined,
     repeat: r.repeat ?? undefined,
     reminder: r.reminder ?? undefined,
+    reminderDueAt: r.reminder_due_at ?? null,
+    reminderSentAt: r.reminder_sent_at ?? null,
     completed: r.completed ?? false,
     completedAt: r.completed_at ?? undefined,
     createdBy: r.created_by,
