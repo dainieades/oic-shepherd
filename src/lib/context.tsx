@@ -1109,6 +1109,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
         ),
       };
     });
+    // Keep currentPersona.assignedPeopleIds in sync so the "My Sheep" filter
+    // reflects new assignments without requiring a page reload.
+    setCurrentPersona((prev) => {
+      const isNowMine = shepherdIds.includes(prev.id);
+      const wasMine = prev.assignedPeopleIds.includes(personId);
+      if (isNowMine === wasMine) return prev;
+      return {
+        ...prev,
+        assignedPeopleIds: isNowMine
+          ? [...prev.assignedPeopleIds, personId]
+          : prev.assignedPeopleIds.filter((id) => id !== personId),
+      };
+    });
     const supabase = createClient();
     try {
       await supabase.from('person_shepherds').delete().eq('person_id', personId);
