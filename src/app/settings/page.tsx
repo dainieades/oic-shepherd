@@ -53,7 +53,7 @@ export default function SettingsPage() {
   const isDevOverride = supabaseUser && currentPersona.userId !== supabaseUser.id;
   const displayName = isDevOverride
     ? (person?.englishName ?? currentPersona.name)
-    : (supabaseUser?.user_metadata?.full_name ?? person?.englishName ?? currentPersona.name);
+    : (person?.englishName ?? supabaseUser?.user_metadata?.full_name ?? currentPersona.name);
   const displayEmail = isDevOverride
     ? (person?.email ?? '')
     : (supabaseUser?.email ?? person?.email ?? '');
