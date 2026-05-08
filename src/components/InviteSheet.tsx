@@ -9,7 +9,6 @@ import {
   Users,
   Check,
 } from '@phosphor-icons/react';
-import { createClient } from '@/utils/supabase/client';
 import { useApp } from '@/lib/context';
 import { X } from '@phosphor-icons/react';
 import { BACKDROP_COLOR, SHEET_MAX_WIDTH, Z_SHEET } from '@/lib/constants';
@@ -24,6 +23,8 @@ interface Props {
   personName?: string;
   /** If provided, saves the chosen role back to the person record on success */
   personId?: string;
+  /** If provided, shows a "Change" button next to the person name to go back to the picker */
+  onChangePerson?: () => void;
 }
 
 const ROLES: { value: InviteRole; label: string; description: string; icon: React.ReactNode }[] = [
@@ -54,6 +55,7 @@ export default function InviteSheet({
   initialRole = 'shepherd',
   personName,
   personId,
+  onChangePerson,
 }: Props) {
   const { currentPersona, updatePerson } = useApp();
   const [email, setEmail] = React.useState(initialEmail);
@@ -82,34 +84,33 @@ export default function InviteSheet({
     setStatus('loading');
     setErrorMsg('');
 
-    const supabase = createClient();
-    const { error } = await supabase
-      .from('approved_emails')
-      .upsert({ email: trimmed, label: personName ?? null }, { onConflict: 'email' });
-
-    if (error) {
-      setErrorMsg(error.message);
+    let res: Response;
+    let data: { ok?: boolean; existing?: boolean; error?: string };
+    try {
+      res = await fetch('/api/invite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: trimmed, label: personName ?? null }),
+      });
+      data = await res.json();
+    } catch {
+      setErrorMsg('Network error. Please try again.');
       setStatus('error');
       return;
     }
 
-    // If linked to a person record, save the role and email back to their profile
+    if (!res.ok || !data.ok) {
+      setErrorMsg(data.error ?? 'Something went wrong. Please try again.');
+      setStatus('error');
+      return;
+    }
+
     if (personId) {
       await updatePerson(personId, { appRole: role, email: trimmed });
     }
 
     setStatus('success');
     onSuccess?.();
-
-    fetch('/api/notify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        type: 'invite.sent',
-        invitedEmail: trimmed,
-        invitedByName: currentPersona.name,
-      }),
-    }).catch(() => {});
   }
 
   return (
@@ -146,20 +147,44 @@ export default function InviteSheet({
             borderBottom: '1px solid var(--border-light)',
           }}
         >
-          <p
-            style={{
-              fontSize: 12,
-              fontWeight: 600,
-              color: 'var(--text-muted)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.06em',
-              margin: 0,
-              flex: 1,
-              textAlign: 'center',
-            }}
-          >
-            Invite to App
-          </p>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p
+              style={{
+                fontSize: 12,
+                fontWeight: 600,
+                color: 'var(--text-muted)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+                margin: 0,
+                textAlign: personName ? 'left' : 'center',
+              }}
+            >
+              Invite to App
+            </p>
+            {personName && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
+                <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
+                  {personName}
+                </p>
+                {onChangePerson && (
+                  <button
+                    onClick={onChangePerson}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: 0,
+                      fontSize: 13,
+                      color: 'var(--sage)',
+                      fontWeight: 500,
+                    }}
+                  >
+                    Change
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
           <button
             onClick={onClose}
             aria-label="Close"
@@ -172,6 +197,7 @@ export default function InviteSheet({
               display: 'flex',
               alignItems: 'center',
               marginLeft: 8,
+              flexShrink: 0,
             }}
           >
             <X size={18} />
@@ -200,8 +226,8 @@ export default function InviteSheet({
                 marginBottom: 24,
               }}
             >
-              <strong>{email.trim()}</strong> has been approved and they've been sent an invite
-              email. They can sign in with Google, or use their email to create a password.
+              <strong>{email.trim()}</strong> has been approved. They'll receive an email with a
+              link to sign in — no password needed.
             </p>
             <button
               onClick={onClose}

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { MagnifyingGlass, Check } from '@phosphor-icons/react';
+import { MagnifyingGlass, Check, IdentificationCard } from '@phosphor-icons/react';
 import { CheckboxMark } from './CheckRow';
 import { SHEPHERD_AVATAR_PALETTE, Z_SHEET } from '@/lib/constants';
 import { CHURCH_POSITIONS } from '@/lib/types';
@@ -830,5 +830,168 @@ function RadioDot({ selected }: { selected: boolean }) {
     >
       {selected && <Check size={11} color="var(--on-sage)" weight="bold" />}
     </div>
+  );
+}
+
+export function InvitePersonPickerSheet({
+  people,
+  onSelect,
+  onBack,
+}: {
+  people: { id: string; englishName: string; chineseName?: string; photo?: string; appRole?: string }[];
+  onSelect: (person: { id: string; englishName: string }) => void;
+  onBack: () => void;
+}) {
+  const [search, setSearch] = React.useState('');
+  const searchRef = React.useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    searchRef.current?.focus();
+  }, []);
+
+  const q = search.toLowerCase();
+  const filtered = people.filter(
+    (p) =>
+      !q ||
+      p.englishName.toLowerCase().includes(q) ||
+      (p.chineseName && p.chineseName.toLowerCase().includes(q))
+  );
+
+  return (
+    <BottomSheet onClose={onBack} zIndex={Z_SHEET}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          padding: '0.875rem 1.25rem 0.75rem',
+          flexShrink: 0,
+          borderBottom: '1px solid var(--border-light)',
+        }}
+      >
+        <button
+          onClick={onBack}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-secondary)', padding: 0, marginRight: 'auto' }}
+        >
+          Cancel
+        </button>
+        <span style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
+          Who are you inviting?
+        </span>
+      </div>
+      <div
+        style={{
+          padding: '0.75rem 1.25rem',
+          flexShrink: 0,
+          borderBottom: '1px solid var(--border-light)',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            background: 'var(--bg)',
+            border: '1px solid var(--border)',
+            borderRadius: 'var(--radius-sm)',
+            padding: '0.5625rem 0.75rem',
+          }}
+        >
+          <MagnifyingGlass size={14} color="var(--text-muted)" />
+          <input
+            ref={searchRef}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search people…"
+            style={{
+              flex: 1,
+              fontSize: 14,
+              color: 'var(--text-primary)',
+              background: 'none',
+              border: 'none',
+              outline: 'none',
+            }}
+          />
+          {search && (
+            <button
+              onClick={() => setSearch('')}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: 'var(--text-muted)',
+                fontSize: 18,
+                lineHeight: 1,
+                padding: 0,
+              }}
+            >
+              ×
+            </button>
+          )}
+        </div>
+      </div>
+      <div style={{ flex: 1, overflowY: 'auto' }}>
+        {filtered.map((p, i) => {
+          const hasAccess = p.appRole && p.appRole !== 'no-access';
+          const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
+          return (
+            <button
+              key={p.id}
+              onClick={() => onSelect(p)}
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                padding: '0.75rem 1.25rem',
+                background: 'none',
+                border: 'none',
+                borderBottom: '1px solid var(--border-light)',
+                cursor: 'pointer',
+                textAlign: 'left' as const,
+              }}
+            >
+              <AvatarBadge
+                name={p.englishName}
+                photo={p.photo}
+                size={36}
+                bg={palette.bg}
+                color={palette.color}
+              />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 500,
+                    color: 'var(--text-primary)',
+                    margin: 0,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {p.englishName}
+                  {p.chineseName && (
+                    <span style={{ color: 'var(--text-muted)', fontWeight: 400, marginLeft: 6 }}>
+                      {p.chineseName}
+                    </span>
+                  )}
+                </p>
+                {hasAccess && (
+                  <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: '0.125rem 0 0', display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <IdentificationCard size={12} />
+                    Already has access
+                  </p>
+                )}
+              </div>
+            </button>
+          );
+        })}
+        {filtered.length === 0 && (
+          <p style={{ fontSize: 14, color: 'var(--text-muted)', textAlign: 'center', padding: '2rem 1.25rem' }}>
+            No people found
+          </p>
+        )}
+      </div>
+    </BottomSheet>
   );
 }

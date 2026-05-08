@@ -91,7 +91,7 @@ interface Props {
 
 const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
   function PersonFormBody({ person, onSaved, showPhotoUpload, showInviteRow, onValidityChange }, ref) {
-    const { data, currentPersona, addPerson, updatePerson, updateFamilyMembers, assignShepherds, assignGroupsToPerson } = useApp();
+    const { data, currentPersona, personaByPersonId, addPerson, updatePerson, updateFamilyMembers, assignShepherds, assignGroupsToPerson } = useApp();
 
     const isWelcomeTeam: boolean = currentPersona.role === 'welcome-team';
     const isAddMode: boolean = !person;
@@ -167,6 +167,11 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
 
     const fullName = [firstName.trim(), lastName.trim()].filter(Boolean).join(' ');
     const selectedGroups = data.groups.filter((g) => groupIds.includes(g.id));
+    const isPendingInvite =
+      !!person &&
+      appRole !== 'no-access' &&
+      !!email &&
+      !personaByPersonId.has(person.id);
 
     const personaPersonIds = new Set(data.personas.map((p) => p.personId).filter(Boolean));
     type ShepherdEntry = { id: string; name: string; subtitle: string; photo?: string };
@@ -371,38 +376,66 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
                   <CaretRight size={14} color="var(--text-muted)" />
                 </button>
               ) : (
-                <button
-                  className={currentPersona.role === 'admin' ? 'field-row-hover' : undefined}
-                  onClick={() => currentPersona.role === 'admin' && setOpenPicker('appRole')}
-                  style={{
-                    ...rowBtnStyle,
-                    cursor: currentPersona.role === 'admin' ? 'pointer' : 'default',
-                  }}
-                >
-                  <span style={spacerStyle} />
-                  <IdentificationCard size={16} color="var(--text-muted)" />
-                  <span style={labelStyle}>App Role</span>
-                  <span
+                <>
+                  <button
+                    className={currentPersona.role === 'admin' ? 'field-row-hover' : undefined}
+                    onClick={() => currentPersona.role === 'admin' && setOpenPicker('appRole')}
                     style={{
-                      flex: 1,
-                      fontSize: 14,
-                      color: 'var(--text-primary)',
-                      textAlign: 'right',
+                      ...rowBtnStyle,
+                      cursor: currentPersona.role === 'admin' ? 'pointer' : 'default',
                     }}
                   >
-                    {
+                    <span style={spacerStyle} />
+                    <IdentificationCard size={16} color="var(--text-muted)" />
+                    <span style={labelStyle}>App Role</span>
+                    <span
+                      style={{
+                        flex: 1,
+                        fontSize: 14,
+                        color: 'var(--text-primary)',
+                        textAlign: 'right',
+                      }}
+                    >
                       {
-                        admin: 'Admin',
-                        shepherd: 'Shepherd',
-                        'welcome-team': 'Welcome Team',
-                        'no-access': 'No Access',
-                      }[appRole]
-                    }
-                  </span>
-                  {currentPersona.role === 'admin' && (
-                    <CaretRight size={14} color="var(--text-muted)" />
+                        {
+                          admin: 'Admin',
+                          shepherd: 'Shepherd',
+                          'welcome-team': 'Welcome Team',
+                          'no-access': 'No Access',
+                        }[appRole]
+                      }
+                    </span>
+                    {currentPersona.role === 'admin' && (
+                      <CaretRight size={14} color="var(--text-muted)" />
+                    )}
+                  </button>
+                  {isPendingInvite && (
+                    <div
+                      style={{
+                        ...rowBtnStyle,
+                        cursor: 'default',
+                        background: 'var(--amber-light, #fffbeb)',
+                        borderTop: '1px solid var(--border-light)',
+                      }}
+                    >
+                      <span style={spacerStyle} />
+                      <PaperPlaneTilt size={16} color="var(--amber, #d97706)" />
+                      <span style={{ ...labelStyle, color: 'var(--amber, #d97706)' }}>
+                        Invite pending
+                      </span>
+                      <span
+                        style={{
+                          flex: 1,
+                          fontSize: 13,
+                          color: 'var(--text-muted)',
+                          textAlign: 'right',
+                        }}
+                      >
+                        Hasn't signed in yet
+                      </span>
+                    </div>
                   )}
-                </button>
+                </>
               )}
             </FormSection>
           )}
