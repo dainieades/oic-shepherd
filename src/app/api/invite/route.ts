@@ -62,9 +62,17 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       const resend = new Resend(resendKey);
       const from = process.env.RESEND_FROM_EMAIL ?? 'onboarding@resend.dev';
       const { subject, html } = inviteEmail(invitedByName);
-      await resend.emails.send({ from, to: normalizedEmail, subject, html });
+      const { error: emailError } = await resend.emails.send({ from, to: normalizedEmail, subject, html });
+      if (emailError) {
+        console.error('[invite] Resend error:', emailError);
+        return NextResponse.json(
+          { error: `Email delivery failed: ${emailError.message}` },
+          { status: 500 },
+        );
+      }
     } catch (err) {
-      console.error('[invite] Resend email failed', err);
+      console.error('[invite] Resend exception:', err);
+      return NextResponse.json({ error: 'Email delivery failed' }, { status: 500 });
     }
   } else {
     console.warn('[invite] RESEND_API_KEY not set — invite email not sent');
