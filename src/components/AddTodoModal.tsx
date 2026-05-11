@@ -30,6 +30,7 @@ interface AddTodoModalProps {
   prefillFamilyId?: string;
   prefillPersonId?: string;
   todo?: Todo;
+  onBack?: () => void;
 }
 
 const REPEAT_OPTIONS: { value: TodoRepeat; label: string }[] = [
@@ -62,6 +63,7 @@ export default function AddTodoModal({
   prefillFamilyId,
   prefillPersonId,
   todo,
+  onBack,
 }: AddTodoModalProps) {
   const { data, currentPersona, addTodo, updateTodo, deleteTodo, calendarSyncEnabled, calendarConnectedApp } = useApp();
   const { showToast } = useToast();
@@ -188,7 +190,8 @@ export default function AddTodoModal({
               <ModalHeader
                 title={isEditing ? 'Edit to-do' : 'Add to-do'}
                 titleId="add-todo-title"
-                onCancel={onClose}
+                onCancel={onBack ?? onClose}
+                cancelLabel={onBack ? 'Back' : 'Cancel'}
                 onAction={handleSave}
                 actionLabel="Save"
                 actionDisabled={!title.trim()}

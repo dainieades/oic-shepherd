@@ -82,6 +82,7 @@ export const NoteRowSchema = z.object({
   id: z.string(),
   person_id: nullStr,
   family_id: nullStr,
+  todo_id: nullStr,
   type: z.enum(['check-in', 'prayer-request', 'event', 'general']),
   visibility: z.enum(['private', 'public']),
   content: nullStr,

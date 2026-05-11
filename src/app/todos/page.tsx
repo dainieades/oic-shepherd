@@ -46,6 +46,7 @@ export default function TodosPage() {
   const [showAddLog, setShowAddLog] = useState(false);
   const [todoLogPrompt, setTodoLogPrompt] = useState<Todo | null>(null);
   const [pendingLogTodo, setPendingLogTodo] = useState<Todo | null>(null);
+  const [viewingLinkedTodo, setViewingLinkedTodo] = useState<Todo | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const isAdmin = currentPersona.role === 'admin';
@@ -59,9 +60,11 @@ export default function TodosPage() {
   const [showFilter, setShowFilter] = useState(false);
 
   React.useEffect(() => {
-    setFullPageModalOpen(!!(showAddTodo || editingTodo || showFilter));
+    setFullPageModalOpen(
+      !!(showAddTodo || editingTodo || showFilter || showAddLog || todoLogPrompt || viewingLinkedTodo)
+    );
     return () => setFullPageModalOpen(false);
-  }, [showAddTodo, editingTodo, showFilter, setFullPageModalOpen]);
+  }, [showAddTodo, editingTodo, showFilter, showAddLog, todoLogPrompt, viewingLinkedTodo, setFullPageModalOpen]);
   const [draftFilter, setDraftFilter] = useState<string[]>(['mine']);
   const [shepherdSearch, setShepherdSearch] = useState('');
 
@@ -518,6 +521,28 @@ export default function TodosPage() {
           prefillPersonId={pendingLogTodo?.personId}
           prefillContent={pendingLogTodo?.title}
           prefillType="check-in"
+          prefillTodoId={pendingLogTodo?.id}
+          prefillDate={pendingLogTodo?.completedAt}
+          onOpenTodo={(todoId) => {
+            const t = data.todos.find((x) => x.id === todoId);
+            if (t) {
+              setViewingLinkedTodo(t);
+              setShowAddLog(false);
+            }
+          }}
+        />
+      )}
+      {viewingLinkedTodo && (
+        <AddTodoModal
+          todo={viewingLinkedTodo}
+          onClose={() => {
+            setViewingLinkedTodo(null);
+            setPendingLogTodo(null);
+          }}
+          onBack={() => {
+            setViewingLinkedTodo(null);
+            setShowAddLog(true);
+          }}
         />
       )}
       {todoLogPrompt && (

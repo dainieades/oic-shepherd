@@ -12,6 +12,7 @@ import {
   User,
   UserPlus,
   PlusCircle,
+  ListChecks,
 } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { useToast } from './Toast';
@@ -29,7 +30,10 @@ interface AddLogModalProps {
   prefillPersonId?: string;
   prefillContent?: string;
   prefillType?: NoteType;
+  prefillTodoId?: string;
+  prefillDate?: string;
   note?: Note;
+  onOpenTodo?: (todoId: string) => void;
 }
 
 const NOTE_TYPES: { value: NoteType; label: string; icon: React.ReactNode }[] = [
@@ -46,7 +50,10 @@ export default function AddLogModal({
   prefillPersonId,
   prefillContent,
   prefillType,
+  prefillTodoId,
+  prefillDate,
   note,
+  onOpenTodo,
 }: AddLogModalProps) {
   const { data, currentPersona, addNote, updateNote, deleteNote } = useApp();
   const { showToast } = useToast();
@@ -62,13 +69,18 @@ export default function AddLogModal({
   const [content, setContent] = React.useState(note?.content ?? prefillContent ?? '');
   const [dateStr, setDateStr] = React.useState(() => {
     if (note?.createdAt) return note.createdAt.slice(0, 10);
+    if (prefillDate) return prefillDate.slice(0, 10);
     return format(new Date(), 'yyyy-MM-dd');
   });
   const [timeStr, setTimeStr] = React.useState(() => {
     if (note?.createdAt) return note.createdAt.slice(11, 16);
+    if (prefillDate && prefillDate.length >= 16) return prefillDate.slice(11, 16);
     return format(new Date(), 'HH:mm');
   });
   const [includeTime, setIncludeTime] = React.useState(true);
+
+  const linkedTodoId = prefillTodoId ?? note?.todoId;
+  const linkedTodo = linkedTodoId ? data.todos.find((t) => t.id === linkedTodoId) : undefined;
 
   const [showWhoPicker, setShowWhoPicker] = React.useState(false);
   const [showTypePicker, setShowTypePicker] = React.useState(false);
@@ -97,10 +109,24 @@ export default function AddLogModal({
     } else {
       if (familyIds.length === 0 && personIds.length === 0) return;
       for (const familyId of familyIds) {
-        addNote({ type, familyId, content: content || undefined, visibility: 'public', createdAt });
+        addNote({
+          type,
+          familyId,
+          content: content || undefined,
+          visibility: 'public',
+          createdAt,
+          todoId: prefillTodoId,
+        });
       }
       for (const personId of personIds) {
-        addNote({ type, personId, content: content || undefined, visibility: 'public', createdAt });
+        addNote({
+          type,
+          personId,
+          content: content || undefined,
+          visibility: 'public',
+          createdAt,
+          todoId: prefillTodoId,
+        });
       }
       showToast('Log saved');
     }
@@ -176,6 +202,53 @@ export default function AddLogModal({
                   flexDirection: 'column',
                 }}
               >
+                {linkedTodo && (() => {
+                  const interactive = !!onOpenTodo;
+                  const chipStyle: React.CSSProperties = {
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    alignSelf: 'flex-start',
+                    gap: 6,
+                    padding: '0.375rem 0.625rem',
+                    marginBottom: 12,
+                    background: 'var(--sage-light)',
+                    color: 'var(--sage)',
+                    borderRadius: 'var(--radius-pill)',
+                    fontSize: 12,
+                    fontWeight: 600,
+                    maxWidth: '100%',
+                    border: 'none',
+                    cursor: interactive ? 'pointer' : 'default',
+                    textAlign: 'left',
+                  };
+                  const contents = (
+                    <>
+                      <ListChecks size={13} weight="bold" />
+                      <span
+                        style={{
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        From to-do: {linkedTodo.title}
+                      </span>
+                      {interactive && <CaretRight size={12} weight="bold" />}
+                    </>
+                  );
+                  return interactive ? (
+                    <button
+                      type="button"
+                      onClick={() => onOpenTodo!(linkedTodo.id)}
+                      style={chipStyle}
+                    >
+                      {contents}
+                    </button>
+                  ) : (
+                    <div style={chipStyle}>{contents}</div>
+                  );
+                })()}
+
                 {/* Fields */}
                 <div
                   style={{

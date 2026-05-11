@@ -126,6 +126,8 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
   const [editingTodo, setEditingTodo] = React.useState<Todo | null>(null);
   const [todoLogPrompt, setTodoLogPrompt] = React.useState<Todo | null>(null);
   const [pendingLogTodo, setPendingLogTodo] = React.useState<Todo | null>(null);
+  const [viewingLinkedTodo, setViewingLinkedTodo] = React.useState<Todo | null>(null);
+  const [linkedTodoReturnNote, setLinkedTodoReturnNote] = React.useState<Note | null>(null);
   const [showEditPerson, setShowEditPerson] = React.useState(false);
   const [previewGroupId, setPreviewGroupId] = React.useState<string | null>(null);
   const [showKebab, setShowKebab] = React.useState(false);
@@ -662,6 +664,9 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                   note={note}
                   onClick={() => setEditingNote(note)}
                   creatorName={creator?.name}
+                  linkedTodoTitle={
+                    note.todoId ? data.todos.find((t) => t.id === note.todoId)?.title : undefined
+                  }
                 />
               );
             });
@@ -1203,7 +1208,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
         </div>
       )}
 
-      {showAddLog && (
+      {showAddLog && !viewingLinkedTodo && (
         <AddLogModal
           onClose={() => {
             setShowAddLog(false);
@@ -1212,12 +1217,49 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
           prefillPersonId={person.id}
           prefillContent={pendingLogTodo?.title}
           prefillType="check-in"
+          prefillTodoId={pendingLogTodo?.id}
+          prefillDate={pendingLogTodo?.completedAt}
+          onOpenTodo={(todoId) => {
+            const t = data.todos.find((x) => x.id === todoId);
+            if (t) setViewingLinkedTodo(t);
+          }}
         />
       )}
       {showAddTodo && (
         <AddTodoModal onClose={() => setShowAddTodo(false)} prefillPersonId={person.id} />
       )}
-      {editingNote && <AddLogModal onClose={() => setEditingNote(null)} note={editingNote} />}
+      {editingNote && !viewingLinkedTodo && (
+        <AddLogModal
+          onClose={() => setEditingNote(null)}
+          note={editingNote}
+          onOpenTodo={(todoId) => {
+            const t = data.todos.find((x) => x.id === todoId);
+            if (t) {
+              setLinkedTodoReturnNote(editingNote);
+              setViewingLinkedTodo(t);
+            }
+          }}
+        />
+      )}
+      {viewingLinkedTodo && (
+        <AddTodoModal
+          todo={viewingLinkedTodo}
+          onClose={() => {
+            setViewingLinkedTodo(null);
+            setLinkedTodoReturnNote(null);
+            setPendingLogTodo(null);
+            setShowAddLog(false);
+            setEditingNote(null);
+          }}
+          onBack={() => {
+            setViewingLinkedTodo(null);
+            if (linkedTodoReturnNote) {
+              setEditingNote(linkedTodoReturnNote);
+              setLinkedTodoReturnNote(null);
+            }
+          }}
+        />
+      )}
       {editingTodo && <AddTodoModal onClose={() => setEditingTodo(null)} todo={editingTodo} />}
       {showAddNotice && (
         <AddNoticeModal onClose={() => setShowAddNotice(false)} prefillPersonId={person.id} />

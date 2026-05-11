@@ -745,6 +745,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           id: note.id,
           person_id: note.personId ?? null,
           family_id: note.familyId ?? null,
+          todo_id: note.todoId ?? null,
           type: note.type,
           visibility: note.visibility,
           content: note.content ?? null,

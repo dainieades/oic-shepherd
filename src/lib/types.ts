@@ -122,6 +122,7 @@ export interface Note {
   id: string;
   personId?: string;
   familyId?: string;
+  todoId?: string;
   type: NoteType;
   visibility: NoteVisibility;
   content?: string;

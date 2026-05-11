@@ -17,7 +17,7 @@ import {
 } from 'date-fns';
 import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '@/lib/context';
-import { type Note } from '@/lib/types';
+import { type Note, type Todo } from '@/lib/types';
 import { groupByMonth, getNoteTypeLabel } from '@/lib/utils';
 import {
   MagnifyingGlass,
@@ -27,6 +27,7 @@ import {
   Plus,
 } from '@phosphor-icons/react';
 import AddLogModal from '@/components/AddLogModal';
+import AddTodoModal from '@/components/AddTodoModal';
 import { EmptyState } from '@/components/EmptyState';
 import { LogItem } from '@/components/LogItem';
 import LogsFilterPanel, {
@@ -66,6 +67,8 @@ export default function LogsPage() {
   } = useApp();
   const [showAddLog, setShowAddLog] = useState(false);
   const [editingNote, setEditingNote] = useState<Note | null>(null);
+  const [viewingLinkedTodo, setViewingLinkedTodo] = useState<Todo | null>(null);
+  const [linkedTodoReturnNote, setLinkedTodoReturnNote] = useState<Note | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
 
@@ -467,6 +470,9 @@ export default function LogsPage() {
               onClick={() => setEditingNote(note)}
               creatorName={creator?.name}
               targetChips={targetChips}
+              linkedTodoTitle={
+                note.todoId ? data.todos.find((t) => t.id === note.todoId)?.title : undefined
+              }
             />
           );
         });
@@ -487,7 +493,36 @@ export default function LogsPage() {
       })}
 
       {showAddLog && <AddLogModal onClose={() => setShowAddLog(false)} />}
-      {editingNote && <AddLogModal note={editingNote} onClose={() => setEditingNote(null)} />}
+      {editingNote && !viewingLinkedTodo && (
+        <AddLogModal
+          note={editingNote}
+          onClose={() => setEditingNote(null)}
+          onOpenTodo={(todoId) => {
+            const t = data.todos.find((x) => x.id === todoId);
+            if (t) {
+              setLinkedTodoReturnNote(editingNote);
+              setViewingLinkedTodo(t);
+            }
+          }}
+        />
+      )}
+      {viewingLinkedTodo && (
+        <AddTodoModal
+          todo={viewingLinkedTodo}
+          onClose={() => {
+            setViewingLinkedTodo(null);
+            setLinkedTodoReturnNote(null);
+            setEditingNote(null);
+          }}
+          onBack={() => {
+            setViewingLinkedTodo(null);
+            if (linkedTodoReturnNote) {
+              setEditingNote(linkedTodoReturnNote);
+              setLinkedTodoReturnNote(null);
+            }
+          }}
+        />
+      )}
 
       <LogsFilterPanel
         show={showFilter}

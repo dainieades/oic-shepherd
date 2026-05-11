@@ -156,6 +156,7 @@ export function mapNote(row: Record<string, unknown>): Note {
     id: r.id,
     personId: r.person_id ?? undefined,
     familyId: r.family_id ?? undefined,
+    todoId: r.todo_id ?? undefined,
     type: r.type,
     visibility: r.visibility,
     content: r.content ?? undefined,

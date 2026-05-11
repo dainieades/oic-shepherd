@@ -8,6 +8,7 @@ import {
   NotePencil,
   House,
   User,
+  ListChecks,
 } from '@phosphor-icons/react';
 import { type Note } from '@/lib/types';
 import { getTimeAgo, getNoteTypeLabel } from '@/lib/utils';
@@ -17,11 +18,13 @@ export function LogItem({
   onClick,
   creatorName,
   targetChips,
+  linkedTodoTitle,
 }: {
   note: Note;
   onClick: () => void;
   creatorName?: string;
   targetChips?: { label: string; isFamily: boolean }[];
+  linkedTodoTitle?: string;
 }) {
   return (
     <button
@@ -133,6 +136,25 @@ export function LogItem({
           }}
         >
           {note.content}
+        </p>
+      )}
+      {linkedTodoTitle && (
+        <p
+          style={{
+            fontSize: 11,
+            color: 'var(--text-muted)',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 4,
+            marginBottom: 2,
+            maxWidth: '100%',
+            overflow: 'hidden',
+          }}
+        >
+          <ListChecks size={11} weight="bold" />
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            From to-do: {linkedTodoTitle}
+          </span>
         </p>
       )}
       <p style={{ fontSize: 11, color: 'var(--text-muted)' }}>
