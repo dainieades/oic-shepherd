@@ -14,6 +14,7 @@ export default function BottomNav() {
   const isDetail =
     /^\/(person|family|groups)\/[^/]+/.test(pathname) ||
     pathname === '/settings/profile' ||
+    pathname === '/settings/access' ||
     pathname === '/signin' ||
     pathname === '/signup';
   if (isDetail || fullPageModalOpen) return null;

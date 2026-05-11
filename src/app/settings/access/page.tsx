@@ -2,10 +2,9 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { CaretLeft, Plus, Trash, EnvelopeSimple, CaretRight } from '@phosphor-icons/react';
+import { CaretLeft, Plus, EnvelopeSimple, CaretRight } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { createClient } from '@/utils/supabase/client';
-import { BACKDROP_COLOR, Z_NESTED } from '@/lib/constants';
 import { EmptyState } from '@/components/EmptyState';
 import InviteSheet from '@/components/InviteSheet';
 import { Button } from '@/components/Button';
@@ -63,9 +62,6 @@ export default function AccessManagementPage() {
   const [emails, setEmails] = React.useState<ApprovedEmail[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [showInvite, setShowInvite] = React.useState(false);
-  const [confirmDelete, setConfirmDelete] = React.useState<string | null>(null);
-  const [deleteError, setDeleteError] = React.useState('');
-  const [deleting, setDeleting] = React.useState(false);
   const [roleEditEmail, setRoleEditEmail] = React.useState<string | null>(null);
   const [titleVisible, setTitleVisible] = React.useState(true);
   const titleRef = React.useRef<HTMLHeadingElement>(null);
@@ -120,19 +116,6 @@ export default function AccessManagementPage() {
         <p style={{ color: 'var(--text-muted)', fontSize: 15 }}>Admin access required.</p>
       </div>
     );
-  }
-
-  async function handleDelete(email: string) {
-    setDeleting(true);
-    const { error: err } = await deleteApprovedEmail(email);
-    setDeleting(false);
-    if (err) {
-      setDeleteError(err);
-      return;
-    }
-    setConfirmDelete(null);
-    setDeleteError('');
-    await load();
   }
 
   return (
@@ -230,45 +213,39 @@ export default function AccessManagementPage() {
                 ? linkedPerson.appRole
                 : (linkedPerson ? roleByPersonId.get(linkedPerson.id) : undefined) ?? 'no-access';
             return (
-              <div
+              <button
                 key={e.email}
+                className="field-row-hover"
+                onClick={() => setRoleEditEmail(e.email)}
                 style={{
+                  width: '100%',
                   display: 'flex',
-                  alignItems: 'stretch',
+                  alignItems: 'center',
+                  gap: 12,
+                  padding: '0.875rem 1rem 0.875rem 1.25rem',
+                  background: 'none',
+                  border: 'none',
                   borderBottom: '1px solid var(--border-light)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
                 }}
               >
-                <button
-                  className="field-row-hover"
-                  onClick={() => setRoleEditEmail(e.email)}
-                  style={{
-                    flex: 1,
-                    minWidth: 0,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 12,
-                    padding: '0.75rem 0.5rem 0.75rem 1rem',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    textAlign: 'left',
-                  }}
-                >
-                  <EnvelopeSimple size={16} color="var(--text-muted)" style={{ flexShrink: 0 }} />
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <p
-                      style={{
-                        fontSize: 14,
-                        fontWeight: 500,
-                        color: 'var(--text-primary)',
-                        margin: 0,
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {e.label ?? e.email}
-                    </p>
+                <EnvelopeSimple size={16} color="var(--text-muted)" style={{ flexShrink: 0 }} />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p
+                    style={{
+                      fontSize: 14,
+                      fontWeight: 500,
+                      color: 'var(--text-primary)',
+                      margin: 0,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {e.label ?? e.email}
+                  </p>
+                  {e.label && (
                     <p
                       style={{
                         fontSize: 12,
@@ -279,25 +256,21 @@ export default function AccessManagementPage() {
                         whiteSpace: 'nowrap',
                       }}
                     >
-                      {e.label ? e.email : (linkedPerson ? ROLE_LABEL[role] : 'Tap to manage role')}
+                      {e.email}
                     </p>
-                  </div>
-                  <CaretRight size={14} color="var(--text-muted)" style={{ flexShrink: 0 }} />
-                </button>
-                <button
-                  onClick={() => setConfirmDelete(e.email)}
-                  aria-label={`Remove ${e.email}`}
+                  )}
+                </div>
+                <span
                   style={{
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    padding: '0 1rem',
+                    fontSize: 13,
+                    color: linkedPerson ? 'var(--text-secondary)' : 'var(--text-muted)',
                     flexShrink: 0,
                   }}
                 >
-                  <Trash size={16} color="var(--red)" />
-                </button>
-              </div>
+                  {linkedPerson ? ROLE_LABEL[role] : 'Not linked'}
+                </span>
+                <CaretRight size={14} color="var(--text-muted)" style={{ flexShrink: 0 }} />
+              </button>
             );
           })}
         </div>
@@ -327,9 +300,12 @@ export default function AccessManagementPage() {
               setRoleEditEmail(null);
             }}
             onRemove={async () => {
-              if (!linkedPerson) return;
-              await updatePerson(linkedPerson.id, { appRole: 'no-access' });
+              await deleteApprovedEmail(roleEditEmail);
+              if (linkedPerson) {
+                await updatePerson(linkedPerson.id, { appRole: 'no-access' });
+              }
               setRoleEditEmail(null);
+              await load();
             }}
             onClose={() => setRoleEditEmail(null)}
             isAdmin
@@ -338,105 +314,6 @@ export default function AccessManagementPage() {
         );
       })()}
 
-      {/* Delete confirm modal */}
-      {confirmDelete && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: Z_NESTED,
-            background: BACKDROP_COLOR,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '0 2rem',
-          }}
-          onClick={(e) => {
-            if (e.target === e.currentTarget) { setConfirmDelete(null); setDeleteError(''); }
-          }}
-        >
-          <div
-            style={{
-              background: 'var(--surface)',
-              borderRadius: 16,
-              width: '100%',
-              maxWidth: 320,
-              overflow: 'hidden',
-            }}
-          >
-            <div style={{ padding: '1.5rem 1.25rem 1rem', textAlign: 'center' }}>
-              <p
-                style={{
-                  fontSize: 16,
-                  fontWeight: 600,
-                  color: 'var(--text-primary)',
-                  margin: '0 0 0.375rem',
-                }}
-              >
-                Remove access?
-              </p>
-              <p
-                style={{
-                  fontSize: 14,
-                  color: 'var(--text-muted)',
-                  margin: 0,
-                  wordBreak: 'break-all',
-                }}
-              >
-                {confirmDelete}
-              </p>
-            </div>
-            {deleteError && (
-              <div
-                style={{
-                  padding: '0.5rem 1.25rem',
-                  fontSize: 13,
-                  color: 'var(--red)',
-                  textAlign: 'center',
-                  borderTop: '1px solid var(--border-light)',
-                }}
-              >
-                {deleteError}
-              </div>
-            )}
-            <div style={{ borderTop: '1px solid var(--border-light)', display: 'flex' }}>
-              <button
-                onClick={() => { setConfirmDelete(null); setDeleteError(''); }}
-                style={{
-                  flex: 1,
-                  height: 50,
-                  background: 'none',
-                  border: 'none',
-                  borderRight: '1px solid var(--border-light)',
-                  fontSize: 15,
-                  color: 'var(--text-secondary)',
-                  cursor: 'pointer',
-                  fontWeight: 500,
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => handleDelete(confirmDelete)}
-                disabled={deleting}
-                style={{
-                  flex: 1,
-                  height: 50,
-                  background: 'none',
-                  border: 'none',
-                  fontSize: 15,
-                  color: 'var(--red)',
-                  cursor: deleting ? 'not-allowed' : 'pointer',
-                  fontWeight: 600,
-                  opacity: deleting ? 0.5 : 1,
-                }}
-              >
-                {deleting ? 'Removing…' : 'Remove'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

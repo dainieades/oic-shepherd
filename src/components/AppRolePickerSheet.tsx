@@ -86,6 +86,25 @@ export default function AppRolePickerSheet({
             <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: 24 }}>
               To manage this person&apos;s role, open their person record and add this email address to their profile.
             </p>
+            {isAdmin && (
+              <button
+                onClick={() => setConfirmRemove(true)}
+                style={{
+                  width: '100%',
+                  padding: '0.875rem',
+                  background: 'none',
+                  border: '1px solid var(--border-light)',
+                  color: 'var(--red)',
+                  borderRadius: 'var(--radius-md)',
+                  fontSize: 15,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  marginBottom: 10,
+                }}
+              >
+                Remove Access
+              </button>
+            )}
             <button
               onClick={onClose}
               style={{
