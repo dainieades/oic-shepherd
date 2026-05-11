@@ -1,12 +1,13 @@
 'use client';
 
 import React from 'react';
-import { AppleLogo, GoogleLogo, Link as LinkIcon, Check, CalendarPlus, X } from '@phosphor-icons/react';
+import { GoogleLogo, Check, CalendarPlus, X } from '@phosphor-icons/react';
 import { BottomSheet, ModalHeader } from './BottomSheet';
 import { useApp } from '@/lib/context';
 import { useToast } from './Toast';
 import { buildGoogleCalendarUrl, buildIcsContent } from '@/lib/utils';
-import type { CalendarConnectedApp, TodoRepeat, TodoReminder } from '@/lib/types';
+import { CalendarSubscribeOptions } from './CalendarSubscribeOptions';
+import type { TodoRepeat, TodoReminder } from '@/lib/types';
 
 export interface SingleEventInput {
   title: string;
@@ -22,37 +23,38 @@ interface Props {
   singleEvent?: SingleEventInput;
 }
 
-const APP_LABEL: Record<CalendarConnectedApp, string> = {
-  apple: 'Apple Calendar',
-  google: 'Google Calendar',
-  other: 'your calendar',
-};
-
 export default function CalendarSyncSheet({ onClose, singleEvent }: Props) {
-  const { calendarSyncEnabled, calendarConnectedApp, enableCalendarSync, disableCalendarSync } = useApp();
+  const { calendarSyncEnabled, calendarFeedToken, enableCalendarSync, disableCalendarSync } = useApp();
   const { showToast } = useToast();
+  const [origin, setOrigin] = React.useState('');
 
-  async function getFeedUrl(app: CalendarConnectedApp): Promise<string> {
-    return await enableCalendarSync(app);
-  }
+  React.useEffect(() => {
+    setOrigin(window.location.origin);
+  }, []);
 
-  async function handleApple() {
-    const url = await getFeedUrl('apple');
-    const webcal = url.replace(/^https?:\/\//, 'webcal://');
-    window.location.href = webcal;
+  const feedUrl = calendarFeedToken && origin
+    ? `${origin}/api/calendar-feed/${calendarFeedToken}.ics`
+    : '';
+
+  async function handleSubscribeApple() {
+    const url = await enableCalendarSync();
+    window.location.href = url.replace(/^https?:\/\//, 'webcal://');
     onClose();
   }
 
-  async function handleGoogle() {
-    const url = await getFeedUrl('google');
-    const cidUrl = `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(url)}`;
-    window.open(cidUrl, '_blank', 'noopener,noreferrer');
+  async function handleSubscribeGoogle() {
+    const url = await enableCalendarSync();
+    window.open(
+      `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(url)}`,
+      '_blank',
+      'noopener,noreferrer'
+    );
     showToast('Approve the calendar in Google Calendar to finish');
     onClose();
   }
 
   async function handleCopy() {
-    const url = await getFeedUrl('other');
+    const url = feedUrl || (await enableCalendarSync());
     try {
       await navigator.clipboard.writeText(url);
       showToast('Feed URL copied');
@@ -112,17 +114,22 @@ export default function CalendarSyncSheet({ onClose, singleEvent }: Props) {
       />
 
       <div style={{ padding: '1rem 1.25rem 1.25rem' }}>
-        {calendarSyncEnabled && calendarConnectedApp ? (
-          <ConnectedBlock
-            app={calendarConnectedApp}
-            onDisable={handleDisable}
-          />
+        {calendarSyncEnabled ? (
+          <ConnectedBlock onDisable={handleDisable} />
         ) : (
-          <SetupBlock
-            onApple={handleApple}
-            onGoogle={handleGoogle}
-            onCopy={handleCopy}
-          />
+          <>
+            <p style={sectionHeaderStyle}>Auto-sync your to-dos</p>
+            <p style={sectionDescStyle}>
+              Add OIC to-dos to your calendar app. New items appear automatically; how often
+              updates show up depends on your calendar app.
+            </p>
+            <CalendarSubscribeOptions
+              feedUrl={feedUrl}
+              onSubscribeApple={() => void handleSubscribeApple()}
+              onSubscribeGoogle={() => void handleSubscribeGoogle()}
+              onCopy={() => void handleCopy()}
+            />
+          </>
         )}
 
         {singleEvent && (
@@ -151,49 +158,9 @@ export default function CalendarSyncSheet({ onClose, singleEvent }: Props) {
   );
 }
 
-function SetupBlock({
-  onApple,
-  onGoogle,
-  onCopy,
-}: {
-  onApple: () => void;
-  onGoogle: () => void;
-  onCopy: () => void;
-}) {
-  return (
-    <>
-      <p style={sectionHeaderStyle}>Auto-sync your to-dos</p>
-      <p style={sectionDescStyle}>
-        Subscribe once and all your to-dos appear in your calendar automatically.
-        Updates may take up to an hour to show.
-      </p>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-        <BigActionButton
-          icon={<AppleLogo size={20} color="var(--text-primary)" weight="fill" />}
-          label="Subscribe in Apple Calendar"
-          onClick={onApple}
-        />
-        <BigActionButton
-          icon={<GoogleLogo size={20} color="var(--text-primary)" />}
-          label="Add to Google Calendar"
-          onClick={onGoogle}
-        />
-        <BigActionButton
-          icon={<LinkIcon size={20} color="var(--text-primary)" />}
-          label="Copy feed URL"
-          subLabel="For Outlook, Fantastical, etc."
-          onClick={onCopy}
-        />
-      </div>
-    </>
-  );
-}
-
 function ConnectedBlock({
-  app,
   onDisable,
 }: {
-  app: CalendarConnectedApp;
   onDisable: () => void;
 }) {
   return (
@@ -212,7 +179,7 @@ function ConnectedBlock({
       >
         <Check size={20} weight="bold" color="var(--sage)" />
         <span style={{ flex: 1, fontSize: '0.9375rem', color: 'var(--text-primary)' }}>
-          Synced to <strong>{APP_LABEL[app]}</strong>
+          Synced to <strong>your calendar</strong>
         </span>
       </div>
       <p style={sectionDescStyle}>
@@ -225,46 +192,6 @@ function ConnectedBlock({
         onClick={onDisable}
       />
     </>
-  );
-}
-
-function BigActionButton({
-  icon,
-  label,
-  subLabel,
-  onClick,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  subLabel?: string;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.875rem',
-        padding: '0.875rem 1rem',
-        background: 'var(--surface)',
-        border: '1px solid var(--border-light)',
-        borderRadius: 'var(--radius)',
-        cursor: 'pointer',
-        textAlign: 'left',
-        width: '100%',
-      }}
-    >
-      <span style={{ flexShrink: 0 }}>{icon}</span>
-      <span style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <span style={{ fontSize: '0.9375rem', fontWeight: 500, color: 'var(--text-primary)' }}>{label}</span>
-        {subLabel && (
-          <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', marginTop: '0.125rem' }}>
-            {subLabel}
-          </span>
-        )}
-      </span>
-    </button>
   );
 }
 

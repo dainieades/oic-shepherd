@@ -4,30 +4,18 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import {
   CaretLeft,
-  AppleLogo,
-  GoogleLogo,
-  Link as LinkIcon,
-  Copy,
   ArrowsClockwise,
-  Check,
 } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { useToast } from '@/components/Toast';
 import { ToggleSwitch } from '@/components/ToggleSwitch';
-import type { CalendarConnectedApp } from '@/lib/types';
-
-const APP_LABEL: Record<CalendarConnectedApp, string> = {
-  apple: 'Apple Calendar',
-  google: 'Google Calendar',
-  other: 'your calendar',
-};
+import { CalendarSubscribeOptions } from '@/components/CalendarSubscribeOptions';
 
 export default function CalendarSyncPage() {
   const router = useRouter();
   const {
     calendarSyncEnabled,
     calendarFeedToken,
-    calendarConnectedApp,
     enableCalendarSync,
     disableCalendarSync,
     regenerateCalendarFeedToken,
@@ -46,7 +34,7 @@ export default function CalendarSyncPage() {
 
   async function handleToggle(val: boolean) {
     if (val) {
-      await enableCalendarSync(calendarConnectedApp ?? 'other');
+      await enableCalendarSync();
       showToast('Calendar sync enabled');
     } else {
       await disableCalendarSync();
@@ -54,33 +42,25 @@ export default function CalendarSyncPage() {
     }
   }
 
-  async function handleSubscribe(app: CalendarConnectedApp) {
-    const url = await enableCalendarSync(app);
-    if (app === 'apple') {
-      window.location.href = url.replace(/^https?:\/\//, 'webcal://');
-    } else if (app === 'google') {
-      window.open(
-        `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(url)}`,
-        '_blank',
-        'noopener,noreferrer'
-      );
-      showToast('Approve the calendar in Google Calendar to finish');
-    }
+  async function handleSubscribeApple() {
+    const url = await enableCalendarSync();
+    window.location.href = url.replace(/^https?:\/\//, 'webcal://');
+  }
+
+  async function handleSubscribeGoogle() {
+    const url = await enableCalendarSync();
+    window.open(
+      `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(url)}`,
+      '_blank',
+      'noopener,noreferrer'
+    );
+    showToast('Approve the calendar in Google Calendar to finish');
   }
 
   async function handleCopy() {
-    if (!feedUrl) {
-      const url = await enableCalendarSync(calendarConnectedApp ?? 'other');
-      try {
-        await navigator.clipboard.writeText(url);
-        showToast('Feed URL copied');
-      } catch {
-        showToast('Could not copy — long-press to copy');
-      }
-      return;
-    }
+    const url = feedUrl || (await enableCalendarSync());
     try {
-      await navigator.clipboard.writeText(feedUrl);
+      await navigator.clipboard.writeText(url);
       showToast('Feed URL copied');
     } catch {
       showToast('Could not copy — long-press to copy');
@@ -90,7 +70,7 @@ export default function CalendarSyncPage() {
   async function handleRegenerate() {
     await regenerateCalendarFeedToken();
     setShowRegenConfirm(false);
-    showToast('Feed URL regenerated. Old URL no longer works.');
+    showToast('Feed URL reset. Old URL no longer works.');
   }
 
   return (
@@ -105,11 +85,10 @@ export default function CalendarSyncPage() {
       </div>
 
       <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: '1rem 0 0.75rem', lineHeight: 1.5 }}>
-        Subscribe your calendar app to your personal feed. New to-dos appear in your calendar
-        automatically — updates may take up to an hour to show.
+        Add OIC to-dos to your calendar app. New items appear automatically; how often updates show
+        up depends on your calendar app.
       </p>
 
-      {/* Toggle */}
       <div
         style={{
           background: 'var(--surface)',
@@ -127,79 +106,42 @@ export default function CalendarSyncPage() {
           }}
         >
           <span style={{ flex: 1, minWidth: 0 }}>
-            <span style={labelStyle}>Auto-sync to-dos to my calendar</span>
+            <span style={labelStyle}>Calendar sync</span>
             <span style={descStyle}>
-              {calendarSyncEnabled && calendarConnectedApp
-                ? `Connected to ${APP_LABEL[calendarConnectedApp]}`
+              {calendarSyncEnabled
+                ? 'On — feed is active'
                 : 'Off — to-dos will not appear in your calendar'}
             </span>
           </span>
           <ToggleSwitch
             checked={calendarSyncEnabled}
             onChange={(val) => void handleToggle(val)}
-            label="Auto-sync"
+            label="Calendar sync"
           />
         </div>
       </div>
 
       {calendarSyncEnabled && (
         <>
-          {/* Subscribe buttons */}
-          <p style={sectionHeaderStyle}>Subscribe in your calendar app</p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <SubscribeButton
-              icon={<AppleLogo size={20} color="var(--text-primary)" weight="fill" />}
-              label="Open in Apple Calendar"
-              onClick={() => void handleSubscribe('apple')}
-              checked={calendarConnectedApp === 'apple'}
-            />
-            <SubscribeButton
-              icon={<GoogleLogo size={20} color="var(--text-primary)" />}
-              label="Open in Google Calendar"
-              onClick={() => void handleSubscribe('google')}
-              checked={calendarConnectedApp === 'google'}
-            />
-          </div>
+          <p style={sectionHeaderStyle}>Your calendar app</p>
+          <CalendarSubscribeOptions
+            feedUrl={feedUrl}
+            onSubscribeApple={() => void handleSubscribeApple()}
+            onSubscribeGoogle={() => void handleSubscribeGoogle()}
+            onCopy={() => void handleCopy()}
+          />
 
-          {/* Feed URL */}
-          <p style={sectionHeaderStyle}>Feed URL</p>
-          <div
-            style={{
-              background: 'var(--surface)',
-              border: '1px solid var(--border-light)',
-              borderRadius: 'var(--radius)',
-              padding: '0.75rem',
-              fontFamily: 'ui-monospace, SFMono-Regular, monospace',
-              fontSize: '0.75rem',
-              color: 'var(--text-secondary)',
-              wordBreak: 'break-all',
-              marginBottom: '0.5rem',
-            }}
+          <p style={sectionHeaderStyle}>Manage</p>
+          <button
+            onClick={() => setShowRegenConfirm(true)}
+            style={resetBtnStyle}
           >
-            {feedUrl || 'Generating…'}
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <ActionButton
-              icon={<Copy size={16} color="var(--text-muted)" />}
-              label="Copy feed URL"
-              onClick={handleCopy}
-            />
-            <ActionButton
-              icon={<LinkIcon size={16} color="var(--text-muted)" />}
-              label="Mark as connected to another app"
-              onClick={() => void enableCalendarSync('other')}
-            />
-            <ActionButton
-              icon={<ArrowsClockwise size={16} color="var(--red)" />}
-              label="Regenerate feed URL"
-              destructive
-              onClick={() => setShowRegenConfirm(true)}
-            />
-          </div>
-
-          <p style={{ ...descStyle, marginTop: '1rem' }}>
-            Anyone with this URL can read your to-do list. Regenerate it if you think it has been shared
-            by mistake — your existing calendar subscriptions will need to be re-added.
+            <ArrowsClockwise size={16} color="var(--red)" />
+            <span style={{ flex: 1, textAlign: 'left' }}>Reset feed URL</span>
+          </button>
+          <p style={{ ...descStyle, marginTop: '0.5rem' }}>
+            Resetting disconnects every calendar app currently subscribed. Use only if you think
+            the URL has been shared by mistake — you will need to re-subscribe in each app.
           </p>
         </>
       )}
@@ -231,10 +173,10 @@ export default function CalendarSyncPage() {
             }}
           >
             <p style={{ fontSize: '0.9375rem', fontWeight: 600, margin: '0 0 0.5rem', color: 'var(--text-primary)' }}>
-              Regenerate feed URL?
+              Reset feed URL?
             </p>
             <p style={{ ...descStyle, marginBottom: '1rem' }}>
-              Any calendar app currently subscribed will stop receiving updates. You will need to
+              Every calendar app currently subscribed will stop receiving updates. You will need to
               subscribe again with the new URL.
             </p>
             <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
@@ -248,82 +190,13 @@ export default function CalendarSyncPage() {
                 onClick={() => void handleRegenerate()}
                 style={dangerBtnStyle}
               >
-                Regenerate
+                Reset
               </button>
             </div>
           </div>
         </div>
       )}
     </div>
-  );
-}
-
-function SubscribeButton({
-  icon,
-  label,
-  onClick,
-  checked,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  onClick: () => void;
-  checked?: boolean;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.875rem',
-        padding: '0.875rem 1rem',
-        background: 'var(--surface)',
-        border: '1px solid var(--border-light)',
-        borderRadius: 'var(--radius)',
-        cursor: 'pointer',
-        textAlign: 'left',
-        width: '100%',
-      }}
-    >
-      <span style={{ flexShrink: 0 }}>{icon}</span>
-      <span style={{ flex: 1, fontSize: '0.9375rem', color: 'var(--text-primary)' }}>{label}</span>
-      {checked && <Check size={18} weight="bold" color="var(--sage)" />}
-    </button>
-  );
-}
-
-function ActionButton({
-  icon,
-  label,
-  onClick,
-  destructive,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  onClick: () => void;
-  destructive?: boolean;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.625rem',
-        padding: '0.625rem 0.875rem',
-        background: 'var(--surface)',
-        border: '1px solid var(--border-light)',
-        borderRadius: 'var(--radius-sm)',
-        cursor: 'pointer',
-        textAlign: 'left',
-        width: '100%',
-        fontSize: '0.875rem',
-        color: destructive ? 'var(--red)' : 'var(--text-primary)',
-      }}
-    >
-      <span style={{ flexShrink: 0 }}>{icon}</span>
-      <span style={{ flex: 1 }}>{label}</span>
-    </button>
   );
 }
 
@@ -384,6 +257,20 @@ const sectionHeaderStyle: React.CSSProperties = {
   textTransform: 'uppercase',
   letterSpacing: '0.04em',
   margin: '1.5rem 0 0.5rem',
+};
+
+const resetBtnStyle: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: '0.625rem',
+  padding: '0.625rem 0.875rem',
+  background: 'var(--surface)',
+  border: '1px solid var(--border-light)',
+  borderRadius: 'var(--radius-sm)',
+  cursor: 'pointer',
+  width: '100%',
+  fontSize: '0.875rem',
+  color: 'var(--red)',
 };
 
 const ghostBtnStyle: React.CSSProperties = {

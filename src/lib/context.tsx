@@ -25,7 +25,6 @@ import {
   type MembershipStatus,
   type ThemePreference,
   type NotificationPreferences,
-  type CalendarConnectedApp,
 } from './types';
 import { type PersonRow, type FamilyRow, type NoteRow, type NoticeRow, type TodoRow, type GroupRow } from './schemas';
 import { mapPerson, mapFamily, mapPersona, syncGoogleAvatar, mapNote, mapNotice, mapTodo, mapAuditLog } from './mappers';
@@ -168,8 +167,7 @@ interface AppContextType {
   setNotificationPreference: <K extends keyof NotificationPreferences>(key: K, value: boolean) => Promise<void>;
   calendarSyncEnabled: boolean;
   calendarFeedToken: string | null;
-  calendarConnectedApp: CalendarConnectedApp | null;
-  enableCalendarSync: (app: CalendarConnectedApp) => Promise<string>;
+  enableCalendarSync: () => Promise<string>;
   disableCalendarSync: () => Promise<void>;
   regenerateCalendarFeedToken: () => Promise<string>;
   fullPageModalOpen: boolean;
@@ -215,7 +213,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   });
   const [calendarSyncEnabled, setCalendarSyncEnabledState] = useState<boolean>(false);
   const [calendarFeedToken, setCalendarFeedTokenState] = useState<string | null>(null);
-  const [calendarConnectedApp, setCalendarConnectedAppState] = useState<CalendarConnectedApp | null>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem('shepherd-app-theme') as ThemePreference | null;
@@ -280,18 +277,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
   );
 
   const enableCalendarSync = useCallback(
-    async (app: CalendarConnectedApp): Promise<string> => {
+    async (): Promise<string> => {
       const token = calendarFeedToken ?? (typeof crypto !== 'undefined' && crypto.randomUUID
         ? crypto.randomUUID()
         : Math.random().toString(36).slice(2) + Date.now().toString(36));
       setCalendarSyncEnabledState(true);
       setCalendarFeedTokenState(token);
-      setCalendarConnectedAppState(app);
       setData((prev) => ({
         ...prev,
         personas: prev.personas.map((p) =>
           p.id === currentPersona.id
-            ? { ...p, calendarSyncEnabled: true, calendarFeedToken: token, calendarConnectedApp: app }
+            ? { ...p, calendarSyncEnabled: true, calendarFeedToken: token }
             : p
         ),
       }));
@@ -300,7 +296,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         .update({
           calendar_sync_enabled: true,
           calendar_feed_token: token,
-          calendar_connected_app: app,
         })
         .eq('id', currentPersona.id);
       return `${window.location.origin}/api/calendar-feed/${token}.ics`;
@@ -476,7 +471,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }
         setCalendarSyncEnabledState(persona.calendarSyncEnabled ?? false);
         setCalendarFeedTokenState(persona.calendarFeedToken ?? null);
-        setCalendarConnectedAppState(persona.calendarConnectedApp ?? null);
       }
 
       // Restore last active persona from localStorage (just the ID, not the data)
@@ -1720,7 +1714,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setNotificationPreference,
         calendarSyncEnabled,
         calendarFeedToken,
-        calendarConnectedApp,
         enableCalendarSync,
         disableCalendarSync,
         regenerateCalendarFeedToken,

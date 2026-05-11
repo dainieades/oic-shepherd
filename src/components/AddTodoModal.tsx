@@ -18,7 +18,7 @@ import {
 } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { useToast } from './Toast';
-import { type TodoRepeat, type TodoReminder, type Todo, type CalendarConnectedApp } from '@/lib/types';
+import { type TodoRepeat, type TodoReminder, type Todo } from '@/lib/types';
 import PersonFamilyPicker from './PersonFamilyPicker';
 import PickerMenu from './PickerMenu';
 import DatePickerSheet from './DatePickerSheet';
@@ -65,7 +65,7 @@ export default function AddTodoModal({
   todo,
   onBack,
 }: AddTodoModalProps) {
-  const { data, currentPersona, addTodo, updateTodo, deleteTodo, calendarSyncEnabled, calendarConnectedApp } = useApp();
+  const { data, currentPersona, addTodo, updateTodo, deleteTodo, calendarSyncEnabled } = useApp();
   const { showToast } = useToast();
   const isEditing = !!todo;
 
@@ -263,7 +263,7 @@ export default function AddTodoModal({
                           : <CalendarPlus size={16} />
                       }
                       label="Calendar"
-                      value={calendarSyncEnabled ? syncStatusLabel(calendarConnectedApp) : 'Add to calendar'}
+                      value={calendarSyncEnabled ? 'Synced to your calendar' : 'Add to calendar'}
                       valueColor={calendarSyncEnabled ? 'var(--sage)' : 'var(--text-muted)'}
                       onClick={() => setShowCalendarSheet(true)}
                     />
@@ -420,12 +420,6 @@ export default function AddTodoModal({
       })()}
     </>
   );
-}
-
-function syncStatusLabel(app: CalendarConnectedApp | null | undefined): string {
-  if (app === 'apple') return 'Synced to Apple Calendar';
-  if (app === 'google') return 'Synced to Google Calendar';
-  return 'Synced to your calendar';
 }
 
 function FieldRow({

@@ -11,6 +11,7 @@ export interface NotificationPreferences {
   todoCreated:      boolean;
 }
 
+/** @deprecated No longer read by UI — ICS feeds are stateless, app cannot verify which client subscribed. DB column retained until a future cleanup migration. */
 export type CalendarConnectedApp = 'apple' | 'google' | 'other';
 
 export interface Persona {
@@ -25,6 +26,7 @@ export interface Persona {
   notificationPrefs?: NotificationPreferences;
   calendarSyncEnabled?: boolean;
   calendarFeedToken?: string | null;
+  /** @deprecated No longer used by UI — see CalendarConnectedApp. */
   calendarConnectedApp?: CalendarConnectedApp | null;
 }
 
