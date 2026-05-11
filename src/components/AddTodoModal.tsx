@@ -1,11 +1,9 @@
 'use client';
 
 import { addHours, format } from 'date-fns';
-import { Z_NESTED } from '@/lib/constants';
 import { BottomSheet, ModalHeader } from './BottomSheet';
 import { fmtDateTime, truncateWhoLabel } from '@/lib/utils';
 import React from 'react';
-import { useFloating, autoUpdate, offset, flip, size } from '@floating-ui/react';
 import {
   CaretRight,
   Trash,
@@ -16,15 +14,16 @@ import {
   PlusCircle,
   CalendarPlus,
   Bell,
+  CheckCircle,
 } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { useToast } from './Toast';
-import { type TodoRepeat, type TodoReminder, type Todo } from '@/lib/types';
+import { type TodoRepeat, type TodoReminder, type Todo, type CalendarConnectedApp } from '@/lib/types';
 import PersonFamilyPicker from './PersonFamilyPicker';
 import PickerMenu from './PickerMenu';
 import DatePickerSheet from './DatePickerSheet';
 import { DeleteConfirmDialog } from './AddLogModal';
-import { buildGoogleCalendarUrl, buildIcsContent } from '@/lib/utils';
+import CalendarSyncSheet from './CalendarSyncSheet';
 
 interface AddTodoModalProps {
   onClose: () => void;
@@ -64,7 +63,7 @@ export default function AddTodoModal({
   prefillPersonId,
   todo,
 }: AddTodoModalProps) {
-  const { data, currentPersona, addTodo, updateTodo, deleteTodo } = useApp();
+  const { data, currentPersona, addTodo, updateTodo, deleteTodo, calendarSyncEnabled, calendarConnectedApp } = useApp();
   const { showToast } = useToast();
   const isEditing = !!todo;
 
@@ -100,9 +99,8 @@ export default function AddTodoModal({
 
   const repeatBtnRef = React.useRef<HTMLButtonElement>(null);
   const reminderBtnRef = React.useRef<HTMLButtonElement>(null);
-  const calendarBtnRef = React.useRef<HTMLButtonElement>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
-  const [showCalendarPicker, setShowCalendarPicker] = React.useState(false);
+  const [showCalendarSheet, setShowCalendarSheet] = React.useState(false);
 
   const whoNames = [
     ...familyIds.map((id) => data.families.find((f) => f.id === id)?.label ?? ''),
@@ -254,14 +252,17 @@ export default function AddTodoModal({
                       onClick={() => setShowReminderPicker(true)}
                     />
 
-                    {/* Add to Calendar */}
+                    {/* Add to Calendar / Sync status */}
                     <FieldRow
-                      btnRef={calendarBtnRef}
-                      icon={<CalendarPlus size={16} />}
+                      icon={
+                        calendarSyncEnabled
+                          ? <CheckCircle size={16} weight="fill" color="var(--sage)" />
+                          : <CalendarPlus size={16} />
+                      }
                       label="Calendar"
-                      value="Add to calendar"
-                      valueColor="var(--text-muted)"
-                      onClick={() => setShowCalendarPicker(true)}
+                      value={calendarSyncEnabled ? syncStatusLabel(calendarConnectedApp) : 'Add to calendar'}
+                      valueColor={calendarSyncEnabled ? 'var(--sage)' : 'var(--text-muted)'}
+                      onClick={() => setShowCalendarSheet(true)}
                     />
 
                     {/* Repeat */}
@@ -397,133 +398,31 @@ export default function AddTodoModal({
           onClose={() => setShowReminderPicker(false)}
         />
       )}
-      {showCalendarPicker && (
-        <CalendarPickerMenu
-          anchorRef={calendarBtnRef}
-          title={title.trim() || 'To-do'}
-          dueDate={`${dateStr}T${includeTime ? timeStr : '00:00'}:00`}
-          allDay={!includeTime}
-          repeat={repeat !== 'none' ? repeat : undefined}
-          reminder={reminder !== 'none' ? reminder : undefined}
-          onClose={() => setShowCalendarPicker(false)}
-        />
-      )}
+      {showCalendarSheet && (() => {
+        const start = new Date(`${dateStr}T${includeTime ? timeStr : '00:00'}:00`);
+        const end = addHours(start, 1);
+        return (
+          <CalendarSyncSheet
+            onClose={() => setShowCalendarSheet(false)}
+            singleEvent={{
+              title: title.trim() || 'To-do',
+              start,
+              end,
+              allDay: !includeTime,
+              repeat: repeat !== 'none' ? repeat : undefined,
+              reminder: reminder !== 'none' ? reminder : undefined,
+            }}
+          />
+        );
+      })()}
     </>
   );
 }
 
-function CalendarPickerMenu({
-  anchorRef,
-  title,
-  dueDate,
-  allDay,
-  repeat,
-  reminder,
-  onClose,
-}: {
-  anchorRef: React.RefObject<HTMLButtonElement | null>;
-  title: string;
-  dueDate: string;
-  allDay: boolean;
-  repeat?: TodoRepeat;
-  reminder?: TodoReminder;
-  onClose: () => void;
-}) {
-  const start = new Date(dueDate);
-  const end = addHours(start, 1);
-
-  React.useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      const floating = refs.floating.current;
-      if (
-        floating &&
-        !floating.contains(e.target as Node) &&
-        (!anchorRef?.current || !anchorRef.current.contains(e.target as Node))
-      ) {
-        onClose();
-      }
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [onClose, anchorRef]);
-
-  function handleGoogleCalendar() {
-    window.open(buildGoogleCalendarUrl(title, start, end, allDay, repeat), '_blank', 'noopener,noreferrer');
-    onClose();
-  }
-
-  function handleIcsDownload() {
-    const uid = Date.now().toString(36);
-    const content = buildIcsContent(title, uid, start, end, allDay, repeat, reminder);
-    const blob = new Blob([content], { type: 'text/calendar;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${title.slice(0, 40).replace(/[^a-z0-9]/gi, '-')}.ics`;
-    a.click();
-    URL.revokeObjectURL(url);
-    onClose();
-  }
-
-  const { refs, floatingStyles } = useFloating({
-    placement: 'bottom-start',
-    strategy: 'fixed',
-    middleware: [
-      offset(4),
-      flip({ padding: 8 }),
-      size({
-        apply({ rects, elements }) {
-          elements.floating.style.width = `${rects.reference.width}px`;
-        },
-        padding: 8,
-      }),
-    ],
-    whileElementsMounted: autoUpdate,
-  });
-
-  React.useEffect(() => {
-    refs.setReference(anchorRef?.current ?? null);
-  }, [anchorRef, refs]);
-
-  const itemStyle: React.CSSProperties = {
-    width: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    gap: 10,
-    padding: '0.625rem 0.875rem',
-    background: 'none',
-    border: 'none',
-    borderBottom: '1px solid var(--border-light)',
-    fontSize: 14,
-    cursor: 'pointer',
-    textAlign: 'left',
-    color: 'var(--text-primary)',
-  };
-
-  return (
-    <div
-      ref={refs.setFloating}
-      style={{
-        ...floatingStyles,
-        background: 'var(--surface)',
-        borderRadius: 'var(--radius-md)',
-        boxShadow: 'var(--shadow-elevated)',
-        border: '1px solid var(--border-light)',
-        zIndex: Z_NESTED,
-        overflow: 'hidden',
-      }}
-    >
-      <button onClick={handleGoogleCalendar} style={itemStyle}>
-        <CalendarBlank size={16} color="var(--sage)" />
-        Google Calendar
-      </button>
-      <button onClick={handleIcsDownload} style={{ ...itemStyle, borderBottom: 'none' }}>
-        <CalendarBlank size={16} color="var(--text-muted)" />
-        Apple / Other Calendar
-        <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 2 }}>(.ics)</span>
-      </button>
-    </div>
-  );
+function syncStatusLabel(app: CalendarConnectedApp | null | undefined): string {
+  if (app === 'apple') return 'Synced to Apple Calendar';
+  if (app === 'google') return 'Synced to Google Calendar';
+  return 'Synced to your calendar';
 }
 
 function FieldRow({

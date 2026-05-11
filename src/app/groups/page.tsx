@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useApp } from '@/lib/context';
-import { Crown, HandHeart, Plus } from '@phosphor-icons/react';
+import { Crown, Plus } from '@phosphor-icons/react';
 import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS } from '@/lib/constants';
 import { Button } from '@/components/Button';
 
@@ -39,16 +39,9 @@ export default function GroupsPage() {
 
   const myPersonId = currentPersona.personId;
 
-  // Sort: groups where I'm a shepherd or leader come first
   const sortedGroups = [...data.groups].sort((a, b) => {
-    const aMe =
-      myPersonId && (a.leaderIds.includes(myPersonId) || a.shepherdIds.includes(myPersonId))
-        ? 0
-        : 1;
-    const bMe =
-      myPersonId && (b.leaderIds.includes(myPersonId) || b.shepherdIds.includes(myPersonId))
-        ? 0
-        : 1;
+    const aMe = myPersonId && a.leaderIds.includes(myPersonId) ? 0 : 1;
+    const bMe = myPersonId && b.leaderIds.includes(myPersonId) ? 0 : 1;
     return aMe - bMe;
   });
 
@@ -157,11 +150,9 @@ export default function GroupsPage() {
         {sortedGroups.map((group) => {
           const members = data.people.filter((p) => group.memberIds.includes(p.id));
           const leaders = data.people.filter((p) => group.leaderIds.includes(p.id));
-          const shepherds = data.people.filter((p) => group.shepherdIds.includes(p.id));
 
           const iAmLeader = myPersonId ? group.leaderIds.includes(myPersonId) : false;
-          const iAmShepherd = myPersonId ? group.shepherdIds.includes(myPersonId) : false;
-          const iAmInvolved = iAmLeader || iAmShepherd;
+          const iAmInvolved = iAmLeader;
 
           return (
             <Link key={group.id} href={`/groups/${group.id}`} style={{ textDecoration: 'none' }}>
@@ -191,11 +182,7 @@ export default function GroupsPage() {
                   </div>
                   {iAmInvolved && (
                     <span style={{ fontSize: 11, color: 'var(--sage)', fontWeight: 500 }}>
-                      {iAmLeader && iAmShepherd
-                        ? "You're a leader & shepherd"
-                        : iAmLeader
-                          ? "You're a leader"
-                          : "You're a shepherd"}
+                      You&apos;re a leader
                     </span>
                   )}
                 </div>
@@ -229,22 +216,6 @@ export default function GroupsPage() {
                   >
                     <Crown size={11} />
                     {leaders.length} {leaders.length === 1 ? 'leader' : 'leaders'}
-                  </span>
-                  <span
-                    style={{
-                      fontSize: 11,
-                      fontWeight: 500,
-                      padding: '0.125rem 0.5rem',
-                      borderRadius: 'var(--radius-pill)',
-                      background: 'var(--avatar-s1-bg)',
-                      color: 'var(--avatar-s1-text)',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 4,
-                    }}
-                  >
-                    <HandHeart size={11} />
-                    {shepherds.length} {shepherds.length === 1 ? 'shepherd' : 'shepherds'}
                   </span>
                 </div>
 

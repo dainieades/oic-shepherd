@@ -2561,7 +2561,6 @@ export const initialData: AppData = {
       description:
         'Our vision is "PALS" — a mixture of Greek and English words. P-phronesis (wisdom/prudence), A-agape (sacrificial love), L-logos (word/truth), S-service/dedication. We help students mature in PALS through weekly small groups, special workshops, and church-related volunteering opportunities with brothers and sisters in small group community.',
       leaderIds: ['david-kao'],
-      shepherdIds: ['david-kao'],
       memberIds: [
         'xiang-you',
         'long-cheng',
@@ -2601,7 +2600,6 @@ export const initialData: AppData = {
       description:
         'LIFe stands for Lynchburg International Fellowship. We meet weekly for worship, Bible study, and fellowship. Contact the group leader for address. Join our WhatsApp group to stay updated on our weekly meeting agenda.',
       leaderIds: ['lin-ho', 'tyler-levin', 'gillian-tang', 'kevin-tang'],
-      shepherdIds: ['lin-ho', 'tyler-levin'],
       memberIds: [
         'daini-eades',
         'asia-brady',
@@ -2628,7 +2626,6 @@ export const initialData: AppData = {
       name: 'Forest Family',
       description: 'We meet weekly for Bible study. This group provides childcare for ages 5–12.',
       leaderIds: ['qing-liu'],
-      shepherdIds: ['qing-liu'],
       memberIds: [
         'zachary-daily',
         'lizhi-daily',
@@ -2649,7 +2646,6 @@ export const initialData: AppData = {
       id: 'cornerstone-seniors',
       name: 'Cornerstone / Seniors',
       leaderIds: ['jay-song'],
-      shepherdIds: ['jay-song'],
       memberIds: [
         'kwan-cheng',
         'keimei-chang',
@@ -2667,7 +2663,6 @@ export const initialData: AppData = {
       id: 'forty-plus-seniors',
       name: '40+ / Seniors',
       leaderIds: ['john-thompson'],
-      shepherdIds: ['john-thompson'],
       memberIds: [
         'harmon-blanding',
         'janette-blanding',
@@ -2686,7 +2681,6 @@ export const initialData: AppData = {
       id: 'seekers',
       name: 'Seekers',
       leaderIds: [],
-      shepherdIds: [],
       memberIds: ['eva-brooks', 'diane-francis', 'faye-gallier', 'sandra-west'],
       relatedFamilyIds: [],
     },
@@ -2695,7 +2689,6 @@ export const initialData: AppData = {
       name: "Men's Group (Chinese)",
       description: 'Read books to know Christ more!',
       leaderIds: [],
-      shepherdIds: [],
       memberIds: ['james-forbes'],
       relatedFamilyIds: [],
     },
@@ -2703,7 +2696,6 @@ export const initialData: AppData = {
       id: 'youth',
       name: 'Youth',
       leaderIds: ['lin-ho', 'tyler-levin', 'gillian-tang'],
-      shepherdIds: ['lin-ho', 'tyler-levin'],
       memberIds: ['debbie-liu', 'bekkah-shi', 'gabriel-daily', 'becky-liu'],
       relatedFamilyIds: [],
     },
@@ -2711,7 +2703,6 @@ export const initialData: AppData = {
       id: 'young-family-group',
       name: 'Young Family Group',
       leaderIds: ['long-cheng'],
-      shepherdIds: ['long-cheng'],
       memberIds: [
         'long-cheng',
         'fangyu-ai',

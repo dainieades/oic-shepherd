@@ -371,17 +371,28 @@ export function buildGoogleCalendarUrl(
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
 }
 
-/** Returns a .ics (iCalendar) file string for download.
- *  Includes RRULE if repeat is set, and VALARM if reminder is set. */
-export function buildIcsContent(
-  title: string,
-  uid: string,
-  start: Date,
-  end: Date,
-  allDay = false,
-  repeat?: TodoRepeat,
-  reminder?: TodoReminder
-): string {
+/** Escape iCalendar TEXT field per RFC 5545 (commas, semicolons, backslashes, newlines). */
+function escapeIcsText(value: string): string {
+  return value
+    .replace(/\\/g, '\\\\')
+    .replace(/\n/g, '\\n')
+    .replace(/,/g, '\\,')
+    .replace(/;/g, '\\;');
+}
+
+export interface IcsEventInput {
+  title: string;
+  uid: string;
+  start: Date;
+  end: Date;
+  allDay?: boolean;
+  repeat?: TodoRepeat;
+  reminder?: TodoReminder;
+}
+
+/** Returns the VEVENT lines for a single event (no VCALENDAR wrapper). */
+export function buildIcsEvent(input: IcsEventInput): string[] {
+  const { title, uid, start, end, allDay = false, repeat, reminder } = input;
   const dtStart = allDay
     ? `DTSTART;VALUE=DATE:${toIcsDateOnly(start)}`
     : `DTSTART:${toIcsDate(start)}`;
@@ -399,22 +410,52 @@ export function buildIcsContent(
     }
   }
 
-  const lines = [
-    'BEGIN:VCALENDAR',
-    'VERSION:2.0',
-    'PRODID:-//OIC Shepherd//EN',
+  return [
     'BEGIN:VEVENT',
     dtStart,
     dtEnd,
-    `SUMMARY:${title}`,
+    `SUMMARY:${escapeIcsText(title)}`,
     `UID:${uid}@oic-shepherd`,
     `DTSTAMP:${toIcsDate(new Date())}`,
     ...(rrule ? [rrule] : []),
     ...valarm,
     'END:VEVENT',
-    'END:VCALENDAR',
   ];
+}
+
+/** Wrap one or more events in a VCALENDAR envelope. */
+export function buildIcsFeed(events: IcsEventInput[], calendarName?: string): string {
+  const lines: string[] = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//OIC Shepherd//EN',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+  ];
+  if (calendarName) {
+    const escaped = escapeIcsText(calendarName);
+    lines.push(`X-WR-CALNAME:${escaped}`);
+    lines.push(`NAME:${escaped}`);
+  }
+  for (const ev of events) {
+    lines.push(...buildIcsEvent(ev));
+  }
+  lines.push('END:VCALENDAR');
   return lines.join('\r\n');
+}
+
+/** Returns a .ics (iCalendar) file string for download (single event).
+ *  Includes RRULE if repeat is set, and VALARM if reminder is set. */
+export function buildIcsContent(
+  title: string,
+  uid: string,
+  start: Date,
+  end: Date,
+  allDay = false,
+  repeat?: TodoRepeat,
+  reminder?: TodoReminder
+): string {
+  return buildIcsFeed([{ title, uid, start, end, allDay, repeat, reminder }]);
 }
 
 /** Categorize todos into overdue / today / upcoming / no due date / completed */

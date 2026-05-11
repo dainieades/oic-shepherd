@@ -71,6 +71,9 @@ export const PersonaRowSchema = z.object({
   notify_shepherd_assigned: z.boolean().nullable().optional(),
   notify_person_updated:    z.boolean().nullable().optional(),
   notify_todo_created:      z.boolean().nullable().optional(),
+  calendar_sync_enabled:    z.boolean().nullable().optional(),
+  calendar_feed_token:      nullStr,
+  calendar_connected_app:   z.enum(['apple', 'google', 'other']).nullable().optional(),
 });
 
 export type PersonaRow = z.infer<typeof PersonaRowSchema>;
@@ -146,7 +149,6 @@ export const GroupRowSchema = z.object({
   name: z.string(),
   description: nullStr,
   leader_ids: nullStrArr,
-  shepherd_ids: nullStrArr,
   related_family_ids: nullStrArr,
 });
 

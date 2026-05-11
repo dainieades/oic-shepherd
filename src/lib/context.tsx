@@ -25,6 +25,7 @@ import {
   type MembershipStatus,
   type ThemePreference,
   type NotificationPreferences,
+  type CalendarConnectedApp,
 } from './types';
 import { type PersonRow, type FamilyRow, type NoteRow, type NoticeRow, type TodoRow, type GroupRow } from './schemas';
 import { mapPerson, mapFamily, mapPersona, syncGoogleAvatar, mapNote, mapNotice, mapTodo, mapAuditLog } from './mappers';
@@ -132,7 +133,7 @@ interface AppContextType {
   updateGroup: (
     groupId: string,
     updates: Partial<
-      Pick<import('./types').Group, 'name' | 'description' | 'leaderIds' | 'shepherdIds'>
+      Pick<import('./types').Group, 'name' | 'description' | 'leaderIds'>
     >
   ) => void;
   updateGroupMembers: (groupId: string, memberIds: string[]) => void;
@@ -165,6 +166,12 @@ interface AppContextType {
   setMapProvider: (provider: MapProvider) => void;
   notificationPrefs: NotificationPreferences;
   setNotificationPreference: <K extends keyof NotificationPreferences>(key: K, value: boolean) => Promise<void>;
+  calendarSyncEnabled: boolean;
+  calendarFeedToken: string | null;
+  calendarConnectedApp: CalendarConnectedApp | null;
+  enableCalendarSync: (app: CalendarConnectedApp) => Promise<string>;
+  disableCalendarSync: () => Promise<void>;
+  regenerateCalendarFeedToken: () => Promise<string>;
   fullPageModalOpen: boolean;
   setFullPageModalOpen: Dispatch<SetStateAction<boolean>>;
 }
@@ -206,6 +213,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     personAdded: true, noticeAdded: true, shepherdAssigned: true,
     personUpdated: true, todoCreated: true,
   });
+  const [calendarSyncEnabled, setCalendarSyncEnabledState] = useState<boolean>(false);
+  const [calendarFeedToken, setCalendarFeedTokenState] = useState<string | null>(null);
+  const [calendarConnectedApp, setCalendarConnectedAppState] = useState<CalendarConnectedApp | null>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem('shepherd-app-theme') as ThemePreference | null;
@@ -268,6 +278,67 @@ export function AppProvider({ children }: { children: ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentPersona.id]
   );
+
+  const enableCalendarSync = useCallback(
+    async (app: CalendarConnectedApp): Promise<string> => {
+      const token = calendarFeedToken ?? (typeof crypto !== 'undefined' && crypto.randomUUID
+        ? crypto.randomUUID()
+        : Math.random().toString(36).slice(2) + Date.now().toString(36));
+      setCalendarSyncEnabledState(true);
+      setCalendarFeedTokenState(token);
+      setCalendarConnectedAppState(app);
+      setData((prev) => ({
+        ...prev,
+        personas: prev.personas.map((p) =>
+          p.id === currentPersona.id
+            ? { ...p, calendarSyncEnabled: true, calendarFeedToken: token, calendarConnectedApp: app }
+            : p
+        ),
+      }));
+      await createClient()
+        .from('personas')
+        .update({
+          calendar_sync_enabled: true,
+          calendar_feed_token: token,
+          calendar_connected_app: app,
+        })
+        .eq('id', currentPersona.id);
+      return `${window.location.origin}/api/calendar-feed/${token}.ics`;
+    },
+    [calendarFeedToken, currentPersona.id]
+  );
+
+  const disableCalendarSync = useCallback(async (): Promise<void> => {
+    setCalendarSyncEnabledState(false);
+    setData((prev) => ({
+      ...prev,
+      personas: prev.personas.map((p) =>
+        p.id === currentPersona.id ? { ...p, calendarSyncEnabled: false } : p
+      ),
+    }));
+    await createClient()
+      .from('personas')
+      .update({ calendar_sync_enabled: false })
+      .eq('id', currentPersona.id);
+  }, [currentPersona.id]);
+
+  const regenerateCalendarFeedToken = useCallback(async (): Promise<string> => {
+    const token = typeof crypto !== 'undefined' && crypto.randomUUID
+      ? crypto.randomUUID()
+      : Math.random().toString(36).slice(2) + Date.now().toString(36);
+    setCalendarFeedTokenState(token);
+    setData((prev) => ({
+      ...prev,
+      personas: prev.personas.map((p) =>
+        p.id === currentPersona.id ? { ...p, calendarFeedToken: token } : p
+      ),
+    }));
+    await createClient()
+      .from('personas')
+      .update({ calendar_feed_token: token })
+      .eq('id', currentPersona.id);
+    return `${window.location.origin}/api/calendar-feed/${token}.ics`;
+  }, [currentPersona.id]);
 
   const personaByPersonId = useMemo(
     () => new Map(data.personas.filter((p) => p.personId).map((p) => [p.personId as string, p])),
@@ -376,7 +447,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         name: r.name as string,
         description: r.description as string | undefined,
         leaderIds: (r.leader_ids as string[]) ?? [],
-        shepherdIds: (r.shepherd_ids as string[]) ?? [],
         memberIds: membersByGroup[r.id as string] ?? [],
         relatedFamilyIds: (r.related_family_ids as string[]) ?? [],
       }));
@@ -404,6 +474,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         if (persona.notificationPrefs) {
           setNotificationPrefsState(persona.notificationPrefs);
         }
+        setCalendarSyncEnabledState(persona.calendarSyncEnabled ?? false);
+        setCalendarFeedTokenState(persona.calendarFeedToken ?? null);
+        setCalendarConnectedAppState(persona.calendarConnectedApp ?? null);
       }
 
       // Restore last active persona from localStorage (just the ID, not the data)
@@ -1266,7 +1339,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
       name,
       description,
       leaderIds: [],
-      shepherdIds: [],
       memberIds: [],
       relatedFamilyIds: [],
     };
@@ -1285,44 +1357,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     async (
       groupId: string,
       updates: Partial<
-        Pick<import('./types').Group, 'name' | 'description' | 'leaderIds' | 'shepherdIds'>
+        Pick<import('./types').Group, 'name' | 'description' | 'leaderIds'>
       >
     ): Promise<void> => {
-      // Side-channel to capture computed values for DB ops after setData
-      let eligibleMemberIds: string[] = [];
-      let newShepherdPersonaIds: string[] = [];
       let snapshot: AppData | undefined;
 
       setData((prev) => {
         snapshot = prev;
-        const group = prev.groups.find((g) => g.id === groupId);
         const newGroups = prev.groups.map((g) => (g.id === groupId ? { ...g, ...updates } : g));
-
-        if (updates.shepherdIds !== undefined && group) {
-          // Map shepherd person IDs → persona IDs (with person ID fallback, matching sheep-lookup logic)
-          const pByPersonId = new Map(prev.personas.filter((p) => p.personId).map((p) => [p.personId as string, p]));
-          newShepherdPersonaIds = updates.shepherdIds.flatMap((personId) => {
-            const persona = pByPersonId.get(personId);
-            return [persona ? persona.id : personId];
-          });
-
-          // Eligible sheep: in group, not a leader, not themselves a shepherd
-          const effectiveLeaderIds = updates.leaderIds ?? group.leaderIds;
-          eligibleMemberIds = group.memberIds.filter((memberId) => {
-            if (effectiveLeaderIds.includes(memberId)) return false;
-            if (updates.shepherdIds!.includes(memberId)) return false;
-            const person = prev.people.find((p) => p.id === memberId);
-            return person ? !person.isShepherd : false;
-          });
-
-          const newPeople = prev.people.map((p) =>
-            eligibleMemberIds.includes(p.id)
-              ? { ...p, assignedShepherdIds: newShepherdPersonaIds }
-              : p
-          );
-          return { ...prev, groups: newGroups, people: newPeople };
-        }
-
         return { ...prev, groups: newGroups };
       });
 
@@ -1331,21 +1373,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (updates.name !== undefined) dbUpdates.name = updates.name;
       if (updates.description !== undefined) dbUpdates.description = updates.description ?? null;
       if (updates.leaderIds !== undefined) dbUpdates.leader_ids = updates.leaderIds;
-      if (updates.shepherdIds !== undefined) dbUpdates.shepherd_ids = updates.shepherdIds;
       try {
         await supabase.from('groups').update(dbUpdates).eq('id', groupId);
-
-        // Persist auto-assigned shepherds to eligible group members
-        if (updates.shepherdIds !== undefined) {
-          for (const pid of eligibleMemberIds) {
-            await supabase.from('person_shepherds').delete().eq('person_id', pid);
-            if (newShepherdPersonaIds.length > 0) {
-              await supabase
-                .from('person_shepherds')
-                .insert(newShepherdPersonaIds.map((sid) => ({ person_id: pid, shepherd_id: sid })));
-            }
-          }
-        }
       } catch {
         if (snapshot) setData(snapshot);
         showToast(SAVE_ERROR_MSG, 'error');
@@ -1688,6 +1717,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setMapProvider,
         notificationPrefs,
         setNotificationPreference,
+        calendarSyncEnabled,
+        calendarFeedToken,
+        calendarConnectedApp,
+        enableCalendarSync,
+        disableCalendarSync,
+        regenerateCalendarFeedToken,
         fullPageModalOpen,
         setFullPageModalOpen,
       }}

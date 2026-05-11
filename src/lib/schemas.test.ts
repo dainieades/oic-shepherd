@@ -310,7 +310,6 @@ describe('GroupRowSchema', () => {
       ...minimalGroup,
       description: 'Ages 18-30',
       leader_ids: ['p1', 'p2'],
-      shepherd_ids: ['p3'],
       related_family_ids: ['f1'],
     };
     expect(() => GroupRowSchema.parse(full)).not.toThrow();

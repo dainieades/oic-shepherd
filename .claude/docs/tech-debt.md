@@ -61,6 +61,12 @@ _Last audited: 2026-04-22_
 - [x] P18: Replace remaining hardcoded colors (`#FEE2E2`, `#DC2626`, `#5B8A72`, `#FEF2F2`, `#FFFAF4`, `#D8D4D0`, `#fff` on colored backgrounds) with tokens; replace hardcoded z-index values (65, 71, 91, 9999) with `var(--z-*)` or `calc()` expressions ✅
 - [x] P19: `CheckRow` and `RadioRow` already extracted to `src/components/` and imported by FilterPanel, LogsFilterPanel, todos — no duplication found ✅
 
+**Sprint 9 — Calendar Sync** ✅ Complete 2026-05-08
+- [x] Add ICS subscription feed: per-persona `calendar_feed_token` + `/api/calendar-feed/[token]/route.ts` so users subscribe once in Apple/Google Calendar and todos auto-appear ✅
+- [x] Refactor `buildIcsContent` into `buildIcsEvent` + `buildIcsFeed` for multi-event feeds ✅
+- [x] Replace floating `CalendarPickerMenu` in `AddTodoModal` with reusable `CalendarSyncSheet` (BottomSheet) ✅
+- [x] Add `/settings/calendar-sync` page with toggle, subscribe buttons, feed URL display, regenerate-token flow ✅
+
 **Backlog (plan before next major feature)**
 - [ ] Split AppContext mutations into domain-scoped modules if the file grows beyond 1,500 lines again
 - [ ] Add server-side pagination if dataset grows beyond ~1K people

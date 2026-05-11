@@ -113,6 +113,9 @@ export function mapPersona(row: Record<string, unknown>, assignedPeopleIds: stri
       personUpdated:    r.notify_person_updated    ?? true,
       todoCreated:      r.notify_todo_created      ?? true,
     },
+    calendarSyncEnabled:  r.calendar_sync_enabled ?? false,
+    calendarFeedToken:    r.calendar_feed_token ?? null,
+    calendarConnectedApp: r.calendar_connected_app ?? null,
   };
 }
 

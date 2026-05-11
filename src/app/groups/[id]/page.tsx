@@ -15,7 +15,6 @@ import {
   UserList,
   CaretRight,
   Crown,
-  HandHeart,
   CaretLeft,
   Check,
 } from '@phosphor-icons/react';
@@ -47,17 +46,10 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
 
   const myPersonId = currentPersona.personId;
   const iAmLeader = myPersonId ? group.leaderIds.includes(myPersonId) : false;
-  const iAmShepherd = myPersonId ? group.shepherdIds.includes(myPersonId) : false;
 
   const leaders = data.people.filter((p) => group.leaderIds.includes(p.id));
-  const shepherds = data.people.filter(
-    (p) => group.shepherdIds.includes(p.id) && !group.leaderIds.includes(p.id)
-  );
   const members = data.people.filter(
-    (p) =>
-      group.memberIds.includes(p.id) &&
-      !group.leaderIds.includes(p.id) &&
-      !group.shepherdIds.includes(p.id)
+    (p) => group.memberIds.includes(p.id) && !group.leaderIds.includes(p.id)
   );
 
   return (
@@ -150,18 +142,14 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
               fontWeight: 700,
               color: 'var(--text-primary)',
               letterSpacing: '-0.02em',
-              marginBottom: iAmLeader || iAmShepherd ? 4 : 0,
+              marginBottom: iAmLeader ? 4 : 0,
             }}
           >
             {group.name}
           </h1>
-          {(iAmLeader || iAmShepherd) && (
+          {iAmLeader && (
             <span style={{ fontSize: 12, color: 'var(--sage)', fontWeight: 500 }}>
-              {iAmLeader && iAmShepherd
-                ? "You're a leader & shepherd"
-                : iAmLeader
-                  ? "You're a leader"
-                  : "You're a shepherd"}
+              You&apos;re a leader
             </span>
           )}
         </div>
@@ -203,22 +191,6 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
             <Crown size={11} />
             {leaders.length} {leaders.length === 1 ? 'leader' : 'leaders'}
           </span>
-          <span
-            style={{
-              fontSize: 11,
-              fontWeight: 500,
-              padding: '0.1875rem 0.625rem',
-              borderRadius: 'var(--radius-pill)',
-              background: 'var(--avatar-s1-bg)',
-              color: 'var(--avatar-s1-text)',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 4,
-            }}
-          >
-            <HandHeart size={11} />
-            {group.shepherdIds.length} {group.shepherdIds.length === 1 ? 'shepherd' : 'shepherds'}
-          </span>
         </div>
 
         {group.description && (
@@ -252,7 +224,6 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
           >
             {leaders.map((leader, i) => {
               const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
-              const isAlsoShepherd = group.shepherdIds.includes(leader.id);
               return (
                 <Link
                   key={leader.id}
@@ -285,82 +256,6 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
                       {leader.chineseName && (
                         <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
                           {leader.chineseName}
-                        </span>
-                      )}
-                      {isAlsoShepherd && (
-                        <span
-                          style={{
-                            fontSize: 10,
-                            fontWeight: 600,
-                            padding: '0.0625rem 0.375rem',
-                            borderRadius: 'var(--radius-pill)',
-                            background: 'var(--avatar-s1-bg)',
-                            color: 'var(--avatar-s1-text)',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: 3,
-                          }}
-                        >
-                          <HandHeart size={10} />
-                          Shepherd
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <CaretRight size={14} color="var(--text-muted)" />
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* ── Shepherds (those who are shepherds but not leaders) ── */}
-      {shepherds.length > 0 && (
-        <div style={{ marginBottom: 14 }}>
-          <SectionLabel>Shepherds</SectionLabel>
-          <div
-            className="no-last-border"
-            style={{
-              background: 'var(--surface)',
-              borderRadius: 'var(--radius)',
-              border: '1px solid var(--border-light)',
-              overflow: 'hidden',
-            }}
-          >
-            {shepherds.map((shepherd) => {
-              return (
-                <Link
-                  key={shepherd.id}
-                  href={`/person/${shepherd.id}?from=/groups/${id}`}
-                  className="row-card-hover"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 12,
-                    paddingTop: 12,
-                    paddingBottom: 12,
-                    borderBottom: '1px solid var(--border-light)',
-                    textDecoration: 'none',
-                  }}
-                >
-                  <AvatarBadge
-                    name={shepherd.englishName}
-                    photo={shepherd.photo}
-                    size={40}
-                    bg="var(--avatar-s1-bg)"
-                    color="var(--avatar-s1-text)"
-                  />
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div
-                      style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}
-                    >
-                      <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>
-                        {shepherd.englishName}
-                      </span>
-                      {shepherd.chineseName && (
-                        <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-                          {shepherd.chineseName}
                         </span>
                       )}
                     </div>
@@ -483,7 +378,7 @@ function EditGroupDrawer({
   onClose: () => void;
   onSave: (
     updates: Partial<
-      Pick<import('@/lib/types').Group, 'name' | 'description' | 'leaderIds' | 'shepherdIds'>
+      Pick<import('@/lib/types').Group, 'name' | 'description' | 'leaderIds'>
     >,
     memberIds: string[]
   ) => void;
@@ -493,23 +388,20 @@ function EditGroupDrawer({
   const [name, setName] = React.useState(group.name);
   const [description, setDesc] = React.useState(group.description ?? '');
   const [leaderIds, setLeaderIds] = React.useState<string[]>(group.leaderIds);
-  const [shepherdIds, setShepherdIds] = React.useState<string[]>(group.shepherdIds);
   const [memberIds, setMemberIds] = React.useState<string[]>(group.memberIds);
 
   const [showLeaderPicker, setShowLeaderPicker] = React.useState(false);
-  const [showShepherdPicker, setShowShepherdPicker] = React.useState(false);
   const [showMemberPicker, setShowMemberPicker] = React.useState(false);
 
   const nameRef = React.useRef<HTMLInputElement>(null);
   const descRef = React.useRef<HTMLTextAreaElement>(null);
 
   const selectedLeaders = data.people.filter((p) => leaderIds.includes(p.id));
-  const selectedShepherds = data.people.filter((p) => shepherdIds.includes(p.id));
 
   const handleSave = () => {
     if (!name.trim()) return;
     onSave(
-      { name: name.trim(), description: description.trim() || undefined, leaderIds, shepherdIds },
+      { name: name.trim(), description: description.trim() || undefined, leaderIds },
       memberIds
     );
   };
@@ -598,32 +490,6 @@ function EditGroupDrawer({
               </button>
             </DrawerSection>
 
-            {/* ── SHEPHERDS ── */}
-            <DrawerSection label="Shepherds">
-              <button
-                className="field-row-hover"
-                onClick={() => setShowShepherdPicker(true)}
-                style={pickerRowStyle}
-              >
-                <span style={spacerStyle} />
-                <HandHeart size={16} color="var(--sage)" />
-                <span style={labelStyle}>Shepherds</span>
-                <span
-                  style={{
-                    flex: 1,
-                    fontSize: 14,
-                    color: selectedShepherds.length ? 'var(--text-primary)' : 'var(--text-muted)',
-                    textAlign: 'left',
-                  }}
-                >
-                  {selectedShepherds.length === 0
-                    ? 'None'
-                    : selectedShepherds.map((p) => p.englishName.split(' ')[0]).join(', ')}
-                </span>
-                <CaretRight size={14} color="var(--text-muted)" />
-              </button>
-            </DrawerSection>
-
             {/* ── MEMBERS ── */}
             <DrawerSection label="Members">
               <button
@@ -653,17 +519,6 @@ function EditGroupDrawer({
           selected={leaderIds}
           onConfirm={(ids) => { setLeaderIds(ids); setShowLeaderPicker(false); }}
           onBack={() => setShowLeaderPicker(false)}
-        />
-      )}
-
-      {/* Shepherd picker sheet */}
-      {showShepherdPicker && (
-        <PeoplePickerSheet
-          title="Shepherds"
-          people={data.people}
-          selected={shepherdIds}
-          onConfirm={(ids) => { setShepherdIds(ids); setShowShepherdPicker(false); }}
-          onBack={() => setShowShepherdPicker(false)}
         />
       )}
 

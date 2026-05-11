@@ -11,6 +11,8 @@ export interface NotificationPreferences {
   todoCreated:      boolean;
 }
 
+export type CalendarConnectedApp = 'apple' | 'google' | 'other';
+
 export interface Persona {
   id: string;
   name: string;
@@ -21,6 +23,9 @@ export interface Persona {
   themePreference?: ThemePreference;
   mapProvider?: 'apple' | 'google' | 'waze';
   notificationPrefs?: NotificationPreferences;
+  calendarSyncEnabled?: boolean;
+  calendarFeedToken?: string | null;
+  calendarConnectedApp?: CalendarConnectedApp | null;
 }
 
 export type MembershipStatus = 'member' | 'non-member' | 'membership-track';
@@ -105,7 +110,6 @@ export interface Group {
   name: string;
   description?: string;
   leaderIds: string[];
-  shepherdIds: string[];
   memberIds: string[];
   relatedFamilyIds: string[];
 }

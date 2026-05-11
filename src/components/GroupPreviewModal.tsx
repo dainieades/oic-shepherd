@@ -17,14 +17,8 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
   if (!group) return null;
 
   const leaders = data.people.filter((p) => group.leaderIds.includes(p.id));
-  const shepherds = data.people.filter(
-    (p) => group.shepherdIds.includes(p.id) && !group.leaderIds.includes(p.id)
-  );
   const members = data.people.filter(
-    (p) =>
-      group.memberIds.includes(p.id) &&
-      !group.leaderIds.includes(p.id) &&
-      !group.shepherdIds.includes(p.id)
+    (p) => group.memberIds.includes(p.id) && !group.leaderIds.includes(p.id)
   );
 
   return (
@@ -133,19 +127,6 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
               >
                 {leaders.length} {leaders.length === 1 ? 'leader' : 'leaders'}
               </span>
-              <span
-                style={{
-                  fontSize: 11,
-                  fontWeight: 500,
-                  padding: '0.1875rem 0.625rem',
-                  borderRadius: 'var(--radius-pill)',
-                  background: 'var(--avatar-s1-bg)',
-                  color: 'var(--avatar-s1-text)',
-                }}
-              >
-                {group.shepherdIds.length}{' '}
-                {group.shepherdIds.length === 1 ? 'shepherd' : 'shepherds'}
-              </span>
             </div>
             {group.description && (
               <p
@@ -195,7 +176,6 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
                     .join('')
                     .toUpperCase()
                     .slice(0, 2);
-                  const isAlsoShepherd = group.shepherdIds.includes(leader.id);
                   return (
                     <div
                       key={leader.id}
@@ -243,104 +223,9 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
                           >
                             {leader.englishName}
                           </p>
-                          {isAlsoShepherd && (
-                            <span
-                              style={{
-                                fontSize: 10,
-                                fontWeight: 600,
-                                padding: '0.0625rem 0.375rem',
-                                borderRadius: 'var(--radius-pill)',
-                                background: 'var(--avatar-s1-bg)',
-                                color: 'var(--avatar-s1-text)',
-                              }}
-                            >
-                              Shepherd
-                            </span>
-                          )}
                         </div>
                         <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0 }}>
                           {getMembershipLabel(leader.membershipStatus)}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Shepherds (not also leaders) */}
-          {shepherds.length > 0 && (
-            <div style={{ marginBottom: 14 }}>
-              <p
-                style={{
-                  fontSize: 10,
-                  fontWeight: 600,
-                  color: 'var(--text-muted)',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
-                  marginBottom: 8,
-                }}
-              >
-                Shepherds
-              </p>
-              <div
-                className="no-last-border"
-                style={{
-                  background: 'var(--surface)',
-                  borderRadius: 'var(--radius)',
-                  border: '1px solid var(--border-light)',
-                  overflow: 'hidden',
-                }}
-              >
-                {shepherds.map((shepherd, _i) => {
-                  const initials = shepherd.englishName
-                    .split(' ')
-                    .map((n) => n[0])
-                    .join('')
-                    .toUpperCase()
-                    .slice(0, 2);
-                  return (
-                    <div
-                      key={shepherd.id}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 12,
-                        padding: '0.625rem 1rem',
-                        borderBottom: '1px solid var(--border-light)',
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: 36,
-                          height: 36,
-                          borderRadius: '50%',
-                          background: 'var(--avatar-s1-bg)',
-                          color: 'var(--avatar-s1-text)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: 12,
-                          fontWeight: 600,
-                          flexShrink: 0,
-                        }}
-                      >
-                        {initials}
-                      </div>
-                      <div>
-                        <p
-                          style={{
-                            fontSize: 14,
-                            fontWeight: 600,
-                            color: 'var(--text-primary)',
-                            margin: 0,
-                          }}
-                        >
-                          {shepherd.englishName}
-                        </p>
-                        <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0 }}>
-                          {getMembershipLabel(shepherd.membershipStatus)}
                         </p>
                       </div>
                     </div>

@@ -16,6 +16,7 @@ import {
   GoogleLogo,
   CircleHalf,
   Bell,
+  CalendarBlank,
 } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { useToast } from '@/components/Toast';
@@ -25,7 +26,7 @@ import { MAP_PROVIDER_LABELS } from '@/lib/utils';
 import { BACKDROP_COLOR, Z_NESTED } from '@/lib/constants';
 
 export default function SettingsPage() {
-  const { data, currentPersona, switchPersona, themePreference, mapProvider } = useApp();
+  const { data, currentPersona, switchPersona, themePreference, mapProvider, calendarSyncEnabled } = useApp();
   const { showToast } = useToast();
   const router = useRouter();
   const [scrolled, setScrolled] = React.useState(false);
@@ -299,6 +300,14 @@ export default function SettingsPage() {
           <SettingsRow
             icon={<Bell size={18} color="var(--text-muted)" />}
             label="Notifications"
+            chevron
+          />
+        </Link>
+        <Link href="/settings/calendar-sync" style={{ textDecoration: 'none', display: 'block' }}>
+          <SettingsRow
+            icon={<CalendarBlank size={18} color="var(--text-muted)" />}
+            label="Calendar Sync"
+            value={calendarSyncEnabled ? 'On' : 'Off'}
             chevron
           />
         </Link>
