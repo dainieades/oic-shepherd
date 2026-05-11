@@ -44,7 +44,11 @@ export async function GET(
     .eq('calendar_feed_token', token)
     .maybeSingle();
 
-  if (personaErr || !persona || !persona.calendar_sync_enabled) {
+  if (personaErr) {
+    console.error('[calendar-feed] persona lookup failed', personaErr);
+    return new NextResponse(`Persona lookup failed: ${personaErr.message}`, { status: 500 });
+  }
+  if (!persona || !persona.calendar_sync_enabled) {
     return new NextResponse('Not found', { status: 404 });
   }
 
@@ -55,34 +59,51 @@ export async function GET(
     .not('due_date', 'is', null);
 
   if (todosErr) {
-    return new NextResponse('Error', { status: 500 });
+    console.error('[calendar-feed] todos query failed', {
+      personaId: persona.id,
+      code: todosErr.code,
+      message: todosErr.message,
+      details: todosErr.details,
+      hint: todosErr.hint,
+    });
+    return new NextResponse(
+      `Todos query failed: ${todosErr.message}${todosErr.hint ? ` (hint: ${todosErr.hint})` : ''}`,
+      { status: 500 },
+    );
   }
 
-  const events: IcsEventInput[] = (todos as TodoFeedRow[] | null ?? [])
-    .filter((t) => !!t.due_date)
-    .map((t) => {
-      const dueIso = t.due_date as string;
-      const start = new Date(dueIso);
-      const hasTime = dueIso.length >= 16 && dueIso.slice(11, 16) !== '00:00';
-      const allDay = !hasTime;
-      const end = t.end_date
-        ? new Date(t.end_date)
-        : allDay
-          ? start
-          : addHours(start, 1);
-      const title = t.completed ? `✓ Done: ${t.title}` : t.title;
-      return {
-        title,
-        uid: t.id,
-        start,
-        end,
-        allDay,
-        repeat: t.repeat ?? undefined,
-        reminder: t.reminder ?? undefined,
-      };
-    });
+  let ics: string;
+  try {
+    const events: IcsEventInput[] = (todos as TodoFeedRow[] | null ?? [])
+      .filter((t) => !!t.due_date)
+      .map((t) => {
+        const dueIso = t.due_date as string;
+        const start = new Date(dueIso);
+        const hasTime = dueIso.length >= 16 && dueIso.slice(11, 16) !== '00:00';
+        const allDay = !hasTime;
+        const end = t.end_date
+          ? new Date(t.end_date)
+          : allDay
+            ? start
+            : addHours(start, 1);
+        const title = t.completed ? `✓ Done: ${t.title}` : t.title;
+        return {
+          title,
+          uid: t.id,
+          start,
+          end,
+          allDay,
+          repeat: t.repeat ?? undefined,
+          reminder: t.reminder ?? undefined,
+        };
+      });
 
-  const ics = buildIcsFeed(events, `OIC Shepherd — ${persona.name}`);
+    ics = buildIcsFeed(events, `OIC Shepherd — ${persona.name}`);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error('[calendar-feed] ICS build failed', { personaId: persona.id, err });
+    return new NextResponse(`ICS build failed: ${message}`, { status: 500 });
+  }
 
   return new NextResponse(ics, {
     status: 200,
