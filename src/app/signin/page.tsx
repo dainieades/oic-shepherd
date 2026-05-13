@@ -377,12 +377,9 @@ export default function SignInPage() {
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
           <Logo height={88} style={{ margin: '0 auto 16px' }} />
-          <h1 className="font-display" style={headingStyle}>
-            Welcome
+          <h1 className="font-display" style={{ ...headingStyle, fontSize: 24 }}>
+            Welcome to Shepherd App.
           </h1>
-          <p style={{ fontSize: 15, color: 'var(--text-secondary)' }}>
-            Sign in to the OIC Shepherd app
-          </p>
         </div>
 
         {/* Error banner */}

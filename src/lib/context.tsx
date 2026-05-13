@@ -1041,7 +1041,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         churchAttendance: 'first-time-visitor',
       });
 
-      const submissionId = generateId();
+      const submissionId = crypto.randomUUID();
       const submittedAt = new Date().toISOString();
       const supabase = createClient();
       const { error: submissionError } = await supabase.from('visitor_submissions').insert({
@@ -1063,7 +1063,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         prayer_request: input.prayerRequest ?? null,
       });
       if (submissionError) {
-        console.error('visitor_submissions insert failed:', submissionError);
+        console.error('visitor_submissions insert failed:', JSON.stringify(submissionError, null, 2));
         showToast('Visitor saved, but card data could not be stored', 'error');
       }
 
