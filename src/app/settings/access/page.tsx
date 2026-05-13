@@ -309,7 +309,7 @@ export default function AccessManagementPage() {
             }}
             onClose={() => setRoleEditEmail(null)}
             isAdmin
-            personName={linkedPerson?.englishName.split(' ')[0] ?? emailEntry?.label ?? roleEditEmail}
+            personName={linkedPerson?.preferredName ?? emailEntry?.label ?? roleEditEmail}
           />
         );
       })()}

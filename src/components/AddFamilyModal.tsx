@@ -6,6 +6,7 @@ import { MagnifyingGlass, Check } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { BottomSheet, ModalHeader } from './BottomSheet';
 import { MEMBER_AVATAR_PALETTE } from '@/lib/constants';
+import { fullName } from '@/lib/utils';
 
 interface AddFamilyModalProps {
   onClose: () => void;
@@ -14,13 +15,14 @@ interface AddFamilyModalProps {
 
 function suggestFamilyName(
   memberIds: string[],
-  people: { id: string; englishName: string }[]
+  people: { id: string; preferredName: string; lastName?: string }[]
 ): string {
   const selected = people.filter((p) => memberIds.includes(p.id));
   if (selected.length === 0) return '';
   // Collect last names
   const lastNames = selected.map((p) => {
-    const parts = p.englishName.trim().split(/\s+/);
+    if (p.lastName && p.lastName.trim()) return p.lastName.trim();
+    const parts = p.preferredName.trim().split(/\s+/);
     return parts[parts.length - 1];
   });
   // Find most common last name
@@ -48,14 +50,14 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
   const nameRef = React.useRef<HTMLInputElement>(null);
 
   // People who don't have a family yet
-  const pool = data.people.filter((p) => !p.familyId && !p.isChild);
+  const pool = data.people.filter((p) => !p.familyId);
 
   const q = search.toLowerCase();
   const filtered = pool.filter(
     (p) =>
       q === '' ||
-      p.englishName.toLowerCase().includes(q) ||
-      (p.chineseName && p.chineseName.toLowerCase().includes(q))
+      fullName(p).toLowerCase().includes(q) ||
+      (p.alternativeName && p.alternativeName.toLowerCase().includes(q))
   );
 
   // Sort: selected first, then alphabetical
@@ -156,14 +158,14 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
               )}
               {sorted.map((p) => {
                 const isSelected = selectedIds.includes(p.id);
-                const initials = p.englishName
+                const initials = fullName(p)
                   .split(' ')
                   .map((n) => n[0])
                   .slice(0, 2)
                   .join('')
                   .toUpperCase();
                 const palette =
-                  MEMBER_AVATAR_PALETTE[p.englishName.charCodeAt(0) % MEMBER_AVATAR_PALETTE.length];
+                  MEMBER_AVATAR_PALETTE[p.preferredName.charCodeAt(0) % MEMBER_AVATAR_PALETTE.length];
                 return (
                   <button
                     key={p.id}
@@ -209,11 +211,11 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
                           margin: 0,
                         }}
                       >
-                        {p.englishName}
+                        {fullName(p)}
                       </p>
-                      {p.chineseName && (
+                      {p.alternativeName && (
                         <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0 }}>
-                          {p.chineseName}
+                          {p.alternativeName}
                         </p>
                       )}
                     </div>
@@ -277,14 +279,14 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
                 </p>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                   {selectedPeople.map((p) => {
-                    const initials = p.englishName
+                    const initials = fullName(p)
                       .split(' ')
                       .map((n) => n[0])
                       .slice(0, 2)
                       .join('')
                       .toUpperCase();
                     const palette =
-                      MEMBER_AVATAR_PALETTE[p.englishName.charCodeAt(0) % MEMBER_AVATAR_PALETTE.length];
+                      MEMBER_AVATAR_PALETTE[p.preferredName.charCodeAt(0) % MEMBER_AVATAR_PALETTE.length];
                     return (
                       <div
                         key={p.id}
@@ -318,7 +320,7 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
                         <span
                           style={{ fontSize: 13, color: 'var(--text-primary)', fontWeight: 500 }}
                         >
-                          {p.englishName.split(' ')[0]}
+                          {p.preferredName}
                         </span>
                       </div>
                     );

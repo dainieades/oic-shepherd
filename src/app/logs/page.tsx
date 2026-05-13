@@ -18,7 +18,7 @@ import {
 import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '@/lib/context';
 import { type Note, type Todo } from '@/lib/types';
-import { groupByMonth, getNoteTypeLabel } from '@/lib/utils';
+import { groupByMonth, getNoteTypeLabel, fullName } from '@/lib/utils';
 import {
   MagnifyingGlass,
   Funnel,
@@ -158,7 +158,7 @@ export default function LogsPage() {
     if (n.content?.toLowerCase().includes(q)) return true;
     if (n.personId) {
       const p = data.people.find((p) => p.id === n.personId);
-      if (p?.englishName.toLowerCase().includes(q) || p?.chineseName?.toLowerCase().includes(q))
+      if (p && (fullName(p).toLowerCase().includes(q) || p.alternativeName?.toLowerCase().includes(q)))
         return true;
     }
     if (n.familyId) {
@@ -201,7 +201,7 @@ export default function LogsPage() {
         .filter(
           (p) => p.isShepherd && !personaPersonIds.has(p.id) && p.id !== currentPersona.personId
         )
-        .map((p) => ({ id: p.id, name: p.englishName })),
+        .map((p) => ({ id: p.id, name: fullName(p) })),
     ];
   })();
 
@@ -461,7 +461,7 @@ export default function LogsPage() {
           const family = note.familyId ? data.families.find((f) => f.id === note.familyId) : null;
           const targetChips: { label: string; isFamily: boolean }[] = [
             ...(family ? [{ label: family.label, isFamily: true }] : []),
-            ...(person ? [{ label: person.englishName, isFamily: false }] : []),
+            ...(person ? [{ label: fullName(person), isFamily: false }] : []),
           ];
           return (
             <LogItem

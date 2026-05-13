@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useApp } from '@/lib/context';
-import { getMembershipLabel } from '@/lib/utils';
+import { getMembershipLabel, fullName } from '@/lib/utils';
 import { BottomSheet } from './BottomSheet';
 import { SHEPHERD_AVATAR_PALETTE } from '@/lib/constants';
 
@@ -170,7 +170,7 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
               >
                 {leaders.map((leader, i) => {
                   const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
-                  const initials = leader.englishName
+                  const initials = fullName(leader)
                     .split(' ')
                     .map((n) => n[0])
                     .join('')
@@ -221,7 +221,7 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
                               margin: 0,
                             }}
                           >
-                            {leader.englishName}
+                            {fullName(leader)}
                           </p>
                         </div>
                         <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0 }}>
@@ -261,7 +261,7 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
               >
                 {members.map((m, i) => {
                   const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
-                  const initials = m.englishName
+                  const initials = fullName(m)
                     .split(' ')
                     .map((n) => n[0])
                     .join('')
@@ -304,11 +304,11 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
                             margin: 0,
                           }}
                         >
-                          {m.englishName}
+                          {fullName(m)}
                         </p>
-                        {m.chineseName && (
+                        {m.alternativeName && (
                           <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0 }}>
-                            {m.chineseName}
+                            {m.alternativeName}
                           </p>
                         )}
                       </div>

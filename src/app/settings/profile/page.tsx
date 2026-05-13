@@ -46,7 +46,7 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
   const { data } = useApp();
   const person = data.people.find((p) => p.id === personId)!;
   const formRef = React.useRef<PersonFormBodyHandle>(null);
-  const [canSave, setCanSave] = React.useState(!!person.englishName.trim());
+  const [canSave, setCanSave] = React.useState(!!person.preferredName.trim());
 
   return (
     <>

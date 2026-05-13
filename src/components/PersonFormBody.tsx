@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useApp } from '@/lib/context';
-import { formatPhone, fmtDate } from '@/lib/utils';
+import { formatPhone, fmtDate, fullName } from '@/lib/utils';
 import {
   type Person,
   type MembershipStatus,
@@ -97,10 +97,9 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
     const isAddMode: boolean = !person;
     const [simplified, setSimplified] = React.useState<boolean>(isWelcomeTeam && isAddMode);
 
-    const _nameParts = (person?.englishName ?? '').trim().split(/\s+/);
-    const [firstName, setFirstName] = React.useState(_nameParts[0] ?? '');
-    const [lastName, setLastName] = React.useState(_nameParts.slice(1).join(' '));
-    const [chineseName, setChineseName] = React.useState(person?.chineseName ?? '');
+    const [firstName, setFirstName] = React.useState(person?.preferredName ?? '');
+    const [lastName, setLastName] = React.useState(person?.lastName ?? '');
+    const [chineseName, setChineseName] = React.useState(person?.alternativeName ?? '');
     const [photo, setPhoto] = React.useState(person?.photo ?? '');
 
     const [language, setLanguage] = React.useState<string[]>(person?.language ?? ['English']);
@@ -165,7 +164,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
       shepherdId ? data.people.filter((p) => p.assignedShepherdIds.includes(shepherdId)).map((p) => p.id) : []
     );
 
-    const fullName = [firstName.trim(), lastName.trim()].filter(Boolean).join(' ');
+    const fullDisplayName = [firstName.trim(), lastName.trim()].filter(Boolean).join(' ');
     const selectedGroups = data.groups.filter((g) => groupIds.includes(g.id));
     const isPendingInvite =
       !!person &&
@@ -186,7 +185,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
         })),
       ...data.people
         .filter((p) => p.isShepherd && !personaPersonIds.has(p.id))
-        .map((p) => ({ id: p.id, name: p.englishName, subtitle: 'Shepherd', photo: p.photo })),
+        .map((p) => ({ id: p.id, name: fullName(p), subtitle: 'Shepherd', photo: p.photo })),
     ];
 
     const statusLabel = MEMBERSHIP_OPTIONS.find((o) => o.value === status)?.label ?? '';
@@ -194,7 +193,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
       CHURCH_ATTENDANCE_OPTIONS.find((o) => o.value === attendance)?.label ?? attendance;
     const genderLabel = GENDER_OPTIONS.find((o) => o.value === gender)?.label ?? 'Not set';
     const maritalLabel = MARITAL_OPTIONS.find((o) => o.value === maritalStatus)?.label ?? 'Not set';
-    const initials = fullName
+    const initials = fullDisplayName
       .split(' ')
       .map((n) => n[0])
       .slice(0, 2)
@@ -212,8 +211,9 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
 
         if (!person) {
           const newId = await addPerson({
-            englishName: fullName,
-            chineseName: chineseName.trim() || undefined,
+            preferredName: firstName.trim(),
+            lastName: lastName.trim() || undefined,
+            alternativeName: chineseName.trim() || undefined,
             language: language.length > 0 ? language : ['English'],
             gender: gender || undefined,
             birthday: birthday || undefined,
@@ -280,8 +280,9 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
           assignShepherds(person.id, shepherdIds),
           ...sheepAssignments,
           updatePerson(person.id, {
-            englishName: fullName,
-            chineseName: chineseName.trim() || undefined,
+            preferredName: firstName.trim(),
+            lastName: lastName.trim() || undefined,
+            alternativeName: chineseName.trim() || undefined,
             ...(showPhotoUpload ? { photo: photo || undefined } : {}),
             language,
             gender: gender || undefined,
@@ -314,7 +315,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
           >
             <PhotoAvatar
               photo={photo || undefined}
-              name={fullName || 'Your Name'}
+              name={fullDisplayName || 'Your Name'}
               onPhotoChange={(url) => setPhoto(url)}
               onPhotoRemove={() => setPhoto('')}
             />
@@ -331,7 +332,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
                   textOverflow: 'ellipsis',
                 }}
               >
-                {fullName || 'Your Name'}
+                {fullDisplayName || 'Your Name'}
               </p>
             </div>
           </div>
@@ -623,7 +624,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
                             .slice(0, 5)
                             .map((p) => (
                               <span key={p.id} style={sageChipStyle}>
-                                {p.englishName}
+                                {fullName(p)}
                               </span>
                             ))}
                           {sheepIds.length > 5 && (
@@ -767,7 +768,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
             }}
             onClose={() => setOpenPicker(null)}
             isAdmin={currentPersona.role === 'admin'}
-            personName={(person?.englishName ?? fullName).split(' ')[0]}
+            personName={person?.preferredName ?? firstName.trim()}
           />
         )}
         {showLanguagePicker && (
@@ -828,7 +829,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
             onClose={() => setShowInvite(false)}
             initialEmail={person.email ?? ''}
             initialRole="shepherd"
-            personName={person.englishName}
+            personName={fullName(person)}
             personId={person.id}
           />
         )}

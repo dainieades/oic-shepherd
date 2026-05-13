@@ -31,6 +31,7 @@ import {
   getFamilyNotices,
   groupByMonth,
   categorizeTodos,
+  fullName,
 } from '@/lib/utils';
 import { type Todo, type Note, type AppData, type Notice } from '@/lib/types';
 import AddLogModal from '@/components/AddLogModal';
@@ -113,6 +114,11 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
   }
 
   const members = data.people.filter((p) => family.memberIds.includes(p.id));
+  const canManageFamily =
+    currentPersona.role === 'admin' ||
+    members.some(
+      (m) => currentPersona.personId === m.id || currentPersona.assignedPeopleIds.includes(m.id)
+    );
   const notes = getFamilyNotes(id, data.people, data.notes).filter((n) => canViewNote(n));
   const todos = getFamilyTodos(id, data.people, data.todos);
   const notices = canSeeNotices ? getFamilyNotices(id, data.people, data.notices) : [];
@@ -199,7 +205,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
               <PencilSimpleIcon size={scrolled ? 13 : 15} weight="bold" />
               Info
             </button>
-          ) : (
+          ) : tab === 'notices' && !canManageFamily ? null : (
             <button
               onClick={
                 tab === 'logs'
@@ -527,7 +533,9 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                   <NoticeCard
                     key={notice.id}
                     notice={notice}
-                    onClick={() => setEditingNotice(notice)}
+                    onClick={() => {
+                      if (canManageFamily) setEditingNotice(notice);
+                    }}
                   />
                 ));
               })}
@@ -579,7 +587,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                     }}
                   >
                     <AvatarBadge
-                      name={m.englishName}
+                      name={fullName(m)}
                       photo={m.photo}
                       size={38}
                       bg={palette.bg}
@@ -594,8 +602,8 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                           marginBottom: 2,
                         }}
                       >
-                        {m.englishName}
-                        {m.chineseName && (
+                        {fullName(m)}
+                        {m.alternativeName && (
                           <span
                             style={{
                               fontWeight: 400,
@@ -604,7 +612,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                               marginLeft: 6,
                             }}
                           >
-                            {m.chineseName}
+                            {m.alternativeName}
                           </span>
                         )}
                       </p>
@@ -695,7 +703,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                 (() => {
                   const pc = members.find((m) => m.id === family.primaryContactId);
                   return pc ? (
-                    <InfoRow icon={<User size={15} />} label="Primary" value={pc.englishName} />
+                    <InfoRow icon={<User size={15} />} label="Primary" value={fullName(pc)} />
                   ) : null;
                 })()}
               {familyGroups.length > 0 && (
@@ -1004,7 +1012,7 @@ function TodoSection({
           {todos.map((t) => {
             const person = t.personId ? data.people.find((p) => p.id === t.personId) : null;
             const family = t.familyId ? data.families.find((f) => f.id === t.familyId) : null;
-            const tag = person?.englishName || family?.label || '';
+            const tag = (person ? fullName(person) : '') || family?.label || '';
             const hasRepeat = t.repeat && t.repeat !== 'none';
             return (
               <div

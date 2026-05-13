@@ -57,7 +57,7 @@ export const HOME_DEFAULT_FILTERS: HomeFilters = {
   languages: [],
 };
 import { initialData } from './data';
-import { generateId, MAP_PROVIDERS_STORAGE_KEY, calcReminderDueAt, type MapProvider } from './utils';
+import { generateId, MAP_PROVIDERS_STORAGE_KEY, calcReminderDueAt, fullName, type MapProvider } from './utils';
 import { createClient } from '@/utils/supabase/client';
 import { useToast } from '@/components/Toast';
 import { DEFAULT_FOLLOW_UP_DAYS, SAVE_ERROR_MSG } from '@/lib/constants';
@@ -97,8 +97,9 @@ interface AppContextType {
     updates: Partial<
       Pick<
         Person,
-        | 'englishName'
-        | 'chineseName'
+        | 'preferredName'
+        | 'lastName'
+        | 'alternativeName'
         | 'photo'
         | 'originalPhoto'
         | 'phone'
@@ -179,7 +180,7 @@ const AppContext = createContext<AppContextType | null>(null);
 // ── Audit log helpers ─────────────────────────────────────────────────────
 
 const AUDIT_FIELD_KEYS = [
-  'englishName', 'chineseName', 'photo', 'phone', 'homePhone', 'email', 'homeAddress',
+  'preferredName', 'lastName', 'alternativeName', 'photo', 'phone', 'homePhone', 'email', 'homeAddress',
   'membershipStatus', 'churchAttendance', 'membershipDate', 'language', 'gender',
   'maritalStatus', 'birthday', 'baptismDate', 'anniversary', 'followUpFrequencyDays',
   'isShepherd', 'isBeingDiscipled', 'churchPositions', 'appRole',
@@ -962,8 +963,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       try {
         await supabase.from('people').insert({
           id: person.id,
-          english_name: person.englishName,
-          chinese_name: person.chineseName ?? null,
+          preferred_name: person.preferredName,
+          last_name: person.lastName ?? null,
+          alternative_name: person.alternativeName ?? null,
           photo: person.photo ?? null,
           gender: person.gender ?? null,
           marital_status: person.maritalStatus ?? null,
@@ -992,7 +994,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
       const oneWeekFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
       await addTodo({
-        title: `Contact ${person.englishName}`,
+        title: `Contact ${fullName(person)}`,
         personId: person.id,
         dueDate: oneWeekFromNow,
       });
@@ -1001,7 +1003,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type: 'person.added',
-          personName: person.englishName,
+          personName: fullName(person),
           addedByName: currentPersona.name,
           actorEmail: currentUserEmail,
         }),
@@ -1017,8 +1019,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       updates: Partial<
         Pick<
           Person,
-          | 'englishName'
-          | 'chineseName'
+          | 'preferredName'
+          | 'lastName'
+          | 'alternativeName'
           | 'photo'
           | 'originalPhoto'
           | 'phone'
@@ -1053,8 +1056,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       });
       const supabase = createClient();
       const dbUpdates: Partial<PersonRow> = {};
-      if (updates.englishName !== undefined) dbUpdates.english_name = updates.englishName;
-      if (updates.chineseName !== undefined) dbUpdates.chinese_name = updates.chineseName;
+      if (updates.preferredName !== undefined) dbUpdates.preferred_name = updates.preferredName;
+      if (updates.lastName !== undefined) dbUpdates.last_name = updates.lastName;
+      if (updates.alternativeName !== undefined) dbUpdates.alternative_name = updates.alternativeName;
       if ('photo' in updates) dbUpdates.photo = updates.photo ?? null;
       if ('originalPhoto' in updates) dbUpdates.original_photo = updates.originalPhoto ?? null;
       if (updates.phone !== undefined) dbUpdates.phone = updates.phone;
@@ -1129,7 +1133,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             type: 'person.updated',
-            personName: currentPerson.englishName,
+            personName: fullName(currentPerson),
             shepherdPersonaIds: currentPerson.assignedShepherdIds,
             personUserId: linkedUserId,
             updatedByName: currentPersona.name,
@@ -1185,7 +1189,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     let personName = '';
     setData((prev) => {
       snapshot = prev;
-      personName = prev.people.find((p) => p.id === personId)?.englishName ?? '';
+      const p = prev.people.find((p) => p.id === personId);
+      personName = p ? fullName(p) : '';
       return {
         ...prev,
         people: prev.people.map((p) =>
@@ -1556,7 +1561,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setData((prev) => {
         snapshot = prev;
         if (notice.personId) {
-          aboutName = prev.people.find((p) => p.id === notice.personId)?.englishName ?? '';
+          const p = prev.people.find((p) => p.id === notice.personId);
+          aboutName = p ? fullName(p) : '';
         } else if (notice.familyId) {
           aboutName = prev.families.find((f) => f.id === notice.familyId)?.label ?? '';
         }

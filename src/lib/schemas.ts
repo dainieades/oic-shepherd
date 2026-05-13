@@ -7,8 +7,9 @@ const nullStrArr = z.array(z.string()).nullish();
 
 export const PersonRowSchema = z.object({
   id: z.string(),
-  english_name: z.string(),
-  chinese_name: nullStr,
+  preferred_name: z.string(),
+  last_name: nullStr,
+  alternative_name: nullStr,
   photo: nullStr,
   original_photo: nullStr,
   gender: z.enum(['male', 'female']).nullish().catch(null),
@@ -34,8 +35,6 @@ export const PersonRowSchema = z.object({
   follow_up_frequency_days: nullNum,
   last_contact_date: nullStr,
   next_follow_up_date: nullStr,
-  is_first_time_visitor: nullBool,
-  is_child: nullBool,
   created_at: z.string(),
   created_by: nullStr,
   last_edited_at: nullStr,

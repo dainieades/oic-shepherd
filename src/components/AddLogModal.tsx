@@ -21,7 +21,7 @@ import PersonFamilyPicker from './PersonFamilyPicker';
 import PickerMenu from './PickerMenu';
 import DatePickerSheet from './DatePickerSheet';
 import { BottomSheet, ModalHeader } from './BottomSheet';
-import { fmtDateTime, truncateWhoLabel } from '@/lib/utils';
+import { fmtDateTime, truncateWhoLabel, fullName } from '@/lib/utils';
 import { BACKDROP_COLOR, Z_NESTED } from '@/lib/constants';
 
 interface AddLogModalProps {
@@ -91,7 +91,10 @@ export default function AddLogModal({
 
   const whoNames = [
     ...familyIds.map((id) => data.families.find((f) => f.id === id)?.label ?? ''),
-    ...personIds.map((id) => data.people.find((p) => p.id === id)?.englishName ?? ''),
+    ...personIds.map((id) => {
+      const p = data.people.find((p) => p.id === id);
+      return p ? fullName(p) : '';
+    }),
   ].filter(Boolean);
   const whoLabel = truncateWhoLabel(whoNames);
 

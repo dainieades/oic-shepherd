@@ -1,4 +1,5 @@
 import { type Todo, type AppData, type Persona } from './types';
+import { fullName } from './utils';
 
 export function todoMatchesSearch(
   t: Todo,
@@ -10,7 +11,7 @@ export function todoMatchesSearch(
   if (t.title.toLowerCase().includes(q)) return true;
   if (t.personId) {
     const p = data.people.find((p) => p.id === t.personId);
-    if (p?.englishName.toLowerCase().includes(q) || p?.chineseName?.toLowerCase().includes(q))
+    if (p && (fullName(p).toLowerCase().includes(q) || p.alternativeName?.toLowerCase().includes(q)))
       return true;
   }
   if (t.familyId) {

@@ -15,7 +15,8 @@ import {
 
 const minimalPerson = {
   id: 'p1',
-  english_name: 'John Doe',
+  preferred_name: 'John',
+  last_name: 'Doe',
   membership_status: 'member' as const,
   created_at: '2024-01-01T00:00:00Z',
 };
@@ -28,7 +29,7 @@ describe('PersonRowSchema', () => {
   it('accepts a fully-populated valid row', () => {
     const full = {
       ...minimalPerson,
-      chinese_name: '约翰',
+      alternative_name: '约翰',
       photo: 'https://example.com/photo.jpg',
       gender: 'male',
       marital_status: 'married',
@@ -50,8 +51,6 @@ describe('PersonRowSchema', () => {
       follow_up_frequency_days: 14,
       last_contact_date: '2024-03-01',
       next_follow_up_date: '2024-03-15',
-      is_first_time_visitor: false,
-      is_child: false,
       created_by: 'user1',
     };
     expect(() => PersonRowSchema.parse(full)).not.toThrow();
@@ -62,8 +61,8 @@ describe('PersonRowSchema', () => {
     expect(() => PersonRowSchema.parse(rest)).toThrow();
   });
 
-  it('rejects a row missing english_name', () => {
-    const { english_name: _n, ...rest } = minimalPerson;
+  it('rejects a row missing preferred_name', () => {
+    const { preferred_name: _n, ...rest } = minimalPerson;
     expect(() => PersonRowSchema.parse(rest)).toThrow();
   });
 

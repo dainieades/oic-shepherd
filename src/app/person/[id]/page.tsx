@@ -12,6 +12,7 @@ import {
   groupByMonth,
   categorizeTodos,
   getMapUrl,
+  fullName,
 } from '@/lib/utils';
 import { type Todo, type Note, type AppData, type AppRole, type Notice } from '@/lib/types';
 import AddLogModal from '@/components/AddLogModal';
@@ -181,7 +182,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
         (p) =>
           p.isShepherd && !personaPersonIds.has(p.id) && person.assignedShepherdIds.includes(p.id)
       )
-      .map((p) => ({ id: p.id, name: p.englishName, personId: p.id })),
+      .map((p) => ({ id: p.id, name: fullName(p), personId: p.id })),
   ];
   const notes = getPersonNotes(person.id, data.notes).filter((n) => canViewNote(n));
   const todos = data.todos.filter((t) => t.personId === person.id);
@@ -212,8 +213,8 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
   // If the active tab isn't in the visible set (e.g. persona switched), clamp to info
   const activeTab = visibleTabs.includes(tab) ? tab : 'info';
 
-  const firstName = person.englishName.split(' ')[0];
-  const initials = person.englishName
+  const firstName = person.preferredName;
+  const initials = fullName(person)
     .split(' ')
     .map((n) => n[0])
     .slice(0, 2)
@@ -320,7 +321,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
               </button>
             )
           ) : activeTab === 'notices' ? (
-            canSeeNotices && (
+            canManage && (
               <button
                 onClick={() => setShowAddNotice(true)}
                 style={{
@@ -487,7 +488,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
         <PhotoAvatar
           photo={person.photo}
           originalPhoto={person.originalPhoto}
-          name={person.englishName}
+          name={fullName(person)}
           entityPath={`people/${person.id}`}
           onPhotoChange={(photoUrl, originalUrl) => updatePerson(person.id, { photo: photoUrl, originalPhoto: originalUrl })}
           onPhotoRemove={() => updatePerson(person.id, { photo: undefined, originalPhoto: undefined })}
@@ -525,9 +526,9 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                   textOverflow: 'ellipsis',
                 }}
               >
-                {person.englishName}
+                {fullName(person)}
               </h1>
-              {person.chineseName && (
+              {person.alternativeName && (
                 <span
                   style={{
                     fontSize: 14,
@@ -536,7 +537,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                     flexShrink: 0,
                   }}
                 >
-                  {person.chineseName}
+                  {person.alternativeName}
                 </span>
               )}
             </div>
@@ -759,7 +760,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                     key={notice.id}
                     notice={notice}
                     onClick={() => {
-                      if (canSeeNotices) setEditingNotice(notice);
+                      if (canManage) setEditingNotice(notice);
                     }}
                   />
                 ));
@@ -1032,15 +1033,15 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                             textDecoration: 'none',
                           }}
                         >
-                          <AvatarBadge name={s.englishName} photo={s.photo} size={24} />
+                          <AvatarBadge name={fullName(s)} photo={s.photo} size={24} />
                           <span
                             style={{ fontSize: 13, fontWeight: 500, color: 'var(--blue)' }}
                           >
-                            {s.englishName}
+                            {fullName(s)}
                           </span>
-                          {s.chineseName && (
+                          {s.alternativeName && (
                             <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                              {s.chineseName}
+                              {s.alternativeName}
                             </span>
                           )}
                           <CaretRight size={11} color="var(--blue)" style={{ marginLeft: 'auto' }} />
@@ -1505,7 +1506,7 @@ function TodoSection({
           {todos.map((t) => {
             const person = t.personId ? data.people.find((p) => p.id === t.personId) : null;
             const family = t.familyId ? data.families.find((f) => f.id === t.familyId) : null;
-            const tag = family?.label || person?.englishName || '';
+            const tag = family?.label || (person ? fullName(person) : '') || '';
             const hasRepeat = t.repeat && t.repeat !== 'none';
             return (
               <div

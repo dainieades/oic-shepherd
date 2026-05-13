@@ -31,7 +31,8 @@ import type { Person, Todo } from './types';
 function makePerson(overrides: Partial<Person> = {}): Person {
   return {
     id: 'p1',
-    englishName: 'Alice Smith',
+    preferredName: 'Alice',
+    lastName: 'Smith',
     membershipStatus: 'member',
     churchAttendance: 'regular',
     language: ['english'],
@@ -338,9 +339,9 @@ describe('getFamilyLastContact', () => {
 
 describe('searchPeople', () => {
   const people = [
-    makePerson({ id: 'p1', englishName: 'Alice Smith' }),
-    makePerson({ id: 'p2', englishName: 'Bob Jones' }),
-    makePerson({ id: 'p3', englishName: 'Charlie Brown', chineseName: '布朗' }),
+    makePerson({ id: 'p1', preferredName: 'Alice', lastName: 'Smith' }),
+    makePerson({ id: 'p2', preferredName: 'Bob', lastName: 'Jones' }),
+    makePerson({ id: 'p3', preferredName: 'Charlie', lastName: 'Brown', alternativeName: '布朗' }),
   ];
 
   it('returns all people for empty query', () => {

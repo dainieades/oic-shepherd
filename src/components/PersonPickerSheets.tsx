@@ -7,6 +7,7 @@ import { SHEPHERD_AVATAR_PALETTE, Z_SHEET } from '@/lib/constants';
 import { CHURCH_POSITIONS } from '@/lib/types';
 import { AvatarBadge } from './AvatarBadge';
 import { BottomSheet, ModalHeader } from './BottomSheet';
+import { fullName } from '@/lib/utils';
 
 export function GroupPickerSheet({
   groups,
@@ -153,7 +154,7 @@ export function SheepPickerSheet({
   onConfirm,
   onBack,
 }: {
-  people: { id: string; englishName: string; chineseName?: string; photo?: string }[];
+  people: { id: string; preferredName: string; lastName?: string; alternativeName?: string; photo?: string }[];
   currentIds: string[];
   onConfirm: (ids: string[]) => void;
   onBack: () => void;
@@ -173,8 +174,8 @@ export function SheepPickerSheet({
   ].filter(
     (p) =>
       !q ||
-      p.englishName.toLowerCase().includes(q) ||
-      (p.chineseName && p.chineseName.toLowerCase().includes(q))
+      fullName(p).toLowerCase().includes(q) ||
+      (p.alternativeName && p.alternativeName.toLowerCase().includes(q))
   );
   const toggle = (id: string) =>
     setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
@@ -275,7 +276,7 @@ export function SheepPickerSheet({
                 }}
               >
                 <AvatarBadge
-                  name={p.englishName}
+                  name={fullName(p)}
                   photo={p.photo}
                   size={36}
                   bg={isSel ? 'var(--sage)' : palette.bg}
@@ -290,11 +291,11 @@ export function SheepPickerSheet({
                       margin: 0,
                     }}
                   >
-                    {p.englishName}
+                    {fullName(p)}
                   </p>
-                  {p.chineseName && (
+                  {p.alternativeName && (
                     <p style={{ fontSize: 11, color: 'var(--text-muted)', margin: 0 }}>
-                      {p.chineseName}
+                      {p.alternativeName}
                     </p>
                   )}
                 </div>
@@ -604,7 +605,7 @@ export function FamilyPickerSheet({
   onBack,
 }: {
   families: { id: string; label: string; memberIds: string[] }[];
-  people: { id: string; englishName: string }[];
+  people: { id: string; preferredName: string; lastName?: string }[];
   currentFamilyId: string | undefined;
   onConfirm: (familyId: string | undefined) => void;
   onBack: () => void;
@@ -623,7 +624,7 @@ export function FamilyPickerSheet({
     if (f.label.toLowerCase().includes(q)) return true;
     return people
       .filter((p) => f.memberIds.includes(p.id))
-      .some((m) => m.englishName.toLowerCase().includes(q));
+      .some((m) => fullName(m).toLowerCase().includes(q));
   });
 
   return (
@@ -786,7 +787,7 @@ export function FamilyPickerSheet({
                         whiteSpace: 'nowrap',
                       }}
                     >
-                      {members.map((m) => m.englishName.split(' ')[0]).join(', ')}
+                      {members.map((m) => m.preferredName).join(', ')}
                     </p>
                   )}
                 </div>
@@ -838,8 +839,8 @@ export function InvitePersonPickerSheet({
   onSelect,
   onBack,
 }: {
-  people: { id: string; englishName: string; chineseName?: string; photo?: string; appRole?: string }[];
-  onSelect: (person: { id: string; englishName: string }) => void;
+  people: { id: string; preferredName: string; lastName?: string; alternativeName?: string; photo?: string; appRole?: string }[];
+  onSelect: (person: { id: string; preferredName: string; lastName?: string }) => void;
   onBack: () => void;
 }) {
   const [search, setSearch] = React.useState('');
@@ -853,8 +854,8 @@ export function InvitePersonPickerSheet({
   const filtered = people.filter(
     (p) =>
       !q ||
-      p.englishName.toLowerCase().includes(q) ||
-      (p.chineseName && p.chineseName.toLowerCase().includes(q))
+      fullName(p).toLowerCase().includes(q) ||
+      (p.alternativeName && p.alternativeName.toLowerCase().includes(q))
   );
 
   return (
@@ -951,7 +952,7 @@ export function InvitePersonPickerSheet({
               }}
             >
               <AvatarBadge
-                name={p.englishName}
+                name={fullName(p)}
                 photo={p.photo}
                 size={36}
                 bg={palette.bg}
@@ -969,10 +970,10 @@ export function InvitePersonPickerSheet({
                     whiteSpace: 'nowrap',
                   }}
                 >
-                  {p.englishName}
-                  {p.chineseName && (
+                  {fullName(p)}
+                  {p.alternativeName && (
                     <span style={{ color: 'var(--text-muted)', fontWeight: 400, marginLeft: 6 }}>
-                      {p.chineseName}
+                      {p.alternativeName}
                     </span>
                   )}
                 </p>

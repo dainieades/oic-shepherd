@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useApp, type HomeFilters, type HomeSortKey, HOME_DEFAULT_FILTERS } from '@/lib/context';
-import { getMembershipLabel } from '@/lib/utils';
+import { getMembershipLabel, fullName } from '@/lib/utils';
 import { type MembershipStatus, type ChurchAttendance, type AppRole, CHURCH_POSITIONS } from '@/lib/types';
 import { MagnifyingGlass, X, ArrowsDownUp } from '@phosphor-icons/react';
 import { SORT_OPTIONS } from '@/lib/constants';
@@ -321,7 +321,7 @@ export default function FilterPanel({ show, onClose }: { show: boolean; onClose:
                       .map((p) => ({ id: p.id, name: p.name })),
                     ...data.people
                       .filter((p) => p.isShepherd && !personaPersonIds.has(p.id) && p.id !== currentPersona.personId)
-                      .map((p) => ({ id: p.id, name: p.englishName })),
+                      .map((p) => ({ id: p.id, name: fullName(p) })),
                   ];
                   return shepherdEntries
                     .filter(

@@ -6,6 +6,7 @@ import { CaretLeft, MagnifyingGlass, House } from '@phosphor-icons/react';
 import { SHEPHERD_AVATAR_PALETTE } from '@/lib/constants';
 import { AvatarBadge } from './AvatarBadge';
 import { CheckboxMark } from './CheckRow';
+import { fullName } from '@/lib/utils';
 
 interface PersonFamilyPickerProps {
   data: AppData;
@@ -54,7 +55,7 @@ export default function PersonFamilyPicker({
         .filter((p) => f.memberIds.includes(p.id))
         .some(
           (m) =>
-            m.englishName.toLowerCase().includes(q) || (m.chineseName && m.chineseName.includes(q))
+            fullName(m).toLowerCase().includes(q) || (m.alternativeName && m.alternativeName.includes(q))
         );
     })
     .map((f, fi) => ({
@@ -63,7 +64,7 @@ export default function PersonFamilyPicker({
       label: f.label,
       subtitle: data.people
         .filter((p) => f.memberIds.includes(p.id))
-        .map((m) => m.englishName.split(' ')[0])
+        .map((m) => m.preferredName)
         .join(', '),
       photo: f.photo,
       paletteIndex: fi,
@@ -75,15 +76,15 @@ export default function PersonFamilyPicker({
       if (allowedPersonIds && !allowedPersonIds.includes(p.id)) return false;
       if (!q) return true;
       return (
-        p.englishName.toLowerCase().includes(q) ||
-        (p.chineseName && p.chineseName.includes(q))
+        fullName(p).toLowerCase().includes(q) ||
+        (p.alternativeName && p.alternativeName.includes(q))
       );
     })
     .map((p, pi) => ({
       kind: 'person' as const,
       id: p.id,
-      label: p.englishName,
-      subtitle: p.chineseName,
+      label: fullName(p),
+      subtitle: p.alternativeName,
       photo: p.photo,
       paletteIndex: pi,
     }));

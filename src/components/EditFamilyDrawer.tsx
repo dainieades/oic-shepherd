@@ -18,6 +18,7 @@ import {
   Check,
 } from '@phosphor-icons/react';
 import PickerMenu from './PickerMenu';
+import { fullName } from '@/lib/utils';
 import { ShepherdPickerSheet } from './PersonPickerSheets';
 import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, SHEPHERD_AVATAR_PALETTE, Z_SHEET } from '@/lib/constants';
 
@@ -89,7 +90,7 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
 
   const primaryContactOptions = [
     { value: '', label: 'Not set' },
-    ...currentMembers.map((m) => ({ value: m.id, label: m.englishName })),
+    ...currentMembers.map((m) => ({ value: m.id, label: fullName(m) })),
   ];
 
   return (
@@ -132,7 +133,7 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
             <DrawerSection label="Members">
               {currentMembers.map((m, i) => {
                 const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
-                const inits = m.englishName
+                const inits = fullName(m)
                   .split(' ')
                   .map((n) => n[0])
                   .join('')
@@ -169,7 +170,7 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
                       {inits}
                     </div>
                     <span style={{ flex: 1, fontSize: 14, color: 'var(--text-primary)' }}>
-                      {m.englishName}
+                      {fullName(m)}
                     </span>
                     <button
                       onClick={() => {
@@ -189,7 +190,7 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
                         justifyContent: 'center',
                         flexShrink: 0,
                       }}
-                      aria-label={`Remove ${m.englishName}`}
+                      aria-label={`Remove ${fullName(m)}`}
                     >
                       <X size={12} color="#EF4444" />
                     </button>
@@ -253,7 +254,7 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
                     textAlign: 'left',
                   }}
                 >
-                  {primaryContact ? primaryContact.englishName : 'Not set'}
+                  {primaryContact ? fullName(primaryContact) : 'Not set'}
                 </span>
                 <CaretRight size={14} color="var(--text-muted)" />
               </button>
@@ -476,8 +477,8 @@ function MemberPickerSheet({
   const filtered = pool.filter(
     (p) =>
       !q ||
-      p.englishName.toLowerCase().includes(q) ||
-      (p.chineseName && p.chineseName.toLowerCase().includes(q))
+      fullName(p).toLowerCase().includes(q) ||
+      (p.alternativeName && p.alternativeName.toLowerCase().includes(q))
   );
 
   const toggle = (id: string) =>
@@ -609,7 +610,7 @@ function MemberPickerSheet({
           {filtered.map((p, i) => {
             const isSel = selectedIds.includes(p.id);
             const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
-            const inits = p.englishName
+            const inits = fullName(p)
               .split(' ')
               .map((n) => n[0])
               .join('')
@@ -658,11 +659,11 @@ function MemberPickerSheet({
                       margin: 0,
                     }}
                   >
-                    {p.englishName}
+                    {fullName(p)}
                   </p>
-                  {p.chineseName && (
+                  {p.alternativeName && (
                     <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0 }}>
-                      {p.chineseName}
+                      {p.alternativeName}
                     </p>
                   )}
                 </div>

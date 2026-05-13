@@ -7,10 +7,12 @@ import { CaretLeft, ClockCounterClockwise } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { type AuditLog } from '@/lib/types';
 import { SHEET_MAX_WIDTH } from '@/lib/constants';
+import { fullName } from '@/lib/utils';
 
 const FIELD_LABELS: Record<string, string> = {
-  englishName: 'English Name',
-  chineseName: 'Chinese Name',
+  preferredName: 'Preferred Name',
+  lastName: 'Last Name',
+  alternativeName: 'Alternative Name',
   photo: 'Photo',
   phone: 'Mobile Phone',
   homePhone: 'Home Phone',
@@ -74,7 +76,7 @@ export default function AuditLogPage({ params }: { params: Promise<{ id: string 
 
   if (currentPersona.role !== 'admin') return null;
 
-  const personName = person?.englishName ?? 'Unknown';
+  const personName = person ? fullName(person) : 'Unknown';
   const groups = groupByDate(logs);
 
   return (

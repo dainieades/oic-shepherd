@@ -30,6 +30,7 @@ import {
   type NoticeUrgency,
   type NoticePrivacy,
 } from '@/lib/types';
+import { fullName } from '@/lib/utils';
 import PersonFamilyPicker from './PersonFamilyPicker';
 import PickerMenu from './PickerMenu';
 import { DeleteConfirmDialog } from './AddLogModal';
@@ -51,7 +52,7 @@ const CATEGORIES: { value: NoticeCategory; label: string; icon: React.ReactNode;
 
 const PRIVACIES: { value: NoticePrivacy; label: string; icon: React.ReactNode }[] = [
   { value: 'pastor-only', label: 'Pastor only', icon: <Lock size={16} /> },
-  { value: 'pastor-and-shepherds', label: 'Pastor and all shepherds', icon: <Users size={16} /> },
+  { value: 'pastor-and-shepherds', label: 'Pastors and all shepherds', icon: <Users size={16} /> },
   { value: 'everyone', label: 'Everyone with app access', icon: <Globe size={16} /> },
 ];
 
@@ -120,7 +121,10 @@ export default function AddNoticeModal({
 
   const whoNames = [
     ...familyIds.map((id) => data.families.find((f) => f.id === id)?.label ?? ''),
-    ...personIds.map((id) => data.people.find((p) => p.id === id)?.englishName ?? ''),
+    ...personIds.map((id) => {
+      const p = data.people.find((p) => p.id === id);
+      return p ? fullName(p) : '';
+    }),
   ].filter(Boolean);
 
   const whoLabel = (() => {

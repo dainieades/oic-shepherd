@@ -59,8 +59,9 @@ export const CHURCH_POSITIONS = [
 
 export interface Person {
   id: string;
-  englishName: string;
-  chineseName?: string;
+  preferredName: string;
+  lastName?: string;
+  alternativeName?: string;
   photo?: string;
   originalPhoto?: string;
   gender?: Gender;
@@ -86,8 +87,6 @@ export interface Person {
   followUpFrequencyDays: number;
   lastContactDate?: string; // ISO date
   nextFollowUpDate?: string; // ISO date
-  isFirstTimeVisitor?: boolean;
-  isChild?: boolean;
   createdAt: string;
   createdBy?: string; // persona ID
   lastEditedAt?: string;

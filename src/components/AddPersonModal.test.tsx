@@ -67,7 +67,7 @@ describe('AddPersonModal', () => {
     await waitFor(() => {
       expect(addPerson).toHaveBeenCalledOnce();
       expect(addPerson).toHaveBeenCalledWith(
-        expect.objectContaining({ englishName: 'Jane' }),
+        expect.objectContaining({ preferredName: 'Jane' }),
       );
     });
   });
@@ -86,7 +86,7 @@ describe('AddPersonModal', () => {
     expect(addPerson).not.toHaveBeenCalled();
   });
 
-  it('includes last name in the englishName when both are provided', async () => {
+  it('passes preferredName and lastName as separate fields when both are provided', async () => {
     const addPerson = vi.fn().mockResolvedValue('id');
     mockUseApp.mockReturnValue(buildContext({ addPerson }));
 
@@ -102,7 +102,7 @@ describe('AddPersonModal', () => {
 
     await waitFor(() => {
       expect(addPerson).toHaveBeenCalledWith(
-        expect.objectContaining({ englishName: 'Jane Doe' }),
+        expect.objectContaining({ preferredName: 'Jane', lastName: 'Doe' }),
       );
     });
   });

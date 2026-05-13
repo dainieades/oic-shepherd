@@ -7,7 +7,7 @@ import { AvatarBadge } from '@/components/AvatarBadge';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/lib/context';
-import { getTimeAgo, getDueLabel } from '@/lib/utils';
+import { getTimeAgo, getDueLabel, fullName } from '@/lib/utils';
 import {
   PencilSimpleIcon,
   TextT,
@@ -240,7 +240,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
                   }}
                 >
                   <AvatarBadge
-                    name={leader.englishName}
+                    name={fullName(leader)}
                     photo={leader.photo}
                     size={40}
                     bg={palette.bg}
@@ -251,11 +251,11 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
                       style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}
                     >
                       <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>
-                        {leader.englishName}
+                        {fullName(leader)}
                       </span>
-                      {leader.chineseName && (
+                      {leader.alternativeName && (
                         <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-                          {leader.chineseName}
+                          {leader.alternativeName}
                         </span>
                       )}
                     </div>
@@ -305,7 +305,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
                   }}
                 >
                   <AvatarBadge
-                    name={m.englishName}
+                    name={fullName(m)}
                     photo={m.photo}
                     size={40}
                     bg={palette.bg}
@@ -316,11 +316,11 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
                       style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}
                     >
                       <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>
-                        {m.englishName}
+                        {fullName(m)}
                       </span>
-                      {m.chineseName && (
+                      {m.alternativeName && (
                         <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-                          {m.chineseName}
+                          {m.alternativeName}
                         </span>
                       )}
                     </div>
@@ -484,7 +484,7 @@ function EditGroupDrawer({
                 >
                   {selectedLeaders.length === 0
                     ? 'None'
-                    : selectedLeaders.map((p) => p.englishName.split(' ')[0]).join(', ')}
+                    : selectedLeaders.map((p) => p.preferredName).join(', ')}
                 </span>
                 <CaretRight size={14} color="var(--text-muted)" />
               </button>
@@ -556,8 +556,8 @@ function PeoplePickerSheet({
   const filtered = people.filter(
     (p) =>
       search === '' ||
-      p.englishName.toLowerCase().includes(search.toLowerCase()) ||
-      (p.chineseName ?? '').includes(search)
+      fullName(p).toLowerCase().includes(search.toLowerCase()) ||
+      (p.alternativeName ?? '').includes(search)
   );
 
   const toggle = (id: string) =>
@@ -605,7 +605,7 @@ function PeoplePickerSheet({
       <div style={{ flex: 1, overflowY: 'auto' }}>
         {filtered.map((p) => {
           const isSel = selectedIds.includes(p.id);
-          const initials = p.englishName
+          const initials = fullName(p)
             .split(' ')
             .map((n) => n[0])
             .join('')
@@ -653,11 +653,11 @@ function PeoplePickerSheet({
                     color: isSel ? 'var(--sage)' : 'var(--text-primary)',
                   }}
                 >
-                  {p.englishName}
+                  {fullName(p)}
                 </span>
-                {p.chineseName && (
+                {p.alternativeName && (
                   <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 6 }}>
-                    {p.chineseName}
+                    {p.alternativeName}
                   </span>
                 )}
               </div>

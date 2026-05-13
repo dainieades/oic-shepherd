@@ -2,7 +2,7 @@
 
 import { addHours, format } from 'date-fns';
 import { BottomSheet, ModalHeader } from './BottomSheet';
-import { fmtDateTime, truncateWhoLabel } from '@/lib/utils';
+import { fmtDateTime, truncateWhoLabel, fullName } from '@/lib/utils';
 import React from 'react';
 import {
   CaretRight,
@@ -106,7 +106,10 @@ export default function AddTodoModal({
 
   const whoNames = [
     ...familyIds.map((id) => data.families.find((f) => f.id === id)?.label ?? ''),
-    ...personIds.map((id) => data.people.find((p) => p.id === id)?.englishName ?? ''),
+    ...personIds.map((id) => {
+      const p = data.people.find((p) => p.id === id);
+      return p ? fullName(p) : '';
+    }),
   ].filter(Boolean);
   const whoLabel = truncateWhoLabel(whoNames);
 

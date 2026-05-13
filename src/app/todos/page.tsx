@@ -3,7 +3,7 @@
 import { format, getDaysInMonth, getDay, parseISO } from 'date-fns';
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useApp } from '@/lib/context';
-import { categorizeTodos } from '@/lib/utils';
+import { categorizeTodos, fullName } from '@/lib/utils';
 import { filterTodos } from '@/lib/todo-utils';
 import { type Todo } from '@/lib/types';
 import AddTodoModal from '@/components/AddTodoModal';
@@ -132,7 +132,7 @@ export default function TodosPage() {
         .filter(
           (p) => p.isShepherd && !personaPersonIds.has(p.id) && p.id !== currentPersona.personId
         )
-        .map((p) => ({ id: p.id, name: p.englishName })),
+        .map((p) => ({ id: p.id, name: fullName(p) })),
     ];
   })();
 
@@ -991,7 +991,7 @@ function CalendarView({
               {selectedTodos.map((t) => {
                 const person = t.personId ? data.people.find((p) => p.id === t.personId) : null;
                 const family = t.familyId ? data.families.find((f) => f.id === t.familyId) : null;
-                const targetChips = [family?.label, person?.englishName].filter(
+                const targetChips = [family?.label, person ? fullName(person) : undefined].filter(
                   Boolean
                 ) as string[];
                 return (
@@ -1143,7 +1143,7 @@ function TodoSection({
           {todos.map((t) => {
             const person = t.personId ? data.people.find((p) => p.id === t.personId) : null;
             const family = t.familyId ? data.families.find((f) => f.id === t.familyId) : null;
-            const targetChips = [family?.label, person?.englishName].filter(Boolean) as string[];
+            const targetChips = [family?.label, person ? fullName(person) : undefined].filter(Boolean) as string[];
             const hasRepeat = t.repeat && t.repeat !== 'none';
             return (
               <div

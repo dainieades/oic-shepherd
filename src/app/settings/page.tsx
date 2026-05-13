@@ -22,7 +22,7 @@ import { useApp } from '@/lib/context';
 import { useToast } from '@/components/Toast';
 import { createClient } from '@/utils/supabase/client';
 import type { User } from '@supabase/supabase-js';
-import { MAP_PROVIDER_LABELS } from '@/lib/utils';
+import { MAP_PROVIDER_LABELS, fullName } from '@/lib/utils';
 import { BACKDROP_COLOR, Z_NESTED } from '@/lib/constants';
 
 export default function SettingsPage() {
@@ -53,8 +53,8 @@ export default function SettingsPage() {
   // persona's identity instead of the Google account's identity.
   const isDevOverride = supabaseUser && currentPersona.userId !== supabaseUser.id;
   const displayName = isDevOverride
-    ? (person?.englishName ?? currentPersona.name)
-    : (person?.englishName ?? supabaseUser?.user_metadata?.full_name ?? currentPersona.name);
+    ? (person ? fullName(person) : currentPersona.name)
+    : (person ? fullName(person) : (supabaseUser?.user_metadata?.full_name ?? currentPersona.name));
   const displayEmail = isDevOverride
     ? (person?.email ?? '')
     : (supabaseUser?.email ?? person?.email ?? '');
@@ -219,9 +219,9 @@ export default function SettingsPage() {
               >
                 {displayName}
               </p>
-              {person?.chineseName && (
+              {person?.alternativeName && (
                 <span style={{ fontSize: 13, color: 'var(--text-muted)', fontWeight: 400 }}>
-                  {person.chineseName}
+                  {person.alternativeName}
                 </span>
               )}
             </div>

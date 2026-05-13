@@ -14,6 +14,11 @@ import {
   startOfToday,
 } from 'date-fns';
 
+/** "Preferred Last" — full display name for a person. */
+export function fullName(p: Pick<Person, 'preferredName' | 'lastName'>): string {
+  return [p.preferredName, p.lastName].filter(Boolean).join(' ').trim();
+}
+
 /** Format a YYYY-MM-DD ISO string to "MMM d, yyyy" */
 export function fmtDate(iso: string): string {
   if (!iso) return '';
@@ -173,8 +178,8 @@ export function searchPeople(query: string, people: Person[]): Person[] {
   if (!q) return people;
   return people.filter(
     (p) =>
-      p.englishName.toLowerCase().includes(q) ||
-      (p.chineseName && p.chineseName.includes(query.trim()))
+      fullName(p).toLowerCase().includes(q) ||
+      (p.alternativeName && p.alternativeName.includes(query.trim()))
   );
 }
 

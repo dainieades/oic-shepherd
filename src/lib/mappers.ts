@@ -27,8 +27,9 @@ export function mapPerson(
   const r = PersonRowSchema.parse(row);
   return {
     id: r.id,
-    englishName: r.english_name,
-    chineseName: r.chinese_name ?? undefined,
+    preferredName: r.preferred_name,
+    lastName: r.last_name ?? undefined,
+    alternativeName: r.alternative_name ?? undefined,
     photo: r.photo ?? undefined,
     originalPhoto: r.original_photo ?? undefined,
     gender: r.gender ?? undefined,
@@ -68,8 +69,6 @@ export function mapPerson(
     followUpFrequencyDays: r.follow_up_frequency_days ?? DEFAULT_FOLLOW_UP_DAYS,
     lastContactDate: r.last_contact_date ?? undefined,
     nextFollowUpDate: r.next_follow_up_date ?? undefined,
-    isFirstTimeVisitor: r.is_first_time_visitor ?? undefined,
-    isChild: r.is_child ?? undefined,
     assignedShepherdIds: shepherdIds,
     groupIds,
     createdAt: r.created_at,

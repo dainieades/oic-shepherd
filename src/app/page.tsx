@@ -9,6 +9,7 @@ import {
   getFamilyPriorityScore,
   getMembershipLabel,
   getChurchAttendanceLabel,
+  fullName,
 } from '@/lib/utils';
 import {
   type Family,
@@ -280,8 +281,8 @@ const [showSearch, setShowSearch] = React.useState(false);
     entries.sort((a, b) => {
       const aMembers = a.type === 'family' ? a.members : [a.person];
       const bMembers = b.type === 'family' ? b.members : [b.person];
-      const aName = a.type === 'family' ? a.family.label : a.person.englishName;
-      const bName = b.type === 'family' ? b.family.label : b.person.englishName;
+      const aName = a.type === 'family' ? a.family.label : fullName(a.person);
+      const bName = b.type === 'family' ? b.family.label : fullName(b.person);
       const lastName = (n: string) => n.trim().split(/\s+/).slice(-1)[0] ?? n;
       const aLast = lastName(aName);
       const bLast = lastName(bName);
@@ -753,7 +754,7 @@ const [showSearch, setShowSearch] = React.useState(false);
                   }}
                 >
                   <AvatarBadge
-                    name={p.englishName}
+                    name={fullName(p)}
                     photo={p.photo}
                     size={44}
                     bg="var(--amber-light)"
@@ -772,7 +773,7 @@ const [showSearch, setShowSearch] = React.useState(false);
                       whiteSpace: 'nowrap',
                     }}
                   >
-                    {p.englishName.split(' ')[0]}
+                    {p.preferredName}
                   </span>
                   <span style={{ fontSize: 9, color: 'var(--amber)', fontWeight: 500, marginTop: -2 }}>
                     {timeLabel} ago
@@ -867,7 +868,7 @@ const [showSearch, setShowSearch] = React.useState(false);
             onChangePerson={() => { setShowInvite(false); setInvitePerson(null); setShowInvitePicker(true); }}
             initialEmail={invitePerson.email ?? ''}
             initialRole="shepherd"
-            personName={invitePerson.englishName}
+            personName={fullName(invitePerson)}
             personId={invitePerson.id}
           />
         )}
@@ -1008,7 +1009,7 @@ const FamilyRow = React.memo(function FamilyRow({
                 {m.isShepherd && (
                   <HandHeart size={11} color="var(--sage)" style={{ flexShrink: 0 }} />
                 )}
-                {m.englishName.split(' ')[0]}
+                {m.preferredName}
               </span>
             ))}
             {family.childCount && family.childCount > 0 ? (
@@ -1117,7 +1118,7 @@ const IndividualRow = React.memo(function IndividualRow({
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '0.625rem 0' }}>
         {/* Avatar */}
-        <AvatarBadge name={person.englishName} photo={person.photo} size={44} />
+        <AvatarBadge name={fullName(person)} photo={person.photo} size={44} />
 
         {/* Info */}
         <div style={{ flex: 1, minWidth: 0 }}>
@@ -1153,9 +1154,9 @@ const IndividualRow = React.memo(function IndividualRow({
                   flexShrink: 1,
                 }}
               >
-                {person.englishName}
+                {fullName(person)}
               </span>
-              {person.chineseName && (
+              {person.alternativeName && (
                 <span
                   style={{
                     fontSize: 12,
@@ -1164,7 +1165,7 @@ const IndividualRow = React.memo(function IndividualRow({
                     whiteSpace: 'nowrap',
                   }}
                 >
-                  {person.chineseName}
+                  {person.alternativeName}
                 </span>
               )}
             </div>
