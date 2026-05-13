@@ -776,7 +776,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
       {/* Info tab */}
       {activeTab === 'info' && (
         <div className="tab-fade" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-          <VisitorCardPanel personId={person.id} />
+          <VisitorCardPanel person={person} />
           {/* ACCESS */}
           {(() => {
             const role = (person.appRole ?? 'no-access') as AppRole;

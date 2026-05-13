@@ -10,7 +10,14 @@ import {
   type Gender,
   type MaritalStatus,
   type AppRole,
+  type VisitorSubmission,
+  type ReferralSource,
+  type Interest,
+  REFERRAL_SOURCES,
+  INTERESTS,
 } from '@/lib/types';
+import { fetchLatestVisitorSubmission } from '@/lib/mappers';
+import { REFERRAL_LABELS, INTEREST_LABELS } from '@/lib/constants';
 import PickerMenu from './PickerMenu';
 import PhotoAvatar from './PhotoAvatar';
 import AppRolePickerSheet from './AppRolePickerSheet';
@@ -38,6 +45,8 @@ import {
   Envelope,
   House,
   CaretRight,
+  Megaphone,
+  HandsPraying,
   HandHeart,
   UsersFour,
   PaperPlaneTilt,
@@ -57,7 +66,7 @@ const MEMBERSHIP_OPTIONS: { value: MembershipStatus; label: string }[] = [
 ];
 
 const CHURCH_ATTENDANCE_OPTIONS: { value: ChurchAttendance; label: string }[] = [
-  { value: 'first-time-visitor', label: 'First-Time Visitor' },
+  { value: 'visitor', label: 'Visitor' },
   { value: 'regular', label: 'Regular Attendee' },
   { value: 'on-leave', label: 'On Leave' },
   { value: 'fellowship-group-only', label: 'Fellowship Group Only' },
@@ -91,7 +100,7 @@ interface Props {
 
 const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
   function PersonFormBody({ person, onSaved, showPhotoUpload, showInviteRow, onValidityChange }, ref) {
-    const { data, currentPersona, personaByPersonId, addPerson, updatePerson, updateFamilyMembers, assignShepherds, assignGroupsToPerson } = useApp();
+    const { data, currentPersona, personaByPersonId, addPerson, updatePerson, updateFamilyMembers, assignShepherds, assignGroupsToPerson, updateVisitorSubmission } = useApp();
 
 
     const [firstName, setFirstName] = React.useState(person?.preferredName ?? '');
@@ -110,7 +119,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
     const [groupIds, setGroupIds] = React.useState<string[]>(person?.groupIds ?? []);
     const [shepherdIds, setShepherdIds] = React.useState<string[]>(person?.assignedShepherdIds ?? []);
     const [status, setStatus] = React.useState<MembershipStatus>(person?.membershipStatus ?? 'non-member');
-    const [attendance, setAttendance] = React.useState<ChurchAttendance>(person?.churchAttendance ?? 'first-time-visitor');
+    const [attendance, setAttendance] = React.useState<ChurchAttendance>(person?.churchAttendance ?? 'visitor');
     const [membershipDate, setMembershipDate] = React.useState(person?.membershipDate ?? '');
     const [baptismDate, setBaptismDate] = React.useState(person?.baptismDate ?? '');
     const [isShepherd, setIsShepherd] = React.useState(person?.isShepherd ?? false);
@@ -143,8 +152,35 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
     const maritalBtnRef = React.useRef<HTMLButtonElement>(null);
 
     const [openPicker, setOpenPicker] = React.useState<
-      'status' | 'attendance' | 'gender' | 'marital' | 'appRole' | null
+      'status' | 'attendance' | 'gender' | 'marital' | 'appRole' | 'referralSource' | null
     >(null);
+    const referralBtnRef = React.useRef<HTMLButtonElement>(null);
+
+    const [visitorSubmission, setVisitorSubmission] = React.useState<VisitorSubmission | null>(null);
+    const [referralSource, setReferralSource] = React.useState<ReferralSource | ''>('');
+    const [referralDetail, setReferralDetail] = React.useState('');
+    const [interests, setInterests] = React.useState<Interest[]>([]);
+    const [prayerRequest, setPrayerRequest] = React.useState('');
+    const referralDetailRef = React.useRef<HTMLInputElement>(null);
+    const prayerRequestRef = React.useRef<HTMLTextAreaElement>(null);
+
+    const canEditVisitorCard = currentPersona.role === 'admin';
+
+    const personId = person?.id;
+    React.useEffect(() => {
+      if (!personId || !canEditVisitorCard) return;
+      let cancelled = false;
+      (async () => {
+        const sub = await fetchLatestVisitorSubmission(personId);
+        if (cancelled || !sub) return;
+        setVisitorSubmission(sub);
+        setReferralSource(sub.referralSource ?? '');
+        setReferralDetail(sub.referralDetail ?? '');
+        setInterests(sub.interests);
+        setPrayerRequest(sub.prayerRequest ?? '');
+      })();
+      return () => { cancelled = true; };
+    }, [personId, canEditVisitorCard]);
     const [showLanguagePicker, setShowLanguagePicker] = React.useState(false);
     const [showInvite, setShowInvite] = React.useState(false);
     const [showPositionPicker, setShowPositionPicker] = React.useState(false);
@@ -274,10 +310,30 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
           }
         }
 
+        const visitorPatch: Parameters<typeof updateVisitorSubmission>[1] = {};
+        if (visitorSubmission) {
+          if ((visitorSubmission.referralSource ?? '') !== referralSource) {
+            visitorPatch.referralSource = referralSource === '' ? null : referralSource;
+          }
+          if ((visitorSubmission.referralDetail ?? '') !== referralDetail.trim()) {
+            visitorPatch.referralDetail = referralDetail.trim() || null;
+          }
+          const interestsChanged =
+            visitorSubmission.interests.length !== interests.length ||
+            visitorSubmission.interests.some((i) => !interests.includes(i));
+          if (interestsChanged) visitorPatch.interests = interests;
+          if ((visitorSubmission.prayerRequest ?? '') !== prayerRequest.trim()) {
+            visitorPatch.prayerRequest = prayerRequest.trim() || null;
+          }
+        }
+
         await Promise.all([
           assignGroupsToPerson(person.id, groupIds),
           assignShepherds(person.id, shepherdIds),
           ...sheepAssignments,
+          visitorSubmission && Object.keys(visitorPatch).length > 0
+            ? updateVisitorSubmission(visitorSubmission.id, visitorPatch)
+            : Promise.resolve(),
           updatePerson(person.id, {
             preferredName: firstName.trim(),
             lastName: lastName.trim() || undefined,
@@ -654,6 +710,71 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
                 />
           </FormSection>
 
+          {canEditVisitorCard && visitorSubmission && (
+            <FormSection label="Visitor card">
+              <PickerRow
+                ref={referralBtnRef}
+                icon={<Megaphone size={16} color="var(--text-muted)" />}
+                label="Heard via"
+                value={referralSource ? REFERRAL_LABELS[referralSource] : 'Not set'}
+                onClick={() => setOpenPicker('referralSource')}
+              />
+              {referralSource && (
+                <TextInputRow
+                  icon={<Megaphone size={16} color="var(--text-muted)" style={{ opacity: 0 }} />}
+                  label="Detail"
+                  inputRef={referralDetailRef}
+                  value={referralDetail}
+                  onChange={setReferralDetail}
+                  placeholder="More about how they heard"
+                />
+              )}
+              <div style={rowBtnStyle as React.CSSProperties}>
+                <span style={spacerStyle} />
+                <Heart size={16} color="var(--text-muted)" />
+                <span style={labelStyle}>Interests</span>
+                <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: 6, padding: '0.5rem 0' }}>
+                  {INTERESTS.map((i) => {
+                    const on = interests.includes(i);
+                    return (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() =>
+                          setInterests((prev) =>
+                            prev.includes(i) ? prev.filter((x) => x !== i) : [...prev, i]
+                          )
+                        }
+                        style={{
+                          fontSize: 12,
+                          fontWeight: 600,
+                          padding: '0.25rem 0.625rem',
+                          borderRadius: 'var(--radius-pill)',
+                          background: on ? 'var(--sage-light)' : 'transparent',
+                          color: on ? 'var(--sage-dark, var(--sage))' : 'var(--text-muted)',
+                          border: `1px solid ${on ? 'var(--sage)' : 'var(--border)'}`,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {INTEREST_LABELS[i]}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+              <TextareaRow
+                icon={<HandsPraying size={16} color="var(--text-muted)" />}
+                label="Prayer"
+                inputRef={prayerRequestRef}
+                value={prayerRequest}
+                onChange={setPrayerRequest}
+                placeholder="Prayer request"
+                rows={2}
+                resizable
+              />
+            </FormSection>
+          )}
+
           <FormSection label="Contact">
             <TextInputRow
               icon={<Phone size={16} color="var(--text-muted)" />}
@@ -733,6 +854,19 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
             options={MARITAL_OPTIONS}
             value={maritalStatus}
             onSelect={(v) => setMaritalStatus(v as MaritalStatus | '')}
+            onClose={() => setOpenPicker(null)}
+          />
+        )}
+        {openPicker === 'referralSource' && (
+          <PickerMenu
+            anchorRef={referralBtnRef}
+            title="Heard via"
+            options={[
+              { value: '', label: 'Not set' },
+              ...REFERRAL_SOURCES.map((s) => ({ value: s, label: REFERRAL_LABELS[s] })),
+            ]}
+            value={referralSource}
+            onSelect={(v) => setReferralSource(v as ReferralSource | '')}
             onClose={() => setOpenPicker(null)}
           />
         )}

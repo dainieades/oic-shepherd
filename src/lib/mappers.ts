@@ -196,6 +196,30 @@ export function mapAuditLog(row: Record<string, unknown>): AuditLog {
   };
 }
 
+export async function fetchLatestVisitorSubmission(
+  personId: string
+): Promise<VisitorSubmission | null> {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from('visitor_submissions')
+    .select('*')
+    .eq('person_id', personId)
+    .order('submitted_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) {
+    console.warn('fetchLatestVisitorSubmission: query failed', error);
+    return null;
+  }
+  if (!data) return null;
+  try {
+    return mapVisitorSubmission(data);
+  } catch (parseError) {
+    console.warn('fetchLatestVisitorSubmission: parse failed', parseError);
+    return null;
+  }
+}
+
 export function mapVisitorSubmission(row: Record<string, unknown>): VisitorSubmission {
   const r = VisitorSubmissionRowSchema.parse(row);
   return {

@@ -1,67 +1,32 @@
 'use client';
 
 import React from 'react';
-import { Megaphone, Heart, HandsPraying, Sparkle } from '@phosphor-icons/react';
-import { createClient } from '@/utils/supabase/client';
-import {
-  VisitorSubmissionRowSchema,
-  type VisitorSubmissionRow,
-} from '@/lib/schemas';
-import { mapVisitorSubmission } from '@/lib/mappers';
-import { type VisitorSubmission, type Interest, type ReferralSource } from '@/lib/types';
+import { Megaphone, Heart, HandsPraying, Sparkle, CaretDown, CaretRight } from '@phosphor-icons/react';
+import { fetchLatestVisitorSubmission } from '@/lib/mappers';
+import { type VisitorSubmission, type Person, type ChurchAttendance } from '@/lib/types';
 import { useApp } from '@/lib/context';
+import { REFERRAL_LABELS, INTEREST_LABELS } from '@/lib/constants';
 
-const REFERRAL_LABELS: Record<ReferralSource, string> = {
-  'flyer': 'Flyer',
-  'online': 'Online',
-  'drive-by': 'Drive-by',
-  'school': 'School',
-  'friend': 'Friend',
-  'other': 'Other',
-};
+const ACTIVE_VISITOR_ATTENDANCE: readonly ChurchAttendance[] = ['visitor'];
 
-const INTEREST_LABELS: Record<Interest, string> = {
-  'salvation': 'Salvation',
-  'growth': 'Growth in Christ',
-  'serving': 'Serving',
-  'small-groups': 'Small Groups',
-};
-
-export function VisitorCardPanel({ personId }: { personId: string }) {
+export function VisitorCardPanel({ person }: { person: Person }) {
   const { data } = useApp();
   const [submission, setSubmission] = React.useState<VisitorSubmission | null | undefined>(undefined);
+  const isActiveVisitor = ACTIVE_VISITOR_ATTENDANCE.includes(person.churchAttendance);
+  const [expanded, setExpanded] = React.useState(isActiveVisitor);
+
+  React.useEffect(() => {
+    setExpanded(isActiveVisitor);
+  }, [isActiveVisitor]);
 
   React.useEffect(() => {
     let cancelled = false;
     (async () => {
-      const supabase = createClient();
-      const { data, error } = await supabase
-        .from('visitor_submissions')
-        .select('*')
-        .eq('person_id', personId)
-        .order('submitted_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      if (cancelled) return;
-      if (error) {
-        console.warn('VisitorCardPanel: query failed', error);
-        setSubmission(null);
-        return;
-      }
-      if (!data) {
-        setSubmission(null);
-        return;
-      }
-      try {
-        const parsed = VisitorSubmissionRowSchema.parse(data) as VisitorSubmissionRow;
-        setSubmission(mapVisitorSubmission(parsed));
-      } catch (parseError) {
-        console.warn('VisitorCardPanel: parse failed', parseError);
-        setSubmission(null);
-      }
+      const result = await fetchLatestVisitorSubmission(person.id);
+      if (!cancelled) setSubmission(result);
     })();
     return () => { cancelled = true; };
-  }, [personId]);
+  }, [person.id]);
 
   if (!submission) return null;
 
@@ -70,20 +35,69 @@ export function VisitorCardPanel({ personId }: { personId: string }) {
       (submission.referralDetail ? ` — ${submission.referralDetail}` : '')
     : null;
 
+  const submittedDate = new Date(submission.submittedAt).toLocaleDateString();
+
+  if (!isActiveVisitor && !expanded) {
+    const summaryParts: string[] = [];
+    if (submission.referralSource) summaryParts.push(`Visited via ${REFERRAL_LABELS[submission.referralSource]}`);
+    else summaryParts.push('Visitor card');
+    summaryParts.push(submittedDate);
+
+    return (
+      <div>
+        <p style={sectionLabelStyle}>Visitor card</p>
+        <button
+          type="button"
+          onClick={() => setExpanded(true)}
+          className="field-row-hover"
+          style={{
+            width: '100%',
+            background: 'var(--surface)',
+            borderRadius: 'var(--radius)',
+            padding: '0.75rem 1rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            border: 'none',
+            cursor: 'pointer',
+            textAlign: 'left',
+          }}
+        >
+          <Sparkle size={14} color="var(--text-muted)" />
+          <span style={{ flex: 1, fontSize: 13, color: 'var(--text-muted)' }}>
+            {summaryParts.join(' · ')}
+          </span>
+          <CaretRight size={14} color="var(--text-muted)" />
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div>
-      <p
-        style={{
-          fontSize: 10,
-          fontWeight: 600,
-          color: 'var(--text-muted)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.06em',
-          marginBottom: 8,
-        }}
-      >
-        Visitor card
-      </p>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+        <p style={{ ...sectionLabelStyle, marginBottom: 0 }}>Visitor card</p>
+        {!isActiveVisitor && (
+          <button
+            type="button"
+            onClick={() => setExpanded(false)}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4,
+              fontSize: 11,
+              color: 'var(--text-muted)',
+              padding: 0,
+            }}
+          >
+            Collapse
+            <CaretDown size={11} />
+          </button>
+        )}
+      </div>
       <div
         style={{
           background: 'var(--surface)',
@@ -137,12 +151,21 @@ export function VisitorCardPanel({ personId }: { personId: string }) {
             ? 'Self-submitted via public form'
             : `Filled by ${data.personas.find((p) => p.id === submission.submittedBy)?.name ?? 'Welcome Team'}`}
           {' · '}
-          {new Date(submission.submittedAt).toLocaleDateString()}
+          {submittedDate}
         </div>
       </div>
     </div>
   );
 }
+
+const sectionLabelStyle: React.CSSProperties = {
+  fontSize: 10,
+  fontWeight: 600,
+  color: 'var(--text-muted)',
+  textTransform: 'uppercase',
+  letterSpacing: '0.06em',
+  marginBottom: 8,
+};
 
 function Row({ icon, label, children }: { icon: React.ReactNode; label: string; children: React.ReactNode }) {
   return (

@@ -33,7 +33,7 @@ export interface Persona {
 export type MembershipStatus = 'member' | 'non-member' | 'membership-track';
 
 export type ChurchAttendance =
-  | 'first-time-visitor'
+  | 'visitor'
   | 'regular'
   | 'on-leave'
   | 'fellowship-group-only'

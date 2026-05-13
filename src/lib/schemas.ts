@@ -29,7 +29,7 @@ export const PersonRowSchema = z.object({
   is_student: nullBool,
   membership_status: z.enum(['member', 'non-member', 'membership-track']),
   church_attendance: z
-    .enum(['first-time-visitor', 'regular', 'on-leave', 'fellowship-group-only', 'archived'])
+    .enum(['visitor', 'regular', 'on-leave', 'fellowship-group-only', 'archived'])
     .nullish(),
   language: nullStr,
   family_id: nullStr,

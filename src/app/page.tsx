@@ -602,7 +602,7 @@ const [showSearch, setShowSearch] = React.useState(false);
                   </div>
                   <div>
                     <p style={addMenuLabelStyle}>Visitor</p>
-                    <p style={addMenuDescStyle}>Fill out the visitor card</p>
+                    <p style={addMenuDescStyle}>Fill out their welcome card</p>
                   </div>
                 </button>
               );
@@ -651,9 +651,7 @@ const [showSearch, setShowSearch] = React.useState(false);
                   </div>
                 </button>
               );
-              const items = currentPersona.role === 'welcome-team'
-                ? [visitorBtn, individualBtn, familyBtn, inviteBtn]
-                : [individualBtn, visitorBtn, familyBtn, inviteBtn];
+              const items = [visitorBtn, individualBtn, familyBtn, inviteBtn];
               return items.map((item, i) =>
                 i === items.length - 1
                   ? React.cloneElement(item, { style: { ...addMenuItemStyle, borderBottom: 'none' } })

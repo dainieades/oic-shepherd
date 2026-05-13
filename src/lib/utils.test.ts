@@ -516,7 +516,7 @@ describe('getMembershipLabel', () => {
 describe('getChurchAttendanceLabel', () => {
   it('returns human-readable labels', () => {
     expect(getChurchAttendanceLabel('regular')).toBe('Regular Attendee');
-    expect(getChurchAttendanceLabel('first-time-visitor')).toBe('First-Time Visitor');
+    expect(getChurchAttendanceLabel('visitor')).toBe('Visitor');
     expect(getChurchAttendanceLabel('on-leave')).toBe('On Leave');
     expect(getChurchAttendanceLabel('fellowship-group-only')).toBe('Fellowship Group Only');
     expect(getChurchAttendanceLabel('archived')).toBe('Archived');

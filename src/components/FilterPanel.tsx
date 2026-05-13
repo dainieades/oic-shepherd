@@ -400,14 +400,14 @@ export default function FilterPanel({ show, onClose }: { show: boolean; onClose:
                   </p>
                   {(
                     [
-                      'first-time-visitor',
+                      'visitor',
                       'regular',
                       'on-leave',
                       'fellowship-group-only',
                     ] as ChurchAttendance[]
                   ).map((val) => {
                     const ATTENDANCE_LABELS: Record<string, string> = {
-                      'first-time-visitor': 'First-Time Visitor',
+                      visitor: 'Visitor',
                       regular: 'Regular Attendee',
                       'on-leave': 'On Leave',
                       'fellowship-group-only': 'Fellowship Group Only',

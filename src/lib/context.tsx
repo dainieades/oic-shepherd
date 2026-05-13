@@ -132,6 +132,15 @@ interface AppContextType {
   ) => Promise<{ personId: string; submissionId: string }>;
   promoteVisitorSubmission: (submissionId: string) => Promise<string>;
   discardVisitorSubmission: (submissionId: string) => Promise<void>;
+  updateVisitorSubmission: (
+    submissionId: string,
+    patch: {
+      referralSource?: import('./types').ReferralSource | null;
+      referralDetail?: string | null;
+      interests?: import('./types').Interest[];
+      prayerRequest?: string | null;
+    }
+  ) => Promise<void>;
   assignShepherds: (personId: string, shepherdIds: string[]) => Promise<void>;
   updateFamily: (
     familyId: string,
@@ -1046,7 +1055,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         isStudent: input.isStudent,
         language: input.languages.length > 0 ? input.languages : ['English'],
         membershipStatus: 'non-member',
-        churchAttendance: 'first-time-visitor',
+        churchAttendance: 'visitor',
       });
 
       const submissionId = crypto.randomUUID();
@@ -1101,7 +1110,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           ? (r.languages as string[])
           : ['English'],
         membershipStatus: 'non-member',
-        churchAttendance: 'first-time-visitor',
+        churchAttendance: 'visitor',
       });
 
       await supabase
@@ -1121,6 +1130,35 @@ export function AppProvider({ children }: { children: ReactNode }) {
         .from('visitor_submissions')
         .update({ status: 'discarded' })
         .eq('id', submissionId);
+    },
+    []
+  );
+
+  const updateVisitorSubmission = useCallback(
+    async (
+      submissionId: string,
+      patch: {
+        referralSource?: import('./types').ReferralSource | null;
+        referralDetail?: string | null;
+        interests?: import('./types').Interest[];
+        prayerRequest?: string | null;
+      }
+    ): Promise<void> => {
+      const supabase = createClient();
+      const row: Record<string, unknown> = {};
+      if (patch.referralSource !== undefined) row.referral_source = patch.referralSource;
+      if (patch.referralDetail !== undefined) row.referral_detail = patch.referralDetail;
+      if (patch.interests !== undefined) row.interests = patch.interests;
+      if (patch.prayerRequest !== undefined) row.prayer_request = patch.prayerRequest;
+      if (Object.keys(row).length === 0) return;
+      const { error } = await supabase
+        .from('visitor_submissions')
+        .update(row)
+        .eq('id', submissionId);
+      if (error) {
+        console.error('updateVisitorSubmission failed:', error);
+        throw error;
+      }
     },
     []
   );
@@ -1806,6 +1844,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         submitVisitorIntake,
         promoteVisitorSubmission,
         discardVisitorSubmission,
+        updateVisitorSubmission,
         deletePerson,
         addFamily,
         updatePerson,

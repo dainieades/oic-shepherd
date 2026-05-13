@@ -233,7 +233,7 @@ export function getMembershipLabel(status: Person['membershipStatus']): string {
 
 export function getChurchAttendanceLabel(status: ChurchAttendance): string {
   const labels: Record<ChurchAttendance, string> = {
-    'first-time-visitor': 'First-Time Visitor',
+    visitor: 'Visitor',
     regular: 'Regular Attendee',
     'on-leave': 'On Leave',
     'fellowship-group-only': 'Fellowship Group Only',
