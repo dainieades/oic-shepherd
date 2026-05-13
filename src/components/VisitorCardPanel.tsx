@@ -9,6 +9,7 @@ import {
 } from '@/lib/schemas';
 import { mapVisitorSubmission } from '@/lib/mappers';
 import { type VisitorSubmission, type Interest, type ReferralSource } from '@/lib/types';
+import { useApp } from '@/lib/context';
 
 const REFERRAL_LABELS: Record<ReferralSource, string> = {
   'flyer': 'Flyer',
@@ -27,6 +28,7 @@ const INTEREST_LABELS: Record<Interest, string> = {
 };
 
 export function VisitorCardPanel({ personId }: { personId: string }) {
+  const { data } = useApp();
   const [submission, setSubmission] = React.useState<VisitorSubmission | null | undefined>(undefined);
 
   React.useEffect(() => {
@@ -131,7 +133,9 @@ export function VisitorCardPanel({ personId }: { personId: string }) {
           display: 'flex', alignItems: 'center', gap: 4,
         }}>
           <Sparkle size={11} />
-          {submission.source === 'qr' ? 'Self-submitted via public form' : 'Filled by Welcome Team'}
+          {submission.source === 'qr'
+            ? 'Self-submitted via public form'
+            : `Filled by ${data.personas.find((p) => p.id === submission.submittedBy)?.name ?? 'Welcome Team'}`}
           {' · '}
           {new Date(submission.submittedAt).toLocaleDateString()}
         </div>

@@ -16,6 +16,7 @@ export default function AccessGate() {
   async function handleBack() {
     const supabase = createClient();
     await supabase.auth.signOut();
+    localStorage.removeItem('shepherd-app-persona');
     router.push('/signin');
   }
 

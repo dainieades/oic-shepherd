@@ -483,30 +483,36 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setCalendarFeedTokenState(persona.calendarFeedToken ?? null);
       }
 
-      // Restore last active persona from localStorage (just the ID, not the data)
+      // Resolve the active session first so we can validate any stored persona
+      // against it. Without this check, a leftover localStorage value (e.g. from
+      // a dev persona switch or a previous user on a shared device) would
+      // silently log this session in as the wrong persona.
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
       const savedPersonaId = localStorage.getItem('shepherd-app-persona');
       if (savedPersonaId) {
         const persona = personas.find((p) => p.id === savedPersonaId);
-        if (persona) {
+        const belongsToSession =
+          persona && session?.user ? persona.userId === session.user.id : false;
+        if (persona && belongsToSession) {
           setCurrentPersona(persona);
           applyPersonaSettings(persona);
           setLoaded(true);
           return;
         }
-        // Stored ID no longer valid — fall through to session check
+        // Stored ID is missing, stale, or belongs to a different auth user —
+        // discard it and fall through to session-based resolution.
         localStorage.removeItem('shepherd-app-persona');
       }
-
-      // No valid stored persona — resolve from the active session.
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
 
       if (session?.user) {
         const sessionPersona = personas.find((p) => p.userId === session.user.id);
         if (sessionPersona) {
           setCurrentPersona(sessionPersona);
           applyPersonaSettings(sessionPersona);
+          localStorage.setItem('shepherd-app-persona', sessionPersona.id);
           setLoaded(true);
         }
         // No matching persona yet — loginWithSupabaseUser (via AuthSync) will
@@ -551,6 +557,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       // 0. Access gate — email must be on the approved list
       if (!email) {
         await supabase.auth.signOut();
+        localStorage.removeItem('shepherd-app-persona');
         setAccessDenied(true);
         setLoaded(true);
         return;
@@ -562,6 +569,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         .maybeSingle();
       if (!approved) {
         await supabase.auth.signOut();
+        localStorage.removeItem('shepherd-app-persona');
         setAccessDenied(true);
         setLoaded(true);
         return;

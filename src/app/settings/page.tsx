@@ -26,7 +26,7 @@ import { MAP_PROVIDER_LABELS, fullName } from '@/lib/utils';
 import { BACKDROP_COLOR, Z_NESTED } from '@/lib/constants';
 
 export default function SettingsPage() {
-  const { data, currentPersona, switchPersona, themePreference, mapProvider, calendarSyncEnabled } = useApp();
+  const { data, currentPersona, themePreference, mapProvider, calendarSyncEnabled } = useApp();
   const { showToast } = useToast();
   const router = useRouter();
   const [scrolled, setScrolled] = React.useState(false);
@@ -79,7 +79,7 @@ export default function SettingsPage() {
   const handleSignOut = async () => {
     const supabase = createClient();
     await supabase.auth.signOut();
-    switchPersona(data.personas[0].id);
+    localStorage.removeItem('shepherd-app-persona');
     router.push('/signin');
   };
 
