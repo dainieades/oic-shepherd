@@ -59,9 +59,11 @@ import {
   ArrowsClockwise,
   CaretDown,
   Plus,
+  GraduationCap,
 } from '@phosphor-icons/react';
 import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, SHEPHERD_AVATAR_PALETTE, Z_SHEET, Z_SUBHEADER } from '@/lib/constants';
 import { InfoRow } from '@/components/InfoRow';
+import { VisitorCardPanel } from '@/components/VisitorCardPanel';
 import { AvatarBadge } from '@/components/AvatarBadge';
 
 type Tab = 'logs' | 'todos' | 'notices' | 'info';
@@ -774,6 +776,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
       {/* Info tab */}
       {activeTab === 'info' && (
         <div className="tab-fade" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          <VisitorCardPanel personId={person.id} />
           {/* ACCESS */}
           {(() => {
             const role = (person.appRole ?? 'no-access') as AppRole;
@@ -798,6 +801,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
           {(person.gender ||
             person.birthday ||
             person.maritalStatus ||
+            person.isStudent ||
             (person.language && person.language.length > 0) ||
             family) && (
             <InfoSection title="Personal">
@@ -806,6 +810,13 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                   icon={<Globe size={15} />}
                   label="Language"
                   value={person.language.join(', ')}
+                />
+              )}
+              {person.isStudent && (
+                <InfoRow
+                  icon={<GraduationCap size={15} />}
+                  label="Student"
+                  value="Yes"
                 />
               )}
               {person.gender && (

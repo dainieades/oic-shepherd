@@ -1,5 +1,5 @@
 import React from 'react';
-import { type AppData, type Persona, type Person, type Family, type Note, type Todo, type Notice, type AuditLog } from './types';
+import { type AppData, type Persona, type Person, type Family, type Note, type Todo, type Notice, type AuditLog, type VisitorSubmission, type Interest } from './types';
 import {
   PersonRowSchema,
   FamilyRowSchema,
@@ -8,6 +8,7 @@ import {
   NoticeRowSchema,
   TodoRowSchema,
   AuditLogRowSchema,
+  VisitorSubmissionRowSchema,
   type PersonRow,
   type FamilyRow,
   type NoteRow,
@@ -46,6 +47,7 @@ export function mapPerson(
     isBeingDiscipled: r.is_being_discipled ?? undefined,
     appRole: r.app_role ?? 'no-access',
     churchPositions: r.church_positions ?? undefined,
+    isStudent: r.is_student ?? undefined,
     membershipStatus: r.membership_status,
     churchAttendance: r.church_attendance ?? 'regular',
     language: (() => {
@@ -191,6 +193,28 @@ export function mapAuditLog(row: Record<string, unknown>): AuditLog {
     oldValue: r.old_value ?? null,
     newValue: r.new_value ?? null,
     createdAt: r.created_at,
+  };
+}
+
+export function mapVisitorSubmission(row: Record<string, unknown>): VisitorSubmission {
+  const r = VisitorSubmissionRowSchema.parse(row);
+  return {
+    id: r.id,
+    submittedAt: r.submitted_at,
+    submittedBy: r.submitted_by ?? null,
+    source: r.source,
+    status: r.status,
+    personId: r.person_id ?? null,
+    preferredName: r.preferred_name,
+    lastName: r.last_name ?? undefined,
+    phone: r.phone ?? undefined,
+    email: r.email ?? undefined,
+    isStudent: r.is_student ?? false,
+    languages: r.languages ?? [],
+    referralSource: r.referral_source ?? undefined,
+    referralDetail: r.referral_detail ?? undefined,
+    interests: (r.interests ?? []) as Interest[],
+    prayerRequest: r.prayer_request ?? undefined,
   };
 }
 

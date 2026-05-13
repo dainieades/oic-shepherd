@@ -36,6 +36,9 @@
   /* Text on --sage backgrounds: white in light mode (6.7:1), dark in dark mode (6.7:1) */
   --on-sage: #ffffff;
 
+  /* Brand logo fill: primary purple in light mode, white in dark mode */
+  --logo-color: #705a8c;
+
   /* ── Status colours (unchanged) ── */
   --blue: #6b8eae;
   --blue-light: #ebf1f7;
@@ -126,6 +129,8 @@
   --sage-dark: #c4a8e0;
   --on-sage: #100d17;
 
+  --logo-color: #ffffff;
+
   --blue: #88aacc;
   --blue-light: #131c27;
 
@@ -178,6 +183,8 @@
     --sage-mid: #3e3360;
     --sage-dark: #c4a8e0;
     --on-sage: #100d17;
+
+    --logo-color: #ffffff;
 
     --blue: #88aacc;
     --blue-light: #131c27;

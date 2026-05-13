@@ -21,6 +21,7 @@ import {
 } from '@/lib/types';
 import {
   HandHeart,
+  HandWaving,
   Plus,
   UsersThree,
   PaperPlaneTilt,
@@ -33,6 +34,7 @@ import { Button } from '@/components/Button';
 import { AvatarBadge } from '@/components/AvatarBadge';
 import { StatusBadge } from '@/components/StatusBadge';
 const AddPersonModal = React.lazy(() => import('@/components/AddPersonModal'));
+const AddVisitorModal = React.lazy(() => import('@/components/AddVisitorModal'));
 const AddFamilyModal = React.lazy(() => import('@/components/AddFamilyModal'));
 const InviteSheet = React.lazy(() => import('@/components/InviteSheet'));
 const FilterPanel = React.lazy(() => import('@/components/FilterPanel'));
@@ -60,6 +62,7 @@ const [showSearch, setShowSearch] = React.useState(false);
   const addBtnRef = React.useRef<HTMLDivElement>(null);
   const [showAddChoice, setShowAddChoice] = React.useState(false);
   const [showAddPerson, setShowAddPerson] = React.useState(false);
+  const [showAddVisitor, setShowAddVisitor] = React.useState(false);
   const [showAddFamily, setShowAddFamily] = React.useState(false);
   const [showInvitePicker, setShowInvitePicker] = React.useState(false);
   const [showInvite, setShowInvite] = React.useState(false);
@@ -67,6 +70,21 @@ const [showSearch, setShowSearch] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
 
   const isAdmin = currentPersona.role === 'admin';
+  const canSeePending = isAdmin || currentPersona.role === 'welcome-team';
+  const [pendingVisitorCount, setPendingVisitorCount] = React.useState(0);
+  React.useEffect(() => {
+    if (!canSeePending) return;
+    let cancelled = false;
+    (async () => {
+      const supabase = (await import('@/utils/supabase/client')).createClient();
+      const { count } = await supabase
+        .from('visitor_submissions')
+        .select('id', { count: 'exact', head: true })
+        .eq('status', 'pending');
+      if (!cancelled) setPendingVisitorCount(count ?? 0);
+    })();
+    return () => { cancelled = true; };
+  }, [canSeePending]);
 
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -541,42 +559,107 @@ const [showSearch, setShowSearch] = React.useState(false);
               overflow: 'hidden',
             }}
           >
-            <button
-              onClick={() => { setShowAddChoice(false); setShowAddPerson(true); }}
-              style={addMenuItemStyle}
-            >
-              <div style={addMenuIconStyle}>
-                <Plus size={16} color="var(--sage)" weight="bold" />
-              </div>
-              <div>
-                <p style={addMenuLabelStyle}>Individual</p>
-                <p style={addMenuDescStyle}>Add a single person</p>
-              </div>
-            </button>
-            <button
-              onClick={() => { setShowAddChoice(false); setShowAddFamily(true); }}
-              style={addMenuItemStyle}
-            >
-              <div style={addMenuIconStyle}>
-                <UsersThree size={16} color="var(--sage)" />
-              </div>
-              <div>
-                <p style={addMenuLabelStyle}>Family</p>
-                <p style={addMenuDescStyle}>Group people into a family</p>
-              </div>
-            </button>
-            <button
-              onClick={() => { setShowAddChoice(false); setShowInvitePicker(true); }}
-              style={{ ...addMenuItemStyle, borderBottom: 'none' }}
-            >
-              <div style={addMenuIconStyle}>
-                <PaperPlaneTilt size={16} color="var(--sage)" />
-              </div>
-              <div>
-                <p style={addMenuLabelStyle}>Invite to app</p>
-                <p style={addMenuDescStyle}>Give someone access</p>
-              </div>
-            </button>
+            {canSeePending && pendingVisitorCount > 0 && (
+              <Link
+                href="/visitors/pending"
+                onClick={() => setShowAddChoice(false)}
+                style={{
+                  ...addMenuItemStyle,
+                  background: 'var(--sage-light)',
+                  textDecoration: 'none',
+                }}
+              >
+                <div style={addMenuIconStyle}>
+                  <HandWaving size={16} color="var(--sage)" weight="bold" />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <p style={addMenuLabelStyle}>Review pending visitors</p>
+                  <p style={addMenuDescStyle}>From the public form</p>
+                </div>
+                <span
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    padding: '0.125rem 0.5rem',
+                    borderRadius: 'var(--radius-pill)',
+                    background: 'var(--sage)',
+                    color: 'var(--on-sage)',
+                  }}
+                >
+                  {pendingVisitorCount}
+                </span>
+              </Link>
+            )}
+            {(() => {
+              const visitorBtn = (
+                <button
+                  key="visitor"
+                  onClick={() => { setShowAddChoice(false); setShowAddVisitor(true); }}
+                  style={addMenuItemStyle}
+                >
+                  <div style={addMenuIconStyle}>
+                    <HandWaving size={16} color="var(--sage)" weight="bold" />
+                  </div>
+                  <div>
+                    <p style={addMenuLabelStyle}>Visitor</p>
+                    <p style={addMenuDescStyle}>Fill out the visitor card</p>
+                  </div>
+                </button>
+              );
+              const individualBtn = (
+                <button
+                  key="individual"
+                  onClick={() => { setShowAddChoice(false); setShowAddPerson(true); }}
+                  style={addMenuItemStyle}
+                >
+                  <div style={addMenuIconStyle}>
+                    <Plus size={16} color="var(--sage)" weight="bold" />
+                  </div>
+                  <div>
+                    <p style={addMenuLabelStyle}>Individual</p>
+                    <p style={addMenuDescStyle}>Add a single person</p>
+                  </div>
+                </button>
+              );
+              const familyBtn = (
+                <button
+                  key="family"
+                  onClick={() => { setShowAddChoice(false); setShowAddFamily(true); }}
+                  style={addMenuItemStyle}
+                >
+                  <div style={addMenuIconStyle}>
+                    <UsersThree size={16} color="var(--sage)" />
+                  </div>
+                  <div>
+                    <p style={addMenuLabelStyle}>Family</p>
+                    <p style={addMenuDescStyle}>Group people into a family</p>
+                  </div>
+                </button>
+              );
+              const inviteBtn = (
+                <button
+                  key="invite"
+                  onClick={() => { setShowAddChoice(false); setShowInvitePicker(true); }}
+                  style={addMenuItemStyle}
+                >
+                  <div style={addMenuIconStyle}>
+                    <PaperPlaneTilt size={16} color="var(--sage)" />
+                  </div>
+                  <div>
+                    <p style={addMenuLabelStyle}>Invite to app</p>
+                    <p style={addMenuDescStyle}>Give someone access</p>
+                  </div>
+                </button>
+              );
+              const items = currentPersona.role === 'welcome-team'
+                ? [visitorBtn, individualBtn, familyBtn, inviteBtn]
+                : [individualBtn, visitorBtn, familyBtn, inviteBtn];
+              return items.map((item, i) =>
+                i === items.length - 1
+                  ? React.cloneElement(item, { style: { ...addMenuItemStyle, borderBottom: 'none' } })
+                  : item
+              );
+            })()}
           </div>
         )}
       </div>
@@ -850,6 +933,7 @@ const [showSearch, setShowSearch] = React.useState(false);
 
       <React.Suspense fallback={null}>
         {showAddPerson && <AddPersonModal onClose={() => setShowAddPerson(false)} />}
+        {showAddVisitor && <AddVisitorModal onClose={() => setShowAddVisitor(false)} />}
         {showAddFamily && <AddFamilyModal onClose={() => setShowAddFamily(false)} />}
         {showInvitePicker && (
           <InvitePersonPickerSheet

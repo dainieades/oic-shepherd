@@ -78,6 +78,7 @@ export interface Person {
   isBeingDiscipled?: boolean;
   appRole?: AppRole;
   churchPositions?: string[];
+  isStudent?: boolean;
   membershipStatus: MembershipStatus;
   churchAttendance: ChurchAttendance;
   language: string[];
@@ -190,6 +191,41 @@ export interface AuditLog {
   oldValue: string | null;
   newValue: string | null;
   createdAt: string;
+}
+
+export type ReferralSource = 'flyer' | 'online' | 'drive-by' | 'school' | 'friend' | 'other';
+export const REFERRAL_SOURCES: readonly ReferralSource[] = [
+  'flyer',
+  'online',
+  'drive-by',
+  'school',
+  'friend',
+  'other',
+] as const;
+
+export type Interest = 'salvation' | 'growth' | 'serving' | 'small-groups';
+export const INTERESTS: readonly Interest[] = ['salvation', 'growth', 'serving', 'small-groups'] as const;
+
+export type VisitorSubmissionSource = 'app' | 'qr';
+export type VisitorSubmissionStatus = 'pending' | 'promoted' | 'discarded';
+
+export interface VisitorSubmission {
+  id: string;
+  submittedAt: string; // ISO datetime
+  submittedBy?: string | null; // persona ID; null for QR path
+  source: VisitorSubmissionSource;
+  status: VisitorSubmissionStatus;
+  personId?: string | null;
+  preferredName: string;
+  lastName?: string;
+  phone?: string;
+  email?: string;
+  isStudent: boolean;
+  languages: string[];
+  referralSource?: ReferralSource;
+  referralDetail?: string;
+  interests: Interest[];
+  prayerRequest?: string;
 }
 
 export interface AppData {

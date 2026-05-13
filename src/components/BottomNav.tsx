@@ -10,13 +10,14 @@ export default function BottomNav() {
   const { currentPersona, fullPageModalOpen } = useApp();
   const isWelcome = currentPersona.role === 'welcome-team';
 
-  // Hide on detail pages, sign-in, and when a full-page modal is open
+  // Hide on detail pages, sign-in, public visitor form, and when a full-page modal is open
   const isDetail =
     /^\/(person|family|groups)\/[^/]+/.test(pathname) ||
     pathname === '/settings/profile' ||
     pathname === '/settings/access' ||
     pathname === '/signin' ||
-    pathname === '/signup';
+    pathname === '/signup' ||
+    pathname === '/welcome';
   if (isDetail || fullPageModalOpen) return null;
 
   const isPeople = pathname === '/' || pathname === '/people';

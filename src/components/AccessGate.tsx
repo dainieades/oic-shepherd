@@ -2,13 +2,15 @@
 
 import { useApp } from '@/lib/context';
 import { Lock } from '@phosphor-icons/react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 
 export default function AccessGate() {
   const { accessDenied } = useApp();
   const router = useRouter();
+  const pathname = usePathname();
 
+  if (pathname === '/welcome') return null;
   if (!accessDenied) return null;
 
   async function handleBack() {

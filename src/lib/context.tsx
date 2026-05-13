@@ -120,9 +120,18 @@ interface AppContextType {
         | 'isBeingDiscipled'
         | 'churchPositions'
         | 'appRole'
+        | 'isStudent'
       >
     >
   ) => Promise<void>;
+  submitVisitorIntake: (
+    input: Omit<
+      import('./types').VisitorSubmission,
+      'id' | 'submittedAt' | 'submittedBy' | 'source' | 'status' | 'personId'
+    >
+  ) => Promise<{ personId: string; submissionId: string }>;
+  promoteVisitorSubmission: (submissionId: string) => Promise<string>;
+  discardVisitorSubmission: (submissionId: string) => Promise<void>;
   assignShepherds: (personId: string, shepherdIds: string[]) => Promise<void>;
   updateFamily: (
     familyId: string,
@@ -183,7 +192,7 @@ const AUDIT_FIELD_KEYS = [
   'preferredName', 'lastName', 'alternativeName', 'photo', 'phone', 'homePhone', 'email', 'homeAddress',
   'membershipStatus', 'churchAttendance', 'membershipDate', 'language', 'gender',
   'maritalStatus', 'birthday', 'baptismDate', 'anniversary', 'followUpFrequencyDays',
-  'isShepherd', 'isBeingDiscipled', 'churchPositions', 'appRole',
+  'isShepherd', 'isBeingDiscipled', 'churchPositions', 'appRole', 'isStudent',
 ] as const;
 
 function serializeAuditValue(field: string, value: unknown): string {
@@ -978,6 +987,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           email: person.email ?? null,
           home_address: person.homeAddress ?? null,
           is_shepherd: person.isShepherd ?? false,
+          is_student: person.isStudent ?? false,
           church_positions: person.churchPositions ?? [],
           membership_status: person.membershipStatus,
           church_attendance: person.churchAttendance,
@@ -1013,6 +1023,100 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [currentPersona.id, currentPersona.name, currentUserEmail, addTodo]
   );
 
+  const submitVisitorIntake = useCallback(
+    async (
+      input: Omit<
+        import('./types').VisitorSubmission,
+        'id' | 'submittedAt' | 'submittedBy' | 'source' | 'status' | 'personId'
+      >
+    ): Promise<{ personId: string; submissionId: string }> => {
+      const personId = await addPerson({
+        preferredName: input.preferredName,
+        lastName: input.lastName,
+        phone: input.phone,
+        email: input.email,
+        isStudent: input.isStudent,
+        language: input.languages.length > 0 ? input.languages : ['English'],
+        membershipStatus: 'non-member',
+        churchAttendance: 'first-time-visitor',
+      });
+
+      const submissionId = generateId();
+      const submittedAt = new Date().toISOString();
+      const supabase = createClient();
+      const { error: submissionError } = await supabase.from('visitor_submissions').insert({
+        id: submissionId,
+        submitted_at: submittedAt,
+        submitted_by: currentPersona.id,
+        source: 'app',
+        status: 'promoted',
+        person_id: personId,
+        preferred_name: input.preferredName,
+        last_name: input.lastName ?? null,
+        phone: input.phone ?? null,
+        email: input.email ?? null,
+        is_student: input.isStudent,
+        languages: input.languages,
+        referral_source: input.referralSource ?? null,
+        referral_detail: input.referralDetail ?? null,
+        interests: input.interests,
+        prayer_request: input.prayerRequest ?? null,
+      });
+      if (submissionError) {
+        console.error('visitor_submissions insert failed:', submissionError);
+        showToast('Visitor saved, but card data could not be stored', 'error');
+      }
+
+      return { personId, submissionId };
+    },
+    [addPerson, currentPersona.id, showToast]
+  );
+
+  const promoteVisitorSubmission = useCallback(
+    async (submissionId: string): Promise<string> => {
+      const supabase = createClient();
+      const { data: row } = await supabase
+        .from('visitor_submissions')
+        .select('*')
+        .eq('id', submissionId)
+        .maybeSingle();
+      if (!row) throw new Error('Submission not found');
+      const r = row as Record<string, unknown>;
+
+      const personId = await addPerson({
+        preferredName: r.preferred_name as string,
+        lastName: (r.last_name as string | null) ?? undefined,
+        phone: (r.phone as string | null) ?? undefined,
+        email: (r.email as string | null) ?? undefined,
+        isStudent: (r.is_student as boolean | null) ?? false,
+        language: ((r.languages as string[] | null) ?? []).length > 0
+          ? (r.languages as string[])
+          : ['English'],
+        membershipStatus: 'non-member',
+        churchAttendance: 'first-time-visitor',
+      });
+
+      await supabase
+        .from('visitor_submissions')
+        .update({ status: 'promoted', person_id: personId })
+        .eq('id', submissionId);
+
+      return personId;
+    },
+    [addPerson]
+  );
+
+  const discardVisitorSubmission = useCallback(
+    async (submissionId: string): Promise<void> => {
+      const supabase = createClient();
+      await supabase
+        .from('visitor_submissions')
+        .update({ status: 'discarded' })
+        .eq('id', submissionId);
+    },
+    []
+  );
+
   const updatePerson = useCallback(
     async (
       personId: string,
@@ -1042,6 +1146,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           | 'isBeingDiscipled'
           | 'churchPositions'
           | 'appRole'
+          | 'isStudent'
         >
       >
     ): Promise<void> => {
@@ -1084,6 +1189,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (updates.churchPositions !== undefined)
         dbUpdates.church_positions = updates.churchPositions;
       if (updates.appRole !== undefined) dbUpdates.app_role = updates.appRole;
+      if (updates.isStudent !== undefined) dbUpdates.is_student = updates.isStudent;
       const now = new Date().toISOString();
       dbUpdates.last_edited_at = now;
       dbUpdates.last_edited_by_name = currentPersona.name;
@@ -1689,6 +1795,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         updateNotice,
         deleteNotice,
         addPerson,
+        submitVisitorIntake,
+        promoteVisitorSubmission,
+        discardVisitorSubmission,
         deletePerson,
         addFamily,
         updatePerson,

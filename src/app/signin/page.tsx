@@ -3,6 +3,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
+import { Logo } from '@/components/Logo';
 
 type Step =
   | { type: 'email' }
@@ -375,6 +376,7 @@ export default function SignInPage() {
       <div style={cardStyle}>
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
+          <Logo height={88} style={{ margin: '0 auto 16px' }} />
           <h1 className="font-display" style={headingStyle}>
             Welcome
           </h1>

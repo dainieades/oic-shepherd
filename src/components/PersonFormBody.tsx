@@ -93,9 +93,6 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
   function PersonFormBody({ person, onSaved, showPhotoUpload, showInviteRow, onValidityChange }, ref) {
     const { data, currentPersona, personaByPersonId, addPerson, updatePerson, updateFamilyMembers, assignShepherds, assignGroupsToPerson } = useApp();
 
-    const isWelcomeTeam: boolean = currentPersona.role === 'welcome-team';
-    const isAddMode: boolean = !person;
-    const [simplified, setSimplified] = React.useState<boolean>(isWelcomeTeam && isAddMode);
 
     const [firstName, setFirstName] = React.useState(person?.preferredName ?? '');
     const [lastName, setLastName] = React.useState(person?.lastName ?? '');
@@ -118,6 +115,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
     const [baptismDate, setBaptismDate] = React.useState(person?.baptismDate ?? '');
     const [isShepherd, setIsShepherd] = React.useState(person?.isShepherd ?? false);
     const [isBeingDiscipled, setIsBeingDiscipled] = React.useState(person?.isBeingDiscipled ?? false);
+    const [isStudent, setIsStudent] = React.useState(person?.isStudent ?? false);
     const [appRole, setAppRole] = React.useState<AppRole>(person?.appRole ?? 'no-access');
     const [churchPositions, setChurchPositions] = React.useState<string[]>(
       person?.churchPositions ?? []
@@ -225,6 +223,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
             baptismDate: baptismDate || undefined,
             isShepherd: isShepherd || undefined,
             isBeingDiscipled: isBeingDiscipled || undefined,
+            isStudent: isStudent || undefined,
             appRole,
             churchPositions: churchPositions.length > 0 ? churchPositions : undefined,
             phone: phone.trim() || undefined,
@@ -295,6 +294,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
             baptismDate: baptismDate || undefined,
             isShepherd: isShepherd || undefined,
             isBeingDiscipled: isBeingDiscipled || undefined,
+            isStudent,
             appRole,
             churchPositions: churchPositions.length > 0 ? churchPositions : undefined,
             phone: phone.trim() || undefined,
@@ -339,23 +339,6 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
         )}
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-          {isWelcomeTeam && isAddMode && (
-            <button
-              className="field-row-hover"
-              onClick={() => setSimplified((v) => !v)}
-              style={{
-                ...rowBtnStyle,
-                marginBottom: '1rem',
-                borderRadius: 0,
-              }}
-              aria-pressed={!simplified}
-            >
-              <span style={spacerStyle} />
-              <span style={{ ...labelStyle, flex: 1 }}>Show full form</span>
-              <Toggle on={!simplified} />
-            </button>
-          )}
-
           {(currentPersona.role === 'admin' ||
             (currentPersona.role === 'shepherd' &&
               (appRole === 'shepherd' || appRole === 'no-access'))) && (
@@ -470,14 +453,12 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
           </FormSection>
 
           <FormSection label="Personal">
-            {!simplified && (
-              <PickerRow
-                icon={<UsersThree size={16} color="var(--text-muted)" />}
-                label="Family"
-                value={familyId ? (data.families.find((f) => f.id === familyId)?.label ?? 'Unknown') : 'None'}
-                onClick={() => setShowFamilyPicker(true)}
-              />
-            )}
+            <PickerRow
+              icon={<UsersThree size={16} color="var(--text-muted)" />}
+              label="Family"
+              value={familyId ? (data.families.find((f) => f.id === familyId)?.label ?? 'Unknown') : 'None'}
+              onClick={() => setShowFamilyPicker(true)}
+            />
             <button
               className="field-row-hover"
               onClick={() => setShowLanguagePicker(true)}
@@ -498,43 +479,47 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
               value={genderLabel}
               onClick={() => setOpenPicker('gender')}
             />
-            {!simplified && (
-              <>
-                <FloatingDateRow
-                  icon={<Cake size={16} color="var(--text-muted)" />}
-                  label="Birthday"
-                  value={birthday}
-                  onChange={setBirthday}
-                />
-                <PickerRow
-                  ref={maritalBtnRef}
-                  icon={<Heart size={16} color="var(--text-muted)" />}
-                  label="Marital"
-                  value={maritalLabel}
-                  onClick={() => setOpenPicker('marital')}
-                />
-                {maritalStatus === 'married' && (
-                  <FloatingDateRow
-                    icon={<Sparkle size={16} color="var(--text-muted)" />}
-                    label="Anniversary"
-                    value={anniversary}
-                    onChange={setAnniversary}
-                  />
-                )}
-              </>
+            <FloatingDateRow
+              icon={<Cake size={16} color="var(--text-muted)" />}
+              label="Birthday"
+              value={birthday}
+              onChange={setBirthday}
+            />
+            <PickerRow
+              ref={maritalBtnRef}
+              icon={<Heart size={16} color="var(--text-muted)" />}
+              label="Marital"
+              value={maritalLabel}
+              onClick={() => setOpenPicker('marital')}
+            />
+            {maritalStatus === 'married' && (
+              <FloatingDateRow
+                icon={<Sparkle size={16} color="var(--text-muted)" />}
+                label="Anniversary"
+                value={anniversary}
+                onChange={setAnniversary}
+              />
             )}
+            <button
+              className="field-row-hover"
+              onClick={() => setIsStudent((v) => !v)}
+              style={rowBtnStyle}
+            >
+              <span style={spacerStyle} />
+              <BookOpenText size={16} color="var(--text-muted)" />
+              <span style={{ ...labelStyle, flex: 1 }}>Student?</span>
+              <Toggle on={isStudent} />
+            </button>
           </FormSection>
 
           <FormSection label="Church">
-            {!simplified && (
-              <PickerRow
-                ref={statusBtnRef}
-                icon={<IdentificationCard size={16} color="var(--text-muted)" />}
-                label="Status"
-                value={statusLabel}
-                onClick={() => setOpenPicker('status')}
-              />
-            )}
+            <PickerRow
+              ref={statusBtnRef}
+              icon={<IdentificationCard size={16} color="var(--text-muted)" />}
+              label="Status"
+              value={statusLabel}
+              onClick={() => setOpenPicker('status')}
+            />
             <PickerRow
               ref={attendanceBtnRef}
               icon={<Pulse size={16} color="var(--text-muted)" />}
@@ -542,7 +527,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
               value={attendanceLabel}
               onClick={() => setOpenPicker('attendance')}
             />
-            {!simplified && status === 'member' && (
+            {status === 'member' && (
               <DateRow
                 icon={<CalendarCheck size={16} color="var(--text-muted)" />}
                 label="Member Since"
@@ -551,9 +536,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
                 onChange={setMembershipDate}
               />
             )}
-            {!simplified && (
-              <>
-                <button
+            <button
                   className="field-row-hover"
                   onClick={() => setShowGroupPicker(true)}
                   style={rowBtnStyle}
@@ -669,8 +652,6 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(
                   value={baptismDate}
                   onChange={setBaptismDate}
                 />
-              </>
-            )}
           </FormSection>
 
           <FormSection label="Contact">

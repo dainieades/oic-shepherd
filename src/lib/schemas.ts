@@ -26,6 +26,7 @@ export const PersonRowSchema = z.object({
   is_being_discipled: nullBool,
   app_role: z.enum(['admin', 'shepherd', 'welcome-team', 'no-access']).nullish(),
   church_positions: nullStrArr,
+  is_student: nullBool,
   membership_status: z.enum(['member', 'non-member', 'membership-track']),
   church_attendance: z
     .enum(['first-time-visitor', 'regular', 'on-leave', 'fellowship-group-only', 'archived'])
@@ -153,3 +154,24 @@ export const GroupRowSchema = z.object({
 });
 
 export type GroupRow = z.infer<typeof GroupRowSchema>;
+
+export const VisitorSubmissionRowSchema = z.object({
+  id: z.string(),
+  submitted_at: z.string(),
+  submitted_by: nullStr,
+  source: z.enum(['app', 'qr']),
+  status: z.enum(['pending', 'promoted', 'discarded']),
+  person_id: nullStr,
+  preferred_name: z.string(),
+  last_name: nullStr,
+  phone: nullStr,
+  email: nullStr,
+  is_student: nullBool,
+  languages: nullStrArr,
+  referral_source: z.enum(['flyer', 'online', 'drive-by', 'school', 'friend', 'other']).nullish(),
+  referral_detail: nullStr,
+  interests: nullStrArr,
+  prayer_request: nullStr,
+});
+
+export type VisitorSubmissionRow = z.infer<typeof VisitorSubmissionRowSchema>;
