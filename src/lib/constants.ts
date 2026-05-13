@@ -36,18 +36,18 @@ export const MEMBER_AVATAR_PALETTE: Array<{ bg: string; color: string }> = [
 export const SAVE_ERROR_MSG = 'Failed to save changes. Try again.';
 
 export const REFERRAL_LABELS: Record<ReferralSource, string> = {
-  'flyer': 'Flyer',
-  'online': 'Online',
+  flyer: 'Flyer',
+  online: 'Online',
   'drive-by': 'Drive-by',
-  'school': 'School',
-  'friend': 'Friend',
-  'other': 'Other',
+  school: 'School',
+  friend: 'Friend',
+  other: 'Other',
 };
 
 export const INTEREST_LABELS: Record<Interest, string> = {
-  'salvation': 'Salvation',
-  'growth': 'Growth in Christ',
-  'serving': 'Serving',
+  salvation: 'Salvation',
+  growth: 'Growth in Christ',
+  serving: 'Serving',
   'small-groups': 'Small Groups',
 };
 

@@ -23,14 +23,20 @@ test.describe('Sign in with Google → dashboard', () => {
     await expect(page.getByRole('button', { name: /^continue$/i })).toBeVisible();
   });
 
-  test('clicking Continue with Google triggers the OAuth redirect to Supabase', async ({ page }) => {
+  test('clicking Continue with Google triggers the OAuth redirect to Supabase', async ({
+    page,
+  }) => {
     await mockSupabase(page);
 
     // Intercept the OAuth redirect — prevent navigation so the test stays on the page.
-    const oauthRequestPromise = page.waitForRequest(
-      (req) => req.url().includes(`${SUPABASE_URL}/auth/v1/authorize`) || req.url().includes('accounts.google.com'),
-      { timeout: 5000 },
-    ).catch(() => null); // Supabase auth is mocked so the route may be swallowed
+    const oauthRequestPromise = page
+      .waitForRequest(
+        (req) =>
+          req.url().includes(`${SUPABASE_URL}/auth/v1/authorize`) ||
+          req.url().includes('accounts.google.com'),
+        { timeout: 5000 }
+      )
+      .catch(() => null); // Supabase auth is mocked so the route may be swallowed
 
     await page.goto('/signin');
 

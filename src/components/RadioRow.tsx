@@ -41,7 +41,9 @@ export function RadioRow({ selected, onSelect, children }: RadioRowProps) {
           <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--sage)' }} />
         )}
       </div>
-      <span style={{ fontSize: 14, fontWeight: selected ? 600 : 400, color: 'var(--text-primary)' }}>
+      <span
+        style={{ fontSize: 14, fontWeight: selected ? 600 : 400, color: 'var(--text-primary)' }}
+      >
         {children}
       </span>
     </button>

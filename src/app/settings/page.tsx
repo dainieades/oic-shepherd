@@ -41,6 +41,13 @@ export default function SettingsPage() {
   }, []);
 
   React.useEffect(() => {
+    const mq = window.matchMedia('(min-width: 64rem)');
+    if (mq.matches) {
+      router.replace('/settings/profile');
+    }
+  }, [router]);
+
+  React.useEffect(() => {
     const supabase = createClient();
     supabase.auth.getUser().then(({ data }) => setSupabaseUser(data.user));
   }, []);
@@ -53,8 +60,12 @@ export default function SettingsPage() {
   // persona's identity instead of the Google account's identity.
   const isDevOverride = supabaseUser && currentPersona.userId !== supabaseUser.id;
   const displayName = isDevOverride
-    ? (person ? fullName(person) : currentPersona.name)
-    : (person ? fullName(person) : (supabaseUser?.user_metadata?.full_name ?? currentPersona.name));
+    ? person
+      ? fullName(person)
+      : currentPersona.name
+    : person
+      ? fullName(person)
+      : (supabaseUser?.user_metadata?.full_name ?? currentPersona.name);
   const displayEmail = isDevOverride
     ? (person?.email ?? '')
     : (supabaseUser?.email ?? person?.email ?? '');
@@ -100,7 +111,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div style={{ paddingBottom: 48 }}>
+    <div className="settings-index-mobile" style={{ paddingBottom: 48 }}>
       {/* Sticky header */}
       <div
         style={{
@@ -284,7 +295,9 @@ export default function SettingsPage() {
           <SettingsRow
             icon={<CircleHalf size={18} color="var(--text-muted)" />}
             label="Appearance"
-            value={themePreference === 'light' ? 'Light' : themePreference === 'dark' ? 'Dark' : 'System'}
+            value={
+              themePreference === 'light' ? 'Light' : themePreference === 'dark' ? 'Dark' : 'System'
+            }
             chevron
           />
         </Link>
@@ -428,7 +441,6 @@ export default function SettingsPage() {
     </div>
   );
 }
-
 
 function SettingsRow({
   icon,

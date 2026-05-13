@@ -4,11 +4,11 @@ _Written: 2026-04-21_
 
 ## Stack
 
-| Layer | Tool |
-|---|---|
-| Unit + logic | Vitest |
+| Layer               | Tool                   |
+| ------------------- | ---------------------- |
+| Unit + logic        | Vitest                 |
 | Component rendering | @testing-library/react |
-| E2E (future) | Playwright |
+| E2E (future)        | Playwright             |
 
 ## Pyramid
 
@@ -35,14 +35,14 @@ Functions covered: `formatPhone`, `normalizePhone`, `fmtDate`, `fmtDateTime`,
 
 ## Priority 2 — `src/app/api/check-email/route.ts` ✅ Done 2026-04-21
 
-| Scenario | Expected |
-|---|---|
-| Email not in approved_emails | `{ status: 'not-invited' }` |
-| Approved, user exists (password) | `{ status: 'existing' }` |
-| Approved, user exists (Google) | `{ status: 'google' }` |
-| Approved, no user yet | `{ status: 'invited' }` |
-| Missing service key env var | `{ status: 'no-service-key' }` |
-| Supabase error | `{ status: 'error' }` |
+| Scenario                         | Expected                       |
+| -------------------------------- | ------------------------------ |
+| Email not in approved_emails     | `{ status: 'not-invited' }`    |
+| Approved, user exists (password) | `{ status: 'existing' }`       |
+| Approved, user exists (Google)   | `{ status: 'google' }`         |
+| Approved, no user yet            | `{ status: 'invited' }`        |
+| Missing service key env var      | `{ status: 'no-service-key' }` |
+| Supabase error                   | `{ status: 'error' }`          |
 
 Mock the Supabase client — don't hit the real DB.
 
@@ -57,13 +57,13 @@ fields, bad enum values, wrong types).
 
 ## Priority 4 — Component tests ✅ Done 2026-04-21
 
-| Component | What to test |
-|---|---|
-| `AccessGate` | Renders children when permitted; fallback when denied |
-| `AddPersonModal` | Required fields block submission; calls `addPerson` on submit |
-| `AddTodoModal` | Date picker integration; repeat setting persists |
-| `Toast` | Appears on trigger; dismisses after timeout |
-| `PersonaSwitcherBar` | Switching calls `setCurrentPersona` |
+| Component            | What to test                                                  |
+| -------------------- | ------------------------------------------------------------- |
+| `AccessGate`         | Renders children when permitted; fallback when denied         |
+| `AddPersonModal`     | Required fields block submission; calls `addPerson` on submit |
+| `AddTodoModal`       | Date picker integration; repeat setting persists              |
+| `Toast`              | Appears on trigger; dismisses after timeout                   |
+| `PersonaSwitcherBar` | Switching calls `setCurrentPersona`                           |
 
 Mock `AppContext` — no real Supabase.
 
@@ -71,25 +71,25 @@ Mock `AppContext` — no real Supabase.
 
 ## Priority 5 — E2E (Playwright, future) ✅ Done 2026-04-21
 
-| Journey | Why critical |
-|---|---|
-| Sign in with Google → dashboard | Auth is a single point of failure |
-| Unapproved email → blocked | Core access control |
-| Add person → appears in list | Primary shepherd workflow |
-| Mark todo complete → removed | Core daily usage |
-| Persona switch → data scope changes | Multi-shepherd correctness |
+| Journey                             | Why critical                      |
+| ----------------------------------- | --------------------------------- |
+| Sign in with Google → dashboard     | Auth is a single point of failure |
+| Unapproved email → blocked          | Core access control               |
+| Add person → appears in list        | Primary shepherd workflow         |
+| Mark todo complete → removed        | Core daily usage                  |
+| Persona switch → data scope changes | Multi-shepherd correctness        |
 
 ---
 
 ## Coverage targets
 
-| Layer | Target |
-|---|---|
-| `utils.ts` | 90%+ |
-| API routes | 100% branches |
-| Zod schemas | 80%+ |
-| Components | 60%+ |
-| E2E | Journey-based (not line %) |
+| Layer       | Target                     |
+| ----------- | -------------------------- |
+| `utils.ts`  | 90%+                       |
+| API routes  | 100% branches              |
+| Zod schemas | 80%+                       |
+| Components  | 60%+                       |
+| E2E         | Journey-based (not line %) |
 
 ## What to skip
 

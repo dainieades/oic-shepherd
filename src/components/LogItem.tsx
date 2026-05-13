@@ -157,9 +157,7 @@ export function LogItem({
           </span>
         </p>
       )}
-      <p style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-        by {creatorName ?? 'Unknown'}
-      </p>
+      <p style={{ fontSize: 11, color: 'var(--text-muted)' }}>by {creatorName ?? 'Unknown'}</p>
     </button>
   );
 }

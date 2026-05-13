@@ -14,13 +14,15 @@ function getAdminClient() {
   return createSupabaseAdmin(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { autoRefreshToken: false, persistSession: false } },
+    { auth: { autoRefreshToken: false, persistSession: false } }
   );
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -39,7 +41,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     .from('approved_emails')
     .upsert(
       { email: normalizedEmail, label: label ?? null, person_id: personId ?? null },
-      { onConflict: 'email' },
+      { onConflict: 'email' }
     );
 
   if (approvedError) {
@@ -52,7 +54,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     .select('english_name')
     .eq('user_id', user.id)
     .maybeSingle();
-  const invitedByName = (persona as { english_name?: string } | null)?.english_name ?? user.email ?? 'Your pastor';
+  const invitedByName =
+    (persona as { english_name?: string } | null)?.english_name ?? user.email ?? 'Your pastor';
 
   // Send invite email via Resend
   const resendKey = process.env.RESEND_API_KEY;
@@ -62,12 +65,17 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       const resend = new Resend(resendKey);
       const from = process.env.RESEND_FROM_EMAIL ?? 'onboarding@resend.dev';
       const { subject, html } = inviteEmail(invitedByName);
-      const { error: emailError } = await resend.emails.send({ from, to: normalizedEmail, subject, html });
+      const { error: emailError } = await resend.emails.send({
+        from,
+        to: normalizedEmail,
+        subject,
+        html,
+      });
       if (emailError) {
         console.error('[invite] Resend error:', emailError);
         return NextResponse.json(
           { error: `Email delivery failed: ${emailError.message}` },
-          { status: 500 },
+          { status: 500 }
         );
       }
     } catch (err) {

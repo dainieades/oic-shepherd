@@ -1,26 +1,19 @@
 'use client';
 
-import { differenceInCalendarDays, differenceInHours, subDays, parseISO, isBefore, compareDesc, format } from 'date-fns';
+import {
+  differenceInCalendarDays,
+  differenceInHours,
+  subDays,
+  parseISO,
+  isBefore,
+  compareDesc,
+} from 'date-fns';
 import React from 'react';
 import Link from 'next/link';
 import { useApp } from '@/lib/context';
+import { getMembershipLabel, fullName } from '@/lib/utils';
+import { type Person, type AppRole } from '@/lib/types';
 import {
-  searchFamiliesAndPeople,
-  getFamilyPriorityScore,
-  getMembershipLabel,
-  getChurchAttendanceLabel,
-  fullName,
-} from '@/lib/utils';
-import {
-  type Family,
-  type Person,
-  type Group,
-  type MembershipStatus,
-  type ChurchAttendance,
-  type AppRole,
-} from '@/lib/types';
-import {
-  HandHeart,
   HandWaving,
   Plus,
   UsersThree,
@@ -28,11 +21,14 @@ import {
   MagnifyingGlass,
   Funnel,
   X,
-  House,
 } from '@phosphor-icons/react';
 import { Button } from '@/components/Button';
 import { AvatarBadge } from '@/components/AvatarBadge';
-import { StatusBadge } from '@/components/StatusBadge';
+import FamilyRow from '@/components/people/FamilyRow';
+import IndividualRow from '@/components/people/IndividualRow';
+import PeopleTable from '@/components/people/PeopleTable';
+import PageContainer from '@/components/PageContainer';
+import { usePeopleRows } from '@/lib/usePeopleRows';
 const AddPersonModal = React.lazy(() => import('@/components/AddPersonModal'));
 const AddVisitorModal = React.lazy(() => import('@/components/AddVisitorModal'));
 const AddFamilyModal = React.lazy(() => import('@/components/AddFamilyModal'));
@@ -44,19 +40,55 @@ const InvitePersonPickerSheet = React.lazy(() =>
   import('@/components/PersonPickerSheets').then((m) => ({ default: m.InvitePersonPickerSheet }))
 );
 
+const addMenuItemStyle: React.CSSProperties = {
+  width: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  gap: 10,
+  padding: '0.625rem 0.875rem',
+  background: 'none',
+  border: 'none',
+  borderBottom: '1px solid var(--border-light)',
+  cursor: 'pointer',
+  textAlign: 'left',
+};
+
+const addMenuIconStyle: React.CSSProperties = {
+  width: 28,
+  height: 28,
+  borderRadius: 'var(--radius-sm)',
+  background: 'var(--sage-light)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flexShrink: 0,
+};
+
+const addMenuLabelStyle: React.CSSProperties = {
+  fontSize: 14,
+  fontWeight: 600,
+  color: 'var(--text-primary)',
+  margin: 0,
+};
+
+const addMenuDescStyle: React.CSSProperties = {
+  fontSize: 11,
+  color: 'var(--text-muted)',
+  margin: '0.0625rem 0 0',
+};
+
 export default function PeoplePage() {
   const {
     data,
     currentPersona,
     homeFilters: filters,
     setHomeFilters: setFilters,
-    homeSortKey: sortKey,
     setFullPageModalOpen,
   } = useApp();
   const [search, setSearch] = React.useState('');
   const deferredSearch = React.useDeferredValue(search);
   const isSearchPending = search !== deferredSearch;
-const [showSearch, setShowSearch] = React.useState(false);
+  const [showSearch, setShowSearch] = React.useState(false);
   const [showFilter, setShowFilter] = React.useState(false);
   const searchInputRef = React.useRef<HTMLInputElement>(null);
   const addBtnRef = React.useRef<HTMLDivElement>(null);
@@ -83,7 +115,9 @@ const [showSearch, setShowSearch] = React.useState(false);
         .eq('status', 'pending');
       if (!cancelled) setPendingVisitorCount(count ?? 0);
     })();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [canSeePending]);
 
   React.useEffect(() => {
@@ -103,246 +137,7 @@ const [showSearch, setShowSearch] = React.useState(false);
     return () => document.removeEventListener('mousedown', handler);
   }, [showAddChoice]);
 
-
-  // Build the list: families + solo individuals
-  const entries = React.useMemo(() => {
-    const { families: matchedFamilies, individuals, familyMembers } = searchFamiliesAndPeople(
-      deferredSearch,
-      data.families,
-      data.people
-    );
-
-    type Entry =
-      | { type: 'family'; family: Family; members: Person[]; lastNoteTs: number | null; group: Group | null }
-      | { type: 'individual'; person: Person; lastNoteTs: number | null; group: Group | null; fromFamilySearch?: true };
-    const entries: Entry[] = [];
-
-    const includesMine = filters.shepherds.includes('mine');
-    const includesNoShepherd = filters.shepherds.includes('none');
-    const specificShepherdIds = filters.shepherds.filter((s) => s !== 'mine' && s !== 'none');
-    const includesNoGroup = filters.groups.includes('none');
-
-    // Pre-compute last note timestamp per person (for sort)
-    const lastNoteTime: Record<string, number> = {};
-    for (const note of data.notes) {
-      const pids: string[] = note.personId
-        ? [note.personId]
-        : note.familyId
-          ? (data.families.find((f) => f.id === note.familyId)?.memberIds ?? [])
-          : [];
-      const t = new Date(note.createdAt).getTime();
-      for (const pid of pids) {
-        if (!lastNoteTime[pid] || t > lastNoteTime[pid]) lastNoteTime[pid] = t;
-      }
-    }
-
-    for (const f of matchedFamilies) {
-      const members = data.people.filter((p) => f.memberIds.includes(p.id));
-
-      // Shepherd filter (OR across selected options)
-      if (filters.shepherds.length > 0) {
-        const matchesMine =
-          includesMine && members.some((m) => currentPersona.assignedPeopleIds.includes(m.id));
-        const matchesSpecific = specificShepherdIds.some((sid) =>
-          members.some((m) => m.assignedShepherdIds.includes(sid))
-        );
-        const matchesNone =
-          includesNoShepherd && members.every((m) => m.assignedShepherdIds.length === 0);
-        if (!matchesMine && !matchesSpecific && !matchesNone) continue;
-      }
-      if (
-        filters.archiveFilter === 'hide' &&
-        members.every((m) => m.churchAttendance === 'archived')
-      )
-        continue;
-      if (
-        filters.archiveFilter === 'only' &&
-        !members.every((m) => m.churchAttendance === 'archived')
-      )
-        continue;
-      // Membership filter (OR across selected)
-      if (
-        filters.memberships.length > 0 &&
-        !members.some((m) => filters.memberships.includes(m.membershipStatus))
-      )
-        continue;
-      // Attendance filter (OR across selected)
-      if (
-        filters.attendances.length > 0 &&
-        !members.some((m) => filters.attendances.includes(m.churchAttendance))
-      )
-        continue;
-      // Group filter (OR across selected)
-      if (filters.groups.length > 0) {
-        const specificGroupIds = filters.groups.filter((g) => g !== 'none');
-        const matchesGroup = specificGroupIds.length > 0 && members.some((m) => specificGroupIds.some((gid) => m.groupIds.includes(gid)));
-        const matchesNoGroup = includesNoGroup && members.every((m) => m.groupIds.length === 0);
-        if (!matchesGroup && !matchesNoGroup) continue;
-      }
-      // Discipleship filter — OR logic: family passes if any member matches at least one selected state
-      if (filters.discipleship.length > 0) {
-        const passes = members.some(
-          (m) =>
-            (filters.discipleship.includes('in') && m.isBeingDiscipled) ||
-            (filters.discipleship.includes('not-in') && !m.isBeingDiscipled)
-        );
-        if (!passes) continue;
-      }
-      // App role filter
-      if (
-        filters.appRoles.length > 0 &&
-        !members.some((m) => filters.appRoles.includes(m.appRole ?? 'no-access'))
-      )
-        continue;
-      // Position filter (OR across selected)
-      if (filters.positions.length > 0) {
-        const specificPositions = filters.positions.filter((p) => p !== 'none');
-        const matchesPosition = specificPositions.length > 0 && members.some((m) => specificPositions.some((pos) => (m.churchPositions ?? []).includes(pos)));
-        const matchesNoPosition = filters.positions.includes('none') && members.every((m) => (m.churchPositions ?? []).length === 0);
-        if (!matchesPosition && !matchesNoPosition) continue;
-      }
-      // Language filter (OR across selected)
-      if (
-        filters.languages.length > 0 &&
-        !members.some((m) => filters.languages.some((lang) => m.language.includes(lang)))
-      )
-        continue;
-
-      const familyLastNoteTs = members.reduce((max, m) => {
-        const t = lastNoteTime[m.id] ?? 0;
-        return t > max ? t : max;
-      }, 0) || null;
-      const firstGroupId = members.flatMap((m) => m.groupIds)[0];
-      const familyGroup = firstGroupId ? (data.groups.find((g) => g.id === firstGroupId) ?? null) : null;
-      entries.push({ type: 'family', family: f, members, lastNoteTs: familyLastNoteTs, group: familyGroup });
-    }
-
-    for (const p of individuals) {
-      // Shepherd filter
-      if (filters.shepherds.length > 0) {
-        const matchesMine = includesMine && currentPersona.assignedPeopleIds.includes(p.id);
-        const matchesSpecific = specificShepherdIds.some((sid) =>
-          p.assignedShepherdIds.includes(sid)
-        );
-        const matchesNone = includesNoShepherd && p.assignedShepherdIds.length === 0;
-        if (!matchesMine && !matchesSpecific && !matchesNone) continue;
-      }
-      if (filters.archiveFilter === 'hide' && p.churchAttendance === 'archived') continue;
-      if (filters.archiveFilter === 'only' && p.churchAttendance !== 'archived') continue;
-      if (filters.memberships.length > 0 && !filters.memberships.includes(p.membershipStatus))
-        continue;
-      if (filters.attendances.length > 0 && !filters.attendances.includes(p.churchAttendance))
-        continue;
-      if (filters.groups.length > 0) {
-        const specificGroupIds = filters.groups.filter((g) => g !== 'none');
-        const matchesGroup = specificGroupIds.length > 0 && specificGroupIds.some((gid) => p.groupIds.includes(gid));
-        const matchesNoGroup = includesNoGroup && p.groupIds.length === 0;
-        if (!matchesGroup && !matchesNoGroup) continue;
-      }
-      if (filters.discipleship.length > 0) {
-        const passes =
-          (filters.discipleship.includes('in') && p.isBeingDiscipled) ||
-          (filters.discipleship.includes('not-in') && !p.isBeingDiscipled);
-        if (!passes) continue;
-      }
-      if (filters.appRoles.length > 0 && !filters.appRoles.includes(p.appRole ?? 'no-access'))
-        continue;
-      if (filters.positions.length > 0) {
-        const specificPositions = filters.positions.filter((pos) => pos !== 'none');
-        const matchesPosition = specificPositions.length > 0 && specificPositions.some((pos) => (p.churchPositions ?? []).includes(pos));
-        const matchesNoPosition = filters.positions.includes('none') && (p.churchPositions ?? []).length === 0;
-        if (!matchesPosition && !matchesNoPosition) continue;
-      }
-      if (
-        filters.languages.length > 0 &&
-        !filters.languages.some((lang) => p.language.includes(lang))
-      )
-        continue;
-      const personLastNoteTs = lastNoteTime[p.id] ?? null;
-      const personGroup = p.groupIds[0] ? (data.groups.find((g) => g.id === p.groupIds[0]) ?? null) : null;
-      entries.push({ type: 'individual', person: p, lastNoteTs: personLastNoteTs, group: personGroup });
-    }
-
-    // When searching, also surface family members as individual entries so users can navigate directly to them.
-    // These are not counted in the summary totals (fromFamilySearch: true).
-    for (const p of familyMembers) {
-      if (filters.archiveFilter === 'hide' && p.churchAttendance === 'archived') continue;
-      if (filters.archiveFilter === 'only' && p.churchAttendance !== 'archived') continue;
-      if (filters.memberships.length > 0 && !filters.memberships.includes(p.membershipStatus)) continue;
-      if (filters.attendances.length > 0 && !filters.attendances.includes(p.churchAttendance)) continue;
-      if (filters.groups.length > 0) {
-        const specificGroupIds = filters.groups.filter((g) => g !== 'none');
-        const matchesGroup = specificGroupIds.length > 0 && specificGroupIds.some((gid) => p.groupIds.includes(gid));
-        const matchesNoGroup = includesNoGroup && p.groupIds.length === 0;
-        if (!matchesGroup && !matchesNoGroup) continue;
-      }
-      if (filters.discipleship.length > 0) {
-        const passes =
-          (filters.discipleship.includes('in') && p.isBeingDiscipled) ||
-          (filters.discipleship.includes('not-in') && !p.isBeingDiscipled);
-        if (!passes) continue;
-      }
-      if (filters.appRoles.length > 0 && !filters.appRoles.includes(p.appRole ?? 'no-access')) continue;
-      if (filters.positions.length > 0) {
-        const specificPositions = filters.positions.filter((pos) => pos !== 'none');
-        const matchesPosition = specificPositions.length > 0 && specificPositions.some((pos) => (p.churchPositions ?? []).includes(pos));
-        const matchesNoPosition = filters.positions.includes('none') && (p.churchPositions ?? []).length === 0;
-        if (!matchesPosition && !matchesNoPosition) continue;
-      }
-      if (filters.languages.length > 0 && !filters.languages.some((lang) => p.language.includes(lang))) continue;
-      const personLastNoteTs = lastNoteTime[p.id] ?? null;
-      const personGroup = p.groupIds[0] ? (data.groups.find((g) => g.id === p.groupIds[0]) ?? null) : null;
-      entries.push({ type: 'individual', person: p, lastNoteTs: personLastNoteTs, group: personGroup, fromFamilySearch: true });
-    }
-
-    // Sort
-    entries.sort((a, b) => {
-      const aMembers = a.type === 'family' ? a.members : [a.person];
-      const bMembers = b.type === 'family' ? b.members : [b.person];
-      const aName = a.type === 'family' ? a.family.label : fullName(a.person);
-      const bName = b.type === 'family' ? b.family.label : fullName(b.person);
-      const lastName = (n: string) => n.trim().split(/\s+/).slice(-1)[0] ?? n;
-      const aLast = lastName(aName);
-      const bLast = lastName(bName);
-
-      switch (sortKey) {
-        case 'name': {
-          const cmp = aName.localeCompare(bName);
-          return cmp !== 0 ? cmp : aLast.localeCompare(bLast);
-        }
-        case 'name-desc': {
-          const cmp = bName.localeCompare(aName);
-          return cmp !== 0 ? cmp : bLast.localeCompare(aLast);
-        }
-        case 'last-name': {
-          const cmp = aLast.localeCompare(bLast);
-          return cmp !== 0 ? cmp : aName.localeCompare(bName);
-        }
-        case 'last-name-desc': {
-          const cmp = bLast.localeCompare(aLast);
-          return cmp !== 0 ? cmp : bName.localeCompare(aName);
-        }
-        case 'last-contacted': {
-          // Oldest / never-logged first (needs follow-up most urgently)
-          const aTime = Math.max(0, ...aMembers.map((m) => lastNoteTime[m.id] ?? 0));
-          const bTime = Math.max(0, ...bMembers.map((m) => lastNoteTime[m.id] ?? 0));
-          if (aTime !== bTime) return aTime - bTime;
-          return aLast.localeCompare(bLast);
-        }
-        case 'last-contacted-recent': {
-          // Most recently logged first
-          const aTime = Math.max(0, ...aMembers.map((m) => lastNoteTime[m.id] ?? 0));
-          const bTime = Math.max(0, ...bMembers.map((m) => lastNoteTime[m.id] ?? 0));
-          if (aTime !== bTime) return bTime - aTime;
-          return aLast.localeCompare(bLast);
-        }
-        default: // priority
-          return getFamilyPriorityScore(bMembers) - getFamilyPriorityScore(aMembers);
-      }
-    });
-
-    return entries;
-  }, [data, deferredSearch, filters, sortKey, isAdmin, currentPersona]);
+  const entries = usePeopleRows(deferredSearch);
 
   // New people: created in the last 60 days, no notes yet, not archived
   const newPeople = React.useMemo(() => {
@@ -375,7 +170,11 @@ const [showSearch, setShowSearch] = React.useState(false);
   const chips: { key: string; label: string; clear: () => void }[] = [];
   filters.shepherds.forEach((sid) => {
     const label =
-      sid === 'mine' ? 'My Sheep' : sid === 'none' ? 'No shepherd' : (data.personas.find((p) => p.id === sid)?.name ?? sid);
+      sid === 'mine'
+        ? 'My Sheep'
+        : sid === 'none'
+          ? 'No shepherd'
+          : (data.personas.find((p) => p.id === sid)?.name ?? sid);
     chips.push({
       key: `s-${sid}`,
       label,
@@ -443,22 +242,21 @@ const [showSearch, setShowSearch] = React.useState(false);
     chips.push({
       key: `pos-${pos}`,
       label: pos === 'none' ? 'No church position' : pos,
-      clear: () =>
-        setFilters((f) => ({ ...f, positions: f.positions.filter((x) => x !== pos) })),
+      clear: () => setFilters((f) => ({ ...f, positions: f.positions.filter((x) => x !== pos) })),
     });
   });
   filters.languages.forEach((lang) => {
     chips.push({
       key: `lang-${lang}`,
       label: lang,
-      clear: () =>
-        setFilters((f) => ({ ...f, languages: f.languages.filter((x) => x !== lang) })),
+      clear: () => setFilters((f) => ({ ...f, languages: f.languages.filter((x) => x !== lang) })),
     });
   });
 
   const familyCount = entries.filter((e) => e.type === 'family').length;
-  const individualCount = entries.filter((e) => e.type === 'individual' && !e.fromFamilySearch).length;
-  const totalEntries = familyCount + individualCount;
+  const individualCount = entries.filter(
+    (e) => e.type === 'individual' && !e.fromFamilySearch
+  ).length;
   const btnSize = scrolled ? 30 : 36;
   const btnFont = scrolled ? 13 : 14;
   const btnPad = scrolled ? '0 0.75rem' : '0 0.875rem';
@@ -499,7 +297,10 @@ const [showSearch, setShowSearch] = React.useState(false);
         <Button
           variant="ghost"
           aria-label="Filter people"
-          onClick={() => { setShowFilter(true); setFullPageModalOpen(true); }}
+          onClick={() => {
+            setShowFilter(true);
+            setFullPageModalOpen(true);
+          }}
           style={{
             width: btnSize,
             height: btnSize,
@@ -594,7 +395,10 @@ const [showSearch, setShowSearch] = React.useState(false);
               const visitorBtn = (
                 <button
                   key="visitor"
-                  onClick={() => { setShowAddChoice(false); setShowAddVisitor(true); }}
+                  onClick={() => {
+                    setShowAddChoice(false);
+                    setShowAddVisitor(true);
+                  }}
                   style={addMenuItemStyle}
                 >
                   <div style={addMenuIconStyle}>
@@ -609,7 +413,10 @@ const [showSearch, setShowSearch] = React.useState(false);
               const individualBtn = (
                 <button
                   key="individual"
-                  onClick={() => { setShowAddChoice(false); setShowAddPerson(true); }}
+                  onClick={() => {
+                    setShowAddChoice(false);
+                    setShowAddPerson(true);
+                  }}
                   style={addMenuItemStyle}
                 >
                   <div style={addMenuIconStyle}>
@@ -624,7 +431,10 @@ const [showSearch, setShowSearch] = React.useState(false);
               const familyBtn = (
                 <button
                   key="family"
-                  onClick={() => { setShowAddChoice(false); setShowAddFamily(true); }}
+                  onClick={() => {
+                    setShowAddChoice(false);
+                    setShowAddFamily(true);
+                  }}
                   style={addMenuItemStyle}
                 >
                   <div style={addMenuIconStyle}>
@@ -639,7 +449,10 @@ const [showSearch, setShowSearch] = React.useState(false);
               const inviteBtn = (
                 <button
                   key="invite"
-                  onClick={() => { setShowAddChoice(false); setShowInvitePicker(true); }}
+                  onClick={() => {
+                    setShowAddChoice(false);
+                    setShowInvitePicker(true);
+                  }}
                   style={addMenuItemStyle}
                 >
                   <div style={addMenuIconStyle}>
@@ -654,7 +467,9 @@ const [showSearch, setShowSearch] = React.useState(false);
               const items = [visitorBtn, individualBtn, familyBtn, inviteBtn];
               return items.map((item, i) =>
                 i === items.length - 1
-                  ? React.cloneElement(item, { style: { ...addMenuItemStyle, borderBottom: 'none' } })
+                  ? React.cloneElement(item, {
+                      style: { ...addMenuItemStyle, borderBottom: 'none' },
+                    })
                   : item
               );
             })()}
@@ -665,659 +480,333 @@ const [showSearch, setShowSearch] = React.useState(false);
   );
 
   return (
-    <div style={{ paddingBottom: 32 }}>
-      {/* ── Sticky collapsing header ─────────── */}
-      <header
-        style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 'var(--z-sticky)',
-          background: 'var(--bg)',
-          marginLeft: -16,
-          marginRight: -16,
-          paddingLeft: 16,
-          paddingRight: 16,
-          borderBottom: scrolled ? '1px solid var(--border-light)' : 'none',
-        }}
-      >
-        {scrolled ? (
-          <div
-            style={{
-              height: 44,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-          >
-            <span
-              style={{
-                fontSize: 17,
-                fontWeight: 600,
-                color: 'var(--text-primary)',
-                letterSpacing: '-0.01em',
-              }}
-            >
-              People
-            </span>
-            <ActionButtons />
-          </div>
-        ) : (
-          <div
-            style={{
-              paddingTop: 20,
-              paddingBottom: 14,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-          >
-            <h1
-              style={{
-                fontSize: 32,
-                fontWeight: 800,
-                color: 'var(--text-primary)',
-                letterSpacing: '-0.03em',
-                lineHeight: 1,
-              }}
-            >
-              People
-            </h1>
-            <ActionButtons />
-          </div>
-        )}
-      </header>
-
-      <main>
-      {/* ── Search (expandable) ─────────────── */}
-      <React.Suspense fallback={null}>
-        <SearchBar
-          search={search}
-          setSearch={setSearch}
-          show={showSearch}
-          inputRef={searchInputRef}
-        />
-      </React.Suspense>
-
-      {/* ── Active filter chips ────────────── */}
-      {chips.length > 0 && (
-        <div
-          className="no-scrollbar mb-2.5 flex gap-1.5 overflow-x-auto"
-          style={{ paddingBottom: 2 }}
+    <PageContainer>
+      <div style={{ paddingBottom: 32 }}>
+        {/* ── Sticky collapsing header ─────────── */}
+        <header
+          className="-mx-4 px-4 lg:mx-0 lg:px-0"
+          style={{
+            position: 'sticky',
+            top: 0,
+            zIndex: 'var(--z-sticky)',
+            background: 'var(--bg)',
+            borderBottom: scrolled ? '1px solid var(--border-light)' : 'none',
+          }}
         >
-          {chips.map((chip) => (
-            <button
-              key={chip.key}
-              onClick={chip.clear}
-              aria-label={`Remove ${chip.label} filter`}
+          {scrolled ? (
+            <div
               style={{
-                flexShrink: 0,
+                height: 44,
                 display: 'flex',
                 alignItems: 'center',
-                gap: 4,
-                padding: '0.3125rem 0.625rem',
-                minHeight: 28,
-                borderRadius: 'var(--radius-pill)',
-                background: 'var(--sage-light)',
-                border: '1px solid var(--sage-mid)',
-                color: 'var(--sage-dark)',
-                fontSize: 11,
-                fontWeight: 500,
-                cursor: 'pointer',
+                justifyContent: 'space-between',
               }}
             >
-              {chip.label}
-              <X size={16} aria-hidden="true" />
-            </button>
-          ))}
-        </div>
-      )}
+              <span
+                style={{
+                  fontSize: 17,
+                  fontWeight: 600,
+                  color: 'var(--text-primary)',
+                  letterSpacing: '-0.01em',
+                }}
+              >
+                People
+              </span>
+              <ActionButtons />
+            </div>
+          ) : (
+            <div
+              style={{
+                paddingTop: 20,
+                paddingBottom: 14,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <h1
+                style={{
+                  fontSize: 32,
+                  fontWeight: 800,
+                  color: 'var(--text-primary)',
+                  letterSpacing: '-0.03em',
+                  lineHeight: 1,
+                }}
+              >
+                People
+              </h1>
+              <ActionButtons />
+            </div>
+          )}
+        </header>
 
-      {/* ── New people alert ──────────────── */}
-      {newPeople.length > 0 && (
-        <div style={{ marginBottom: 14 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-            <span
-              style={{
-                fontSize: 10,
-                fontWeight: 700,
-                color: 'var(--amber)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.06em',
-              }}
+        <main>
+          {/* ── Search (expandable) ─────────────── */}
+          <React.Suspense fallback={null}>
+            <SearchBar
+              search={search}
+              setSearch={setSearch}
+              show={showSearch}
+              inputRef={searchInputRef}
+            />
+          </React.Suspense>
+
+          {/* ── Active filter chips ────────────── */}
+          {chips.length > 0 && (
+            <div
+              className="no-scrollbar mb-2.5 flex gap-1.5 overflow-x-auto"
+              style={{ paddingBottom: 2 }}
             >
-              New · needs first contact
-            </span>
-            <span
-              style={{
-                minWidth: 16,
-                height: 16,
-                borderRadius: 'var(--radius-pill)',
-                background: 'var(--amber-light)',
-                border: '1px solid var(--amber-border)',
-                color: 'var(--amber)',
-                fontSize: 10,
-                fontWeight: 700,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '0 0.25rem',
-              }}
-            >
-              {newPeople.length}
-            </span>
-          </div>
-          <div
-            style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4 }}
-            className="no-scrollbar"
-          >
-            {newPeople.map((p) => {
-              const createdAt = parseISO(p.createdAt);
-              const hoursAgo = differenceInHours(new Date(), createdAt);
-              const daysAgo = differenceInCalendarDays(new Date(), createdAt);
-              const timeLabel =
-                hoursAgo < 24
-                  ? `${hoursAgo}h`
-                  : daysAgo < 14
-                    ? `${daysAgo}d`
-                    : `${Math.floor(daysAgo / 7)}w`;
-              return (
-                <Link
-                  key={p.id}
-                  href={`/person/${p.id}`}
+              {chips.map((chip) => (
+                <button
+                  key={chip.key}
+                  onClick={chip.clear}
+                  aria-label={`Remove ${chip.label} filter`}
                   style={{
                     flexShrink: 0,
                     display: 'flex',
-                    flexDirection: 'column',
                     alignItems: 'center',
                     gap: 4,
-                    textDecoration: 'none',
-                    width: 64,
+                    padding: '0.3125rem 0.625rem',
+                    minHeight: 28,
+                    borderRadius: 'var(--radius-pill)',
+                    background: 'var(--sage-light)',
+                    border: '1px solid var(--sage-mid)',
+                    color: 'var(--sage-dark)',
+                    fontSize: 11,
+                    fontWeight: 500,
+                    cursor: 'pointer',
                   }}
                 >
-                  <AvatarBadge
-                    name={fullName(p)}
-                    photo={p.photo}
-                    size={44}
-                    bg="var(--amber-light)"
-                    color="var(--amber)"
-                    border="0.125rem solid var(--amber-border)"
-                  />
-                  <span
-                    style={{
-                      fontSize: 10,
-                      fontWeight: 600,
-                      color: 'var(--text-primary)',
-                      textAlign: 'center',
-                      width: '100%',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    {p.preferredName}
-                  </span>
-                  <span style={{ fontSize: 9, color: 'var(--amber)', fontWeight: 500, marginTop: -2 }}>
-                    {timeLabel} ago
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* ── Count + Sort ──────────────────── */}
-      <div style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
-        <span style={{ fontSize: 12, color: 'var(--text-muted)', flex: 1 }}>
-          {familyCount > 0
-            ? `${familyCount} ${familyCount === 1 ? 'family' : 'families'}`
-            : `${individualCount} people`}
-          {individualCount > 0 && familyCount > 0
-            ? ` + ${individualCount} individual${individualCount !== 1 ? 's' : ''}`
-            : ''}
-        </span>
-
-        <React.Suspense fallback={null}>
-          <SortControls />
-        </React.Suspense>
-      </div>
-
-      {/* ── List ──────────────────────────── */}
-      <div
-        className="no-last-border"
-        style={{
-          background: 'var(--surface)',
-          borderRadius: 'var(--radius)',
-          overflow: 'hidden',
-          opacity: isSearchPending ? 0.6 : 1,
-          transition: 'opacity 0.15s',
-        }}
-      >
-        {entries.map((entry) =>
-          entry.type === 'family' ? (
-            <FamilyRow
-              key={entry.family.id}
-              family={entry.family}
-              members={entry.members}
-              lastNoteTs={entry.lastNoteTs}
-              group={entry.group}
-            />
-          ) : (
-            <IndividualRow
-              key={entry.fromFamilySearch ? `${entry.person.id}-search` : entry.person.id}
-              person={entry.person}
-              lastNoteTs={entry.lastNoteTs}
-              group={entry.group}
-            />
-          )
-        )}
-        {entries.length === 0 && (
-          <div
-            style={{
-              textAlign: 'center',
-              paddingTop: 48,
-              color: 'var(--text-muted)',
-              fontSize: 14,
-            }}
-          >
-            {filters.shepherds.length > 0 &&
-            !isAdmin &&
-            filters.shepherds.every((s) => s === 'mine')
-              ? 'No one assigned to you yet.'
-              : 'No people found.'}
-          </div>
-        )}
-      </div>
-
-      <React.Suspense fallback={null}>
-        {showAddPerson && <AddPersonModal onClose={() => setShowAddPerson(false)} />}
-        {showAddVisitor && <AddVisitorModal onClose={() => setShowAddVisitor(false)} />}
-        {showAddFamily && <AddFamilyModal onClose={() => setShowAddFamily(false)} />}
-        {showInvitePicker && (
-          <InvitePersonPickerSheet
-            people={data.people}
-            onSelect={(p) => {
-              setInvitePerson(data.people.find((x) => x.id === p.id) ?? null);
-              setShowInvitePicker(false);
-              setShowInvite(true);
-            }}
-            onBack={() => setShowInvitePicker(false)}
-          />
-        )}
-        {showInvite && invitePerson && (
-          <InviteSheet
-            onClose={() => { setShowInvite(false); setInvitePerson(null); }}
-            onChangePerson={() => { setShowInvite(false); setInvitePerson(null); setShowInvitePicker(true); }}
-            initialEmail={invitePerson.email ?? ''}
-            initialRole="shepherd"
-            personName={fullName(invitePerson)}
-            personId={invitePerson.id}
-          />
-        )}
-      </React.Suspense>
-
-      {/* ── Filter panel (bottom sheet) ────── */}
-      <React.Suspense fallback={null}>
-        <FilterPanel show={showFilter} onClose={() => { setShowFilter(false); setFullPageModalOpen(false); }} />
-      </React.Suspense>
-      </main>
-    </div>
-  );
-}
-
-/* ── Row components ────────────────────────── */
-
-function LogStatusTag({
-  daysSince,
-  lastNoteTs,
-}: {
-  daysSince: number | null;
-  lastNoteTs: number | null;
-}) {
-  if (lastNoteTs === null) {
-    return <StatusBadge label="Never logged" bg="var(--border-light)" color="var(--text-muted)" />;
-  }
-  if (daysSince !== null && daysSince >= 7) {
-    return (
-      <StatusBadge
-        label={`${daysSince}d ago`}
-        bg="var(--amber-light)"
-        color="var(--amber)"
-        border="1px solid var(--amber-border)"
-      />
-    );
-  }
-  return (
-    <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-      Logged {format(new Date(lastNoteTs!), 'MMM d')}
-    </span>
-  );
-}
-
-const FamilyRow = React.memo(function FamilyRow({
-  family,
-  members,
-  lastNoteTs,
-  group,
-}: {
-  family: Family;
-  members: Person[];
-  lastNoteTs: number | null;
-  group: Group | null;
-}) {
-  const daysSinceNote =
-    lastNoteTs !== null ? differenceInCalendarDays(new Date(), new Date(lastNoteTs)) : null;
-
-  return (
-    <Link
-      href={`/family/${family.id}`}
-      className="row-hover"
-      style={{ borderBottom: '1px solid var(--border-light)' }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '0.625rem 0' }}>
-        {/* Family avatar — single circle with photo or house icon */}
-        <AvatarBadge
-          name={family.label}
-          photo={family.photo}
-          size={44}
-          bg="var(--sage)"
-          color="var(--sage-light)"
-          icon={<House size={22} color="var(--sage-light)" />}
-        />
-
-        {/* Info */}
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: 6,
-              marginBottom: 3,
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 5,
-                minWidth: 0,
-                overflow: 'hidden',
-              }}
-            >
-              <span
-                style={{
-                  fontSize: 15,
-                  fontWeight: 600,
-                  color: 'var(--text-primary)',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  flexShrink: 1,
-                }}
-              >
-                {family.label}
-              </span>
+                  {chip.label}
+                  <X size={16} aria-hidden="true" />
+                </button>
+              ))}
             </div>
-            <LogStatusTag daysSince={daysSinceNote} lastNoteTs={lastNoteTs} />
-          </div>
+          )}
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-              {members.every((m) => m.assignedShepherdIds.length === 0) && (
-                <>
-                  <StatusBadge
-                    label="No shepherd"
-                    bg="var(--amber-light)"
-                    color="var(--amber)"
-                    border="1px solid var(--amber-border)"
-                  />
-                  <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>·</span>
-                </>
-              )}
-            </span>
-            {members.map((m, i) => (
-              <span
-                key={m.id}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 3,
-                  fontSize: 12,
-                  color: 'var(--text-muted)',
-                }}
-              >
-                {i > 0 && <span>,&nbsp;</span>}
-                {m.isShepherd && (
-                  <HandHeart size={11} color="var(--sage)" style={{ flexShrink: 0 }} />
-                )}
-                {m.preferredName}
-              </span>
-            ))}
-            {family.childCount && family.childCount > 0 ? (
-              <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                , +{family.childCount} kid{family.childCount !== 1 ? 's' : ''}
-              </span>
-            ) : null}
-            {group && (() => {
-              const allGroupIds = [...new Set(members.flatMap((m) => m.groupIds))];
-              const extra = allGroupIds.length - 1;
-              return (
-                <>
-                  <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>·</span>
-                  <span
-                    style={{
-                      fontSize: 10,
-                      padding: '0.125rem 0.4375rem',
-                      borderRadius: 'var(--radius-pill)',
-                      background: 'var(--blue-light)',
-                      color: 'var(--blue)',
-                      fontWeight: 600,
-                      flexShrink: 0,
-                    }}
-                  >
-                    {group.name}
-                  </span>
-                  {extra > 0 && (
-                    <span
-                      style={{
-                        fontSize: 10,
-                        padding: '0.125rem 0.375rem',
-                        borderRadius: 'var(--radius-pill)',
-                        background: 'var(--blue-light)',
-                        color: 'var(--blue)',
-                        fontWeight: 600,
-                        flexShrink: 0,
-                      }}
-                    >
-                      +{extra}
-                    </span>
-                  )}
-                </>
-              );
-            })()}
-          </div>
-        </div>
-      </div>
-    </Link>
-  );
-});
-
-const addMenuItemStyle: React.CSSProperties = {
-  width: '100%',
-  display: 'flex',
-  alignItems: 'center',
-  gap: 10,
-  padding: '0.625rem 0.875rem',
-  background: 'none',
-  border: 'none',
-  borderBottom: '1px solid var(--border-light)',
-  cursor: 'pointer',
-  textAlign: 'left',
-};
-
-const addMenuIconStyle: React.CSSProperties = {
-  width: 28,
-  height: 28,
-  borderRadius: 'var(--radius-sm)',
-  background: 'var(--sage-light)',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  flexShrink: 0,
-};
-
-const addMenuLabelStyle: React.CSSProperties = {
-  fontSize: 14,
-  fontWeight: 600,
-  color: 'var(--text-primary)',
-  margin: 0,
-};
-
-const addMenuDescStyle: React.CSSProperties = {
-  fontSize: 11,
-  color: 'var(--text-muted)',
-  margin: '0.0625rem 0 0',
-};
-
-const IndividualRow = React.memo(function IndividualRow({
-  person,
-  lastNoteTs,
-  group,
-}: {
-  person: Person;
-  lastNoteTs: number | null;
-  group: Group | null;
-}) {
-  const daysSinceNote =
-    lastNoteTs !== null ? differenceInCalendarDays(new Date(), new Date(lastNoteTs)) : null;
-
-  return (
-    <Link
-      href={`/person/${person.id}`}
-      className="row-hover"
-      style={{ borderBottom: '1px solid var(--border-light)' }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '0.625rem 0' }}>
-        {/* Avatar */}
-        <AvatarBadge name={fullName(person)} photo={person.photo} size={44} />
-
-        {/* Info */}
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: 6,
-              marginBottom: 3,
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 5,
-                minWidth: 0,
-                overflow: 'hidden',
-              }}
-            >
-              {person.isShepherd && (
-                <HandHeart size={14} color="var(--sage)" style={{ flexShrink: 0 }} />
-              )}
-              <span
-                style={{
-                  fontSize: 15,
-                  fontWeight: 600,
-                  color: 'var(--text-primary)',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  flexShrink: 1,
-                }}
-              >
-                {fullName(person)}
-              </span>
-              {person.alternativeName && (
+          {/* ── New people alert ──────────────── */}
+          {newPeople.length > 0 && (
+            <div style={{ marginBottom: 14 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
                 <span
                   style={{
-                    fontSize: 12,
-                    color: 'var(--text-muted)',
-                    flexShrink: 0,
-                    whiteSpace: 'nowrap',
+                    fontSize: 10,
+                    fontWeight: 700,
+                    color: 'var(--amber)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em',
                   }}
                 >
-                  {person.alternativeName}
+                  New · needs first contact
                 </span>
-              )}
-            </div>
-            <LogStatusTag daysSince={daysSinceNote} lastNoteTs={lastNoteTs} />
-          </div>
-
-          <div style={{ lineHeight: 1.5 }}>
-            {person.assignedShepherdIds.length === 0 && (
-              <>
-                <StatusBadge
-                  label="No shepherd"
-                  bg="var(--amber-light)"
-                  color="var(--amber)"
-                  border="1px solid var(--amber-border)"
-                />
-                {' '}
-              </>
-            )}
-            <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-              {person.assignedShepherdIds.length === 0 && '· '}
-              {getMembershipLabel(person.membershipStatus)} ·{' '}
-              {getChurchAttendanceLabel(person.churchAttendance)}
-            </span>
-            {group && (() => {
-              const extra = person.groupIds.length - 1;
-              return (
-                <>
-                  {' '}
-                  <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>·</span>
-                  {' '}
-                  <span
-                    style={{
-                      fontSize: 10,
-                      padding: '0.125rem 0.4375rem',
-                      borderRadius: 'var(--radius-pill)',
-                      background: 'var(--blue-light)',
-                      color: 'var(--blue)',
-                      fontWeight: 600,
-                      display: 'inline-block',
-                      verticalAlign: 'middle',
-                    }}
-                  >
-                    {group.name}
-                  </span>
-                  {extra > 0 && (
-                    <>
-                      {' '}
+                <span
+                  style={{
+                    minWidth: 16,
+                    height: 16,
+                    borderRadius: 'var(--radius-pill)',
+                    background: 'var(--amber-light)',
+                    border: '1px solid var(--amber-border)',
+                    color: 'var(--amber)',
+                    fontSize: 10,
+                    fontWeight: 700,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '0 0.25rem',
+                  }}
+                >
+                  {newPeople.length}
+                </span>
+              </div>
+              <div
+                style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4 }}
+                className="no-scrollbar"
+              >
+                {newPeople.map((p) => {
+                  const createdAt = parseISO(p.createdAt);
+                  const hoursAgo = differenceInHours(new Date(), createdAt);
+                  const daysAgo = differenceInCalendarDays(new Date(), createdAt);
+                  const timeLabel =
+                    hoursAgo < 24
+                      ? `${hoursAgo}h`
+                      : daysAgo < 14
+                        ? `${daysAgo}d`
+                        : `${Math.floor(daysAgo / 7)}w`;
+                  return (
+                    <Link
+                      key={p.id}
+                      href={`/person/${p.id}`}
+                      style={{
+                        flexShrink: 0,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: 4,
+                        textDecoration: 'none',
+                        width: 64,
+                      }}
+                    >
+                      <AvatarBadge
+                        name={fullName(p)}
+                        photo={p.photo}
+                        size={44}
+                        bg="var(--amber-light)"
+                        color="var(--amber)"
+                        border="0.125rem solid var(--amber-border)"
+                      />
                       <span
                         style={{
                           fontSize: 10,
-                          padding: '0.125rem 0.375rem',
-                          borderRadius: 'var(--radius-pill)',
-                          background: 'var(--blue-light)',
-                          color: 'var(--blue)',
                           fontWeight: 600,
-                          display: 'inline-block',
-                          verticalAlign: 'middle',
+                          color: 'var(--text-primary)',
+                          textAlign: 'center',
+                          width: '100%',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
                         }}
                       >
-                        +{extra}
+                        {p.preferredName}
                       </span>
-                    </>
-                  )}
-                </>
-              );
-            })()}
-          </div>
-        </div>
-      </div>
-    </Link>
-  );
-});
+                      <span
+                        style={{
+                          fontSize: 9,
+                          color: 'var(--amber)',
+                          fontWeight: 500,
+                          marginTop: -2,
+                        }}
+                      >
+                        {timeLabel} ago
+                      </span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
+          {/* ── Count + Sort ──────────────────── */}
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
+            <span style={{ fontSize: 12, color: 'var(--text-muted)', flex: 1 }}>
+              {familyCount > 0
+                ? `${familyCount} ${familyCount === 1 ? 'family' : 'families'}`
+                : `${individualCount} people`}
+              {individualCount > 0 && familyCount > 0
+                ? ` + ${individualCount} individual${individualCount !== 1 ? 's' : ''}`
+                : ''}
+            </span>
+
+            <div className="lg:hidden">
+              <React.Suspense fallback={null}>
+                <SortControls />
+              </React.Suspense>
+            </div>
+          </div>
+
+          {/* ── List ──────────────────────────── */}
+          <div
+            className="no-last-border lg:hidden"
+            style={{
+              background: 'var(--surface)',
+              borderRadius: 'var(--radius)',
+              overflow: 'hidden',
+              opacity: isSearchPending ? 0.6 : 1,
+              transition: 'opacity 0.15s',
+            }}
+          >
+            {entries.map((entry) =>
+              entry.type === 'family' ? (
+                <FamilyRow
+                  key={entry.family.id}
+                  family={entry.family}
+                  members={entry.members}
+                  lastNoteTs={entry.lastNoteTs}
+                  group={entry.group}
+                />
+              ) : (
+                <IndividualRow
+                  key={entry.fromFamilySearch ? `${entry.person.id}-search` : entry.person.id}
+                  person={entry.person}
+                  lastNoteTs={entry.lastNoteTs}
+                  group={entry.group}
+                />
+              )
+            )}
+            {entries.length === 0 && (
+              <div
+                style={{
+                  textAlign: 'center',
+                  paddingTop: 48,
+                  color: 'var(--text-muted)',
+                  fontSize: 14,
+                }}
+              >
+                {filters.shepherds.length > 0 &&
+                !isAdmin &&
+                filters.shepherds.every((s) => s === 'mine')
+                  ? 'No one assigned to you yet.'
+                  : 'No people found.'}
+              </div>
+            )}
+          </div>
+
+          <div
+            className="hidden lg:block"
+            style={{
+              opacity: isSearchPending ? 0.6 : 1,
+              transition: 'opacity 0.15s',
+            }}
+          >
+            <PeopleTable entries={entries} />
+          </div>
+
+          <React.Suspense fallback={null}>
+            {showAddPerson && <AddPersonModal onClose={() => setShowAddPerson(false)} />}
+            {showAddVisitor && <AddVisitorModal onClose={() => setShowAddVisitor(false)} />}
+            {showAddFamily && <AddFamilyModal onClose={() => setShowAddFamily(false)} />}
+            {showInvitePicker && (
+              <InvitePersonPickerSheet
+                people={data.people}
+                onSelect={(p) => {
+                  setInvitePerson(data.people.find((x) => x.id === p.id) ?? null);
+                  setShowInvitePicker(false);
+                  setShowInvite(true);
+                }}
+                onBack={() => setShowInvitePicker(false)}
+              />
+            )}
+            {showInvite && invitePerson && (
+              <InviteSheet
+                onClose={() => {
+                  setShowInvite(false);
+                  setInvitePerson(null);
+                }}
+                onChangePerson={() => {
+                  setShowInvite(false);
+                  setInvitePerson(null);
+                  setShowInvitePicker(true);
+                }}
+                initialEmail={invitePerson.email ?? ''}
+                initialRole="shepherd"
+                personName={fullName(invitePerson)}
+                personId={invitePerson.id}
+              />
+            )}
+          </React.Suspense>
+
+          {/* ── Filter panel (bottom sheet) ────── */}
+          <React.Suspense fallback={null}>
+            <FilterPanel
+              show={showFilter}
+              onClose={() => {
+                setShowFilter(false);
+                setFullPageModalOpen(false);
+              }}
+            />
+          </React.Suspense>
+        </main>
+      </div>
+    </PageContainer>
+  );
+}

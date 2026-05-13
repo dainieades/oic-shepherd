@@ -30,7 +30,7 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
   };
 
   return (
-    <BottomSheet onClose={onClose} aria-labelledby="add-person-title">
+    <BottomSheet onClose={onClose} variant="dialog" aria-labelledby="add-person-title">
       <ModalHeader
         title="Add person"
         titleId="add-person-title"
@@ -75,16 +75,10 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
             <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)' }}>
               Person added
             </p>
-            <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
-              Added to the directory.
-            </p>
+            <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>Added to the directory.</p>
           </div>
         ) : (
-          <PersonFormBody
-            ref={formRef}
-            onSaved={handleSaved}
-            onValidityChange={setCanSave}
-          />
+          <PersonFormBody ref={formRef} onSaved={handleSaved} onValidityChange={setCanSave} />
         )}
       </div>
     </BottomSheet>

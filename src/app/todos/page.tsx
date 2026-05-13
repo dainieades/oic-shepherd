@@ -8,6 +8,7 @@ import { filterTodos } from '@/lib/todo-utils';
 import { type Todo } from '@/lib/types';
 import AddTodoModal from '@/components/AddTodoModal';
 import AddLogModal from '@/components/AddLogModal';
+import PageContainer from '@/components/PageContainer';
 import TodoLogPrompt from '@/components/TodoLogPrompt';
 import {
   CaretLeft,
@@ -61,10 +62,25 @@ export default function TodosPage() {
 
   React.useEffect(() => {
     setFullPageModalOpen(
-      !!(showAddTodo || editingTodo || showFilter || showAddLog || todoLogPrompt || viewingLinkedTodo)
+      !!(
+        showAddTodo ||
+        editingTodo ||
+        showFilter ||
+        showAddLog ||
+        todoLogPrompt ||
+        viewingLinkedTodo
+      )
     );
     return () => setFullPageModalOpen(false);
-  }, [showAddTodo, editingTodo, showFilter, showAddLog, todoLogPrompt, viewingLinkedTodo, setFullPageModalOpen]);
+  }, [
+    showAddTodo,
+    editingTodo,
+    showFilter,
+    showAddLog,
+    todoLogPrompt,
+    viewingLinkedTodo,
+    setFullPageModalOpen,
+  ]);
   const [draftFilter, setDraftFilter] = useState<string[]>(['mine']);
   const [shepherdSearch, setShepherdSearch] = useState('');
 
@@ -83,7 +99,9 @@ export default function TodosPage() {
     if (!showFilter) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = prev; };
+    return () => {
+      document.body.style.overflow = prev;
+    };
   }, [showFilter]);
 
   const openFilter = () => {
@@ -239,18 +257,16 @@ export default function TodosPage() {
   );
 
   return (
+    <PageContainer>
     <div style={{ paddingBottom: 32 }}>
       {/* Sticky collapsing header */}
       <div
+        className="-mx-4 px-4 lg:mx-0 lg:px-0"
         style={{
           position: 'sticky',
           top: 0,
           zIndex: 'var(--z-sticky)',
           background: 'var(--bg)',
-          marginLeft: -16,
-          marginRight: -16,
-          paddingLeft: 16,
-          paddingRight: 16,
           borderBottom: scrolled ? '1px solid var(--border-light)' : 'none',
         }}
       >
@@ -339,34 +355,44 @@ export default function TodosPage() {
       )}
 
       {/* Filter chips + view toggle row */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: 10,
+        }}
+      >
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
-          {isAdmin && shepherdFilter.map((sid) => {
-            const label =
-              sid === 'mine' ? 'My Sheep' : (data.personas.find((p) => p.id === sid)?.name ?? sid);
-            return (
-              <button
-                key={sid}
-                onClick={() => setShepherdFilter((f) => f.filter((s) => s !== sid))}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 4,
-                  padding: '0.1875rem 0.5625rem',
-                  borderRadius: 'var(--radius-pill)',
-                  background: 'var(--sage-light)',
-                  border: '1px solid var(--sage-mid)',
-                  color: 'var(--sage-dark)',
-                  fontSize: 11,
-                  fontWeight: 500,
-                  cursor: 'pointer',
-                }}
-              >
-                {label}
-                <X size={9} />
-              </button>
-            );
-          })}
+          {isAdmin &&
+            shepherdFilter.map((sid) => {
+              const label =
+                sid === 'mine'
+                  ? 'My Sheep'
+                  : (data.personas.find((p) => p.id === sid)?.name ?? sid);
+              return (
+                <button
+                  key={sid}
+                  onClick={() => setShepherdFilter((f) => f.filter((s) => s !== sid))}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    padding: '0.1875rem 0.5625rem',
+                    borderRadius: 'var(--radius-pill)',
+                    background: 'var(--sage-light)',
+                    border: '1px solid var(--sage-mid)',
+                    color: 'var(--sage-dark)',
+                    fontSize: 11,
+                    fontWeight: 500,
+                    cursor: 'pointer',
+                  }}
+                >
+                  {label}
+                  <X size={9} />
+                </button>
+              );
+            })}
         </div>
         <div
           style={{
@@ -743,6 +769,7 @@ export default function TodosPage() {
         </div>
       )}
     </div>
+    </PageContainer>
   );
 }
 
@@ -917,7 +944,11 @@ function CalendarView({
                 style={{
                   fontSize: 13,
                   fontWeight: isToday || isSelected ? 700 : 400,
-                  color: isSelected ? 'var(--on-sage)' : isToday ? 'var(--sage)' : 'var(--text-primary)',
+                  color: isSelected
+                    ? 'var(--on-sage)'
+                    : isToday
+                      ? 'var(--sage)'
+                      : 'var(--text-primary)',
                   lineHeight: 1,
                 }}
               >
@@ -972,8 +1003,7 @@ function CalendarView({
               marginBottom: 8,
             }}
           >
-            {format(parseISO(`${selectedDate}T00:00:00`), 'EEEE, MMMM d')}{' '}
-            · {selectedTodos.length}
+            {format(parseISO(`${selectedDate}T00:00:00`), 'EEEE, MMMM d')} · {selectedTodos.length}
           </p>
           {selectedTodos.length === 0 ? (
             <p style={{ fontSize: 13, color: 'var(--text-muted)', padding: '0.75rem 0' }}>
@@ -1083,7 +1113,6 @@ function CalendarView({
   );
 }
 
-
 function TodoSection({
   label,
   todos,
@@ -1143,7 +1172,9 @@ function TodoSection({
           {todos.map((t) => {
             const person = t.personId ? data.people.find((p) => p.id === t.personId) : null;
             const family = t.familyId ? data.families.find((f) => f.id === t.familyId) : null;
-            const targetChips = [family?.label, person ? fullName(person) : undefined].filter(Boolean) as string[];
+            const targetChips = [family?.label, person ? fullName(person) : undefined].filter(
+              Boolean
+            ) as string[];
             const hasRepeat = t.repeat && t.repeat !== 'none';
             return (
               <div

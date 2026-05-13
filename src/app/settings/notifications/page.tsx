@@ -56,7 +56,7 @@ export default function NotificationsPage() {
 
   return (
     <div style={{ paddingBottom: 48 }}>
-      <div style={navBarStyle}>
+      <div className="settings-subpage-navbar" style={navBarStyle}>
         <button onClick={() => router.push('/settings')} style={backBtnStyle}>
           <CaretLeft size={16} weight="bold" />
           Settings
@@ -85,7 +85,8 @@ export default function NotificationsPage() {
               alignItems: 'center',
               gap: 14,
               padding: '0.875rem 1rem',
-              borderBottom: i < visibleOptions.length - 1 ? '1px solid var(--border-light)' : 'none',
+              borderBottom:
+                i < visibleOptions.length - 1 ? '1px solid var(--border-light)' : 'none',
             }}
           >
             <span style={{ flex: 1, minWidth: 0 }}>

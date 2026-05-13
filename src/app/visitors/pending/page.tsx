@@ -23,18 +23,18 @@ import { mapVisitorSubmission } from '@/lib/mappers';
 import { type VisitorSubmission, type Interest, type ReferralSource } from '@/lib/types';
 
 const REFERRAL_LABELS: Record<ReferralSource, string> = {
-  'flyer': 'Flyer',
-  'online': 'Online',
+  flyer: 'Flyer',
+  online: 'Online',
   'drive-by': 'Drive-by',
-  'school': 'School',
-  'friend': 'Friend',
-  'other': 'Other',
+  school: 'School',
+  friend: 'Friend',
+  other: 'Other',
 };
 
 const INTEREST_LABELS: Record<Interest, string> = {
-  'salvation': 'Salvation',
-  'growth': 'Growth in Christ',
-  'serving': 'Serving',
+  salvation: 'Salvation',
+  growth: 'Growth in Christ',
+  serving: 'Serving',
   'small-groups': 'Small Groups',
 };
 
@@ -102,10 +102,16 @@ export default function PendingVisitorsPage() {
   return (
     <div style={{ paddingTop: 16, paddingBottom: 48 }}>
       <header style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
-        <Link href="/" style={{ color: 'var(--text-muted)', display: 'flex', alignItems: 'center' }}>
+        <Link
+          href="/"
+          style={{ color: 'var(--text-muted)', display: 'flex', alignItems: 'center' }}
+        >
           <CaretLeft size={20} />
         </Link>
-        <h1 className="font-display" style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)' }}>
+        <h1
+          className="font-display"
+          style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)' }}
+        >
           Pending visitors
         </h1>
       </header>
@@ -113,15 +119,17 @@ export default function PendingVisitorsPage() {
       {submissions === null ? (
         <p style={{ color: 'var(--text-muted)', fontSize: 14 }}>Loading…</p>
       ) : submissions.length === 0 ? (
-        <div style={{
-          background: 'var(--surface)',
-          borderRadius: 'var(--radius)',
-          border: '1px solid var(--border-light)',
-          padding: '2rem 1.25rem',
-          textAlign: 'center',
-          color: 'var(--text-muted)',
-          fontSize: 14,
-        }}>
+        <div
+          style={{
+            background: 'var(--surface)',
+            borderRadius: 'var(--radius)',
+            border: '1px solid var(--border-light)',
+            padding: '2rem 1.25rem',
+            textAlign: 'center',
+            color: 'var(--text-muted)',
+            fontSize: 14,
+          }}
+        >
           <HandWaving size={32} color="var(--text-muted)" style={{ marginBottom: 12 }} />
           <p style={{ marginBottom: 4 }}>No pending visitor cards.</p>
           <p style={{ fontSize: 12 }}>
@@ -174,11 +182,20 @@ function SubmissionCard({
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
         <h2 style={{ fontSize: 17, fontWeight: 600, color: 'var(--text-primary)' }}>{name}</h2>
         <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-          {submittedAt.toLocaleDateString()} {submittedAt.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
+          {submittedAt.toLocaleDateString()}{' '}
+          {submittedAt.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
         </span>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13, color: 'var(--text-secondary)' }}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 6,
+          fontSize: 13,
+          color: 'var(--text-secondary)',
+        }}
+      >
         {submission.phone && (
           <Row icon={<Phone size={13} color="var(--text-muted)" />}>{submission.phone}</Row>
         )}
@@ -186,7 +203,9 @@ function SubmissionCard({
           <Row icon={<Envelope size={13} color="var(--text-muted)" />}>{submission.email}</Row>
         )}
         {submission.languages.length > 0 && (
-          <Row icon={<Globe size={13} color="var(--text-muted)" />}>{submission.languages.join(', ')}</Row>
+          <Row icon={<Globe size={13} color="var(--text-muted)" />}>
+            {submission.languages.join(', ')}
+          </Row>
         )}
         {submission.isStudent && (
           <Row icon={<GraduationCap size={13} color="var(--text-muted)" />}>Student</Row>

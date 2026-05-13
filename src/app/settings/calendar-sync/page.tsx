@@ -2,10 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  CaretLeft,
-  ArrowsClockwise,
-} from '@phosphor-icons/react';
+import { CaretLeft, ArrowsClockwise } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { useToast } from '@/components/Toast';
 import { ToggleSwitch } from '@/components/ToggleSwitch';
@@ -28,9 +25,8 @@ export default function CalendarSyncPage() {
     setOrigin(window.location.origin);
   }, []);
 
-  const feedUrl = calendarFeedToken && origin
-    ? `${origin}/api/calendar-feed/${calendarFeedToken}.ics`
-    : '';
+  const feedUrl =
+    calendarFeedToken && origin ? `${origin}/api/calendar-feed/${calendarFeedToken}.ics` : '';
 
   async function handleToggle(val: boolean) {
     if (val) {
@@ -75,7 +71,7 @@ export default function CalendarSyncPage() {
 
   return (
     <div style={{ paddingBottom: 48 }}>
-      <div style={navBarStyle}>
+      <div className="settings-subpage-navbar" style={navBarStyle}>
         <button onClick={() => router.push('/settings')} style={backBtnStyle}>
           <CaretLeft size={16} weight="bold" />
           Settings
@@ -84,7 +80,14 @@ export default function CalendarSyncPage() {
         <span style={{ width: 72 }} />
       </div>
 
-      <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: '1rem 0 0.75rem', lineHeight: 1.5 }}>
+      <p
+        style={{
+          fontSize: 13,
+          color: 'var(--text-muted)',
+          margin: '1rem 0 0.75rem',
+          lineHeight: 1.5,
+        }}
+      >
         Add OIC to-dos to your calendar app. New items appear automatically; how often updates show
         up depends on your calendar app.
       </p>
@@ -132,16 +135,13 @@ export default function CalendarSyncPage() {
           />
 
           <p style={sectionHeaderStyle}>Manage</p>
-          <button
-            onClick={() => setShowRegenConfirm(true)}
-            style={resetBtnStyle}
-          >
+          <button onClick={() => setShowRegenConfirm(true)} style={resetBtnStyle}>
             <ArrowsClockwise size={16} color="var(--red)" />
             <span style={{ flex: 1, textAlign: 'left' }}>Reset feed URL</span>
           </button>
           <p style={{ ...descStyle, marginTop: '0.5rem' }}>
-            Resetting disconnects every calendar app currently subscribed. Use only if you think
-            the URL has been shared by mistake — you will need to re-subscribe in each app.
+            Resetting disconnects every calendar app currently subscribed. Use only if you think the
+            URL has been shared by mistake — you will need to re-subscribe in each app.
           </p>
         </>
       )}
@@ -172,7 +172,14 @@ export default function CalendarSyncPage() {
               border: '1px solid var(--border-light)',
             }}
           >
-            <p style={{ fontSize: '0.9375rem', fontWeight: 600, margin: '0 0 0.5rem', color: 'var(--text-primary)' }}>
+            <p
+              style={{
+                fontSize: '0.9375rem',
+                fontWeight: 600,
+                margin: '0 0 0.5rem',
+                color: 'var(--text-primary)',
+              }}
+            >
               Reset feed URL?
             </p>
             <p style={{ ...descStyle, marginBottom: '1rem' }}>
@@ -180,16 +187,10 @@ export default function CalendarSyncPage() {
               subscribe again with the new URL.
             </p>
             <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-              <button
-                onClick={() => setShowRegenConfirm(false)}
-                style={ghostBtnStyle}
-              >
+              <button onClick={() => setShowRegenConfirm(false)} style={ghostBtnStyle}>
                 Cancel
               </button>
-              <button
-                onClick={() => void handleRegenerate()}
-                style={dangerBtnStyle}
-              >
+              <button onClick={() => void handleRegenerate()} style={dangerBtnStyle}>
                 Reset
               </button>
             </div>

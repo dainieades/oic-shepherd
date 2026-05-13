@@ -14,12 +14,7 @@ import {
   CaretRight,
 } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
-import {
-  REFERRAL_SOURCES,
-  INTERESTS,
-  type ReferralSource,
-  type Interest,
-} from '@/lib/types';
+import { REFERRAL_SOURCES, INTERESTS, type ReferralSource, type Interest } from '@/lib/types';
 import { TextInputRow, TextareaRow, PickerRow } from '@/components/form';
 import { rowBtnStyle, spacerStyle, labelStyle } from '@/components/form/formStyles';
 import LanguagePickerSheet from './LanguagePickerSheet';
@@ -36,18 +31,18 @@ interface Props {
 }
 
 const REFERRAL_LABELS: Record<ReferralSource, string> = {
-  'flyer': 'Flyer',
-  'online': 'Online',
+  flyer: 'Flyer',
+  online: 'Online',
   'drive-by': 'Drive-by',
-  'school': 'School',
-  'friend': 'Friend',
-  'other': 'Other',
+  school: 'School',
+  friend: 'Friend',
+  other: 'Other',
 };
 
 const INTEREST_LABELS: Record<Interest, string> = {
-  'salvation': 'Salvation',
-  'growth': 'Growth in Christ',
-  'serving': 'Serving',
+  salvation: 'Salvation',
+  growth: 'Growth in Christ',
+  serving: 'Serving',
   'small-groups': 'Small Groups',
 };
 
@@ -104,9 +99,18 @@ const VisitorIntakeForm = React.forwardRef<VisitorIntakeFormHandle, Props>(
       });
       onSaved(personId);
     }, [
-      preferredName, lastName, phone, email, isStudent, languages,
-      referralSource, referralDetail, interests, prayerRequest,
-      submitVisitorIntake, onSaved,
+      preferredName,
+      lastName,
+      phone,
+      email,
+      isStudent,
+      languages,
+      referralSource,
+      referralDetail,
+      interests,
+      prayerRequest,
+      submitVisitorIntake,
+      onSaved,
     ]);
 
     React.useImperativeHandle(ref, () => ({ save }), [save]);
@@ -171,10 +175,14 @@ const VisitorIntakeForm = React.forwardRef<VisitorIntakeFormHandle, Props>(
             <span style={spacerStyle} />
             <Globe size={16} color="var(--text-muted)" />
             <span style={labelStyle}>Language</span>
-            <span style={{
-              flex: 1, fontSize: 14, textAlign: 'left',
-              color: languages.length > 0 ? 'var(--text-primary)' : 'var(--text-muted)',
-            }}>
+            <span
+              style={{
+                flex: 1,
+                fontSize: 14,
+                textAlign: 'left',
+                color: languages.length > 0 ? 'var(--text-primary)' : 'var(--text-muted)',
+              }}
+            >
               {languages.length > 0 ? languages.join(', ') : 'None'}
             </span>
             <CaretRight size={14} color="var(--text-muted)" />
@@ -196,7 +204,7 @@ const VisitorIntakeForm = React.forwardRef<VisitorIntakeFormHandle, Props>(
               inputRef={referralDetailRef}
               value={referralDetail}
               onChange={setReferralDetail}
-              placeholder={referralSource === 'friend' ? "Who invited you?" : 'Tell us more'}
+              placeholder={referralSource === 'friend' ? 'Who invited you?' : 'Tell us more'}
             />
           )}
         </Section>
@@ -230,15 +238,27 @@ const VisitorIntakeForm = React.forwardRef<VisitorIntakeFormHandle, Props>(
                   color={selected ? 'var(--sage)' : 'var(--text-muted)'}
                   weight={selected ? 'fill' : 'regular'}
                 />
-                <span style={{ ...labelStyle, color: 'var(--text-primary)', flex: 1, textAlign: 'left' }}>
+                <span
+                  style={{
+                    ...labelStyle,
+                    color: 'var(--text-primary)',
+                    flex: 1,
+                    textAlign: 'left',
+                  }}
+                >
                   {INTEREST_LABELS[interest]}
                 </span>
                 {selected && (
-                  <span style={{
-                    fontSize: 11, fontWeight: 700, padding: '0.125rem 0.5rem',
-                    borderRadius: 'var(--radius-pill)', background: 'var(--sage)',
-                    color: 'var(--on-sage)',
-                  }}>
+                  <span
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 700,
+                      padding: '0.125rem 0.5rem',
+                      borderRadius: 'var(--radius-pill)',
+                      background: 'var(--sage)',
+                      color: 'var(--on-sage)',
+                    }}
+                  >
                     Selected
                   </span>
                 )}
@@ -280,10 +300,16 @@ export default VisitorIntakeForm;
 function Section({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div style={{ marginBottom: 24 }}>
-      <p style={{
-        fontSize: 10, fontWeight: 600, color: 'var(--text-muted)',
-        textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6,
-      }}>
+      <p
+        style={{
+          fontSize: 10,
+          fontWeight: 600,
+          color: 'var(--text-muted)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.06em',
+          marginBottom: 6,
+        }}
+      >
         {label}
       </p>
       <div

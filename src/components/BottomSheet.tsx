@@ -1,8 +1,10 @@
 'use client';
 
 import React from 'react';
-import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS } from '@/lib/constants';
+import { BACKDROP_COLOR } from '@/lib/constants';
 import { Button } from './Button';
+
+export type SheetVariant = 'sheet' | 'dialog' | 'side-panel';
 
 interface BottomSheetProps {
   onClose: () => void;
@@ -10,8 +12,26 @@ interface BottomSheetProps {
   compact?: boolean;
   contentStyle?: React.CSSProperties;
   children: React.ReactNode;
+  /**
+   * Desktop presentation override. Below md (768px) all variants render as a
+   * bottom sheet; at md+ 'dialog' centers as a modal and 'side-panel' anchors
+   * to the right.
+   */
+  variant?: SheetVariant;
   'aria-labelledby'?: string;
 }
+
+const OUTER_VARIANT_CLASS: Record<SheetVariant, string> = {
+  sheet: '',
+  dialog: 'sheet-outer-dialog',
+  'side-panel': 'sheet-outer-side-panel',
+};
+
+const PANEL_VARIANT_CLASS: Record<SheetVariant, string> = {
+  sheet: '',
+  dialog: 'sheet-panel-dialog',
+  'side-panel': 'sheet-panel-side-panel',
+};
 
 export function BottomSheet({
   onClose,
@@ -19,12 +39,15 @@ export function BottomSheet({
   compact = false,
   contentStyle,
   children,
+  variant = 'sheet',
   'aria-labelledby': ariaLabelledby,
 }: BottomSheetProps) {
   React.useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = prev; };
+    return () => {
+      document.body.style.overflow = prev;
+    };
   }, []);
 
   React.useEffect(() => {
@@ -37,14 +60,13 @@ export function BottomSheet({
 
   return (
     <div
+      className={`sheet-outer ${OUTER_VARIANT_CLASS[variant]}`}
       style={{
         position: 'fixed',
         inset: 0,
         background: BACKDROP_COLOR,
         zIndex,
         display: 'flex',
-        alignItems: 'flex-end',
-        justifyContent: 'center',
       }}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
@@ -54,15 +76,17 @@ export function BottomSheet({
         role="dialog"
         aria-modal="true"
         aria-labelledby={ariaLabelledby}
-        className="animate-slide-up"
+        className={`sheet-panel ${PANEL_VARIANT_CLASS[variant]}`}
         style={{
           background: 'var(--surface)',
-          borderRadius: SHEET_BORDER_RADIUS,
-          width: '100%',
-          maxWidth: SHEET_MAX_WIDTH,
           ...(compact
             ? { paddingBottom: 'env(safe-area-inset-bottom, 1.5rem)' }
-            : { height: 'calc(100dvh - 3rem)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }),
+            : {
+                height: 'calc(100dvh - 3rem)',
+                display: 'flex',
+                flexDirection: 'column',
+                overflow: 'hidden',
+              }),
           position: 'relative',
           ...contentStyle,
         }}
@@ -108,7 +132,9 @@ export function ModalHeader({
       <Button variant="ghost" size="sm" onClick={onCancel}>
         {cancelLabel}
       </Button>
-      <span id={titleId} style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>{title}</span>
+      <span id={titleId} style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
+        {title}
+      </span>
       <Button
         variant={actionVariant === 'text' ? 'text' : 'primary'}
         size="sm"

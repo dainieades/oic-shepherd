@@ -18,7 +18,12 @@ import {
   CaretLeft,
   Check,
 } from '@phosphor-icons/react';
-import { SHEPHERD_AVATAR_PALETTE, Z_SHEET, SHEET_BORDER_RADIUS, SHEET_MAX_WIDTH } from '@/lib/constants';
+import {
+  SHEPHERD_AVATAR_PALETTE,
+  Z_SHEET,
+  SHEET_BORDER_RADIUS,
+  SHEET_MAX_WIDTH,
+} from '@/lib/constants';
 import { BottomSheet, ModalHeader } from '@/components/BottomSheet';
 
 export default function GroupDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -377,9 +382,7 @@ function EditGroupDrawer({
   group: import('@/lib/types').Group;
   onClose: () => void;
   onSave: (
-    updates: Partial<
-      Pick<import('@/lib/types').Group, 'name' | 'description' | 'leaderIds'>
-    >,
+    updates: Partial<Pick<import('@/lib/types').Group, 'name' | 'description' | 'leaderIds'>>,
     memberIds: string[]
   ) => void;
 }) {
@@ -416,99 +419,99 @@ function EditGroupDrawer({
           actionLabel="Save"
         />
 
-          {/* Scrollable body */}
-          <div
-            style={{
-              flex: 1,
-              overflowY: 'auto',
-              padding: '1.25rem 1.25rem 3rem',
-              background: 'var(--bg)',
-            }}
-          >
-            {/* ── DETAILS ── */}
-            <DrawerSection label="Details">
-              <div
-                className="field-row-hover"
-                style={textRowStyle}
-                onClick={() => nameRef.current?.focus()}
-              >
-                <span style={asteriskStyle}>*</span>
-                <TextT size={16} color="var(--text-muted)" />
-                <span style={labelStyle}>Name</span>
-                <input
-                  ref={nameRef}
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Group name"
-                  style={inputStyle}
-                />
-              </div>
-              <div
-                className="field-row-hover"
-                style={{ ...textRowStyle, alignItems: 'flex-start' }}
-                onClick={() => descRef.current?.focus()}
-              >
-                <span style={spacerStyle} />
-                <span style={{ paddingTop: 2 }}>
-                  <AlignLeft size={16} color="var(--text-muted)" />
-                </span>
-                <span style={{ ...labelStyle, paddingTop: 2 }}>About</span>
-                <textarea
-                  ref={descRef}
-                  value={description}
-                  onChange={(e) => setDesc(e.target.value)}
-                  placeholder="Description…"
-                  rows={3}
-                  style={{ ...inputStyle, resize: 'none', lineHeight: 1.5 }}
-                />
-              </div>
-            </DrawerSection>
+        {/* Scrollable body */}
+        <div
+          style={{
+            flex: 1,
+            overflowY: 'auto',
+            padding: '1.25rem 1.25rem 3rem',
+            background: 'var(--bg)',
+          }}
+        >
+          {/* ── DETAILS ── */}
+          <DrawerSection label="Details">
+            <div
+              className="field-row-hover"
+              style={textRowStyle}
+              onClick={() => nameRef.current?.focus()}
+            >
+              <span style={asteriskStyle}>*</span>
+              <TextT size={16} color="var(--text-muted)" />
+              <span style={labelStyle}>Name</span>
+              <input
+                ref={nameRef}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Group name"
+                style={inputStyle}
+              />
+            </div>
+            <div
+              className="field-row-hover"
+              style={{ ...textRowStyle, alignItems: 'flex-start' }}
+              onClick={() => descRef.current?.focus()}
+            >
+              <span style={spacerStyle} />
+              <span style={{ paddingTop: 2 }}>
+                <AlignLeft size={16} color="var(--text-muted)" />
+              </span>
+              <span style={{ ...labelStyle, paddingTop: 2 }}>About</span>
+              <textarea
+                ref={descRef}
+                value={description}
+                onChange={(e) => setDesc(e.target.value)}
+                placeholder="Description…"
+                rows={3}
+                style={{ ...inputStyle, resize: 'none', lineHeight: 1.5 }}
+              />
+            </div>
+          </DrawerSection>
 
-            {/* ── LEADERS ── */}
-            <DrawerSection label="Leaders">
-              <button
-                className="field-row-hover"
-                onClick={() => setShowLeaderPicker(true)}
-                style={pickerRowStyle}
+          {/* ── LEADERS ── */}
+          <DrawerSection label="Leaders">
+            <button
+              className="field-row-hover"
+              onClick={() => setShowLeaderPicker(true)}
+              style={pickerRowStyle}
+            >
+              <span style={spacerStyle} />
+              <Crown size={16} color="var(--blue)" />
+              <span style={labelStyle}>Leaders</span>
+              <span
+                style={{
+                  flex: 1,
+                  fontSize: 14,
+                  color: selectedLeaders.length ? 'var(--text-primary)' : 'var(--text-muted)',
+                  textAlign: 'left',
+                }}
               >
-                <span style={spacerStyle} />
-                <Crown size={16} color="var(--blue)" />
-                <span style={labelStyle}>Leaders</span>
-                <span
-                  style={{
-                    flex: 1,
-                    fontSize: 14,
-                    color: selectedLeaders.length ? 'var(--text-primary)' : 'var(--text-muted)',
-                    textAlign: 'left',
-                  }}
-                >
-                  {selectedLeaders.length === 0
-                    ? 'None'
-                    : selectedLeaders.map((p) => p.preferredName).join(', ')}
-                </span>
-                <CaretRight size={14} color="var(--text-muted)" />
-              </button>
-            </DrawerSection>
+                {selectedLeaders.length === 0
+                  ? 'None'
+                  : selectedLeaders.map((p) => p.preferredName).join(', ')}
+              </span>
+              <CaretRight size={14} color="var(--text-muted)" />
+            </button>
+          </DrawerSection>
 
-            {/* ── MEMBERS ── */}
-            <DrawerSection label="Members">
-              <button
-                className="field-row-hover"
-                onClick={() => setShowMemberPicker(true)}
-                style={pickerRowStyle}
+          {/* ── MEMBERS ── */}
+          <DrawerSection label="Members">
+            <button
+              className="field-row-hover"
+              onClick={() => setShowMemberPicker(true)}
+              style={pickerRowStyle}
+            >
+              <span style={spacerStyle} />
+              <UserList size={16} color="var(--text-muted)" />
+              <span style={labelStyle}>Members</span>
+              <span
+                style={{ flex: 1, fontSize: 14, color: 'var(--text-primary)', textAlign: 'left' }}
               >
-                <span style={spacerStyle} />
-                <UserList size={16} color="var(--text-muted)" />
-                <span style={labelStyle}>Members</span>
-                <span
-                  style={{ flex: 1, fontSize: 14, color: 'var(--text-primary)', textAlign: 'left' }}
-                >
-                  {memberIds.length} {memberIds.length === 1 ? 'person' : 'people'}
-                </span>
-                <CaretRight size={14} color="var(--text-muted)" />
-              </button>
-            </DrawerSection>
-          </div>
+                {memberIds.length} {memberIds.length === 1 ? 'person' : 'people'}
+              </span>
+              <CaretRight size={14} color="var(--text-muted)" />
+            </button>
+          </DrawerSection>
+        </div>
       </BottomSheet>
 
       {/* Leader picker sheet */}
@@ -517,7 +520,10 @@ function EditGroupDrawer({
           title="Leaders"
           people={data.people}
           selected={leaderIds}
-          onConfirm={(ids) => { setLeaderIds(ids); setShowLeaderPicker(false); }}
+          onConfirm={(ids) => {
+            setLeaderIds(ids);
+            setShowLeaderPicker(false);
+          }}
           onBack={() => setShowLeaderPicker(false)}
         />
       )}
@@ -527,7 +533,10 @@ function EditGroupDrawer({
         <PeoplePickerSheet
           people={data.people}
           selected={memberIds}
-          onConfirm={(ids) => { setMemberIds(ids); setShowMemberPicker(false); }}
+          onConfirm={(ids) => {
+            setMemberIds(ids);
+            setShowMemberPicker(false);
+          }}
           onBack={() => setShowMemberPicker(false)}
         />
       )}
@@ -733,5 +742,3 @@ const inputStyle: React.CSSProperties = {
   fontSize: 14,
   color: 'var(--text-primary)',
 };
-
-

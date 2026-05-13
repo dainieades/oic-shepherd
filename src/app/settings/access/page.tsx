@@ -67,7 +67,7 @@ export default function AccessManagementPage() {
   const titleRef = React.useRef<HTMLHeadingElement>(null);
 
   const personByEmail = React.useMemo(() => {
-    const map = new Map<string, typeof data.people[number]>();
+    const map = new Map<string, (typeof data.people)[number]>();
     for (const p of data.people) {
       if (p.email) map.set(p.email.toLowerCase(), p);
     }
@@ -85,10 +85,9 @@ export default function AccessManagementPage() {
   React.useEffect(() => {
     const el = titleRef.current;
     if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => setTitleVisible(entry.isIntersecting),
-      { threshold: 0 }
-    );
+    const observer = new IntersectionObserver(([entry]) => setTitleVisible(entry.isIntersecting), {
+      threshold: 0,
+    });
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
@@ -121,12 +120,16 @@ export default function AccessManagementPage() {
   return (
     <div style={{ paddingBottom: 48 }}>
       {/* Nav bar */}
-      <div style={navBarStyle}>
+      <div className="settings-subpage-navbar" style={navBarStyle}>
         <button onClick={() => router.push('/settings')} style={backBtnStyle}>
           <CaretLeft size={16} weight="bold" />
           Settings
         </button>
-        <span style={{ ...navTitleStyle, opacity: titleVisible ? 0 : 1, transition: 'opacity 0.15s' }}>Access Management</span>
+        <span
+          style={{ ...navTitleStyle, opacity: titleVisible ? 0 : 1, transition: 'opacity 0.15s' }}
+        >
+          Access Management
+        </span>
         <Button variant="primary" size="sm" onClick={() => setShowInvite(true)}>
           <Plus size={16} weight="bold" />
           Invite
@@ -211,7 +214,7 @@ export default function AccessManagementPage() {
             const role: AppRole =
               linkedPerson?.appRole && linkedPerson.appRole !== 'no-access'
                 ? linkedPerson.appRole
-                : (linkedPerson ? roleByPersonId.get(linkedPerson.id) : undefined) ?? 'no-access';
+                : ((linkedPerson ? roleByPersonId.get(linkedPerson.id) : undefined) ?? 'no-access');
             return (
               <button
                 key={e.email}
@@ -222,7 +225,7 @@ export default function AccessManagementPage() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: 12,
-                  padding: '0.875rem 1rem 0.875rem 1.25rem',
+                  padding: '0.875rem 1rem',
                   background: 'none',
                   border: 'none',
                   borderBottom: '1px solid var(--border-light)',
@@ -276,44 +279,39 @@ export default function AccessManagementPage() {
         </div>
       )}
 
-      {showInvite && (
-        <InviteSheet
-          onClose={() => setShowInvite(false)}
-          onSuccess={() => load()}
-        />
-      )}
+      {showInvite && <InviteSheet onClose={() => setShowInvite(false)} onSuccess={() => load()} />}
 
-      {roleEditEmail && (() => {
-        const linkedPerson = personByEmail.get(roleEditEmail.toLowerCase());
-        const role: AppRole =
-          linkedPerson?.appRole && linkedPerson.appRole !== 'no-access'
-            ? linkedPerson.appRole
-            : (linkedPerson ? roleByPersonId.get(linkedPerson.id) : undefined) ?? 'no-access';
-        const emailEntry = emails.find(e => e.email === roleEditEmail);
-        return (
-          <AppRolePickerSheet
-            currentRole={linkedPerson ? role : undefined}
-            noPersonLinked={!linkedPerson}
-            onSelect={async (newRole) => {
-              if (!linkedPerson) return;
-              await updatePerson(linkedPerson.id, { appRole: newRole });
-              setRoleEditEmail(null);
-            }}
-            onRemove={async () => {
-              await deleteApprovedEmail(roleEditEmail);
-              if (linkedPerson) {
-                await updatePerson(linkedPerson.id, { appRole: 'no-access' });
-              }
-              setRoleEditEmail(null);
-              await load();
-            }}
-            onClose={() => setRoleEditEmail(null)}
-            isAdmin
-            personName={linkedPerson?.preferredName ?? emailEntry?.label ?? roleEditEmail}
-          />
-        );
-      })()}
-
+      {roleEditEmail &&
+        (() => {
+          const linkedPerson = personByEmail.get(roleEditEmail.toLowerCase());
+          const role: AppRole =
+            linkedPerson?.appRole && linkedPerson.appRole !== 'no-access'
+              ? linkedPerson.appRole
+              : ((linkedPerson ? roleByPersonId.get(linkedPerson.id) : undefined) ?? 'no-access');
+          const emailEntry = emails.find((e) => e.email === roleEditEmail);
+          return (
+            <AppRolePickerSheet
+              currentRole={linkedPerson ? role : undefined}
+              noPersonLinked={!linkedPerson}
+              onSelect={async (newRole) => {
+                if (!linkedPerson) return;
+                await updatePerson(linkedPerson.id, { appRole: newRole });
+                setRoleEditEmail(null);
+              }}
+              onRemove={async () => {
+                await deleteApprovedEmail(roleEditEmail);
+                if (linkedPerson) {
+                  await updatePerson(linkedPerson.id, { appRole: 'no-access' });
+                }
+                setRoleEditEmail(null);
+                await load();
+              }}
+              onClose={() => setRoleEditEmail(null)}
+              isAdmin
+              personName={linkedPerson?.preferredName ?? emailEntry?.label ?? roleEditEmail}
+            />
+          );
+        })()}
     </div>
   );
 }

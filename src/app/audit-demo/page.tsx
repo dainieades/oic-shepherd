@@ -34,53 +34,103 @@ const FIELD_LABELS: Record<string, string> = {
 
 const MOCK_LOGS: AuditLog[] = [
   {
-    id: '1', personId: 'p1', changedByPersonaId: 'persona-1', changedByName: 'Pastor David',
-    fieldName: 'churchAttendance', oldValue: 'on-leave', newValue: 'regular',
+    id: '1',
+    personId: 'p1',
+    changedByPersonaId: 'persona-1',
+    changedByName: 'Pastor David',
+    fieldName: 'churchAttendance',
+    oldValue: 'on-leave',
+    newValue: 'regular',
     createdAt: '2026-04-23T14:32:00.000Z',
   },
   {
-    id: '2', personId: 'p1', changedByPersonaId: 'persona-1', changedByName: 'Pastor David',
-    fieldName: 'membershipStatus', oldValue: 'non-member', newValue: 'membership-track',
+    id: '2',
+    personId: 'p1',
+    changedByPersonaId: 'persona-1',
+    changedByName: 'Pastor David',
+    fieldName: 'membershipStatus',
+    oldValue: 'non-member',
+    newValue: 'membership-track',
     createdAt: '2026-04-23T14:32:00.000Z',
   },
   {
-    id: '3', personId: 'p1', changedByPersonaId: 'persona-2', changedByName: 'Shepherd Grace',
-    fieldName: 'phone', oldValue: '', newValue: '604-555-0192',
+    id: '3',
+    personId: 'p1',
+    changedByPersonaId: 'persona-2',
+    changedByName: 'Shepherd Grace',
+    fieldName: 'phone',
+    oldValue: '',
+    newValue: '604-555-0192',
     createdAt: '2026-04-21T09:15:00.000Z',
   },
   {
-    id: '4', personId: 'p1', changedByPersonaId: 'persona-2', changedByName: 'Shepherd Grace',
-    fieldName: 'homeAddress', oldValue: '', newValue: '1234 Maple St, Vancouver, BC',
+    id: '4',
+    personId: 'p1',
+    changedByPersonaId: 'persona-2',
+    changedByName: 'Shepherd Grace',
+    fieldName: 'homeAddress',
+    oldValue: '',
+    newValue: '1234 Maple St, Vancouver, BC',
     createdAt: '2026-04-21T09:15:00.000Z',
   },
   {
-    id: '5', personId: 'p1', changedByPersonaId: 'persona-1', changedByName: 'Pastor David',
-    fieldName: 'appRole', oldValue: 'no-access', newValue: 'shepherd',
+    id: '5',
+    personId: 'p1',
+    changedByPersonaId: 'persona-1',
+    changedByName: 'Pastor David',
+    fieldName: 'appRole',
+    oldValue: 'no-access',
+    newValue: 'shepherd',
     createdAt: '2026-04-18T16:45:00.000Z',
   },
   {
-    id: '6', personId: 'p1', changedByPersonaId: 'persona-1', changedByName: 'Pastor David',
-    fieldName: 'isBeingDiscipled', oldValue: 'No', newValue: 'Yes',
+    id: '6',
+    personId: 'p1',
+    changedByPersonaId: 'persona-1',
+    changedByName: 'Pastor David',
+    fieldName: 'isBeingDiscipled',
+    oldValue: 'No',
+    newValue: 'Yes',
     createdAt: '2026-04-18T16:45:00.000Z',
   },
   {
-    id: '7', personId: 'p1', changedByPersonaId: 'persona-3', changedByName: 'Shepherd James',
-    fieldName: 'englishName', oldValue: 'Timothy Chan', newValue: 'Timothy Chang',
+    id: '7',
+    personId: 'p1',
+    changedByPersonaId: 'persona-3',
+    changedByName: 'Shepherd James',
+    fieldName: 'englishName',
+    oldValue: 'Timothy Chan',
+    newValue: 'Timothy Chang',
     createdAt: '2026-04-10T11:20:00.000Z',
   },
   {
-    id: '8', personId: 'p1', changedByPersonaId: 'persona-3', changedByName: 'Shepherd James',
-    fieldName: 'birthday', oldValue: '', newValue: '1995-03-14',
+    id: '8',
+    personId: 'p1',
+    changedByPersonaId: 'persona-3',
+    changedByName: 'Shepherd James',
+    fieldName: 'birthday',
+    oldValue: '',
+    newValue: '1995-03-14',
     createdAt: '2026-04-10T11:20:00.000Z',
   },
   {
-    id: '9', personId: 'p1', changedByPersonaId: 'persona-2', changedByName: 'Shepherd Grace',
-    fieldName: 'language', oldValue: 'English', newValue: 'English, Mandarin Chinese',
+    id: '9',
+    personId: 'p1',
+    changedByPersonaId: 'persona-2',
+    changedByName: 'Shepherd Grace',
+    fieldName: 'language',
+    oldValue: 'English',
+    newValue: 'English, Mandarin Chinese',
     createdAt: '2026-04-03T13:05:00.000Z',
   },
   {
-    id: '10', personId: 'p1', changedByPersonaId: 'persona-1', changedByName: 'Pastor David',
-    fieldName: 'followUpFrequencyDays', oldValue: '14', newValue: '7',
+    id: '10',
+    personId: 'p1',
+    changedByPersonaId: 'persona-1',
+    changedByName: 'Pastor David',
+    fieldName: 'followUpFrequencyDays',
+    oldValue: '14',
+    newValue: '7',
     createdAt: '2026-03-28T10:00:00.000Z',
   },
 ];
@@ -130,7 +180,14 @@ export default function AuditDemoPage() {
           {groups.map((group) => (
             <div key={group.date}>
               <p style={dateLabelStyle}>{group.date}</p>
-              <div style={{ background: 'var(--surface)', borderRadius: 'var(--radius)', border: '1px solid var(--border-light)', overflow: 'hidden' }}>
+              <div
+                style={{
+                  background: 'var(--surface)',
+                  borderRadius: 'var(--radius)',
+                  border: '1px solid var(--border-light)',
+                  overflow: 'hidden',
+                }}
+              >
                 {group.items.map((log, i) => (
                   <AuditEntry key={log.id} log={log} isLast={i === group.items.length - 1} />
                 ))}
@@ -146,8 +203,21 @@ export default function AuditDemoPage() {
 function AuditEntry({ log, isLast }: { log: AuditLog; isLast: boolean }) {
   const isEmpty = (v: string | null) => v === null || v === '';
   return (
-    <div style={{ padding: '0.75rem 1rem', borderBottom: isLast ? 'none' : '1px solid var(--border-light)' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, marginBottom: 6 }}>
+    <div
+      style={{
+        padding: '0.75rem 1rem',
+        borderBottom: isLast ? 'none' : '1px solid var(--border-light)',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          gap: 8,
+          marginBottom: 6,
+        }}
+      >
         <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-primary)' }}>
           {fieldLabel(log.fieldName)}
         </span>
@@ -169,31 +239,57 @@ function AuditEntry({ log, isLast }: { log: AuditLog; isLast: boolean }) {
 
 function ValueChip({ value, empty }: { value: string | null; empty: boolean }) {
   return (
-    <span style={{
-      fontSize: '0.8125rem',
-      color: empty ? 'var(--text-muted)' : 'var(--text-primary)',
-      background: empty ? 'transparent' : 'var(--sage-light)',
-      borderRadius: 'var(--radius-sm)',
-      padding: empty ? 0 : '0.125rem 0.375rem',
-      fontStyle: empty ? 'italic' : 'normal',
-    }}>
+    <span
+      style={{
+        fontSize: '0.8125rem',
+        color: empty ? 'var(--text-muted)' : 'var(--text-primary)',
+        background: empty ? 'transparent' : 'var(--sage-light)',
+        borderRadius: 'var(--radius-sm)',
+        padding: empty ? 0 : '0.125rem 0.375rem',
+        fontStyle: empty ? 'italic' : 'normal',
+      }}
+    >
       {empty ? 'Not set' : value}
     </span>
   );
 }
 
 const navBarStyle: React.CSSProperties = {
-  position: 'sticky', top: 0, zIndex: 50, background: 'var(--bg)',
-  marginLeft: -16, marginRight: -16, paddingLeft: 16, paddingRight: 16,
-  borderBottom: '1px solid var(--border-light)', display: 'flex',
-  alignItems: 'center', justifyContent: 'space-between', height: 54,
+  position: 'sticky',
+  top: 0,
+  zIndex: 50,
+  background: 'var(--bg)',
+  marginLeft: -16,
+  marginRight: -16,
+  paddingLeft: 16,
+  paddingRight: 16,
+  borderBottom: '1px solid var(--border-light)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  height: 54,
 };
 const backBtnStyle: React.CSSProperties = {
-  display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 13,
-  color: 'var(--sage)', background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: 4,
+  fontSize: 13,
+  color: 'var(--sage)',
+  background: 'none',
+  border: 'none',
+  cursor: 'pointer',
+  padding: 0,
 };
-const navTitleStyle: React.CSSProperties = { fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' };
+const navTitleStyle: React.CSSProperties = {
+  fontSize: 15,
+  fontWeight: 600,
+  color: 'var(--text-primary)',
+};
 const dateLabelStyle: React.CSSProperties = {
-  fontSize: 11, fontWeight: 600, color: 'var(--text-muted)',
-  textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8,
+  fontSize: 11,
+  fontWeight: 600,
+  color: 'var(--text-muted)',
+  textTransform: 'uppercase',
+  letterSpacing: '0.06em',
+  marginBottom: 8,
 };

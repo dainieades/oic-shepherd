@@ -54,7 +54,16 @@ export function truncateWhoLabel(names: string[]): string | null {
   const hidden = names.length - shown.length;
   return shown.join(', ') + (hidden > 0 ? ` +${hidden}` : '');
 }
-import { type Person, type Note, type Todo, type Family, type ChurchAttendance, type Notice, type TodoRepeat, type TodoReminder } from './types';
+import {
+  type Person,
+  type Note,
+  type Todo,
+  type Family,
+  type ChurchAttendance,
+  type Notice,
+  type TodoRepeat,
+  type TodoReminder,
+} from './types';
 
 export function getTimeAgo(dateStr: string): string {
   const date = parseISO(dateStr);
@@ -319,12 +328,18 @@ function toIcsDateOnly(d: Date): string {
 
 function repeatToRrule(repeat: TodoRepeat): string | null {
   switch (repeat) {
-    case 'daily': return 'RRULE:FREQ=DAILY';
-    case 'weekly': return 'RRULE:FREQ=WEEKLY';
-    case 'biweekly': return 'RRULE:FREQ=WEEKLY;INTERVAL=2';
-    case 'monthly': return 'RRULE:FREQ=MONTHLY';
-    case 'yearly': return 'RRULE:FREQ=YEARLY';
-    default: return null;
+    case 'daily':
+      return 'RRULE:FREQ=DAILY';
+    case 'weekly':
+      return 'RRULE:FREQ=WEEKLY';
+    case 'biweekly':
+      return 'RRULE:FREQ=WEEKLY;INTERVAL=2';
+    case 'monthly':
+      return 'RRULE:FREQ=MONTHLY';
+    case 'yearly':
+      return 'RRULE:FREQ=YEARLY';
+    default:
+      return null;
   }
 }
 
@@ -336,20 +351,30 @@ function reminderToTrigger(reminder: TodoReminder, allDay: boolean): string | nu
   if (reminder === 'none') return null;
   if (!allDay) {
     switch (reminder) {
-      case '30_min_before': return 'TRIGGER:-PT30M';
-      case '1_hour_before': return 'TRIGGER:-PT1H';
-      case '1_day_before': return 'TRIGGER:-P1D';
-      default: return null;
+      case '30_min_before':
+        return 'TRIGGER:-PT30M';
+      case '1_hour_before':
+        return 'TRIGGER:-PT1H';
+      case '1_day_before':
+        return 'TRIGGER:-P1D';
+      default:
+        return null;
     }
   }
   // All-day: DTSTART is midnight; compute offset to reach the target time
   switch (reminder) {
-    case 'same_day_9am': return 'TRIGGER:PT9H';       // +9h from midnight
-    case 'day_before_9am': return 'TRIGGER:-PT15H';   // -15h from midnight
-    case 'day_before_5pm': return 'TRIGGER:-PT7H';    // -7h from midnight
-    case '2_days_before_9am': return 'TRIGGER:-PT39H'; // -39h from midnight
-    case '1_week_before_9am': return 'TRIGGER:-P6DT15H'; // 6d+15h before midnight
-    default: return null;
+    case 'same_day_9am':
+      return 'TRIGGER:PT9H'; // +9h from midnight
+    case 'day_before_9am':
+      return 'TRIGGER:-PT15H'; // -15h from midnight
+    case 'day_before_5pm':
+      return 'TRIGGER:-PT7H'; // -7h from midnight
+    case '2_days_before_9am':
+      return 'TRIGGER:-PT39H'; // -39h from midnight
+    case '1_week_before_9am':
+      return 'TRIGGER:-P6DT15H'; // 6d+15h before midnight
+    default:
+      return null;
   }
 }
 
@@ -513,7 +538,9 @@ function dateAtTimeInTZ(date: Date, hours: number, minutes: number, tz: string):
   // Get the calendar date string in the target timezone (YYYY-MM-DD)
   const localDateStr = date.toLocaleDateString('en-CA', { timeZone: tz });
   // Treat that date + time as a UTC candidate, then shift by the TZ offset at that moment
-  const candidate = new Date(`${localDateStr}T${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00Z`);
+  const candidate = new Date(
+    `${localDateStr}T${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00Z`
+  );
   const tzMs = new Date(candidate.toLocaleString('en-US', { timeZone: tz })).getTime();
   const utcMs = new Date(candidate.toLocaleString('en-US', { timeZone: 'UTC' })).getTime();
   return new Date(candidate.getTime() + (utcMs - tzMs));
@@ -522,20 +549,41 @@ function dateAtTimeInTZ(date: Date, hours: number, minutes: number, tz: string):
 export function calcReminderDueAt(
   dueDate: string | undefined,
   reminder: TodoReminder | undefined,
-  tz = NOTIFICATION_TIMEZONE,
+  tz = NOTIFICATION_TIMEZONE
 ): string | null {
   if (!dueDate || !reminder || reminder === 'none') return null;
   const due = new Date(dueDate);
   const DAY = 86_400_000;
   switch (reminder) {
-    case '30_min_before':    return new Date(due.getTime() - 30 * 60_000).toISOString();
-    case '1_hour_before':    return new Date(due.getTime() - 60 * 60_000).toISOString();
-    case '1_day_before':     return new Date(due.getTime() - DAY).toISOString();
-    case 'same_day_9am':     return dateAtTimeInTZ(due, 9, 0, tz).toISOString();
-    case 'day_before_9am':   return dateAtTimeInTZ(new Date(due.getTime() - DAY), 9, 0, tz).toISOString();
-    case 'day_before_5pm':   return dateAtTimeInTZ(new Date(due.getTime() - DAY), 17, 0, tz).toISOString();
-    case '2_days_before_9am': return dateAtTimeInTZ(new Date(due.getTime() - 2 * DAY), 9, 0, tz).toISOString();
-    case '1_week_before_9am': return dateAtTimeInTZ(new Date(due.getTime() - 7 * DAY), 9, 0, tz).toISOString();
-    default: return null;
+    case '30_min_before':
+      return new Date(due.getTime() - 30 * 60_000).toISOString();
+    case '1_hour_before':
+      return new Date(due.getTime() - 60 * 60_000).toISOString();
+    case '1_day_before':
+      return new Date(due.getTime() - DAY).toISOString();
+    case 'same_day_9am':
+      return dateAtTimeInTZ(due, 9, 0, tz).toISOString();
+    case 'day_before_9am':
+      return dateAtTimeInTZ(new Date(due.getTime() - DAY), 9, 0, tz).toISOString();
+    case 'day_before_5pm':
+      return dateAtTimeInTZ(new Date(due.getTime() - DAY), 17, 0, tz).toISOString();
+    case '2_days_before_9am':
+      return dateAtTimeInTZ(new Date(due.getTime() - 2 * DAY), 9, 0, tz).toISOString();
+    case '1_week_before_9am':
+      return dateAtTimeInTZ(new Date(due.getTime() - 7 * DAY), 9, 0, tz).toISOString();
+    default:
+      return null;
   }
+}
+
+/**
+ * Hide rows flagged `isTest` from non-test viewers. A test persona sees
+ * everything (so they can verify test rows show up in pickers/lists).
+ */
+export function visibleTo<T extends { isTest?: boolean }>(
+  rows: T[],
+  viewerIsTest: boolean
+): T[] {
+  if (viewerIsTest) return rows;
+  return rows.filter((r) => !r.isTest);
 }

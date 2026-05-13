@@ -32,7 +32,11 @@ export async function resizeImageBlob(blob: Blob, maxDim: number): Promise<Blob>
       canvas.width = w;
       canvas.height = h;
       canvas.getContext('2d')!.drawImage(img, 0, 0, w, h);
-      canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('resize failed'))), 'image/jpeg', 0.9);
+      canvas.toBlob(
+        (b) => (b ? resolve(b) : reject(new Error('resize failed'))),
+        'image/jpeg',
+        0.9
+      );
     };
     img.onerror = reject;
     img.src = url;

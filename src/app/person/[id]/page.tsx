@@ -61,7 +61,14 @@ import {
   Plus,
   GraduationCap,
 } from '@phosphor-icons/react';
-import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, SHEPHERD_AVATAR_PALETTE, Z_SHEET, Z_SUBHEADER } from '@/lib/constants';
+import {
+  BACKDROP_COLOR,
+  SHEET_MAX_WIDTH,
+  SHEET_BORDER_RADIUS,
+  SHEPHERD_AVATAR_PALETTE,
+  Z_SHEET,
+  Z_SUBHEADER,
+} from '@/lib/constants';
 import { InfoRow } from '@/components/InfoRow';
 import { VisitorCardPanel } from '@/components/VisitorCardPanel';
 import { AvatarBadge } from '@/components/AvatarBadge';
@@ -223,7 +230,6 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
     .join('')
     .toUpperCase();
 
-
   const handleTodoToggle = (todoId: string) => {
     const todo = data.todos.find((t) => t.id === todoId);
     if (todo && !todo.completed) {
@@ -249,7 +255,8 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
   };
 
   return (
-    <div style={{ paddingBottom: 32 }}>
+    <div className="person-page-shell">
+      <div style={{ paddingBottom: 32 }}>
       {/* ── Nav bar ── */}
       <div
         style={{
@@ -484,6 +491,8 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
         </div>
       </div>
 
+      <div className="person-body">
+      <div className="person-sidebar-col">
       {/* ── Large title — scrolls away ── */}
       <div style={{ padding: '1.75rem 0 1.25rem', display: 'flex', alignItems: 'center', gap: 16 }}>
         {/* Avatar */}
@@ -492,8 +501,12 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
           originalPhoto={person.originalPhoto}
           name={fullName(person)}
           entityPath={`people/${person.id}`}
-          onPhotoChange={(photoUrl, originalUrl) => updatePerson(person.id, { photo: photoUrl, originalPhoto: originalUrl })}
-          onPhotoRemove={() => updatePerson(person.id, { photo: undefined, originalPhoto: undefined })}
+          onPhotoChange={(photoUrl, originalUrl) =>
+            updatePerson(person.id, { photo: photoUrl, originalPhoto: originalUrl })
+          }
+          onPhotoRemove={() =>
+            updatePerson(person.id, { photo: undefined, originalPhoto: undefined })
+          }
         />
 
         {/* Name + meta */}
@@ -575,10 +588,48 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
         </div>
       </div>
 
-
-      {/* ── Tabs — sticky below nav bar ── */}
+      {/* ── Tabs (desktop sidebar variant) ── */}
+      {visibleTabs.length > 1 && (
+        <nav className="person-tabs-desktop">
+          {visibleTabs.map((t) => {
+            const active = activeTab === t;
+            const count =
+              t === 'todos' ? incompleteTodosCount : t === 'notices' ? notices.length : 0;
+            return (
+              <button
+                key={t}
+                onClick={() => setTab(t as Tab)}
+                className="person-tab-item"
+                data-active={active}
+              >
+                <TabIcon tab={t as Tab} active={active} />
+                <span style={{ flex: 1, textAlign: 'left' }}>{TAB_LABELS[t as Tab]}</span>
+                {count > 0 && (
+                  <span
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 600,
+                      background: 'var(--sage)',
+                      color: 'var(--on-sage)',
+                      borderRadius: 'var(--radius-sm)',
+                      padding: '0.0625rem 0.375rem',
+                      lineHeight: 1.5,
+                    }}
+                  >
+                    {count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </nav>
+      )}
+      </div>
+      <div className="person-main-col">
+      {/* ── Tabs — sticky below nav bar (mobile) ── */}
       {visibleTabs.length > 1 && (
         <div
+          className="person-tabs-mobile"
           style={{
             position: 'sticky',
             top: 54,
@@ -602,7 +653,8 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
-                borderBottom: activeTab === t ? '0.125rem solid var(--sage)' : '0.125rem solid transparent',
+                borderBottom:
+                  activeTab === t ? '0.125rem solid var(--sage)' : '0.125rem solid transparent',
                 marginBottom: -2,
                 display: 'flex',
                 alignItems: 'center',
@@ -754,9 +806,8 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
           {notices.length > 0 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {/* Sort: urgent first, then moderate, then ongoing */}
-              {(['urgent', 'moderate', 'ongoing'] as const).map((level) => {
+              {(['urgent', 'moderate', 'ongoing'] as const).flatMap((level) => {
                 const group = notices.filter((n) => n.urgency === level);
-                if (group.length === 0) return null;
                 return group.map((notice) => (
                   <NoticeCard
                     key={notice.id}
@@ -813,11 +864,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                 />
               )}
               {person.isStudent && (
-                <InfoRow
-                  icon={<GraduationCap size={15} />}
-                  label="Student"
-                  value="Yes"
-                />
+                <InfoRow icon={<GraduationCap size={15} />} label="Student" value="Yes" />
               )}
               {person.gender && (
                 <InfoRow
@@ -1045,9 +1092,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                           }}
                         >
                           <AvatarBadge name={fullName(s)} photo={s.photo} size={24} />
-                          <span
-                            style={{ fontSize: 13, fontWeight: 500, color: 'var(--blue)' }}
-                          >
+                          <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--blue)' }}>
                             {fullName(s)}
                           </span>
                           {s.alternativeName && (
@@ -1055,7 +1100,11 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                               {s.alternativeName}
                             </span>
                           )}
-                          <CaretRight size={11} color="var(--blue)" style={{ marginLeft: 'auto' }} />
+                          <CaretRight
+                            size={11}
+                            color="var(--blue)"
+                            style={{ marginLeft: 'auto' }}
+                          />
                         </Link>
                       );
                     })}
@@ -1206,19 +1255,27 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                   currentPersona.role === 'admin' ? (
                     <Link
                       href={`/person/${person.id}/audit`}
-                      style={{ color: 'var(--sage)', textDecoration: 'underline', textUnderlineOffset: '0.2em' }}
+                      style={{
+                        color: 'var(--sage)',
+                        textDecoration: 'underline',
+                        textUnderlineOffset: '0.2em',
+                      }}
                     >
                       {format(parseISO(person.lastEditedAt), 'MMM d, yyyy')}
                     </Link>
                   ) : (
                     format(parseISO(person.lastEditedAt), 'MMM d, yyyy')
                   )
-                ) : '—'
+                ) : (
+                  '—'
+                )
               }
             />
           </InfoSection>
         </div>
       )}
+      </div>
+      </div>
 
       {showAddLog && !viewingLinkedTodo && (
         <AddLogModal
@@ -1285,7 +1342,6 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
       {previewGroupId && (
         <GroupPreviewModal groupId={previewGroupId} onClose={() => setPreviewGroupId(null)} />
       )}
-
 
       {todoLogPrompt && (
         <TodoLogPrompt
@@ -1455,6 +1511,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }
@@ -1616,7 +1673,6 @@ function TodoSection({
   );
 }
 
-
 function LogSection({
   label,
   count,
@@ -1686,7 +1742,12 @@ function InfoSection({
       </p>
       <div
         className="no-last-border"
-        style={{ background: 'var(--surface)', borderRadius: 'var(--radius)', overflow: 'hidden', padding: 0 }}
+        style={{
+          background: 'var(--surface)',
+          borderRadius: 'var(--radius)',
+          overflow: 'hidden',
+          padding: 0,
+        }}
       >
         {children}
       </div>

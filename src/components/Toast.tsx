@@ -61,7 +61,8 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               display: 'flex',
               alignItems: 'center',
               gap: 8,
-              background: toast.type === 'error' ? 'rgba(180, 40, 40, 0.92)' : 'rgba(31, 37, 51, 0.92)',
+              background:
+                toast.type === 'error' ? 'rgba(180, 40, 40, 0.92)' : 'rgba(31, 37, 51, 0.92)',
               color: '#fff',
               padding: '0.625rem 1.125rem',
               borderRadius: 'var(--radius-pill)',

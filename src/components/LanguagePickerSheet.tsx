@@ -97,122 +97,122 @@ export default function LanguagePickerSheet({ currentLanguages, onConfirm, onBac
         actionVariant="pill"
       />
 
+      <div
+        style={{
+          padding: '0.75rem 1.25rem',
+          flexShrink: 0,
+          borderBottom: '1px solid var(--border-light)',
+        }}
+      >
         <div
           style={{
-            padding: '0.75rem 1.25rem',
-            flexShrink: 0,
-            borderBottom: '1px solid var(--border-light)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            background: 'var(--bg)',
+            border: '1px solid var(--border)',
+            borderRadius: 'var(--radius-sm)',
+            padding: '0.5625rem 0.75rem',
           }}
         >
-          <div
+          <MagnifyingGlass size={14} color="var(--text-muted)" />
+          <input
+            ref={searchRef}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search languages…"
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              background: 'var(--bg)',
-              border: '1px solid var(--border)',
-              borderRadius: 'var(--radius-sm)',
-              padding: '0.5625rem 0.75rem',
+              flex: 1,
+              fontSize: 14,
+              color: 'var(--text-primary)',
+              background: 'none',
+              border: 'none',
+              outline: 'none',
             }}
-          >
-            <MagnifyingGlass size={14} color="var(--text-muted)" />
-            <input
-              ref={searchRef}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search languages…"
+          />
+          {search && (
+            <button
+              onClick={() => setSearch('')}
               style={{
-                flex: 1,
-                fontSize: 14,
-                color: 'var(--text-primary)',
                 background: 'none',
                 border: 'none',
-                outline: 'none',
-              }}
-            />
-            {search && (
-              <button
-                onClick={() => setSearch('')}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: 'var(--text-muted)',
-                  fontSize: 18,
-                  lineHeight: 1,
-                  padding: 0,
-                }}
-              >
-                ×
-              </button>
-            )}
-          </div>
-        </div>
-
-        <div style={{ flex: 1, overflowY: 'auto' }}>
-          {/* Priority languages */}
-          {filteredPriority.length > 0 && (
-            <>
-              {!q && (
-                <p
-                  style={{
-                    fontSize: 10,
-                    fontWeight: 600,
-                    color: 'var(--text-muted)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.06em',
-                    padding: '0.75rem 1.25rem 0.375rem',
-                    margin: 0,
-                  }}
-                >
-                  Suggested
-                </p>
-              )}
-              {filteredPriority.map((lang) => (
-                <LanguageRow key={lang} lang={lang} selected={selected} onToggle={toggle} />
-              ))}
-            </>
-          )}
-
-          {/* Other languages */}
-          {filteredOther.length > 0 && (
-            <>
-              {!q && filteredPriority.length > 0 && (
-                <p
-                  style={{
-                    fontSize: 10,
-                    fontWeight: 600,
-                    color: 'var(--text-muted)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.06em',
-                    padding: '0.75rem 1.25rem 0.375rem',
-                    margin: 0,
-                    borderTop: '1px solid var(--border-light)',
-                  }}
-                >
-                  All Languages
-                </p>
-              )}
-              {filteredOther.map((lang) => (
-                <LanguageRow key={lang} lang={lang} selected={selected} onToggle={toggle} />
-              ))}
-            </>
-          )}
-
-          {filteredPriority.length === 0 && filteredOther.length === 0 && (
-            <p
-              style={{
-                padding: '1.5rem 1.25rem',
-                fontSize: 13,
+                cursor: 'pointer',
                 color: 'var(--text-muted)',
-                textAlign: 'center',
-                fontStyle: 'italic',
+                fontSize: 18,
+                lineHeight: 1,
+                padding: 0,
               }}
             >
-              No languages found.
-            </p>
+              ×
+            </button>
           )}
         </div>
+      </div>
+
+      <div style={{ flex: 1, overflowY: 'auto' }}>
+        {/* Priority languages */}
+        {filteredPriority.length > 0 && (
+          <>
+            {!q && (
+              <p
+                style={{
+                  fontSize: 10,
+                  fontWeight: 600,
+                  color: 'var(--text-muted)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                  padding: '0.75rem 1.25rem 0.375rem',
+                  margin: 0,
+                }}
+              >
+                Suggested
+              </p>
+            )}
+            {filteredPriority.map((lang) => (
+              <LanguageRow key={lang} lang={lang} selected={selected} onToggle={toggle} />
+            ))}
+          </>
+        )}
+
+        {/* Other languages */}
+        {filteredOther.length > 0 && (
+          <>
+            {!q && filteredPriority.length > 0 && (
+              <p
+                style={{
+                  fontSize: 10,
+                  fontWeight: 600,
+                  color: 'var(--text-muted)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                  padding: '0.75rem 1.25rem 0.375rem',
+                  margin: 0,
+                  borderTop: '1px solid var(--border-light)',
+                }}
+              >
+                All Languages
+              </p>
+            )}
+            {filteredOther.map((lang) => (
+              <LanguageRow key={lang} lang={lang} selected={selected} onToggle={toggle} />
+            ))}
+          </>
+        )}
+
+        {filteredPriority.length === 0 && filteredOther.length === 0 && (
+          <p
+            style={{
+              padding: '1.5rem 1.25rem',
+              fontSize: 13,
+              color: 'var(--text-muted)',
+              textAlign: 'center',
+              fontStyle: 'italic',
+            }}
+          >
+            No languages found.
+          </p>
+        )}
+      </div>
     </BottomSheet>
   );
 }

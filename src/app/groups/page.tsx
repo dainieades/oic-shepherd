@@ -6,6 +6,7 @@ import { useApp } from '@/lib/context';
 import { Crown, Plus } from '@phosphor-icons/react';
 import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS } from '@/lib/constants';
 import { Button } from '@/components/Button';
+import PageContainer from '@/components/PageContainer';
 
 export default function GroupsPage() {
   const { data, currentPersona, addGroup } = useApp();
@@ -26,7 +27,9 @@ export default function GroupsPage() {
     } else {
       document.body.style.overflow = '';
     }
-    return () => { document.body.style.overflow = ''; };
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [showAdd]);
 
   const handleAdd = () => {
@@ -46,18 +49,16 @@ export default function GroupsPage() {
   });
 
   return (
+    <PageContainer>
     <div style={{ paddingBottom: 32 }}>
       {/* Sticky collapsing header */}
       <div
+        className="-mx-4 px-4 lg:mx-0 lg:px-0"
         style={{
           position: 'sticky',
           top: 0,
           zIndex: 'var(--z-sticky)',
           background: 'var(--bg)',
-          marginLeft: -16,
-          marginRight: -16,
-          paddingLeft: 16,
-          paddingRight: 16,
           borderBottom: scrolled ? '1px solid var(--border-light)' : 'none',
         }}
       >
@@ -254,7 +255,9 @@ export default function GroupsPage() {
             padding: '0 1rem',
             background: 'rgba(0,0,0,0.4)',
           }}
-          onClick={(e) => { if (e.target === e.currentTarget) setShowAdd(false); }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowAdd(false);
+          }}
         >
           <div
             style={{
@@ -372,5 +375,6 @@ export default function GroupsPage() {
         </div>
       )}
     </div>
+    </PageContainer>
   );
 }

@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic';
 function getAdminClient() {
   return createSupabaseAdmin(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 }
 
@@ -68,24 +68,20 @@ export async function GET(
     });
     return new NextResponse(
       `Todos query failed: ${todosErr.message}${todosErr.hint ? ` (hint: ${todosErr.hint})` : ''}`,
-      { status: 500 },
+      { status: 500 }
     );
   }
 
   let ics: string;
   try {
-    const events: IcsEventInput[] = (todos as TodoFeedRow[] | null ?? [])
+    const events: IcsEventInput[] = ((todos as TodoFeedRow[] | null) ?? [])
       .filter((t) => !!t.due_date)
       .map((t) => {
         const dueIso = t.due_date as string;
         const start = new Date(dueIso);
         const hasTime = dueIso.length >= 16 && dueIso.slice(11, 16) !== '00:00';
         const allDay = !hasTime;
-        const end = t.end_date
-          ? new Date(t.end_date)
-          : allDay
-            ? start
-            : addHours(start, 1);
+        const end = t.end_date ? new Date(t.end_date) : allDay ? start : addHours(start, 1);
         const title = t.completed ? `✓ Done: ${t.title}` : t.title;
         return {
           title,

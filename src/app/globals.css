@@ -63,8 +63,10 @@
   --radius-xl: 1.25rem;
   --radius-pill: 62.4375rem;
 
-  --shadow-card: 0 0.0625rem 0.25rem rgba(31, 37, 51, 0.07), 0 0.0625rem 0.125rem rgba(31, 37, 51, 0.04);
-  --shadow-elevated: 0 0.25rem 1rem rgba(31, 37, 51, 0.11), 0 0.0625rem 0.25rem rgba(31, 37, 51, 0.06);
+  --shadow-card:
+    0 0.0625rem 0.25rem rgba(31, 37, 51, 0.07), 0 0.0625rem 0.125rem rgba(31, 37, 51, 0.04);
+  --shadow-elevated:
+    0 0.25rem 1rem rgba(31, 37, 51, 0.11), 0 0.0625rem 0.25rem rgba(31, 37, 51, 0.06);
 
   /* ── Spacing scale ── */
   --spacing-xs: 0.25rem;
@@ -91,24 +93,34 @@
   --backdrop: rgba(30, 26, 24, 0.45);
 
   /* ── Avatar palettes ── */
-  --avatar-m1-bg: #e8f0fe; --avatar-m1-text: #4a6fa5;
-  --avatar-m2-bg: #fde8f0; --avatar-m2-text: #a54a6f;
-  --avatar-m3-bg: #e8fef0; --avatar-m3-text: #4aa56f;
-  --avatar-m4-bg: #fef3e8; --avatar-m4-text: #a5794a;
-  --avatar-m5-bg: #f0e8fe; --avatar-m5-text: #7a4aa5;
-  --avatar-m6-bg: #e8fefe; --avatar-m6-text: #4a9fa5;
+  --avatar-m1-bg: #e8f0fe;
+  --avatar-m1-text: #4a6fa5;
+  --avatar-m2-bg: #fde8f0;
+  --avatar-m2-text: #a54a6f;
+  --avatar-m3-bg: #e8fef0;
+  --avatar-m3-text: #4aa56f;
+  --avatar-m4-bg: #fef3e8;
+  --avatar-m4-text: #a5794a;
+  --avatar-m5-bg: #f0e8fe;
+  --avatar-m5-text: #7a4aa5;
+  --avatar-m6-bg: #e8fefe;
+  --avatar-m6-text: #4a9fa5;
 
-  --avatar-s1-bg: #eaf2ee; --avatar-s1-text: #5b8a72;
-  --avatar-s2-bg: #ebf1f7; --avatar-s2-text: #6b8eae;
-  --avatar-s3-bg: #f5f0eb; --avatar-s3-text: #8c7055;
-  --avatar-s4-bg: #f0ebf5; --avatar-s4-text: #7a6a8c;
+  --avatar-s1-bg: #eaf2ee;
+  --avatar-s1-text: #5b8a72;
+  --avatar-s2-bg: #ebf1f7;
+  --avatar-s2-text: #6b8eae;
+  --avatar-s3-bg: #f5f0eb;
+  --avatar-s3-text: #8c7055;
+  --avatar-s4-bg: #f0ebf5;
+  --avatar-s4-text: #7a6a8c;
 }
 
 /* ── Dark mode tokens ──────────────────────────── */
 /* Shared dark token values used in both blocks below */
 
 /* Forced dark: data-theme="dark" on <html> */
-:root[data-theme="dark"] {
+:root[data-theme='dark'] {
   color-scheme: dark;
 
   --bg: #100f13;
@@ -150,22 +162,32 @@
   --shadow-elevated: 0 0.25rem 1rem rgba(0, 0, 0, 0.5), 0 0.0625rem 0.25rem rgba(0, 0, 0, 0.3);
   --backdrop: rgba(0, 0, 0, 0.7);
 
-  --avatar-m1-bg: #192040; --avatar-m1-text: #7a9ed4;
-  --avatar-m2-bg: #401930; --avatar-m2-text: #d47aa0;
-  --avatar-m3-bg: #193020; --avatar-m3-text: #7ad4a0;
-  --avatar-m4-bg: #301e10; --avatar-m4-text: #d4a070;
-  --avatar-m5-bg: #28143c; --avatar-m5-text: #b07ad4;
-  --avatar-m6-bg: #103030; --avatar-m6-text: #70c8d4;
+  --avatar-m1-bg: #192040;
+  --avatar-m1-text: #7a9ed4;
+  --avatar-m2-bg: #401930;
+  --avatar-m2-text: #d47aa0;
+  --avatar-m3-bg: #193020;
+  --avatar-m3-text: #7ad4a0;
+  --avatar-m4-bg: #301e10;
+  --avatar-m4-text: #d4a070;
+  --avatar-m5-bg: #28143c;
+  --avatar-m5-text: #b07ad4;
+  --avatar-m6-bg: #103030;
+  --avatar-m6-text: #70c8d4;
 
-  --avatar-s1-bg: #162218; --avatar-s1-text: #7ab892;
-  --avatar-s2-bg: #131c27; --avatar-s2-text: #7aaed4;
-  --avatar-s3-bg: #281e14; --avatar-s3-text: #c4a07a;
-  --avatar-s4-bg: #1e1628; --avatar-s4-text: #b09cc8;
+  --avatar-s1-bg: #162218;
+  --avatar-s1-text: #7ab892;
+  --avatar-s2-bg: #131c27;
+  --avatar-s2-text: #7aaed4;
+  --avatar-s3-bg: #281e14;
+  --avatar-s3-text: #c4a07a;
+  --avatar-s4-bg: #1e1628;
+  --avatar-s4-text: #b09cc8;
 }
 
 /* System dark: OS prefers dark and the user hasn't forced light */
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
+  :root:not([data-theme='light']) {
     color-scheme: dark;
 
     --bg: #100f13;
@@ -201,21 +223,32 @@
     --teal: #5ab8b8;
     --teal-light: #0e2222;
 
-    --shadow-card: 0 0.0625rem 0.25rem rgba(0, 0, 0, 0.35), 0 0.0625rem 0.125rem rgba(0, 0, 0, 0.25);
+    --shadow-card:
+      0 0.0625rem 0.25rem rgba(0, 0, 0, 0.35), 0 0.0625rem 0.125rem rgba(0, 0, 0, 0.25);
     --shadow-elevated: 0 0.25rem 1rem rgba(0, 0, 0, 0.5), 0 0.0625rem 0.25rem rgba(0, 0, 0, 0.3);
     --backdrop: rgba(0, 0, 0, 0.7);
 
-    --avatar-m1-bg: #192040; --avatar-m1-text: #7a9ed4;
-    --avatar-m2-bg: #401930; --avatar-m2-text: #d47aa0;
-    --avatar-m3-bg: #193020; --avatar-m3-text: #7ad4a0;
-    --avatar-m4-bg: #301e10; --avatar-m4-text: #d4a070;
-    --avatar-m5-bg: #28143c; --avatar-m5-text: #b07ad4;
-    --avatar-m6-bg: #103030; --avatar-m6-text: #70c8d4;
+    --avatar-m1-bg: #192040;
+    --avatar-m1-text: #7a9ed4;
+    --avatar-m2-bg: #401930;
+    --avatar-m2-text: #d47aa0;
+    --avatar-m3-bg: #193020;
+    --avatar-m3-text: #7ad4a0;
+    --avatar-m4-bg: #301e10;
+    --avatar-m4-text: #d4a070;
+    --avatar-m5-bg: #28143c;
+    --avatar-m5-text: #b07ad4;
+    --avatar-m6-bg: #103030;
+    --avatar-m6-text: #70c8d4;
 
-    --avatar-s1-bg: #162218; --avatar-s1-text: #7ab892;
-    --avatar-s2-bg: #131c27; --avatar-s2-text: #7aaed4;
-    --avatar-s3-bg: #281e14; --avatar-s3-text: #c4a07a;
-    --avatar-s4-bg: #1e1628; --avatar-s4-text: #b09cc8;
+    --avatar-s1-bg: #162218;
+    --avatar-s1-text: #7ab892;
+    --avatar-s2-bg: #131c27;
+    --avatar-s2-text: #7aaed4;
+    --avatar-s3-bg: #281e14;
+    --avatar-s3-text: #c4a07a;
+    --avatar-s4-bg: #1e1628;
+    --avatar-s4-text: #b09cc8;
   }
 }
 
@@ -334,8 +367,12 @@ body {
   animation: tab-fade-in 0.22s ease both;
 }
 @keyframes tab-fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes toast-in {
@@ -363,6 +400,184 @@ body {
 }
 .toast-exit {
   animation: toast-out 0.28s ease both;
+}
+
+/* ── People table (desktop) ────────────────────── */
+.people-row {
+  transition: background-color 0.14s ease;
+}
+.people-row:hover {
+  background-color: var(--sage-light);
+}
+.people-row a:focus-visible {
+  outline-offset: -0.125rem;
+}
+
+/* ── Side nav (desktop) ────────────────────────── */
+.side-nav-item {
+  transition:
+    background-color 0.12s ease,
+    color 0.12s ease;
+}
+.side-nav-item:hover {
+  background-color: var(--sage-light);
+  color: var(--sage-dark);
+}
+
+/* ── BottomSheet responsive variants ───────────── */
+.sheet-outer {
+  align-items: flex-end;
+  justify-content: center;
+}
+.sheet-panel {
+  width: 100%;
+  max-width: 26.875rem;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  animation: slide-up 0.28s cubic-bezier(0.34, 1.2, 0.64, 1) both;
+}
+
+@media (min-width: 48rem) {
+  .sheet-outer-dialog {
+    align-items: center;
+  }
+  .sheet-panel-dialog {
+    max-width: 34rem;
+    max-height: 85vh;
+    height: auto !important;
+    border-radius: var(--radius-lg);
+    animation: fade-in 0.22s ease both;
+  }
+  .sheet-outer-side-panel {
+    align-items: stretch;
+    justify-content: flex-end;
+  }
+  .sheet-panel-side-panel {
+    width: 30rem;
+    max-width: 30rem;
+    height: 100vh !important;
+    border-radius: 0;
+    animation: slide-in-right 0.28s cubic-bezier(0.34, 1.2, 0.64, 1) both;
+  }
+}
+
+/* ── Settings: desktop two-pane layout ───────────── */
+.settings-shell {
+  display: contents;
+}
+.settings-sidebar-desktop {
+  display: none;
+}
+.settings-index-mobile {
+  display: block;
+}
+
+@media (min-width: 64rem) {
+  .settings-shell {
+    display: grid;
+    grid-template-columns: 18rem 1fr;
+    gap: 2rem;
+    align-items: start;
+    max-width: 75rem;
+    margin: 0 auto;
+    padding: 2rem 2rem 3rem;
+  }
+  .settings-sidebar-desktop {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    position: sticky;
+    top: 1.5rem;
+    align-self: start;
+  }
+  .settings-content-desktop {
+    background: var(--surface);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem 1.75rem 2rem;
+    min-height: 30rem;
+  }
+  /* Hide each sub-page's mobile back-button nav bar and its fixed-header spacer on desktop */
+  .settings-content-desktop .settings-subpage-navbar,
+  .settings-content-desktop .settings-subpage-spacer {
+    display: none !important;
+  }
+  /* Hide the mobile settings list when desktop layout is active (index page) */
+  .settings-content-desktop .settings-index-mobile {
+    display: none;
+  }
+  /* Sub-page containers expect mobile max-width; widen them inside content panel */
+  .settings-content-desktop > div[style*='paddingBottom'] {
+    padding-bottom: 0 !important;
+  }
+}
+
+/* ── Person detail page: two-column on desktop ──── */
+.person-page-shell {
+  width: 100%;
+}
+.person-body {
+  display: block;
+}
+.person-tabs-desktop {
+  display: none;
+}
+@media (min-width: 64rem) {
+  .person-page-shell {
+    max-width: 75rem;
+    margin: 0 auto;
+    padding: 0 2rem 2rem;
+  }
+  .person-body {
+    display: grid;
+    grid-template-columns: 18rem 1fr;
+    gap: 2.5rem;
+    align-items: start;
+  }
+  .person-sidebar-col {
+    position: sticky;
+    top: 4.5rem;
+    align-self: start;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .person-main-col {
+    min-width: 0;
+  }
+  .person-tabs-mobile {
+    display: none !important;
+  }
+  .person-tabs-desktop {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+  .person-tab-item {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.625rem 0.875rem;
+    border-radius: var(--radius);
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    transition:
+      background-color 0.12s ease,
+      color 0.12s ease;
+  }
+  .person-tab-item:hover {
+    background: var(--sage-light);
+    color: var(--sage-dark);
+  }
+  .person-tab-item[data-active='true'] {
+    background: var(--sage-light);
+    color: var(--sage-dark);
+    font-weight: 700;
+  }
 }
 
 /* ── Urgency left-border cards ─────────────────── */

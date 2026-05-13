@@ -24,7 +24,8 @@ interface Props {
 }
 
 export default function CalendarSyncSheet({ onClose, singleEvent }: Props) {
-  const { calendarSyncEnabled, calendarFeedToken, enableCalendarSync, disableCalendarSync } = useApp();
+  const { calendarSyncEnabled, calendarFeedToken, enableCalendarSync, disableCalendarSync } =
+    useApp();
   const { showToast } = useToast();
   const [origin, setOrigin] = React.useState('');
 
@@ -32,9 +33,8 @@ export default function CalendarSyncSheet({ onClose, singleEvent }: Props) {
     setOrigin(window.location.origin);
   }, []);
 
-  const feedUrl = calendarFeedToken && origin
-    ? `${origin}/api/calendar-feed/${calendarFeedToken}.ics`
-    : '';
+  const feedUrl =
+    calendarFeedToken && origin ? `${origin}/api/calendar-feed/${calendarFeedToken}.ics` : '';
 
   async function handleSubscribeApple() {
     const url = await enableCalendarSync();
@@ -72,7 +72,13 @@ export default function CalendarSyncSheet({ onClose, singleEvent }: Props) {
   function handleOneOffGoogle() {
     if (!singleEvent) return;
     window.open(
-      buildGoogleCalendarUrl(singleEvent.title, singleEvent.start, singleEvent.end, singleEvent.allDay, singleEvent.repeat),
+      buildGoogleCalendarUrl(
+        singleEvent.title,
+        singleEvent.start,
+        singleEvent.end,
+        singleEvent.allDay,
+        singleEvent.repeat
+      ),
       '_blank',
       'noopener,noreferrer'
     );
@@ -120,8 +126,8 @@ export default function CalendarSyncSheet({ onClose, singleEvent }: Props) {
           <>
             <p style={sectionHeaderStyle}>Auto-sync your to-dos</p>
             <p style={sectionDescStyle}>
-              Add OIC to-dos to your calendar app. New items appear automatically; how often
-              updates show up depends on your calendar app.
+              Add OIC to-dos to your calendar app. New items appear automatically; how often updates
+              show up depends on your calendar app.
             </p>
             <CalendarSubscribeOptions
               feedUrl={feedUrl}
@@ -158,11 +164,7 @@ export default function CalendarSyncSheet({ onClose, singleEvent }: Props) {
   );
 }
 
-function ConnectedBlock({
-  onDisable,
-}: {
-  onDisable: () => void;
-}) {
+function ConnectedBlock({ onDisable }: { onDisable: () => void }) {
   return (
     <>
       <div
@@ -183,8 +185,8 @@ function ConnectedBlock({
         </span>
       </div>
       <p style={sectionDescStyle}>
-        New to-dos appear in your calendar automatically. To manage the feed URL or rotate it,
-        open Settings → Calendar Sync.
+        New to-dos appear in your calendar automatically. To manage the feed URL or rotate it, open
+        Settings → Calendar Sync.
       </p>
       <SmallActionButton
         icon={<X size={16} color="var(--text-muted)" />}

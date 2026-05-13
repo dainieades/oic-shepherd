@@ -15,12 +15,7 @@ import {
   CheckCircle,
 } from '@phosphor-icons/react';
 import { createClient } from '@/utils/supabase/client';
-import {
-  REFERRAL_SOURCES,
-  INTERESTS,
-  type ReferralSource,
-  type Interest,
-} from '@/lib/types';
+import { REFERRAL_SOURCES, INTERESTS, type ReferralSource, type Interest } from '@/lib/types';
 import { TextInputRow, TextareaRow, PickerRow } from '@/components/form';
 import { rowBtnStyle, spacerStyle, labelStyle } from '@/components/form/formStyles';
 import LanguagePickerSheet from '@/components/LanguagePickerSheet';
@@ -29,18 +24,18 @@ import PickerMenu from '@/components/PickerMenu';
 import { ToggleSwitch } from '@/components/ToggleSwitch';
 
 const REFERRAL_LABELS: Record<ReferralSource, string> = {
-  'flyer': 'Flyer',
-  'online': 'Online',
+  flyer: 'Flyer',
+  online: 'Online',
   'drive-by': 'Drive-by',
-  'school': 'School',
-  'friend': 'Friend',
-  'other': 'Other',
+  school: 'School',
+  friend: 'Friend',
+  other: 'Other',
 };
 
 const INTEREST_LABELS: Record<Interest, string> = {
-  'salvation': 'Salvation',
-  'growth': 'Growth in Christ',
-  'serving': 'Serving',
+  salvation: 'Salvation',
+  growth: 'Growth in Christ',
+  serving: 'Serving',
   'small-groups': 'Small Groups',
 };
 
@@ -108,7 +103,9 @@ export default function WelcomePage() {
     });
     setSubmitting(false);
     if (insertError) {
-      setError("Sorry, we couldn't submit your card. Please try again or talk to a Welcome Team member.");
+      setError(
+        "Sorry, we couldn't submit your card. Please try again or talk to a Welcome Team member."
+      );
       return;
     }
     setDone(true);
@@ -116,33 +113,41 @@ export default function WelcomePage() {
 
   if (done) {
     return (
-      <div style={{
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        textAlign: 'center',
-        padding: '2rem 1.25rem',
-        gap: 16,
-      }}>
-        <Logo height={88} />
-        <div style={{
-          width: 72,
-          height: 72,
-          borderRadius: '50%',
-          background: 'var(--sage-light)',
+      <div
+        style={{
+          minHeight: '100vh',
           display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-        }}>
+          textAlign: 'center',
+          padding: '2rem 1.25rem',
+          gap: 16,
+        }}
+      >
+        <Logo height={88} />
+        <div
+          style={{
+            width: 72,
+            height: 72,
+            borderRadius: '50%',
+            background: 'var(--sage-light)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
           <CheckCircle size={36} color="var(--sage)" weight="fill" />
         </div>
-        <h1 className="font-display" style={{ fontSize: 24, fontWeight: 700, color: 'var(--text-primary)' }}>
+        <h1
+          className="font-display"
+          style={{ fontSize: 24, fontWeight: 700, color: 'var(--text-primary)' }}
+        >
           Thank you for visiting!
         </h1>
         <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.5, maxWidth: 320 }}>
-          We've got your card. Someone from our Welcome Team will reach out to you soon. We're so glad you're here.
+          We've got your card. Someone from our Welcome Team will reach out to you soon. We're so
+          glad you're here.
         </p>
       </div>
     );
@@ -152,7 +157,10 @@ export default function WelcomePage() {
     <div style={{ paddingTop: 24, paddingBottom: 48 }}>
       <header style={{ textAlign: 'center', marginBottom: 24 }}>
         <Logo height={96} style={{ margin: '0 auto 16px' }} />
-        <h1 className="font-display" style={{ fontSize: 24, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>
+        <h1
+          className="font-display"
+          style={{ fontSize: 24, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}
+        >
           Welcome!
         </h1>
         <p style={{ fontSize: 14, color: 'var(--text-muted)', lineHeight: 1.4 }}>
@@ -227,10 +235,14 @@ export default function WelcomePage() {
           <span style={spacerStyle} />
           <Globe size={16} color="var(--text-muted)" />
           <span style={labelStyle}>Language</span>
-          <span style={{
-            flex: 1, fontSize: 14, textAlign: 'left',
-            color: languages.length > 0 ? 'var(--text-primary)' : 'var(--text-muted)',
-          }}>
+          <span
+            style={{
+              flex: 1,
+              fontSize: 14,
+              textAlign: 'left',
+              color: languages.length > 0 ? 'var(--text-primary)' : 'var(--text-muted)',
+            }}
+          >
             {languages.length > 0 ? languages.join(', ') : 'None'}
           </span>
           <CaretRight size={14} color="var(--text-muted)" />
@@ -252,7 +264,7 @@ export default function WelcomePage() {
             inputRef={referralDetailRef}
             value={referralDetail}
             onChange={setReferralDetail}
-            placeholder={referralSource === 'friend' ? "Who invited you?" : 'Tell us more'}
+            placeholder={referralSource === 'friend' ? 'Who invited you?' : 'Tell us more'}
           />
         )}
       </Section>
@@ -286,15 +298,22 @@ export default function WelcomePage() {
                 color={selected ? 'var(--sage)' : 'var(--text-muted)'}
                 weight={selected ? 'fill' : 'regular'}
               />
-              <span style={{ ...labelStyle, color: 'var(--text-primary)', flex: 1, textAlign: 'left' }}>
+              <span
+                style={{ ...labelStyle, color: 'var(--text-primary)', flex: 1, textAlign: 'left' }}
+              >
                 {INTEREST_LABELS[interest]}
               </span>
               {selected && (
-                <span style={{
-                  fontSize: 11, fontWeight: 700, padding: '0.125rem 0.5rem',
-                  borderRadius: 'var(--radius-pill)', background: 'var(--sage)',
-                  color: 'var(--on-sage)',
-                }}>
+                <span
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    padding: '0.125rem 0.5rem',
+                    borderRadius: 'var(--radius-pill)',
+                    background: 'var(--sage)',
+                    color: 'var(--on-sage)',
+                  }}
+                >
                   Selected
                 </span>
               )}
@@ -304,14 +323,16 @@ export default function WelcomePage() {
       </Section>
 
       {error && (
-        <p style={{
-          background: 'var(--red-light, #fee2e2)',
-          color: 'var(--red, #b91c1c)',
-          padding: '0.75rem 1rem',
-          borderRadius: 'var(--radius)',
-          fontSize: 13,
-          marginBottom: 16,
-        }}>
+        <p
+          style={{
+            background: 'var(--red-light, #fee2e2)',
+            color: 'var(--red, #b91c1c)',
+            padding: '0.75rem 1rem',
+            borderRadius: 'var(--radius)',
+            fontSize: 13,
+            marginBottom: 16,
+          }}
+        >
           {error}
         </p>
       )}
@@ -364,10 +385,16 @@ export default function WelcomePage() {
 function Section({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div style={{ marginBottom: 24 }}>
-      <p style={{
-        fontSize: 10, fontWeight: 600, color: 'var(--text-muted)',
-        textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6,
-      }}>
+      <p
+        style={{
+          fontSize: 10,
+          fontWeight: 600,
+          color: 'var(--text-muted)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.06em',
+          marginBottom: 6,
+        }}
+      >
         {label}
       </p>
       <div

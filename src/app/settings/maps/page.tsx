@@ -19,7 +19,7 @@ export default function MapsAppPage() {
   return (
     <div style={{ paddingBottom: 48 }}>
       {/* Nav bar */}
-      <div style={navBarStyle}>
+      <div className="settings-subpage-navbar" style={navBarStyle}>
         <button onClick={() => router.push('/settings')} style={backBtnStyle}>
           <CaretLeft size={16} weight="bold" />
           Settings

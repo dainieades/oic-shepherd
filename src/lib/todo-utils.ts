@@ -11,7 +11,10 @@ export function todoMatchesSearch(
   if (t.title.toLowerCase().includes(q)) return true;
   if (t.personId) {
     const p = data.people.find((p) => p.id === t.personId);
-    if (p && (fullName(p).toLowerCase().includes(q) || p.alternativeName?.toLowerCase().includes(q)))
+    if (
+      p &&
+      (fullName(p).toLowerCase().includes(q) || p.alternativeName?.toLowerCase().includes(q))
+    )
       return true;
   }
   if (t.familyId) {
@@ -68,7 +71,10 @@ export function filterTodos(
       if (t.personId && currentPersona.assignedPeopleIds.includes(t.personId)) return true;
       if (t.familyId) {
         const family = data.families.find((f) => f.id === t.familyId);
-        if (family && family.memberIds.some((mid) => currentPersona.assignedPeopleIds.includes(mid)))
+        if (
+          family &&
+          family.memberIds.some((mid) => currentPersona.assignedPeopleIds.includes(mid))
+        )
           return true;
       }
       return false;

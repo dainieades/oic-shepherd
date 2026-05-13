@@ -284,8 +284,12 @@ export default function DatePickerSheet({
 
     function handleDateChange(val: string) {
       const clamped = allowFuture
-        ? (val < todayStr ? todayStr : val)
-        : (val > todayStr ? todayStr : val);
+        ? val < todayStr
+          ? todayStr
+          : val
+        : val > todayStr
+          ? todayStr
+          : val;
       setActive(field);
       if (field === 'start') {
         setStartDate(clamped);
@@ -367,213 +371,220 @@ export default function DatePickerSheet({
   }
 
   return (
-    <BottomSheet onClose={onClose} zIndex={Z_SHEET}>
-          {/* Header */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '0.875rem 1.25rem 0.75rem',
-              borderBottom: '1px solid var(--border-light)',
-            }}
-          >
-            <button
-              onClick={onClose}
-              style={{
-                fontSize: 14,
-                color: 'var(--text-secondary)',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-              }}
-            >
-              Cancel
+    <BottomSheet onClose={onClose} variant="dialog" zIndex={Z_SHEET}>
+      {/* Header */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '0.875rem 1.25rem 0.75rem',
+          borderBottom: '1px solid var(--border-light)',
+        }}
+      >
+        <button
+          onClick={onClose}
+          style={{
+            fontSize: 14,
+            color: 'var(--text-secondary)',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+          }}
+        >
+          Cancel
+        </button>
+        <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
+          {showEndDate ? `${fmtDate(startDate)} → ${fmtDate(endDate)}` : fmtDate(startDate)}
+        </span>
+        <button
+          onClick={() =>
+            onConfirm(
+              startDate,
+              startTime,
+              showTime,
+              showEndDate ? endDate : undefined,
+              showEndDate && showTime ? endTime : undefined
+            )
+          }
+          style={{
+            height: 32,
+            padding: '0 0.875rem',
+            borderRadius: 'var(--radius-xs)',
+            background: 'var(--sage)',
+            color: 'var(--on-sage)',
+            fontSize: 14,
+            fontWeight: 600,
+            border: 'none',
+            cursor: 'pointer',
+          }}
+        >
+          Done
+        </button>
+      </div>
+
+      {/* Scrollable body */}
+      <div style={{ flex: 1, overflowY: 'auto', paddingBottom: 40 }}>
+        {/* Date pill inputs */}
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 6,
+            padding: '0.625rem 1rem 0.125rem',
+          }}
+        >
+          <DatePill field="start" dateVal={startDate} timeVal={startTime} />
+          {showEndDate && <DatePill field="end" dateVal={endDate} timeVal={endTime} />}
+        </div>
+
+        {/* Month navigation */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '0.5rem 1rem 0.25rem',
+          }}
+        >
+          <span style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)' }}>
+            {MONTH_NAMES[viewMonth]} {viewYear}
+          </span>
+          <div style={{ display: 'flex', gap: 6 }}>
+            <button style={navBtnStyle} onClick={prevMonth}>
+              <CaretLeft size={14} weight="bold" />
             </button>
-            <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
-              {showEndDate ? `${fmtDate(startDate)} → ${fmtDate(endDate)}` : fmtDate(startDate)}
-            </span>
-            <button
-              onClick={() =>
-                onConfirm(
-                  startDate,
-                  startTime,
-                  showTime,
-                  showEndDate ? endDate : undefined,
-                  showEndDate && showTime ? endTime : undefined
-                )
-              }
+            <button style={navBtnStyle} onClick={nextMonth}>
+              <CaretRight size={14} weight="bold" />
+            </button>
+          </div>
+        </div>
+
+        {/* Day headers */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(7, 1fr)',
+            padding: '0 0.625rem',
+            marginBottom: 0,
+          }}
+        >
+          {DAY_HEADERS.map((h) => (
+            <div
+              key={h}
               style={{
-                height: 32,
-                padding: '0 0.875rem',
-                borderRadius: 'var(--radius-xs)',
-                background: 'var(--sage)',
-                color: 'var(--on-sage)',
-                fontSize: 14,
+                textAlign: 'center',
+                fontSize: 11,
                 fontWeight: 600,
-                border: 'none',
-                cursor: 'pointer',
+                color: 'var(--text-muted)',
+                padding: '0.125rem 0',
               }}
             >
-              Done
-            </button>
-          </div>
-
-          {/* Scrollable body */}
-          <div style={{ flex: 1, overflowY: 'auto', paddingBottom: 40 }}>
-            {/* Date pill inputs */}
-            <div
-              style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: '0.625rem 1rem 0.125rem' }}
-            >
-              <DatePill field="start" dateVal={startDate} timeVal={startTime} />
-              {showEndDate && <DatePill field="end" dateVal={endDate} timeVal={endTime} />}
+              {h}
             </div>
+          ))}
+        </div>
 
-            {/* Month navigation */}
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '0.5rem 1rem 0.25rem',
-              }}
-            >
-              <span style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)' }}>
-                {MONTH_NAMES[viewMonth]} {viewYear}
-              </span>
-              <div style={{ display: 'flex', gap: 6 }}>
-                <button style={navBtnStyle} onClick={prevMonth}>
-                  <CaretLeft size={14} weight="bold" />
-                </button>
-                <button style={navBtnStyle} onClick={nextMonth}>
-                  <CaretRight size={14} weight="bold" />
-                </button>
-              </div>
-            </div>
+        {/* Calendar grid */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(7, 1fr)',
+            padding: '0 0.625rem',
+            gap: '0.0625rem 0',
+          }}
+        >
+          {cells.map((cell, i) => {
+            const isStart = cell.dateStr === startDate;
+            const isEnd = showEndDate && cell.dateStr === endDate;
+            const inRange =
+              showEndDate &&
+              cell.dateStr !== null &&
+              cell.dateStr > rangeStart &&
+              cell.dateStr < rangeEnd;
+            const isToday = cell.dateStr === todayStr;
+            const isDisabledDate =
+              cell.dateStr !== null &&
+              (allowFuture ? cell.dateStr < todayStr : cell.dateStr > todayStr);
+            const isSelected = isStart || isEnd;
 
-            {/* Day headers */}
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(7, 1fr)',
-                padding: '0 0.625rem',
-                marginBottom: 0,
-              }}
-            >
-              {DAY_HEADERS.map((h) => (
-                <div
-                  key={h}
-                  style={{
-                    textAlign: 'center',
-                    fontSize: 11,
-                    fontWeight: 600,
-                    color: 'var(--text-muted)',
-                    padding: '0.125rem 0',
-                  }}
-                >
-                  {h}
-                </div>
-              ))}
-            </div>
-
-            {/* Calendar grid */}
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(7, 1fr)',
-                padding: '0 0.625rem',
-                gap: '0.0625rem 0',
-              }}
-            >
-              {cells.map((cell, i) => {
-                const isStart = cell.dateStr === startDate;
-                const isEnd = showEndDate && cell.dateStr === endDate;
-                const inRange =
-                  showEndDate &&
-                  cell.dateStr !== null &&
-                  cell.dateStr > rangeStart &&
-                  cell.dateStr < rangeEnd;
-                const isToday = cell.dateStr === todayStr;
-                const isDisabledDate = cell.dateStr !== null && (
-                  allowFuture ? cell.dateStr < todayStr : cell.dateStr > todayStr
-                );
-                const isSelected = isStart || isEnd;
-
-                const isClickable = cell.dateStr !== null && !isDisabledDate;
-                return (
-                  <button
-                    key={i}
-                    disabled={!isClickable}
-                    onClick={() => cell.dateStr && handleDayClick(cell.dateStr, cell.inMonth)}
-                    style={{
-                      width: 44,
-                      height: 44,
-                      margin: '0 auto',
-                      borderRadius: '50%',
-                      border:
-                        isToday && !isSelected ? '0.125rem solid var(--sage)' : '0.125rem solid transparent',
-                      background: isSelected
-                        ? 'var(--sage)'
-                        : inRange
-                          ? 'color-mix(in srgb, var(--sage) 15%, transparent)'
-                          : 'none',
-                      color: isSelected
-                        ? 'var(--on-sage)'
-                        : isDisabledDate
-                          ? 'var(--text-muted)'
-                          : !cell.inMonth
-                            ? 'var(--text-muted)'
-                            : isToday
-                              ? 'var(--sage)'
-                              : 'var(--text-primary)',
-                      fontSize: 15,
-                      fontWeight: isSelected || isToday ? 600 : 400,
-                      cursor: isClickable ? 'pointer' : 'default',
-                      opacity: isClickable ? 1 : 0.35,
-                    }}
-                  >
-                    {cell.day}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Divider */}
-            <div style={{ margin: '0.5rem 1rem 0', borderTop: '1px solid var(--border-light)' }} />
-
-            {/* End date toggle */}
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '0.625rem 1rem 0',
-              }}
-            >
-              <span style={{ fontSize: 15, color: 'var(--text-primary)' }}>End date</span>
-              <Toggle
-                on={showEndDate}
-                onToggle={() => {
-                  setShowEndDate((v) => !v);
-                  setActive('start');
+            const isClickable = cell.dateStr !== null && !isDisabledDate;
+            return (
+              <button
+                key={i}
+                disabled={!isClickable}
+                onClick={() => cell.dateStr && handleDayClick(cell.dateStr, cell.inMonth)}
+                style={{
+                  width: 44,
+                  height: 44,
+                  margin: '0 auto',
+                  borderRadius: '50%',
+                  border:
+                    isToday && !isSelected
+                      ? '0.125rem solid var(--sage)'
+                      : '0.125rem solid transparent',
+                  background: isSelected
+                    ? 'var(--sage)'
+                    : inRange
+                      ? 'color-mix(in srgb, var(--sage) 15%, transparent)'
+                      : 'none',
+                  color: isSelected
+                    ? 'var(--on-sage)'
+                    : isDisabledDate
+                      ? 'var(--text-muted)'
+                      : !cell.inMonth
+                        ? 'var(--text-muted)'
+                        : isToday
+                          ? 'var(--sage)'
+                          : 'var(--text-primary)',
+                  fontSize: 15,
+                  fontWeight: isSelected || isToday ? 600 : 400,
+                  cursor: isClickable ? 'pointer' : 'default',
+                  opacity: isClickable ? 1 : 0.35,
                 }}
-              />
-            </div>
+              >
+                {cell.day}
+              </button>
+            );
+          })}
+        </div>
 
-            {/* Include time toggle */}
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '0.625rem 1rem 0',
-              }}
-            >
-              <span style={{ fontSize: 15, color: 'var(--text-primary)' }}>Include time</span>
-              <Toggle on={showTime} onToggle={() => setShowTime((v) => !v)} />
-            </div>
-          </div>
-          {/* end scrollable body */}
+        {/* Divider */}
+        <div style={{ margin: '0.5rem 1rem 0', borderTop: '1px solid var(--border-light)' }} />
+
+        {/* End date toggle */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '0.625rem 1rem 0',
+          }}
+        >
+          <span style={{ fontSize: 15, color: 'var(--text-primary)' }}>End date</span>
+          <Toggle
+            on={showEndDate}
+            onToggle={() => {
+              setShowEndDate((v) => !v);
+              setActive('start');
+            }}
+          />
+        </div>
+
+        {/* Include time toggle */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '0.625rem 1rem 0',
+          }}
+        >
+          <span style={{ fontSize: 15, color: 'var(--text-primary)' }}>Include time</span>
+          <Toggle on={showTime} onToggle={() => setShowTime((v) => !v)} />
+        </div>
+      </div>
+      {/* end scrollable body */}
     </BottomSheet>
   );
 }

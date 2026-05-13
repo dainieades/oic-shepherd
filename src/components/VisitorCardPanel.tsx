@@ -1,7 +1,14 @@
 'use client';
 
 import React from 'react';
-import { Megaphone, Heart, HandsPraying, Sparkle, CaretDown, CaretRight } from '@phosphor-icons/react';
+import {
+  Megaphone,
+  Heart,
+  HandsPraying,
+  Sparkle,
+  CaretDown,
+  CaretRight,
+} from '@phosphor-icons/react';
 import { fetchLatestVisitorSubmission } from '@/lib/mappers';
 import { type VisitorSubmission, type Person, type ChurchAttendance } from '@/lib/types';
 import { useApp } from '@/lib/context';
@@ -11,7 +18,9 @@ const ACTIVE_VISITOR_ATTENDANCE: readonly ChurchAttendance[] = ['visitor'];
 
 export function VisitorCardPanel({ person }: { person: Person }) {
   const { data } = useApp();
-  const [submission, setSubmission] = React.useState<VisitorSubmission | null | undefined>(undefined);
+  const [submission, setSubmission] = React.useState<VisitorSubmission | null | undefined>(
+    undefined
+  );
   const isActiveVisitor = ACTIVE_VISITOR_ATTENDANCE.includes(person.churchAttendance);
   const [expanded, setExpanded] = React.useState(isActiveVisitor);
 
@@ -25,7 +34,9 @@ export function VisitorCardPanel({ person }: { person: Person }) {
       const result = await fetchLatestVisitorSubmission(person.id);
       if (!cancelled) setSubmission(result);
     })();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [person.id]);
 
   if (!submission) return null;
@@ -39,7 +50,8 @@ export function VisitorCardPanel({ person }: { person: Person }) {
 
   if (!isActiveVisitor && !expanded) {
     const summaryParts: string[] = [];
-    if (submission.referralSource) summaryParts.push(`Visited via ${REFERRAL_LABELS[submission.referralSource]}`);
+    if (submission.referralSource)
+      summaryParts.push(`Visited via ${REFERRAL_LABELS[submission.referralSource]}`);
     else summaryParts.push('Visitor card');
     summaryParts.push(submittedDate);
 
@@ -75,7 +87,14 @@ export function VisitorCardPanel({ person }: { person: Person }) {
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: 8,
+        }}
+      >
         <p style={{ ...sectionLabelStyle, marginBottom: 0 }}>Visitor card</p>
         {!isActiveVisitor && (
           <button
@@ -142,10 +161,15 @@ export function VisitorCardPanel({ person }: { person: Person }) {
           </Row>
         )}
 
-        <div style={{
-          fontSize: 11, color: 'var(--text-muted)',
-          display: 'flex', alignItems: 'center', gap: 4,
-        }}>
+        <div
+          style={{
+            fontSize: 11,
+            color: 'var(--text-muted)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 4,
+          }}
+        >
           <Sparkle size={11} />
           {submission.source === 'qr'
             ? 'Self-submitted via public form'
@@ -167,13 +191,23 @@ const sectionLabelStyle: React.CSSProperties = {
   marginBottom: 8,
 };
 
-function Row({ icon, label, children }: { icon: React.ReactNode; label: string; children: React.ReactNode }) {
+function Row({
+  icon,
+  label,
+  children,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  children: React.ReactNode;
+}) {
   return (
     <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
       <div style={{ paddingTop: 2 }}>{icon}</div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <p style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 2 }}>{label}</p>
-        <div style={{ fontSize: 14, color: 'var(--text-primary)', lineHeight: 1.4 }}>{children}</div>
+        <div style={{ fontSize: 14, color: 'var(--text-primary)', lineHeight: 1.4 }}>
+          {children}
+        </div>
       </div>
     </div>
   );

@@ -26,12 +26,44 @@ import {
   type ThemePreference,
   type NotificationPreferences,
 } from './types';
-import { type PersonRow, type FamilyRow, type NoteRow, type NoticeRow, type TodoRow, type GroupRow } from './schemas';
-import { mapPerson, mapFamily, mapPersona, syncGoogleAvatar, mapNote, mapNotice, mapTodo, mapAuditLog } from './mappers';
+import {
+  type PersonRow,
+  type FamilyRow,
+  type NoteRow,
+  type NoticeRow,
+  type TodoRow,
+  type GroupRow,
+} from './schemas';
+import {
+  mapPerson,
+  mapFamily,
+  mapPersona,
+  syncGoogleAvatar,
+  mapNote,
+  mapNotice,
+  mapTodo,
+  mapAuditLog,
+} from './mappers';
 
 // ── Shared filter types (exported so pages can import them) ──────────────────
 
-export type HomeSortKey = 'last-contacted' | 'last-contacted-recent' | 'name' | 'name-desc' | 'last-name' | 'last-name-desc';
+export type HomeSortKey =
+  | 'last-contacted'
+  | 'last-contacted-recent'
+  | 'name'
+  | 'name-desc'
+  | 'last-name'
+  | 'last-name-desc'
+  | 'status'
+  | 'status-desc'
+  | 'attendance'
+  | 'attendance-desc'
+  | 'groups'
+  | 'groups-desc'
+  | 'todos'
+  | 'todos-desc'
+  | 'notices'
+  | 'notices-desc';
 
 export interface HomeFilters {
   shepherds: string[];
@@ -57,7 +89,14 @@ export const HOME_DEFAULT_FILTERS: HomeFilters = {
   languages: [],
 };
 import { initialData } from './data';
-import { generateId, MAP_PROVIDERS_STORAGE_KEY, calcReminderDueAt, fullName, type MapProvider } from './utils';
+import {
+  generateId,
+  MAP_PROVIDERS_STORAGE_KEY,
+  calcReminderDueAt,
+  fullName,
+  visibleTo,
+  type MapProvider,
+} from './utils';
 import { createClient } from '@/utils/supabase/client';
 import { useToast } from '@/components/Toast';
 import { DEFAULT_FOLLOW_UP_DAYS, SAVE_ERROR_MSG } from '@/lib/constants';
@@ -80,7 +119,9 @@ interface AppContextType {
   addTodo: (todo: Omit<Todo, 'id' | 'createdAt' | 'createdBy' | 'completed'>) => void;
   updateTodo: (
     todoId: string,
-    updates: Partial<Pick<Todo, 'title' | 'dueDate' | 'repeat' | 'reminder' | 'familyId' | 'personId'>>
+    updates: Partial<
+      Pick<Todo, 'title' | 'dueDate' | 'repeat' | 'reminder' | 'familyId' | 'personId'>
+    >
   ) => void;
   deleteTodo: (todoId: string) => void;
   toggleTodo: (todoId: string) => void;
@@ -144,15 +185,15 @@ interface AppContextType {
   assignShepherds: (personId: string, shepherdIds: string[]) => Promise<void>;
   updateFamily: (
     familyId: string,
-    updates: Partial<Pick<Family, 'label' | 'photo' | 'originalPhoto' | 'primaryContactId' | 'childCount'>>
+    updates: Partial<
+      Pick<Family, 'label' | 'photo' | 'originalPhoto' | 'primaryContactId' | 'childCount'>
+    >
   ) => Promise<void>;
   updateFamilyMembers: (familyId: string, memberIds: string[]) => Promise<void>;
   addGroup: (name: string, description?: string) => void;
   updateGroup: (
     groupId: string,
-    updates: Partial<
-      Pick<import('./types').Group, 'name' | 'description' | 'leaderIds'>
-    >
+    updates: Partial<Pick<import('./types').Group, 'name' | 'description' | 'leaderIds'>>
   ) => void;
   updateGroupMembers: (groupId: string, memberIds: string[]) => void;
   assignGroupsToPerson: (personId: string, groupIds: string[]) => Promise<void>;
@@ -183,7 +224,10 @@ interface AppContextType {
   mapProvider: MapProvider;
   setMapProvider: (provider: MapProvider) => void;
   notificationPrefs: NotificationPreferences;
-  setNotificationPreference: <K extends keyof NotificationPreferences>(key: K, value: boolean) => Promise<void>;
+  setNotificationPreference: <K extends keyof NotificationPreferences>(
+    key: K,
+    value: boolean
+  ) => Promise<void>;
   calendarSyncEnabled: boolean;
   calendarFeedToken: string | null;
   enableCalendarSync: () => Promise<string>;
@@ -198,10 +242,29 @@ const AppContext = createContext<AppContextType | null>(null);
 // ── Audit log helpers ─────────────────────────────────────────────────────
 
 const AUDIT_FIELD_KEYS = [
-  'preferredName', 'lastName', 'alternativeName', 'photo', 'phone', 'homePhone', 'email', 'homeAddress',
-  'membershipStatus', 'churchAttendance', 'membershipDate', 'language', 'gender',
-  'maritalStatus', 'birthday', 'baptismDate', 'anniversary', 'followUpFrequencyDays',
-  'isShepherd', 'isBeingDiscipled', 'churchPositions', 'appRole', 'isStudent',
+  'preferredName',
+  'lastName',
+  'alternativeName',
+  'photo',
+  'phone',
+  'homePhone',
+  'email',
+  'homeAddress',
+  'membershipStatus',
+  'churchAttendance',
+  'membershipDate',
+  'language',
+  'gender',
+  'maritalStatus',
+  'birthday',
+  'baptismDate',
+  'anniversary',
+  'followUpFrequencyDays',
+  'isShepherd',
+  'isBeingDiscipled',
+  'churchPositions',
+  'appRole',
+  'isStudent',
 ] as const;
 
 function serializeAuditValue(field: string, value: unknown): string {
@@ -227,8 +290,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [themePreference, setThemePreferenceState] = useState<ThemePreference>('system');
   const [mapProvider, setMapProviderState] = useState<MapProvider>('google');
   const [notificationPrefs, setNotificationPrefsState] = useState<NotificationPreferences>({
-    personAdded: true, noticeAdded: true, shepherdAssigned: true,
-    personUpdated: true, todoCreated: true,
+    personAdded: true,
+    noticeAdded: true,
+    shepherdAssigned: true,
+    personUpdated: true,
+    todoCreated: true,
   });
   const [calendarSyncEnabled, setCalendarSyncEnabledState] = useState<boolean>(false);
   const [calendarFeedToken, setCalendarFeedTokenState] = useState<string | null>(null);
@@ -255,32 +321,38 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, [themePreference]);
 
-  const setThemePreference = useCallback((pref: ThemePreference): void => {
-    setThemePreferenceState(pref);
-    localStorage.setItem('shepherd-app-theme', pref);
-    createClient()
-      .from('personas')
-      .update({ theme_preference: pref })
-      .eq('id', currentPersona.id)
-      .then(() => {});
-  }, [currentPersona.id]);
+  const setThemePreference = useCallback(
+    (pref: ThemePreference): void => {
+      setThemePreferenceState(pref);
+      localStorage.setItem('shepherd-app-theme', pref);
+      createClient()
+        .from('personas')
+        .update({ theme_preference: pref })
+        .eq('id', currentPersona.id)
+        .then(() => {});
+    },
+    [currentPersona.id]
+  );
 
-  const setMapProvider = useCallback((provider: MapProvider): void => {
-    setMapProviderState(provider);
-    localStorage.setItem(MAP_PROVIDERS_STORAGE_KEY, provider);
-    createClient()
-      .from('personas')
-      .update({ map_provider: provider })
-      .eq('id', currentPersona.id)
-      .then(() => {});
-  }, [currentPersona.id]);
+  const setMapProvider = useCallback(
+    (provider: MapProvider): void => {
+      setMapProviderState(provider);
+      localStorage.setItem(MAP_PROVIDERS_STORAGE_KEY, provider);
+      createClient()
+        .from('personas')
+        .update({ map_provider: provider })
+        .eq('id', currentPersona.id)
+        .then(() => {});
+    },
+    [currentPersona.id]
+  );
 
   const NOTIFY_PREF_COLUMNS: Record<keyof NotificationPreferences, string> = {
-    personAdded:      'notify_person_added',
-    noticeAdded:      'notify_notice_added',
+    personAdded: 'notify_person_added',
+    noticeAdded: 'notify_notice_added',
     shepherdAssigned: 'notify_shepherd_assigned',
-    personUpdated:    'notify_person_updated',
-    todoCreated:      'notify_todo_created',
+    personUpdated: 'notify_person_updated',
+    todoCreated: 'notify_todo_created',
   };
 
   const setNotificationPreference = useCallback(
@@ -295,32 +367,31 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [currentPersona.id]
   );
 
-  const enableCalendarSync = useCallback(
-    async (): Promise<string> => {
-      const token = calendarFeedToken ?? (typeof crypto !== 'undefined' && crypto.randomUUID
+  const enableCalendarSync = useCallback(async (): Promise<string> => {
+    const token =
+      calendarFeedToken ??
+      (typeof crypto !== 'undefined' && crypto.randomUUID
         ? crypto.randomUUID()
         : Math.random().toString(36).slice(2) + Date.now().toString(36));
-      setCalendarSyncEnabledState(true);
-      setCalendarFeedTokenState(token);
-      setData((prev) => ({
-        ...prev,
-        personas: prev.personas.map((p) =>
-          p.id === currentPersona.id
-            ? { ...p, calendarSyncEnabled: true, calendarFeedToken: token }
-            : p
-        ),
-      }));
-      await createClient()
-        .from('personas')
-        .update({
-          calendar_sync_enabled: true,
-          calendar_feed_token: token,
-        })
-        .eq('id', currentPersona.id);
-      return `${window.location.origin}/api/calendar-feed/${token}.ics`;
-    },
-    [calendarFeedToken, currentPersona.id]
-  );
+    setCalendarSyncEnabledState(true);
+    setCalendarFeedTokenState(token);
+    setData((prev) => ({
+      ...prev,
+      personas: prev.personas.map((p) =>
+        p.id === currentPersona.id
+          ? { ...p, calendarSyncEnabled: true, calendarFeedToken: token }
+          : p
+      ),
+    }));
+    await createClient()
+      .from('personas')
+      .update({
+        calendar_sync_enabled: true,
+        calendar_feed_token: token,
+      })
+      .eq('id', currentPersona.id);
+    return `${window.location.origin}/api/calendar-feed/${token}.ics`;
+  }, [calendarFeedToken, currentPersona.id]);
 
   const disableCalendarSync = useCallback(async (): Promise<void> => {
     setCalendarSyncEnabledState(false);
@@ -337,9 +408,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [currentPersona.id]);
 
   const regenerateCalendarFeedToken = useCallback(async (): Promise<string> => {
-    const token = typeof crypto !== 'undefined' && crypto.randomUUID
-      ? crypto.randomUUID()
-      : Math.random().toString(36).slice(2) + Date.now().toString(36);
+    const token =
+      typeof crypto !== 'undefined' && crypto.randomUUID
+        ? crypto.randomUUID()
+        : Math.random().toString(36).slice(2) + Date.now().toString(36);
     setCalendarFeedTokenState(token);
     setData((prev) => ({
       ...prev,
@@ -359,10 +431,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [data.personas]
   );
 
-  const personaById = useMemo(
-    () => new Map(data.personas.map((p) => [p.id, p])),
-    [data.personas]
-  );
+  const personaById = useMemo(() => new Map(data.personas.map((p) => [p.id, p])), [data.personas]);
 
   // ── Persistent page filter state ─────────────────────────────────────
   const [homeFilters, setHomeFilters] = useState<HomeFilters>(HOME_DEFAULT_FILTERS);
@@ -446,7 +515,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
 
       const people = (peopleRows as Record<string, unknown>[]).map((r) => {
-        const person = mapPerson(r, shepherdsByPerson[r.id as string] ?? [], groupsByPerson[r.id as string] ?? []);
+        const person = mapPerson(
+          r,
+          shepherdsByPerson[r.id as string] ?? [],
+          groupsByPerson[r.id as string] ?? []
+        );
         const derivedFamilyId = familyByPerson[r.id as string];
         if (derivedFamilyId) person.familyId = derivedFamilyId;
         return person;
@@ -463,6 +536,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         leaderIds: (r.leader_ids as string[]) ?? [],
         memberIds: membersByGroup[r.id as string] ?? [],
         relatedFamilyIds: (r.related_family_ids as string[]) ?? [],
+        isTest: (r.is_test as boolean | undefined) ?? false,
       }));
 
       const personas = (personaRows as Record<string, unknown>[]).map((r) =>
@@ -636,6 +710,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
             .maybeSingle()
             .then(({ data }) => data?.id ?? null));
 
+        // If the resolved person is a hidden test record, mirror the flag onto the
+        // auto-created persona so test users see the in-prod persona switcher.
+        const resolvedIsTest: boolean = resolvedPersonId
+          ? await supabase
+              .from('people')
+              .select('is_test')
+              .eq('id', resolvedPersonId)
+              .maybeSingle()
+              .then(({ data }) => Boolean(data?.is_test))
+          : false;
+
         if (resolvedPersonId) {
           const { data: personaRow } = await supabase
             .from('personas')
@@ -649,13 +734,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
               // Fall through to step 3 — create a fresh persona for this auth user.
             } else {
               // Persona found — stamp it with the auth user_id so future logins are instant
-              await supabase.from('personas').update({ user_id: userId, email }).eq('id', personaRow.id);
+              await supabase
+                .from('personas')
+                .update({ user_id: userId, email })
+                .eq('id', personaRow.id);
               const linked = { ...personaRow, user_id: userId };
               const { data: ppRows } = await supabase
                 .from('persona_people')
                 .select('person_id')
                 .eq('persona_id', personaRow.id);
-              const assignedPeopleIds = (ppRows ?? []).map((r: { person_id: string }) => r.person_id);
+              const assignedPeopleIds = (ppRows ?? []).map(
+                (r: { person_id: string }) => r.person_id
+              );
               const persona = mapPersona(linked as Record<string, unknown>, assignedPeopleIds);
               setCurrentPersona(persona);
               setCurrentUserEmail(email);
@@ -675,7 +765,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
             // Create a persona linked to their person record so their profile is immediately visible.
             const { data: inserted } = await supabase
               .from('personas')
-              .insert({ id: userId, user_id: userId, name, role: 'shepherd', email, person_id: resolvedPersonId })
+              .insert({
+                id: userId,
+                user_id: userId,
+                name,
+                role: 'shepherd',
+                email,
+                person_id: resolvedPersonId,
+                is_test: resolvedIsTest,
+              })
               .select()
               .single();
             if (inserted) {
@@ -786,7 +884,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
           ).data;
           if (person) {
             const days =
-              (person as { follow_up_frequency_days: number }).follow_up_frequency_days ?? DEFAULT_FOLLOW_UP_DAYS;
+              (person as { follow_up_frequency_days: number }).follow_up_frequency_days ??
+              DEFAULT_FOLLOW_UP_DAYS;
             const now = new Date();
             await supabase
               .from('people')
@@ -815,7 +914,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       let snapshot: AppData | undefined;
       setData((prev) => {
         snapshot = prev;
-        return { ...prev, notes: prev.notes.map((n) => (n.id === noteId ? { ...n, ...updates } : n)) };
+        return {
+          ...prev,
+          notes: prev.notes.map((n) => (n.id === noteId ? { ...n, ...updates } : n)),
+        };
       });
       const supabase = createClient();
       const dbUpdates: Partial<NoteRow> = {};
@@ -837,7 +939,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const deleteNote = useCallback(async (noteId: string): Promise<void> => {
     let snapshot: AppData | undefined;
-    setData((prev) => { snapshot = prev; return { ...prev, notes: prev.notes.filter((n) => n.id !== noteId) }; });
+    setData((prev) => {
+      snapshot = prev;
+      return { ...prev, notes: prev.notes.filter((n) => n.id !== noteId) };
+    });
     const supabase = createClient();
     try {
       await supabase.from('notes').delete().eq('id', noteId);
@@ -858,7 +963,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
         createdAt: new Date().toISOString(),
       };
       let snapshot: AppData | undefined;
-      setData((prev) => { snapshot = prev; return { ...prev, todos: [todo, ...prev.todos] }; });
+      setData((prev) => {
+        snapshot = prev;
+        return { ...prev, todos: [todo, ...prev.todos] };
+      });
       const supabase = createClient();
       try {
         await supabase.from('todos').insert({
@@ -886,14 +994,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const updateTodo = useCallback(
     async (
       todoId: string,
-      updates: Partial<Pick<Todo, 'title' | 'dueDate' | 'endDate' | 'repeat' | 'reminder' | 'familyId' | 'personId'>>
+      updates: Partial<
+        Pick<
+          Todo,
+          'title' | 'dueDate' | 'endDate' | 'repeat' | 'reminder' | 'familyId' | 'personId'
+        >
+      >
     ): Promise<void> => {
       let snapshot: AppData | undefined;
       let existingTodo: Todo | undefined;
       setData((prev) => {
         snapshot = prev;
         existingTodo = prev.todos.find((t) => t.id === todoId);
-        return { ...prev, todos: prev.todos.map((t) => (t.id === todoId ? { ...t, ...updates } : t)) };
+        return {
+          ...prev,
+          todos: prev.todos.map((t) => (t.id === todoId ? { ...t, ...updates } : t)),
+        };
       });
       const supabase = createClient();
       const dbUpdates: Partial<TodoRow> = {};
@@ -923,7 +1039,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const deleteTodo = useCallback(async (todoId: string): Promise<void> => {
     let snapshot: AppData | undefined;
-    setData((prev) => { snapshot = prev; return { ...prev, todos: prev.todos.filter((t) => t.id !== todoId) }; });
+    setData((prev) => {
+      snapshot = prev;
+      return { ...prev, todos: prev.todos.filter((t) => t.id !== todoId) };
+    });
     const supabase = createClient();
     try {
       await supabase.from('todos').delete().eq('id', todoId);
@@ -982,9 +1101,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
         followUpFrequencyDays: DEFAULT_FOLLOW_UP_DAYS,
         createdAt: new Date().toISOString(),
         createdBy: currentPersona.id,
+        isTest: currentPersona.isTest === true,
       };
       let snapshot: AppData | undefined;
-      setData((prev) => { snapshot = prev; return { ...prev, people: [...prev.people, person] }; });
+      setData((prev) => {
+        snapshot = prev;
+        return { ...prev, people: [...prev.people, person] };
+      });
       const supabase = createClient();
       try {
         await supabase.from('people').insert({
@@ -1013,6 +1136,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           follow_up_frequency_days: DEFAULT_FOLLOW_UP_DAYS,
           created_at: person.createdAt,
           created_by: person.createdBy ?? null,
+          is_test: person.isTest ?? false,
         });
       } catch {
         if (snapshot) setData(snapshot);
@@ -1080,7 +1204,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
         prayer_request: input.prayerRequest ?? null,
       });
       if (submissionError) {
-        console.error('visitor_submissions insert failed:', JSON.stringify(submissionError, null, 2));
+        console.error(
+          'visitor_submissions insert failed:',
+          JSON.stringify(submissionError, null, 2)
+        );
         showToast('Visitor saved, but card data could not be stored', 'error');
       }
 
@@ -1106,9 +1233,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
         phone: (r.phone as string | null) ?? undefined,
         email: (r.email as string | null) ?? undefined,
         isStudent: (r.is_student as boolean | null) ?? false,
-        language: ((r.languages as string[] | null) ?? []).length > 0
-          ? (r.languages as string[])
-          : ['English'],
+        language:
+          ((r.languages as string[] | null) ?? []).length > 0
+            ? (r.languages as string[])
+            : ['English'],
         membershipStatus: 'non-member',
         churchAttendance: 'visitor',
       });
@@ -1123,16 +1251,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [addPerson]
   );
 
-  const discardVisitorSubmission = useCallback(
-    async (submissionId: string): Promise<void> => {
-      const supabase = createClient();
-      await supabase
-        .from('visitor_submissions')
-        .update({ status: 'discarded' })
-        .eq('id', submissionId);
-    },
-    []
-  );
+  const discardVisitorSubmission = useCallback(async (submissionId: string): Promise<void> => {
+    const supabase = createClient();
+    await supabase
+      .from('visitor_submissions')
+      .update({ status: 'discarded' })
+      .eq('id', submissionId);
+  }, []);
 
   const updateVisitorSubmission = useCallback(
     async (
@@ -1203,13 +1328,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
         snapshot = prev;
         currentPerson = prev.people.find((p) => p.id === personId);
         linkedUserId = prev.personas.find((p) => p.personId === personId)?.userId;
-        return { ...prev, people: prev.people.map((p) => (p.id === personId ? { ...p, ...updates } : p)) };
+        return {
+          ...prev,
+          people: prev.people.map((p) => (p.id === personId ? { ...p, ...updates } : p)),
+        };
       });
       const supabase = createClient();
       const dbUpdates: Partial<PersonRow> = {};
       if (updates.preferredName !== undefined) dbUpdates.preferred_name = updates.preferredName;
       if (updates.lastName !== undefined) dbUpdates.last_name = updates.lastName;
-      if (updates.alternativeName !== undefined) dbUpdates.alternative_name = updates.alternativeName;
+      if (updates.alternativeName !== undefined)
+        dbUpdates.alternative_name = updates.alternativeName;
       if ('photo' in updates) dbUpdates.photo = updates.photo ?? null;
       if ('originalPhoto' in updates) dbUpdates.original_photo = updates.originalPhoto ?? null;
       if (updates.phone !== undefined) dbUpdates.phone = updates.phone;
@@ -1240,15 +1369,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
       dbUpdates.last_edited_at = now;
       dbUpdates.last_edited_by_name = currentPersona.name;
       const auditRows = currentPerson
-        ? AUDIT_FIELD_KEYS
-            .filter((field) => field in updates)
-            .flatMap((field) => {
-              const oldRaw = currentPerson![field as keyof Person];
-              const newRaw = updates[field as keyof typeof updates];
-              const oldStr = serializeAuditValue(field, oldRaw);
-              const newStr = serializeAuditValue(field, newRaw);
-              if (oldStr === newStr) return [];
-              return [{
+        ? AUDIT_FIELD_KEYS.filter((field) => field in updates).flatMap((field) => {
+            const oldRaw = currentPerson![field as keyof Person];
+            const newRaw = updates[field as keyof typeof updates];
+            const oldStr = serializeAuditValue(field, oldRaw);
+            const newStr = serializeAuditValue(field, newRaw);
+            if (oldStr === newStr) return [];
+            return [
+              {
                 person_id: personId,
                 changed_by_persona_id: currentPersona.id,
                 changed_by_name: currentPersona.name,
@@ -1256,8 +1384,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
                 old_value: oldStr,
                 new_value: newStr,
                 created_at: now,
-              }];
-            })
+              },
+            ];
+          })
         : [];
       try {
         await Promise.all([
@@ -1290,7 +1419,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
             personUserId: linkedUserId,
             updatedByName: currentPersona.name,
             actorEmail: currentUserEmail,
-            changes: auditRows.map((r) => ({ field: r.field_name, oldValue: r.old_value, newValue: r.new_value })),
+            changes: auditRows.map((r) => ({
+              field: r.field_name,
+              oldValue: r.old_value,
+              newValue: r.new_value,
+            })),
           }),
         });
       }
@@ -1298,15 +1431,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [currentPersona.id, currentPersona.name, currentUserEmail]
   );
 
-  const fetchAuditLogs = useCallback(async (personId: string): Promise<import('./types').AuditLog[]> => {
-    const supabase = createClient();
-    const { data: rows } = await supabase
-      .from('audit_logs')
-      .select('*')
-      .eq('person_id', personId)
-      .order('created_at', { ascending: false });
-    return (rows ?? []).map(mapAuditLog);
-  }, []);
+  const fetchAuditLogs = useCallback(
+    async (personId: string): Promise<import('./types').AuditLog[]> => {
+      const supabase = createClient();
+      const { data: rows } = await supabase
+        .from('audit_logs')
+        .select('*')
+        .eq('person_id', personId)
+        .order('created_at', { ascending: false });
+      return (rows ?? []).map(mapAuditLog);
+    },
+    []
+  );
 
   const deletePerson = useCallback(async (personId: string): Promise<void> => {
     let snapshot: AppData | undefined;
@@ -1336,65 +1472,69 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const assignShepherds = useCallback(async (personId: string, shepherdIds: string[]): Promise<void> => {
-    let snapshot: AppData | undefined;
-    let personName = '';
-    setData((prev) => {
-      snapshot = prev;
-      const p = prev.people.find((p) => p.id === personId);
-      personName = p ? fullName(p) : '';
-      return {
-        ...prev,
-        people: prev.people.map((p) =>
-          p.id === personId ? { ...p, assignedShepherdIds: shepherdIds } : p
-        ),
-      };
-    });
-    // Keep currentPersona.assignedPeopleIds in sync so the "My Sheep" filter
-    // reflects new assignments without requiring a page reload.
-    setCurrentPersona((prev) => {
-      const isNowMine = shepherdIds.includes(prev.id);
-      const wasMine = prev.assignedPeopleIds.includes(personId);
-      if (isNowMine === wasMine) return prev;
-      return {
-        ...prev,
-        assignedPeopleIds: isNowMine
-          ? [...prev.assignedPeopleIds, personId]
-          : prev.assignedPeopleIds.filter((id) => id !== personId),
-      };
-    });
-    const supabase = createClient();
-    try {
-      await supabase.from('person_shepherds').delete().eq('person_id', personId);
-      if (shepherdIds.length > 0) {
-        await supabase
-          .from('person_shepherds')
-          .insert(shepherdIds.map((sid) => ({ person_id: personId, shepherd_id: sid })));
-      }
-    } catch {
-      if (snapshot) setData(snapshot);
-      showToast(SAVE_ERROR_MSG, 'error');
-      return;
-    }
-    if (shepherdIds.length > 0 && personName) {
-      void fetch('/api/notify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'shepherd.assigned',
-          personName,
-          shepherdPersonaIds: shepherdIds,
-          assignedByName: currentPersona.name,
-          actorEmail: currentUserEmail,
-        }),
+  const assignShepherds = useCallback(
+    async (personId: string, shepherdIds: string[]): Promise<void> => {
+      let snapshot: AppData | undefined;
+      let personName = '';
+      setData((prev) => {
+        snapshot = prev;
+        const p = prev.people.find((p) => p.id === personId);
+        personName = p ? fullName(p) : '';
+        return {
+          ...prev,
+          people: prev.people.map((p) =>
+            p.id === personId ? { ...p, assignedShepherdIds: shepherdIds } : p
+          ),
+        };
       });
-    }
-  }, [currentPersona.name, currentUserEmail]);
+      // Keep currentPersona.assignedPeopleIds in sync so the "My Sheep" filter
+      // reflects new assignments without requiring a page reload.
+      setCurrentPersona((prev) => {
+        const isNowMine = shepherdIds.includes(prev.id);
+        const wasMine = prev.assignedPeopleIds.includes(personId);
+        if (isNowMine === wasMine) return prev;
+        return {
+          ...prev,
+          assignedPeopleIds: isNowMine
+            ? [...prev.assignedPeopleIds, personId]
+            : prev.assignedPeopleIds.filter((id) => id !== personId),
+        };
+      });
+      const supabase = createClient();
+      try {
+        await supabase.from('person_shepherds').delete().eq('person_id', personId);
+        if (shepherdIds.length > 0) {
+          await supabase
+            .from('person_shepherds')
+            .insert(shepherdIds.map((sid) => ({ person_id: personId, shepherd_id: sid })));
+        }
+      } catch {
+        if (snapshot) setData(snapshot);
+        showToast(SAVE_ERROR_MSG, 'error');
+        return;
+      }
+      if (shepherdIds.length > 0 && personName) {
+        void fetch('/api/notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'shepherd.assigned',
+            personName,
+            shepherdPersonaIds: shepherdIds,
+            assignedByName: currentPersona.name,
+            actorEmail: currentUserEmail,
+          }),
+        });
+      }
+    },
+    [currentPersona.name, currentUserEmail]
+  );
 
   // ── Families ──────────────────────────────────────────────────────────
   const addFamily = useCallback(async (label: string, memberIds: string[]): Promise<string> => {
     const familyId = generateId();
-    const family: Family = { id: familyId, label, tags: [], memberIds };
+    const isTest = currentPersona.isTest === true;
+    const family: Family = { id: familyId, label, tags: [], memberIds, isTest };
     let snapshot: AppData | undefined;
     setData((prev) => {
       snapshot = prev;
@@ -1406,29 +1546,38 @@ export function AppProvider({ children }: { children: ReactNode }) {
     });
     const supabase = createClient();
     try {
-      await supabase.from('families').insert({ id: familyId, label, tags: [] });
+      await supabase.from('families').insert({ id: familyId, label, tags: [], is_test: isTest });
       if (memberIds.length > 0) {
         await supabase
           .from('family_members')
           .insert(memberIds.map((pid) => ({ family_id: familyId, person_id: pid })));
-        await Promise.all(memberIds.map((pid) => supabase.from('people').update({ family_id: familyId }).eq('id', pid)));
+        await Promise.all(
+          memberIds.map((pid) =>
+            supabase.from('people').update({ family_id: familyId }).eq('id', pid)
+          )
+        );
       }
     } catch {
       if (snapshot) setData(snapshot);
       showToast(SAVE_ERROR_MSG, 'error');
     }
     return familyId;
-  }, []);
+  }, [currentPersona.isTest]);
 
   const updateFamily = useCallback(
     async (
       familyId: string,
-      updates: Partial<Pick<Family, 'label' | 'photo' | 'originalPhoto' | 'primaryContactId' | 'childCount'>>
+      updates: Partial<
+        Pick<Family, 'label' | 'photo' | 'originalPhoto' | 'primaryContactId' | 'childCount'>
+      >
     ): Promise<void> => {
       let snapshot: AppData | undefined;
       setData((prev) => {
         snapshot = prev;
-        return { ...prev, families: prev.families.map((f) => (f.id === familyId ? { ...f, ...updates } : f)) };
+        return {
+          ...prev,
+          families: prev.families.map((f) => (f.id === familyId ? { ...f, ...updates } : f)),
+        };
       });
       const supabase = createClient();
       const dbUpdates: Partial<FamilyRow> = {};
@@ -1448,44 +1597,52 @@ export function AppProvider({ children }: { children: ReactNode }) {
     []
   );
 
-  const updateFamilyMembers = useCallback(async (familyId: string, newMemberIds: string[]): Promise<void> => {
-    let snapshot: AppData | undefined;
-    setData((prev) => {
-      snapshot = prev;
-      const family = prev.families.find((f) => f.id === familyId);
-      if (!family) return prev;
-      const oldMemberIds = family.memberIds;
-      const removed = oldMemberIds.filter((id) => !newMemberIds.includes(id));
-      const added = newMemberIds.filter((id) => !oldMemberIds.includes(id));
-      const newFamilies = prev.families.map((f) => {
-        if (f.id === familyId) return { ...f, memberIds: newMemberIds };
-        const filtered = f.memberIds.filter((id) => !added.includes(id));
-        return filtered.length !== f.memberIds.length ? { ...f, memberIds: filtered } : f;
+  const updateFamilyMembers = useCallback(
+    async (familyId: string, newMemberIds: string[]): Promise<void> => {
+      let snapshot: AppData | undefined;
+      setData((prev) => {
+        snapshot = prev;
+        const family = prev.families.find((f) => f.id === familyId);
+        if (!family) return prev;
+        const oldMemberIds = family.memberIds;
+        const removed = oldMemberIds.filter((id) => !newMemberIds.includes(id));
+        const added = newMemberIds.filter((id) => !oldMemberIds.includes(id));
+        const newFamilies = prev.families.map((f) => {
+          if (f.id === familyId) return { ...f, memberIds: newMemberIds };
+          const filtered = f.memberIds.filter((id) => !added.includes(id));
+          return filtered.length !== f.memberIds.length ? { ...f, memberIds: filtered } : f;
+        });
+        const newPeople = prev.people.map((p) => {
+          if (removed.includes(p.id)) return { ...p, familyId: undefined };
+          if (added.includes(p.id)) return { ...p, familyId };
+          return p;
+        });
+        return { ...prev, families: newFamilies, people: newPeople };
       });
-      const newPeople = prev.people.map((p) => {
-        if (removed.includes(p.id)) return { ...p, familyId: undefined };
-        if (added.includes(p.id)) return { ...p, familyId };
-        return p;
-      });
-      return { ...prev, families: newFamilies, people: newPeople };
-    });
 
-    const supabase = createClient();
-    try {
-      await supabase.from('family_members').delete().eq('family_id', familyId);
-      if (newMemberIds.length > 0) {
-        await supabase
-          .from('family_members')
-          .insert(newMemberIds.map((pid) => ({ family_id: familyId, person_id: pid })));
+      const supabase = createClient();
+      try {
+        await supabase.from('family_members').delete().eq('family_id', familyId);
+        if (newMemberIds.length > 0) {
+          await supabase
+            .from('family_members')
+            .insert(newMemberIds.map((pid) => ({ family_id: familyId, person_id: pid })));
+        }
+        await Promise.all(
+          newMemberIds.map((pid) =>
+            supabase.from('people').update({ family_id: familyId }).eq('id', pid)
+          )
+        );
+      } catch {
+        if (snapshot) setData(snapshot);
+        showToast(SAVE_ERROR_MSG, 'error');
       }
-      await Promise.all(newMemberIds.map((pid) => supabase.from('people').update({ family_id: familyId }).eq('id', pid)));
-    } catch {
-      if (snapshot) setData(snapshot);
-      showToast(SAVE_ERROR_MSG, 'error');
-    }
-  }, []);
+    },
+    []
+  );
 
   const addGroup = useCallback(async (name: string, description?: string): Promise<void> => {
+    const isTest = currentPersona.isTest === true;
     const group = {
       id: generateId(),
       name,
@@ -1493,24 +1650,28 @@ export function AppProvider({ children }: { children: ReactNode }) {
       leaderIds: [],
       memberIds: [],
       relatedFamilyIds: [],
+      isTest,
     };
     let snapshot: AppData | undefined;
-    setData((prev) => { snapshot = prev; return { ...prev, groups: [...prev.groups, group] }; });
+    setData((prev) => {
+      snapshot = prev;
+      return { ...prev, groups: [...prev.groups, group] };
+    });
     const supabase = createClient();
     try {
-      await supabase.from('groups').insert({ id: group.id, name, description: description ?? null });
+      await supabase
+        .from('groups')
+        .insert({ id: group.id, name, description: description ?? null, is_test: isTest });
     } catch {
       if (snapshot) setData(snapshot);
       showToast(SAVE_ERROR_MSG, 'error');
     }
-  }, []);
+  }, [currentPersona.isTest]);
 
   const updateGroup = useCallback(
     async (
       groupId: string,
-      updates: Partial<
-        Pick<import('./types').Group, 'name' | 'description' | 'leaderIds'>
-      >
+      updates: Partial<Pick<import('./types').Group, 'name' | 'description' | 'leaderIds'>>
     ): Promise<void> => {
       let snapshot: AppData | undefined;
 
@@ -1535,169 +1696,188 @@ export function AppProvider({ children }: { children: ReactNode }) {
     []
   );
 
-  const updateGroupMembers = useCallback(async (groupId: string, memberIds: string[]): Promise<void> => {
-    let snapshot: AppData | undefined;
-    setData((prev) => {
-      snapshot = prev;
-      const newGroups = prev.groups.map((g) => (g.id === groupId ? { ...g, memberIds } : g));
-      const newPeople = prev.people.map((p) => {
-        const inGroup = memberIds.includes(p.id);
-        const hadGroup = p.groupIds.includes(groupId);
-        if (inGroup && !hadGroup) return { ...p, groupIds: [...p.groupIds, groupId] };
-        if (!inGroup && hadGroup)
-          return { ...p, groupIds: p.groupIds.filter((id) => id !== groupId) };
-        return p;
-      });
-      return { ...prev, groups: newGroups, people: newPeople };
-    });
-    const supabase = createClient();
-    try {
-      await supabase.from('group_members').delete().eq('group_id', groupId);
-      if (memberIds.length > 0) {
-        await supabase.from('group_members').insert(memberIds.map((pid) => ({ group_id: groupId, person_id: pid })));
-      }
-    } catch {
-      if (snapshot) setData(snapshot);
-      showToast(SAVE_ERROR_MSG, 'error');
-    }
-  }, []);
-
-  const assignGroupsToPerson = useCallback(async (personId: string, groupIds: string[]): Promise<void> => {
-    let snapshot: AppData | undefined;
-    setData((prev) => {
-      snapshot = prev;
-      const newPeople = prev.people.map((p) => (p.id === personId ? { ...p, groupIds } : p));
-      const newGroups = prev.groups.map((g) => {
-        if (groupIds.includes(g.id)) {
-          return g.memberIds.includes(personId)
-            ? g
-            : { ...g, memberIds: [...g.memberIds, personId] };
-        } else {
-          return { ...g, memberIds: g.memberIds.filter((id) => id !== personId) };
-        }
-      });
-      return { ...prev, people: newPeople, groups: newGroups };
-    });
-    const supabase = createClient();
-    try {
-      await supabase.from('group_members').delete().eq('person_id', personId);
-      for (const gid of groupIds) {
-        await supabase.from('group_members').insert({ group_id: gid, person_id: personId });
-      }
-    } catch {
-      if (snapshot) setData(snapshot);
-      showToast(SAVE_ERROR_MSG, 'error');
-    }
-  }, []);
-
-  const assignGroupsToFamily = useCallback(async (familyId: string, groupIds: string[]): Promise<void> => {
-    let snapshot: AppData | undefined;
-    setData((prev) => {
-      snapshot = prev;
-      const family = prev.families.find((f) => f.id === familyId);
-      if (!family) return prev;
-      const memberIds = family.memberIds;
-      const newPeople = prev.people.map((p) => (memberIds.includes(p.id) ? { ...p, groupIds } : p));
-      const newGroups = prev.groups.map((g) => {
-        if (groupIds.includes(g.id)) {
-          const merged = [...g.memberIds];
-          for (const mid of memberIds) {
-            if (!merged.includes(mid)) merged.push(mid);
-          }
-          return { ...g, memberIds: merged };
-        } else {
-          return { ...g, memberIds: g.memberIds.filter((id) => !memberIds.includes(id)) };
-        }
-      });
-      return { ...prev, people: newPeople, groups: newGroups };
-    });
-
-    const supabase = createClient();
-    try {
-      const { data: fmRows } = await supabase
-        .from('family_members')
-        .select('person_id')
-        .eq('family_id', familyId);
-      const memberIds = (fmRows ?? []).map((r: { person_id: string }) => r.person_id);
-      for (const mid of memberIds) {
-        await supabase.from('group_members').delete().eq('person_id', mid);
-      }
-      for (const gid of groupIds) {
-        for (const mid of memberIds) {
-          await supabase.from('group_members').insert({ group_id: gid, person_id: mid });
-        }
-      }
-    } catch {
-      if (snapshot) setData(snapshot);
-      showToast(SAVE_ERROR_MSG, 'error');
-    }
-  }, []);
-
-  const assignShepherdsToFamily = useCallback(async (familyId: string, shepherdIds: string[]): Promise<void> => {
-    let snapshot: AppData | undefined;
-    setData((prev) => {
-      snapshot = prev;
-      const family = prev.families.find((f) => f.id === familyId);
-      if (!family) return prev;
-      const memberIds = family.memberIds;
-      const newPeople = prev.people.map((p) =>
-        memberIds.includes(p.id) ? { ...p, assignedShepherdIds: shepherdIds } : p
-      );
-      return { ...prev, people: newPeople };
-    });
-
-    const supabase = createClient();
-    try {
-      const { data: fmRows } = await supabase
-        .from('family_members')
-        .select('person_id')
-        .eq('family_id', familyId);
-      const memberIds = (fmRows ?? []).map((r: { person_id: string }) => r.person_id);
-      for (const pid of memberIds) {
-        await supabase.from('person_shepherds').delete().eq('person_id', pid);
-        if (shepherdIds.length > 0) {
-          await supabase
-            .from('person_shepherds')
-            .insert(shepherdIds.map((sid) => ({ person_id: pid, shepherd_id: sid })));
-        }
-      }
-    } catch {
-      if (snapshot) setData(snapshot);
-      showToast(SAVE_ERROR_MSG, 'error');
-    }
-  }, []);
-
-  const setFollowUpFrequency = useCallback(async (personId: string, days: number): Promise<void> => {
-    let nextFollowUpDate: string | undefined;
-    let snapshot: AppData | undefined;
-    setData((prev) => {
-      snapshot = prev;
-      return {
-        ...prev,
-        people: prev.people.map((p) => {
-          if (p.id === personId) {
-            const base = p.lastContactDate ? parseISO(p.lastContactDate) : new Date();
-            nextFollowUpDate = formatISO(addDays(base, days));
-            return { ...p, followUpFrequencyDays: days, nextFollowUpDate };
-          }
+  const updateGroupMembers = useCallback(
+    async (groupId: string, memberIds: string[]): Promise<void> => {
+      let snapshot: AppData | undefined;
+      setData((prev) => {
+        snapshot = prev;
+        const newGroups = prev.groups.map((g) => (g.id === groupId ? { ...g, memberIds } : g));
+        const newPeople = prev.people.map((p) => {
+          const inGroup = memberIds.includes(p.id);
+          const hadGroup = p.groupIds.includes(groupId);
+          if (inGroup && !hadGroup) return { ...p, groupIds: [...p.groupIds, groupId] };
+          if (!inGroup && hadGroup)
+            return { ...p, groupIds: p.groupIds.filter((id) => id !== groupId) };
           return p;
-        }),
-      };
-    });
-    const supabase = createClient();
-    try {
-      await supabase
-        .from('people')
-        .update({
-          follow_up_frequency_days: days,
-          next_follow_up_date: nextFollowUpDate ?? null,
-        })
-        .eq('id', personId);
-    } catch {
-      if (snapshot) setData(snapshot);
-      showToast(SAVE_ERROR_MSG, 'error');
-    }
-  }, []);
+        });
+        return { ...prev, groups: newGroups, people: newPeople };
+      });
+      const supabase = createClient();
+      try {
+        await supabase.from('group_members').delete().eq('group_id', groupId);
+        if (memberIds.length > 0) {
+          await supabase
+            .from('group_members')
+            .insert(memberIds.map((pid) => ({ group_id: groupId, person_id: pid })));
+        }
+      } catch {
+        if (snapshot) setData(snapshot);
+        showToast(SAVE_ERROR_MSG, 'error');
+      }
+    },
+    []
+  );
+
+  const assignGroupsToPerson = useCallback(
+    async (personId: string, groupIds: string[]): Promise<void> => {
+      let snapshot: AppData | undefined;
+      setData((prev) => {
+        snapshot = prev;
+        const newPeople = prev.people.map((p) => (p.id === personId ? { ...p, groupIds } : p));
+        const newGroups = prev.groups.map((g) => {
+          if (groupIds.includes(g.id)) {
+            return g.memberIds.includes(personId)
+              ? g
+              : { ...g, memberIds: [...g.memberIds, personId] };
+          } else {
+            return { ...g, memberIds: g.memberIds.filter((id) => id !== personId) };
+          }
+        });
+        return { ...prev, people: newPeople, groups: newGroups };
+      });
+      const supabase = createClient();
+      try {
+        await supabase.from('group_members').delete().eq('person_id', personId);
+        for (const gid of groupIds) {
+          await supabase.from('group_members').insert({ group_id: gid, person_id: personId });
+        }
+      } catch {
+        if (snapshot) setData(snapshot);
+        showToast(SAVE_ERROR_MSG, 'error');
+      }
+    },
+    []
+  );
+
+  const assignGroupsToFamily = useCallback(
+    async (familyId: string, groupIds: string[]): Promise<void> => {
+      let snapshot: AppData | undefined;
+      setData((prev) => {
+        snapshot = prev;
+        const family = prev.families.find((f) => f.id === familyId);
+        if (!family) return prev;
+        const memberIds = family.memberIds;
+        const newPeople = prev.people.map((p) =>
+          memberIds.includes(p.id) ? { ...p, groupIds } : p
+        );
+        const newGroups = prev.groups.map((g) => {
+          if (groupIds.includes(g.id)) {
+            const merged = [...g.memberIds];
+            for (const mid of memberIds) {
+              if (!merged.includes(mid)) merged.push(mid);
+            }
+            return { ...g, memberIds: merged };
+          } else {
+            return { ...g, memberIds: g.memberIds.filter((id) => !memberIds.includes(id)) };
+          }
+        });
+        return { ...prev, people: newPeople, groups: newGroups };
+      });
+
+      const supabase = createClient();
+      try {
+        const { data: fmRows } = await supabase
+          .from('family_members')
+          .select('person_id')
+          .eq('family_id', familyId);
+        const memberIds = (fmRows ?? []).map((r: { person_id: string }) => r.person_id);
+        for (const mid of memberIds) {
+          await supabase.from('group_members').delete().eq('person_id', mid);
+        }
+        for (const gid of groupIds) {
+          for (const mid of memberIds) {
+            await supabase.from('group_members').insert({ group_id: gid, person_id: mid });
+          }
+        }
+      } catch {
+        if (snapshot) setData(snapshot);
+        showToast(SAVE_ERROR_MSG, 'error');
+      }
+    },
+    []
+  );
+
+  const assignShepherdsToFamily = useCallback(
+    async (familyId: string, shepherdIds: string[]): Promise<void> => {
+      let snapshot: AppData | undefined;
+      setData((prev) => {
+        snapshot = prev;
+        const family = prev.families.find((f) => f.id === familyId);
+        if (!family) return prev;
+        const memberIds = family.memberIds;
+        const newPeople = prev.people.map((p) =>
+          memberIds.includes(p.id) ? { ...p, assignedShepherdIds: shepherdIds } : p
+        );
+        return { ...prev, people: newPeople };
+      });
+
+      const supabase = createClient();
+      try {
+        const { data: fmRows } = await supabase
+          .from('family_members')
+          .select('person_id')
+          .eq('family_id', familyId);
+        const memberIds = (fmRows ?? []).map((r: { person_id: string }) => r.person_id);
+        for (const pid of memberIds) {
+          await supabase.from('person_shepherds').delete().eq('person_id', pid);
+          if (shepherdIds.length > 0) {
+            await supabase
+              .from('person_shepherds')
+              .insert(shepherdIds.map((sid) => ({ person_id: pid, shepherd_id: sid })));
+          }
+        }
+      } catch {
+        if (snapshot) setData(snapshot);
+        showToast(SAVE_ERROR_MSG, 'error');
+      }
+    },
+    []
+  );
+
+  const setFollowUpFrequency = useCallback(
+    async (personId: string, days: number): Promise<void> => {
+      let nextFollowUpDate: string | undefined;
+      let snapshot: AppData | undefined;
+      setData((prev) => {
+        snapshot = prev;
+        return {
+          ...prev,
+          people: prev.people.map((p) => {
+            if (p.id === personId) {
+              const base = p.lastContactDate ? parseISO(p.lastContactDate) : new Date();
+              nextFollowUpDate = formatISO(addDays(base, days));
+              return { ...p, followUpFrequencyDays: days, nextFollowUpDate };
+            }
+            return p;
+          }),
+        };
+      });
+      const supabase = createClient();
+      try {
+        await supabase
+          .from('people')
+          .update({
+            follow_up_frequency_days: days,
+            next_follow_up_date: nextFollowUpDate ?? null,
+          })
+          .eq('id', personId);
+      } catch {
+        if (snapshot) setData(snapshot);
+        showToast(SAVE_ERROR_MSG, 'error');
+      }
+    },
+    []
+  );
 
   // ── Notices ───────────────────────────────────────────────────────────
   const addNotice = useCallback(
@@ -1765,7 +1945,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       let snapshot: AppData | undefined;
       setData((prev) => {
         snapshot = prev;
-        return { ...prev, notices: prev.notices.map((n) => (n.id === noticeId ? { ...n, ...updates } : n)) };
+        return {
+          ...prev,
+          notices: prev.notices.map((n) => (n.id === noticeId ? { ...n, ...updates } : n)),
+        };
       });
       const supabase = createClient();
       const dbUpdates: Partial<NoticeRow> = {};
@@ -1787,7 +1970,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const deleteNotice = useCallback(async (noticeId: string): Promise<void> => {
     let snapshot: AppData | undefined;
-    setData((prev) => { snapshot = prev; return { ...prev, notices: prev.notices.filter((n) => n.id !== noticeId) }; });
+    setData((prev) => {
+      snapshot = prev;
+      return { ...prev, notices: prev.notices.filter((n) => n.id !== noticeId) };
+    });
     const supabase = createClient();
     try {
       await supabase.from('notices').delete().eq('id', noticeId);
@@ -1810,6 +1996,30 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [currentPersona]
   );
 
+  const viewerIsTest = currentPersona.isTest === true;
+  const visibleData = useMemo<AppData>(() => {
+    if (viewerIsTest) return data;
+    const people = visibleTo(data.people, false);
+    const families = visibleTo(data.families, false);
+    const groups = visibleTo(data.groups, false);
+    const personas = visibleTo(data.personas, false);
+    const hiddenPeople = new Set(
+      data.people.filter((p) => p.isTest).map((p) => p.id)
+    );
+    const hiddenFamilies = new Set(
+      data.families.filter((f) => f.isTest).map((f) => f.id)
+    );
+    const refHidden = (personId?: string, familyId?: string): boolean => {
+      if (personId && hiddenPeople.has(personId)) return true;
+      if (familyId && hiddenFamilies.has(familyId)) return true;
+      return false;
+    };
+    const notes = data.notes.filter((n) => !refHidden(n.personId, n.familyId));
+    const todos = data.todos.filter((t) => !refHidden(t.personId, t.familyId));
+    const notices = data.notices.filter((n) => !refHidden(n.personId, n.familyId));
+    return { people, families, groups, personas, notes, todos, notices };
+  }, [data, viewerIsTest]);
+
   if (!loaded) {
     return (
       <div
@@ -1824,7 +2034,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   return (
     <AppContext.Provider
       value={{
-        data,
+        data: visibleData,
         personaByPersonId,
         currentPersona,
         accessDenied,

@@ -72,7 +72,10 @@ function fmtDue(iso: string) {
 export default function FamilyDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = React.use(params);
   const { data, toggleTodo, canViewNote, updateFamily, currentPersona } = useApp();
-  const canSeeNotices = currentPersona.role === 'admin' || currentPersona.role === 'shepherd' || currentPersona.role === 'welcome-team';
+  const canSeeNotices =
+    currentPersona.role === 'admin' ||
+    currentPersona.role === 'shepherd' ||
+    currentPersona.role === 'welcome-team';
   const [tab, setTab] = React.useState<Tab>('logs');
   const [showAddLog, setShowAddLog] = React.useState(false);
   const [showAddTodo, setShowAddTodo] = React.useState(false);
@@ -308,7 +311,9 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
           onPhotoChange={(photoUrl, originalUrl) =>
             updateFamily(family.id, { photo: photoUrl, originalPhoto: originalUrl })
           }
-          onPhotoRemove={() => updateFamily(family.id, { photo: undefined, originalPhoto: undefined })}
+          onPhotoRemove={() =>
+            updateFamily(family.id, { photo: undefined, originalPhoto: undefined })
+          }
         />
 
         {/* Name + meta */}
@@ -350,7 +355,6 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
           </div>
         </div>
       </div>
-
 
       {/* ── Tabs — sticky below nav bar ── */}
       <div
@@ -619,11 +623,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                       <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>
                         {getMembershipLabel(m.membershipStatus)}
                         {m.lastContactDate && (
-                          <span>
-                            {' '}
-                            · Logged{' '}
-                            {format(parseISO(m.lastContactDate), 'MMM d')}
-                          </span>
+                          <span> · Logged {format(parseISO(m.lastContactDate), 'MMM d')}</span>
                         )}
                       </p>
                     </div>
@@ -1109,4 +1109,3 @@ function TodoSection({
     </div>
   );
 }
-

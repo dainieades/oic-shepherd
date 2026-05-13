@@ -31,6 +31,7 @@ create table people_import (
 ```
 
 Notes:
+
 - Match `id`'s type to the real table. In Shepherd, `people.id` is a **slug (`text`)**, not a `uuid`. Confirm by looking at a few rows.
 - For non-`id` columns, `text` is fine even if the real column is an enum/date/etc. — the staging table is just a buffer.
 

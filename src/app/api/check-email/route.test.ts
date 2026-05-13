@@ -2,7 +2,10 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 vi.mock('next/server', () => ({
   NextResponse: {
-    json: (data: unknown, init?: { status?: number }) => ({ _data: data, _status: init?.status ?? 200 }),
+    json: (data: unknown, init?: { status?: number }) => ({
+      _data: data,
+      _status: init?.status ?? 200,
+    }),
   },
 }));
 
@@ -71,14 +74,20 @@ describe('POST /api/check-email', () => {
   });
 
   it('returns not-invited when email is absent from approved_emails', async () => {
-    mockCreateClient.mockReturnValue(makeSupabaseMock({ data: null, error: null }) as unknown as ReturnType<typeof createClient>);
-    const res = (await POST(makeRequest({ email: 'unknown@example.com' }))) as unknown as MockResponse;
+    mockCreateClient.mockReturnValue(
+      makeSupabaseMock({ data: null, error: null }) as unknown as ReturnType<typeof createClient>
+    );
+    const res = (await POST(
+      makeRequest({ email: 'unknown@example.com' })
+    )) as unknown as MockResponse;
     expect(res._data).toEqual({ status: 'not-invited' });
   });
 
   it('returns error when approved_emails query fails', async () => {
     mockCreateClient.mockReturnValue(
-      makeSupabaseMock({ data: null, error: { message: 'DB error' } }) as unknown as ReturnType<typeof createClient>,
+      makeSupabaseMock({ data: null, error: { message: 'DB error' } }) as unknown as ReturnType<
+        typeof createClient
+      >
     );
     const res = (await POST(makeRequest({ email: 'test@example.com' }))) as unknown as MockResponse;
     expect(res._data).toEqual({ status: 'error' });
@@ -86,7 +95,10 @@ describe('POST /api/check-email', () => {
 
   it('returns invited when auth admin API is unavailable', async () => {
     mockCreateClient.mockReturnValue(
-      makeSupabaseMock({ data: { email: 'test@example.com' }, error: null }) as unknown as ReturnType<typeof createClient>,
+      makeSupabaseMock({
+        data: { email: 'test@example.com' },
+        error: null,
+      }) as unknown as ReturnType<typeof createClient>
     );
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false }));
     const res = (await POST(makeRequest({ email: 'test@example.com' }))) as unknown as MockResponse;
@@ -95,11 +107,14 @@ describe('POST /api/check-email', () => {
 
   it('returns invited when user is approved but has no auth account', async () => {
     mockCreateClient.mockReturnValue(
-      makeSupabaseMock({ data: { email: 'test@example.com' }, error: null }) as unknown as ReturnType<typeof createClient>,
+      makeSupabaseMock({
+        data: { email: 'test@example.com' },
+        error: null,
+      }) as unknown as ReturnType<typeof createClient>
     );
     vi.stubGlobal(
       'fetch',
-      vi.fn().mockResolvedValue({ ok: true, json: async () => ({ users: [] }) }),
+      vi.fn().mockResolvedValue({ ok: true, json: async () => ({ users: [] }) })
     );
     const res = (await POST(makeRequest({ email: 'test@example.com' }))) as unknown as MockResponse;
     expect(res._data).toEqual({ status: 'invited' });
@@ -107,7 +122,10 @@ describe('POST /api/check-email', () => {
 
   it('returns google when user has only a Google identity', async () => {
     mockCreateClient.mockReturnValue(
-      makeSupabaseMock({ data: { email: 'test@example.com' }, error: null }) as unknown as ReturnType<typeof createClient>,
+      makeSupabaseMock({
+        data: { email: 'test@example.com' },
+        error: null,
+      }) as unknown as ReturnType<typeof createClient>
     );
     vi.stubGlobal(
       'fetch',
@@ -116,7 +134,7 @@ describe('POST /api/check-email', () => {
         json: async () => ({
           users: [{ email: 'test@example.com', identities: [{ provider: 'google' }] }],
         }),
-      }),
+      })
     );
     const res = (await POST(makeRequest({ email: 'test@example.com' }))) as unknown as MockResponse;
     expect(res._data).toEqual({ status: 'google' });
@@ -124,7 +142,10 @@ describe('POST /api/check-email', () => {
 
   it('returns existing when user has a password identity', async () => {
     mockCreateClient.mockReturnValue(
-      makeSupabaseMock({ data: { email: 'test@example.com' }, error: null }) as unknown as ReturnType<typeof createClient>,
+      makeSupabaseMock({
+        data: { email: 'test@example.com' },
+        error: null,
+      }) as unknown as ReturnType<typeof createClient>
     );
     vi.stubGlobal(
       'fetch',
@@ -133,7 +154,7 @@ describe('POST /api/check-email', () => {
         json: async () => ({
           users: [{ email: 'test@example.com', identities: [{ provider: 'email' }] }],
         }),
-      }),
+      })
     );
     const res = (await POST(makeRequest({ email: 'test@example.com' }))) as unknown as MockResponse;
     expect(res._data).toEqual({ status: 'existing' });
@@ -141,7 +162,10 @@ describe('POST /api/check-email', () => {
 
   it('returns existing when user has both Google and password identities', async () => {
     mockCreateClient.mockReturnValue(
-      makeSupabaseMock({ data: { email: 'test@example.com' }, error: null }) as unknown as ReturnType<typeof createClient>,
+      makeSupabaseMock({
+        data: { email: 'test@example.com' },
+        error: null,
+      }) as unknown as ReturnType<typeof createClient>
     );
     vi.stubGlobal(
       'fetch',
@@ -149,10 +173,13 @@ describe('POST /api/check-email', () => {
         ok: true,
         json: async () => ({
           users: [
-            { email: 'test@example.com', identities: [{ provider: 'google' }, { provider: 'email' }] },
+            {
+              email: 'test@example.com',
+              identities: [{ provider: 'google' }, { provider: 'email' }],
+            },
           ],
         }),
-      }),
+      })
     );
     const res = (await POST(makeRequest({ email: 'test@example.com' }))) as unknown as MockResponse;
     expect(res._data).toEqual({ status: 'existing' });

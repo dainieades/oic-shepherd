@@ -40,6 +40,7 @@ export const PersonRowSchema = z.object({
   created_by: nullStr,
   last_edited_at: nullStr,
   last_edited_by_name: nullStr,
+  is_test: nullBool,
 });
 
 export type PersonRow = z.infer<typeof PersonRowSchema>;
@@ -54,6 +55,7 @@ export const FamilyRowSchema = z.object({
   primary_contact_id: nullStr,
   created_at: nullStr,
   created_by: nullStr,
+  is_test: nullBool,
 });
 
 export type FamilyRow = z.infer<typeof FamilyRowSchema>;
@@ -66,14 +68,15 @@ export const PersonaRowSchema = z.object({
   user_id: nullStr,
   theme_preference: z.enum(['light', 'dark', 'system']).nullable().optional(),
   map_provider: z.enum(['apple', 'google', 'waze']).nullable().optional(),
-  notify_person_added:      z.boolean().nullable().optional(),
-  notify_notice_added:      z.boolean().nullable().optional(),
+  notify_person_added: z.boolean().nullable().optional(),
+  notify_notice_added: z.boolean().nullable().optional(),
   notify_shepherd_assigned: z.boolean().nullable().optional(),
-  notify_person_updated:    z.boolean().nullable().optional(),
-  notify_todo_created:      z.boolean().nullable().optional(),
-  calendar_sync_enabled:    z.boolean().nullable().optional(),
-  calendar_feed_token:      nullStr,
-  calendar_connected_app:   z.enum(['apple', 'google', 'other']).nullable().optional(),
+  notify_person_updated: z.boolean().nullable().optional(),
+  notify_todo_created: z.boolean().nullable().optional(),
+  calendar_sync_enabled: z.boolean().nullable().optional(),
+  calendar_feed_token: nullStr,
+  calendar_connected_app: z.enum(['apple', 'google', 'other']).nullable().optional(),
+  is_test: nullBool,
 });
 
 export type PersonaRow = z.infer<typeof PersonaRowSchema>;
@@ -93,7 +96,13 @@ export const NoteRowSchema = z.object({
 
 export type NoteRow = z.infer<typeof NoteRowSchema>;
 
-const noticeCategoryEnum = z.enum(['physical-need', 'spiritual-need', 'social-need', 'psychological-need', 'other']);
+const noticeCategoryEnum = z.enum([
+  'physical-need',
+  'spiritual-need',
+  'social-need',
+  'psychological-need',
+  'other',
+]);
 
 export const NoticeRowSchema = z.object({
   id: z.string(),
@@ -117,11 +126,19 @@ export const TodoRowSchema = z.object({
   due_date: nullStr,
   end_date: nullStr,
   repeat: z.enum(['none', 'daily', 'weekly', 'biweekly', 'monthly', 'yearly']).nullish(),
-  reminder: z.enum([
-    'none',
-    '30_min_before', '1_hour_before', '1_day_before',
-    'same_day_9am', 'day_before_9am', 'day_before_5pm', '2_days_before_9am', '1_week_before_9am',
-  ]).nullish(),
+  reminder: z
+    .enum([
+      'none',
+      '30_min_before',
+      '1_hour_before',
+      '1_day_before',
+      'same_day_9am',
+      'day_before_9am',
+      'day_before_5pm',
+      '2_days_before_9am',
+      '1_week_before_9am',
+    ])
+    .nullish(),
   reminder_due_at: nullStr,
   reminder_sent_at: nullStr,
   completed: z.boolean().nullish(),
@@ -151,6 +168,7 @@ export const GroupRowSchema = z.object({
   description: nullStr,
   leader_ids: nullStrArr,
   related_family_ids: nullStrArr,
+  is_test: nullBool,
 });
 
 export type GroupRow = z.infer<typeof GroupRowSchema>;

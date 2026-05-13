@@ -87,7 +87,6 @@ export default function LogsFilterPanel({
     }
   }, [show]); // eslint-disable-line react-hooks/exhaustive-deps
 
-
   const applyFilter = (): void => {
     onApply(draft);
     onClose();
@@ -107,355 +106,362 @@ export default function LogsFilterPanel({
   const CATEGORIES: CategoryDef[] = [
     { key: 'type', label: 'Log type', count: typeCount },
     { key: 'date', label: 'Date logged', count: dateCount },
-    ...(isAdmin ? [{ key: 'shepherd' as FilterCategory, label: 'Shepherd', count: shepherdCount, adminOnly: true }] : []),
+    ...(isAdmin
+      ? [
+          {
+            key: 'shepherd' as FilterCategory,
+            label: 'Shepherd',
+            count: shepherdCount,
+            adminOnly: true,
+          },
+        ]
+      : []),
   ];
 
   if (!show) return null;
 
   return (
     <BottomSheet onClose={onClose} zIndex={50}>
-
-        {/* Header */}
-        <div
+      {/* Header */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '0.875rem 1.25rem 0.75rem',
+          flexShrink: 0,
+          borderBottom: '1px solid var(--border-light)',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>Filter</h2>
+          {draftTotalCount > 0 && (
+            <span
+              style={{
+                fontSize: 11,
+                fontWeight: 700,
+                padding: '0.125rem 0.5rem',
+                borderRadius: 'var(--radius-pill)',
+                background: 'var(--sage)',
+                color: 'var(--on-sage)',
+              }}
+            >
+              {draftTotalCount}
+            </span>
+          )}
+        </div>
+        <button
+          onClick={onClose}
           style={{
+            width: 28,
+            height: 28,
+            borderRadius: '50%',
+            background: 'var(--bg)',
+            border: 'none',
+            cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '0.875rem 1.25rem 0.75rem',
-            flexShrink: 0,
-            borderBottom: '1px solid var(--border-light)',
+            justifyContent: 'center',
+            color: 'var(--text-muted)',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>Filter</h2>
-            {draftTotalCount > 0 && (
-              <span
+          <X size={12} />
+        </button>
+      </div>
+
+      {/* Two-column body */}
+      <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+        {/* Left: category nav */}
+        <div
+          style={{
+            width: 120,
+            background: 'var(--bg)',
+            borderRight: '1px solid var(--border-light)',
+            overflowY: 'auto',
+            flexShrink: 0,
+          }}
+        >
+          {CATEGORIES.map(({ key, label, count }) => {
+            const isActive = activeCategory === key;
+            return (
+              <button
+                key={key}
+                onClick={() => setActiveCategory(key)}
                 style={{
-                  fontSize: 11,
-                  fontWeight: 700,
-                  padding: '0.125rem 0.5rem',
-                  borderRadius: 'var(--radius-pill)',
-                  background: 'var(--sage)',
-                  color: 'var(--on-sage)',
+                  width: '100%',
+                  padding: '0.875rem 1rem',
+                  textAlign: 'left',
+                  background: isActive ? 'var(--surface)' : 'none',
+                  border: 'none',
+                  borderLeft: isActive
+                    ? '0.1875rem solid var(--sage)'
+                    : '0.1875rem solid transparent',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
                 }}
               >
-                {draftTotalCount}
-              </span>
-            )}
-          </div>
-          <button
-            onClick={onClose}
-            style={{
-              width: 28,
-              height: 28,
-              borderRadius: '50%',
-              background: 'var(--bg)',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'var(--text-muted)',
-            }}
-          >
-            <X size={12} />
-          </button>
-        </div>
-
-        {/* Two-column body */}
-        <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
-          {/* Left: category nav */}
-          <div
-            style={{
-              width: 120,
-              background: 'var(--bg)',
-              borderRight: '1px solid var(--border-light)',
-              overflowY: 'auto',
-              flexShrink: 0,
-            }}
-          >
-            {CATEGORIES.map(({ key, label, count }) => {
-              const isActive = activeCategory === key;
-              return (
-                <button
-                  key={key}
-                  onClick={() => setActiveCategory(key)}
+                <span
                   style={{
-                    width: '100%',
-                    padding: '0.875rem 1rem',
-                    textAlign: 'left',
-                    background: isActive ? 'var(--surface)' : 'none',
-                    border: 'none',
-                    borderLeft: isActive ? '0.1875rem solid var(--sage)' : '0.1875rem solid transparent',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
+                    fontSize: 14,
+                    fontWeight: isActive ? 600 : 400,
+                    color: isActive ? 'var(--sage)' : 'var(--text-primary)',
                   }}
                 >
+                  {label}
+                </span>
+                {count > 0 && (
                   <span
                     style={{
-                      fontSize: 14,
-                      fontWeight: isActive ? 600 : 400,
-                      color: isActive ? 'var(--sage)' : 'var(--text-primary)',
+                      fontSize: 10,
+                      fontWeight: 700,
+                      minWidth: 18,
+                      height: 18,
+                      borderRadius: 'var(--radius-pill)',
+                      padding: '0 0.25rem',
+                      background: 'var(--sage)',
+                      color: 'var(--on-sage)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
                     }}
                   >
-                    {label}
+                    {count}
                   </span>
-                  {count > 0 && (
-                    <span
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Right: options */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '1rem 1.25rem' }}>
+          {activeCategory === 'type' && (
+            <>
+              <SectionLabel>Log type</SectionLabel>
+              {NOTE_TYPES.map((t) => (
+                <CheckRow
+                  key={t}
+                  checked={draft.types.includes(t)}
+                  onToggle={() =>
+                    setDraft((d) => ({
+                      ...d,
+                      types: d.types.includes(t) ? d.types.filter((x) => x !== t) : [...d.types, t],
+                    }))
+                  }
+                >
+                  {getNoteTypeLabel(t)}
+                </CheckRow>
+              ))}
+            </>
+          )}
+
+          {activeCategory === 'date' && (
+            <>
+              <SectionLabel>Date logged</SectionLabel>
+              {DATE_PRESETS.map((preset) => (
+                <RadioRow
+                  key={preset.value}
+                  selected={draft.datePreset === preset.value}
+                  onSelect={() =>
+                    setDraft((d) => ({
+                      ...d,
+                      datePreset: d.datePreset === preset.value ? '' : preset.value,
+                      dateFrom: d.datePreset === preset.value ? '' : d.dateFrom,
+                      dateTo: d.datePreset === preset.value ? '' : d.dateTo,
+                    }))
+                  }
+                >
+                  {preset.label}
+                </RadioRow>
+              ))}
+              {draft.datePreset === 'custom' && (
+                <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <div>
+                    <p
                       style={{
-                        fontSize: 10,
-                        fontWeight: 700,
-                        minWidth: 18,
-                        height: 18,
-                        borderRadius: 'var(--radius-pill)',
-                        padding: '0 0.25rem',
-                        background: 'var(--sage)',
-                        color: 'var(--on-sage)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexShrink: 0,
+                        fontSize: 11,
+                        color: 'var(--text-muted)',
+                        marginBottom: 4,
+                        fontWeight: 500,
                       }}
                     >
-                      {count}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Right: options */}
-          <div style={{ flex: 1, overflowY: 'auto', padding: '1rem 1.25rem' }}>
-            {activeCategory === 'type' && (
-              <>
-                <SectionLabel>Log type</SectionLabel>
-                {NOTE_TYPES.map((t) => (
-                  <CheckRow
-                    key={t}
-                    checked={draft.types.includes(t)}
-                    onToggle={() =>
-                      setDraft((d) => ({
-                        ...d,
-                        types: d.types.includes(t)
-                          ? d.types.filter((x) => x !== t)
-                          : [...d.types, t],
-                      }))
-                    }
-                  >
-                    {getNoteTypeLabel(t)}
-                  </CheckRow>
-                ))}
-              </>
-            )}
-
-            {activeCategory === 'date' && (
-              <>
-                <SectionLabel>Date logged</SectionLabel>
-                {DATE_PRESETS.map((preset) => (
-                  <RadioRow
-                    key={preset.value}
-                    selected={draft.datePreset === preset.value}
-                    onSelect={() =>
-                      setDraft((d) => ({
-                        ...d,
-                        datePreset: d.datePreset === preset.value ? '' : preset.value,
-                        dateFrom: d.datePreset === preset.value ? '' : d.dateFrom,
-                        dateTo: d.datePreset === preset.value ? '' : d.dateTo,
-                      }))
-                    }
-                  >
-                    {preset.label}
-                  </RadioRow>
-                ))}
-                {draft.datePreset === 'custom' && (
-                  <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
-                    <div>
-                      <p
-                        style={{
-                          fontSize: 11,
-                          color: 'var(--text-muted)',
-                          marginBottom: 4,
-                          fontWeight: 500,
-                        }}
-                      >
-                        From
-                      </p>
-                      <input
-                        type="date"
-                        value={draft.dateFrom}
-                        onChange={(e) => setDraft((d) => ({ ...d, dateFrom: e.target.value }))}
-                        style={{
-                          width: '100%',
-                          padding: '0.4375rem 0.625rem',
-                          background: 'var(--bg)',
-                          border: '1px solid var(--border)',
-                          borderRadius: 'var(--radius-xs)',
-                          fontSize: 13,
-                          color: 'var(--text-primary)',
-                          outline: 'none',
-                          boxSizing: 'border-box' as const,
-                        }}
-                      />
-                    </div>
-                    <div>
-                      <p
-                        style={{
-                          fontSize: 11,
-                          color: 'var(--text-muted)',
-                          marginBottom: 4,
-                          fontWeight: 500,
-                        }}
-                      >
-                        To
-                      </p>
-                      <input
-                        type="date"
-                        value={draft.dateTo}
-                        onChange={(e) => setDraft((d) => ({ ...d, dateTo: e.target.value }))}
-                        style={{
-                          width: '100%',
-                          padding: '0.4375rem 0.625rem',
-                          background: 'var(--bg)',
-                          border: '1px solid var(--border)',
-                          borderRadius: 'var(--radius-xs)',
-                          fontSize: 13,
-                          color: 'var(--text-primary)',
-                          outline: 'none',
-                          boxSizing: 'border-box' as const,
-                        }}
-                      />
-                    </div>
+                      From
+                    </p>
+                    <input
+                      type="date"
+                      value={draft.dateFrom}
+                      onChange={(e) => setDraft((d) => ({ ...d, dateFrom: e.target.value }))}
+                      style={{
+                        width: '100%',
+                        padding: '0.4375rem 0.625rem',
+                        background: 'var(--bg)',
+                        border: '1px solid var(--border)',
+                        borderRadius: 'var(--radius-xs)',
+                        fontSize: 13,
+                        color: 'var(--text-primary)',
+                        outline: 'none',
+                        boxSizing: 'border-box' as const,
+                      }}
+                    />
                   </div>
-                )}
-              </>
-            )}
-
-            {activeCategory === 'shepherd' && isAdmin && (
-              <>
-                <SectionLabel>Shepherd</SectionLabel>
-                <div style={{ position: 'relative', marginBottom: 10 }}>
-                  <MagnifyingGlass
-                    size={13}
-                    color="var(--text-muted)"
-                    style={{
-                      position: 'absolute',
-                      left: 9,
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      pointerEvents: 'none',
-                    }}
-                  />
-                  <input
-                    type="text"
-                    value={shepherdSearch}
-                    onChange={(e) => setShepherdSearch(e.target.value)}
-                    placeholder="Search…"
-                    style={{
-                      width: '100%',
-                      paddingLeft: 28,
-                      paddingRight: 10,
-                      paddingTop: 7,
-                      paddingBottom: 7,
-                      background: 'var(--bg)',
-                      border: '1px solid var(--border)',
-                      borderRadius: 'var(--radius-xs)',
-                      fontSize: 13,
-                      color: 'var(--text-primary)',
-                      outline: 'none',
-                      boxSizing: 'border-box' as const,
-                    }}
-                  />
+                  <div>
+                    <p
+                      style={{
+                        fontSize: 11,
+                        color: 'var(--text-muted)',
+                        marginBottom: 4,
+                        fontWeight: 500,
+                      }}
+                    >
+                      To
+                    </p>
+                    <input
+                      type="date"
+                      value={draft.dateTo}
+                      onChange={(e) => setDraft((d) => ({ ...d, dateTo: e.target.value }))}
+                      style={{
+                        width: '100%',
+                        padding: '0.4375rem 0.625rem',
+                        background: 'var(--bg)',
+                        border: '1px solid var(--border)',
+                        borderRadius: 'var(--radius-xs)',
+                        fontSize: 13,
+                        color: 'var(--text-primary)',
+                        outline: 'none',
+                        boxSizing: 'border-box' as const,
+                      }}
+                    />
+                  </div>
                 </div>
-                {('my sheep'.includes(shepherdSearch.toLowerCase()) ||
-                  currentPersonaName.toLowerCase().includes(shepherdSearch.toLowerCase())) && (
+              )}
+            </>
+          )}
+
+          {activeCategory === 'shepherd' && isAdmin && (
+            <>
+              <SectionLabel>Shepherd</SectionLabel>
+              <div style={{ position: 'relative', marginBottom: 10 }}>
+                <MagnifyingGlass
+                  size={13}
+                  color="var(--text-muted)"
+                  style={{
+                    position: 'absolute',
+                    left: 9,
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    pointerEvents: 'none',
+                  }}
+                />
+                <input
+                  type="text"
+                  value={shepherdSearch}
+                  onChange={(e) => setShepherdSearch(e.target.value)}
+                  placeholder="Search…"
+                  style={{
+                    width: '100%',
+                    paddingLeft: 28,
+                    paddingRight: 10,
+                    paddingTop: 7,
+                    paddingBottom: 7,
+                    background: 'var(--bg)',
+                    border: '1px solid var(--border)',
+                    borderRadius: 'var(--radius-xs)',
+                    fontSize: 13,
+                    color: 'var(--text-primary)',
+                    outline: 'none',
+                    boxSizing: 'border-box' as const,
+                  }}
+                />
+              </div>
+              {('my sheep'.includes(shepherdSearch.toLowerCase()) ||
+                currentPersonaName.toLowerCase().includes(shepherdSearch.toLowerCase())) && (
+                <CheckRow
+                  checked={draft.shepherds.includes('mine')}
+                  onToggle={() =>
+                    setDraft((d) => ({
+                      ...d,
+                      shepherds: d.shepherds.includes('mine')
+                        ? d.shepherds.filter((s) => s !== 'mine')
+                        : [...d.shepherds, 'mine'],
+                    }))
+                  }
+                >
+                  My Sheep ({currentPersonaName})
+                </CheckRow>
+              )}
+              {shepherdEntries
+                .filter(
+                  (e) =>
+                    shepherdSearch === '' ||
+                    e.name.toLowerCase().includes(shepherdSearch.toLowerCase())
+                )
+                .map((e) => (
                   <CheckRow
-                    checked={draft.shepherds.includes('mine')}
+                    key={e.id}
+                    checked={draft.shepherds.includes(e.id)}
                     onToggle={() =>
                       setDraft((d) => ({
                         ...d,
-                        shepherds: d.shepherds.includes('mine')
-                          ? d.shepherds.filter((s) => s !== 'mine')
-                          : [...d.shepherds, 'mine'],
+                        shepherds: d.shepherds.includes(e.id)
+                          ? d.shepherds.filter((s) => s !== e.id)
+                          : [...d.shepherds, e.id],
                       }))
                     }
                   >
-                    My Sheep ({currentPersonaName})
+                    {e.name}
                   </CheckRow>
-                )}
-                {shepherdEntries
-                  .filter(
-                    (e) =>
-                      shepherdSearch === '' ||
-                      e.name.toLowerCase().includes(shepherdSearch.toLowerCase())
-                  )
-                  .map((e) => (
-                    <CheckRow
-                      key={e.id}
-                      checked={draft.shepherds.includes(e.id)}
-                      onToggle={() =>
-                        setDraft((d) => ({
-                          ...d,
-                          shepherds: d.shepherds.includes(e.id)
-                            ? d.shepherds.filter((s) => s !== e.id)
-                            : [...d.shepherds, e.id],
-                        }))
-                      }
-                    >
-                      {e.name}
-                    </CheckRow>
-                  ))}
-              </>
-            )}
-          </div>
+                ))}
+            </>
+          )}
         </div>
+      </div>
 
-        {/* Footer */}
-        <div
+      {/* Footer */}
+      <div
+        style={{
+          padding: '0.625rem 1.25rem 1rem',
+          flexShrink: 0,
+          borderTop: '1px solid var(--border-light)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+        }}
+      >
+        <button
+          onClick={clearFilter}
           style={{
-            padding: '0.625rem 1.25rem 1rem',
-            flexShrink: 0,
-            borderTop: '1px solid var(--border-light)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
+            flex: 1,
+            background: 'none',
+            border: 'none',
+            fontSize: 14,
+            fontWeight: 600,
+            color: 'var(--text-secondary)',
+            cursor: 'pointer',
+            padding: '0.75rem 0',
           }}
         >
-          <button
-            onClick={clearFilter}
-            style={{
-              flex: 1,
-              background: 'none',
-              border: 'none',
-              fontSize: 14,
-              fontWeight: 600,
-              color: 'var(--text-secondary)',
-              cursor: 'pointer',
-              padding: '0.75rem 0',
-            }}
-          >
-            Clear filters
-          </button>
-          <button
-            onClick={applyFilter}
-            style={{
-              flex: 2,
-              background: 'var(--sage)',
-              color: 'var(--on-sage)',
-              border: 'none',
-              borderRadius: 'var(--radius)',
-              padding: '0.75rem 0',
-              fontSize: 15,
-              fontWeight: 600,
-              cursor: 'pointer',
-            }}
-          >
-            Apply
-          </button>
-        </div>
+          Clear filters
+        </button>
+        <button
+          onClick={applyFilter}
+          style={{
+            flex: 2,
+            background: 'var(--sage)',
+            color: 'var(--on-sage)',
+            border: 'none',
+            borderRadius: 'var(--radius)',
+            padding: '0.75rem 0',
+            fontSize: 15,
+            fontWeight: 600,
+            cursor: 'pointer',
+          }}
+        >
+          Apply
+        </button>
+      </div>
     </BottomSheet>
   );
 }
-

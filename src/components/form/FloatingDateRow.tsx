@@ -8,8 +8,18 @@ import { SHEET_MAX_WIDTH, Z_FLOAT } from '@/lib/constants';
 import { rowBtnStyle, spacerStyle, labelStyle } from './formStyles';
 
 const MONTH_NAMES = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
 ];
 const DAY_HEADERS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
@@ -77,12 +87,16 @@ function FloatingCalendar({
   }
 
   function prevMonth() {
-    if (viewMonth === 0) { setViewMonth(11); setViewYear(y => y - 1); }
-    else setViewMonth(m => m - 1);
+    if (viewMonth === 0) {
+      setViewMonth(11);
+      setViewYear((y) => y - 1);
+    } else setViewMonth((m) => m - 1);
   }
   function nextMonth() {
-    if (viewMonth === 11) { setViewMonth(0); setViewYear(y => y + 1); }
-    else setViewMonth(m => m + 1);
+    if (viewMonth === 11) {
+      setViewMonth(0);
+      setViewYear((y) => y + 1);
+    } else setViewMonth((m) => m + 1);
   }
 
   function fmtDisplay(d: string) {
@@ -104,30 +118,75 @@ function FloatingCalendar({
   }
 
   const navBtnStyle: React.CSSProperties = {
-    width: 30, height: 30, borderRadius: 'var(--radius-xs)',
-    background: 'var(--bg)', border: '1px solid var(--border-light)',
-    color: 'var(--text-secondary)', cursor: 'pointer',
-    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+    width: 30,
+    height: 30,
+    borderRadius: 'var(--radius-xs)',
+    background: 'var(--bg)',
+    border: '1px solid var(--border-light)',
+    color: 'var(--text-secondary)',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
   };
 
   return (
     <>
-      <div role="presentation" style={{ position: 'fixed', inset: 0, zIndex: Z_FLOAT }} onClick={onClose} />
+      <div
+        role="presentation"
+        style={{ position: 'fixed', inset: 0, zIndex: Z_FLOAT }}
+        onClick={onClose}
+      />
       <div
         style={{
-          position: 'fixed', top, left, width: calWidth, zIndex: Z_FLOAT + 1,
-          background: 'var(--surface)', borderRadius: 16,
+          position: 'fixed',
+          top,
+          left,
+          width: calWidth,
+          zIndex: Z_FLOAT + 1,
+          background: 'var(--surface)',
+          borderRadius: 16,
           boxShadow: 'var(--shadow-elevated)',
-          border: '1px solid var(--border)', overflow: 'hidden',
+          border: '1px solid var(--border)',
+          overflow: 'hidden',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 1rem 0.625rem', borderBottom: '1px solid var(--border-light)' }}>
-          <button onClick={onClose} style={{ fontSize: 14, color: 'var(--text-secondary)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '0.75rem 1rem 0.625rem',
+            borderBottom: '1px solid var(--border-light)',
+          }}
+        >
+          <button
+            onClick={onClose}
+            style={{
+              fontSize: 14,
+              color: 'var(--text-secondary)',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 0,
+            }}
+          >
             Cancel
           </button>
           <button
             onClick={() => onSelect(selectedDate)}
-            style={{ height: 28, padding: '0 0.75rem', borderRadius: 'var(--radius-xs)', background: 'var(--sage)', color: 'var(--on-sage)', fontSize: 14, fontWeight: 600, border: 'none', cursor: 'pointer' }}
+            style={{
+              height: 28,
+              padding: '0 0.75rem',
+              borderRadius: 'var(--radius-xs)',
+              background: 'var(--sage)',
+              color: 'var(--on-sage)',
+              fontSize: 14,
+              fontWeight: 600,
+              border: 'none',
+              cursor: 'pointer',
+            }}
           >
             Done
           </button>
@@ -141,16 +200,28 @@ function FloatingCalendar({
             onBlur={handleDateInputBlur}
             placeholder="Apr 17, 2026"
             style={{
-              width: '100%', boxSizing: 'border-box',
-              padding: '0.5625rem 0.75rem', borderRadius: 'var(--radius-sm)',
+              width: '100%',
+              boxSizing: 'border-box',
+              padding: '0.5625rem 0.75rem',
+              borderRadius: 'var(--radius-sm)',
               border: '0.125rem solid var(--sage)',
-              background: 'var(--bg)', outline: 'none',
-              fontSize: 15, fontWeight: 500, color: 'var(--text-primary)',
+              background: 'var(--bg)',
+              outline: 'none',
+              fontSize: 15,
+              fontWeight: 500,
+              color: 'var(--text-primary)',
             }}
           />
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.25rem 0.875rem' }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '0.25rem 0.875rem',
+          }}
+        >
           <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>
             {MONTH_NAMES[viewMonth]} {viewYear}
           </span>
@@ -164,15 +235,33 @@ function FloatingCalendar({
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', padding: '0 0.5rem' }}>
-          {DAY_HEADERS.map(h => (
-            <div key={h} style={{ textAlign: 'center', fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', padding: '0.125rem 0' }}>
+        <div
+          style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', padding: '0 0.5rem' }}
+        >
+          {DAY_HEADERS.map((h) => (
+            <div
+              key={h}
+              style={{
+                textAlign: 'center',
+                fontSize: 11,
+                fontWeight: 600,
+                color: 'var(--text-muted)',
+                padding: '0.125rem 0',
+              }}
+            >
               {h}
             </div>
           ))}
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', padding: '0 0.5rem 0.625rem', gap: '0.0625rem 0' }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(7, 1fr)',
+            padding: '0 0.5rem 0.625rem',
+            gap: '0.0625rem 0',
+          }}
+        >
           {cells.map((cell, i) => {
             const isSelected = cell.dateStr === selectedDate;
             const isToday = cell.dateStr === todayStr;
@@ -191,14 +280,31 @@ function FloatingCalendar({
                   }
                 }}
                 style={{
-                  width: 36, height: 36, margin: '0 auto', borderRadius: '50%',
-                  border: isToday && !isSelected ? '0.125rem solid var(--sage)' : '0.125rem solid transparent',
+                  width: 36,
+                  height: 36,
+                  margin: '0 auto',
+                  borderRadius: '50%',
+                  border:
+                    isToday && !isSelected
+                      ? '0.125rem solid var(--sage)'
+                      : '0.125rem solid transparent',
                   background: isSelected ? 'var(--sage)' : 'none',
-                  color: isSelected ? 'var(--on-sage)' : isFuture ? 'var(--text-muted)' : !cell.inMonth ? 'var(--text-muted)' : isToday ? 'var(--sage)' : 'var(--text-primary)',
-                  fontSize: 13, fontWeight: isSelected || isToday ? 600 : 400,
+                  color: isSelected
+                    ? 'var(--on-sage)'
+                    : isFuture
+                      ? 'var(--text-muted)'
+                      : !cell.inMonth
+                        ? 'var(--text-muted)'
+                        : isToday
+                          ? 'var(--sage)'
+                          : 'var(--text-primary)',
+                  fontSize: 13,
+                  fontWeight: isSelected || isToday ? 600 : 400,
                   cursor: isClickable ? 'pointer' : 'default',
                   opacity: isClickable ? 1 : 0.35,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
               >
                 {cell.day}
@@ -239,7 +345,14 @@ export function FloatingDateRow({
         <span style={spacerStyle} />
         {icon}
         <span style={labelStyle}>{label}</span>
-        <span style={{ flex: 1, fontSize: 14, color: value ? 'var(--text-primary)' : 'var(--text-muted)', textAlign: 'left' }}>
+        <span
+          style={{
+            flex: 1,
+            fontSize: 14,
+            color: value ? 'var(--text-primary)' : 'var(--text-muted)',
+            textAlign: 'left',
+          }}
+        >
           {value ? fmtDate(value) : 'Not set'}
         </span>
         <CaretRight size={14} color="var(--text-muted)" />
@@ -248,7 +361,10 @@ export function FloatingDateRow({
         <FloatingCalendar
           anchorRect={anchorRect}
           date={value}
-          onSelect={(d) => { onChange(d); setOpen(false); }}
+          onSelect={(d) => {
+            onChange(d);
+            setOpen(false);
+          }}
           onClose={() => setOpen(false)}
         />
       )}

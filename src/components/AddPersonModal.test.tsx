@@ -27,7 +27,7 @@ function renderModal(onClose = vi.fn()) {
   return render(
     <ToastProvider>
       <AddPersonModal onClose={onClose} />
-    </ToastProvider>,
+    </ToastProvider>
   );
 }
 
@@ -58,7 +58,7 @@ describe('AddPersonModal', () => {
     const { getByRole, getByPlaceholderText } = render(
       <ToastProvider>
         <AddPersonModal onClose={vi.fn()} />
-      </ToastProvider>,
+      </ToastProvider>
     );
 
     fireEvent.change(getByPlaceholderText('Preferred name'), { target: { value: 'Jane' } });
@@ -66,9 +66,7 @@ describe('AddPersonModal', () => {
 
     await waitFor(() => {
       expect(addPerson).toHaveBeenCalledOnce();
-      expect(addPerson).toHaveBeenCalledWith(
-        expect.objectContaining({ preferredName: 'Jane' }),
-      );
+      expect(addPerson).toHaveBeenCalledWith(expect.objectContaining({ preferredName: 'Jane' }));
     });
   });
 
@@ -79,7 +77,7 @@ describe('AddPersonModal', () => {
     const { getByRole } = render(
       <ToastProvider>
         <AddPersonModal onClose={vi.fn()} />
-      </ToastProvider>,
+      </ToastProvider>
     );
 
     fireEvent.click(getByRole('button', { name: 'Save' }));
@@ -93,7 +91,7 @@ describe('AddPersonModal', () => {
     const { getByRole, getByPlaceholderText } = render(
       <ToastProvider>
         <AddPersonModal onClose={vi.fn()} />
-      </ToastProvider>,
+      </ToastProvider>
     );
 
     fireEvent.change(getByPlaceholderText('Preferred name'), { target: { value: 'Jane' } });
@@ -102,7 +100,7 @@ describe('AddPersonModal', () => {
 
     await waitFor(() => {
       expect(addPerson).toHaveBeenCalledWith(
-        expect.objectContaining({ preferredName: 'Jane', lastName: 'Doe' }),
+        expect.objectContaining({ preferredName: 'Jane', lastName: 'Doe' })
       );
     });
   });

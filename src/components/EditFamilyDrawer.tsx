@@ -20,7 +20,13 @@ import {
 import PickerMenu from './PickerMenu';
 import { fullName } from '@/lib/utils';
 import { ShepherdPickerSheet } from './PersonPickerSheets';
-import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS, SHEPHERD_AVATAR_PALETTE, Z_SHEET } from '@/lib/constants';
+import {
+  BACKDROP_COLOR,
+  SHEET_MAX_WIDTH,
+  SHEET_BORDER_RADIUS,
+  SHEPHERD_AVATAR_PALETTE,
+  Z_SHEET,
+} from '@/lib/constants';
 
 interface Props {
   family: Family;
@@ -95,264 +101,271 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
 
   return (
     <>
-      <BottomSheet onClose={onClose} aria-labelledby="edit-family-title">
-          <ModalHeader
-            title="Edit family"
-            titleId="edit-family-title"
-            onCancel={onClose}
-            onAction={handleSave}
-            actionLabel="Save"
-          />
+      <BottomSheet onClose={onClose} variant="side-panel" aria-labelledby="edit-family-title">
+        <ModalHeader
+          title="Edit family"
+          titleId="edit-family-title"
+          onCancel={onClose}
+          onAction={handleSave}
+          actionLabel="Save"
+        />
 
-          {/* Scrollable body */}
-          <div style={{ flex: 1, overflowY: 'auto', padding: '1.25rem 1.25rem 3rem', background: 'var(--bg)' }}>
-            {/* ── BASIC ── */}
-            <DrawerSection label="Basic">
-              <div
-                className="field-row-hover"
-                style={textRowStyle}
-                onClick={() => labelRef.current?.focus()}
-              >
-                <span style={asteriskStyle}>*</span>
-                <House size={16} color="var(--text-muted)" />
-                <span style={labelStyle}>Last name</span>
-                <input
-                  ref={labelRef}
-                  value={label}
-                  onChange={(e) => setLabel(e.target.value)}
-                  placeholder="e.g. Chen"
-                  style={inputInlineStyle}
-                />
-                <span style={{ fontSize: 15, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
-                  Family
-                </span>
-              </div>
-            </DrawerSection>
+        {/* Scrollable body */}
+        <div
+          style={{
+            flex: 1,
+            overflowY: 'auto',
+            padding: '1.25rem 1.25rem 3rem',
+            background: 'var(--bg)',
+          }}
+        >
+          {/* ── BASIC ── */}
+          <DrawerSection label="Basic">
+            <div
+              className="field-row-hover"
+              style={textRowStyle}
+              onClick={() => labelRef.current?.focus()}
+            >
+              <span style={asteriskStyle}>*</span>
+              <House size={16} color="var(--text-muted)" />
+              <span style={labelStyle}>Last name</span>
+              <input
+                ref={labelRef}
+                value={label}
+                onChange={(e) => setLabel(e.target.value)}
+                placeholder="e.g. Chen"
+                style={inputInlineStyle}
+              />
+              <span style={{ fontSize: 15, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+                Family
+              </span>
+            </div>
+          </DrawerSection>
 
-            {/* ── MEMBERS ── */}
-            <DrawerSection label="Members">
-              {currentMembers.map((m, i) => {
-                const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
-                const inits = fullName(m)
-                  .split(' ')
-                  .map((n) => n[0])
-                  .join('')
-                  .toUpperCase()
-                  .slice(0, 2);
-                return (
-                  <div
-                    key={m.id}
-                    className="field-row-hover"
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 10,
-                      paddingTop: 10,
-                      paddingBottom: 10,
-                      borderBottom: '1px solid var(--border-light)',
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: 32,
-                        height: 32,
-                        borderRadius: '50%',
-                        background: palette.bg,
-                        color: palette.color,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: 11,
-                        fontWeight: 700,
-                        flexShrink: 0,
-                      }}
-                    >
-                      {inits}
-                    </div>
-                    <span style={{ flex: 1, fontSize: 14, color: 'var(--text-primary)' }}>
-                      {fullName(m)}
-                    </span>
-                    <button
-                      onClick={() => {
-                        const remaining = memberIds.filter((x) => x !== m.id);
-                        setMemberIds(remaining);
-                        if (primaryContactId === m.id) setPrimaryContactId(remaining[0] ?? '');
-                      }}
-                      style={{
-                        width: 28,
-                        height: 28,
-                        borderRadius: '50%',
-                        background: 'var(--red-light)',
-                        border: 'none',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexShrink: 0,
-                      }}
-                      aria-label={`Remove ${fullName(m)}`}
-                    >
-                      <X size={12} color="#EF4444" />
-                    </button>
-                  </div>
-                );
-              })}
-              {/* Add / edit members row */}
-              <button
-                className="field-row-hover"
-                onClick={() => setShowMemberPicker(true)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 10,
-                  paddingTop: 12,
-                  paddingBottom: 12,
-                  border: 'none',
-                  borderBottom: '1px solid var(--border-light)',
-                  background: 'none',
-                  cursor: 'pointer',
-                  width: '100%',
-                  textAlign: 'left' as const,
-                }}
-              >
-                <span style={spacerStyle} />
-                <Plus size={16} color="var(--sage)" />
-                <span style={{ fontSize: 14, color: 'var(--sage)', fontWeight: 500 }}>
-                  Add member
-                </span>
-              </button>
-            </DrawerSection>
-
-            {/* ── CHURCH ── */}
-            <DrawerSection label="Church">
-              {/* Primary Contact */}
-              <button
-                className="field-row-hover"
-                onClick={() => setShowPrimaryContactPicker(true)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 10,
-                  paddingTop: 12,
-                  paddingBottom: 12,
-                  border: 'none',
-                  borderBottom: '1px solid var(--border-light)',
-                  background: 'none',
-                  cursor: 'pointer',
-                  width: '100%',
-                  textAlign: 'left' as const,
-                }}
-              >
-                <span style={spacerStyle} />
-                <User size={16} color="var(--text-muted)" />
-                <span style={labelStyle}>Primary</span>
-                <span
+          {/* ── MEMBERS ── */}
+          <DrawerSection label="Members">
+            {currentMembers.map((m, i) => {
+              const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
+              const inits = fullName(m)
+                .split(' ')
+                .map((n) => n[0])
+                .join('')
+                .toUpperCase()
+                .slice(0, 2);
+              return (
+                <div
+                  key={m.id}
+                  className="field-row-hover"
                   style={{
-                    flex: 1,
-                    fontSize: 14,
-                    color: primaryContact ? 'var(--text-primary)' : 'var(--text-muted)',
-                    textAlign: 'left',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                    paddingTop: 10,
+                    paddingBottom: 10,
+                    borderBottom: '1px solid var(--border-light)',
                   }}
                 >
-                  {primaryContact ? fullName(primaryContact) : 'Not set'}
-                </span>
-                <CaretRight size={14} color="var(--text-muted)" />
-              </button>
+                  <div
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: '50%',
+                      background: palette.bg,
+                      color: palette.color,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 11,
+                      fontWeight: 700,
+                      flexShrink: 0,
+                    }}
+                  >
+                    {inits}
+                  </div>
+                  <span style={{ flex: 1, fontSize: 14, color: 'var(--text-primary)' }}>
+                    {fullName(m)}
+                  </span>
+                  <button
+                    onClick={() => {
+                      const remaining = memberIds.filter((x) => x !== m.id);
+                      setMemberIds(remaining);
+                      if (primaryContactId === m.id) setPrimaryContactId(remaining[0] ?? '');
+                    }}
+                    style={{
+                      width: 28,
+                      height: 28,
+                      borderRadius: '50%',
+                      background: 'var(--red-light)',
+                      border: 'none',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                    }}
+                    aria-label={`Remove ${fullName(m)}`}
+                  >
+                    <X size={12} color="#EF4444" />
+                  </button>
+                </div>
+              );
+            })}
+            {/* Add / edit members row */}
+            <button
+              className="field-row-hover"
+              onClick={() => setShowMemberPicker(true)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 10,
+                paddingTop: 12,
+                paddingBottom: 12,
+                border: 'none',
+                borderBottom: '1px solid var(--border-light)',
+                background: 'none',
+                cursor: 'pointer',
+                width: '100%',
+                textAlign: 'left' as const,
+              }}
+            >
+              <span style={spacerStyle} />
+              <Plus size={16} color="var(--sage)" />
+              <span style={{ fontSize: 14, color: 'var(--sage)', fontWeight: 500 }}>
+                Add member
+              </span>
+            </button>
+          </DrawerSection>
 
-              {/* Fellowship Groups */}
-              <button
-                ref={groupBtnRef}
-                className="field-row-hover"
-                onClick={() => setShowGroupPicker((v) => !v)}
+          {/* ── CHURCH ── */}
+          <DrawerSection label="Church">
+            {/* Primary Contact */}
+            <button
+              className="field-row-hover"
+              onClick={() => setShowPrimaryContactPicker(true)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 10,
+                paddingTop: 12,
+                paddingBottom: 12,
+                border: 'none',
+                borderBottom: '1px solid var(--border-light)',
+                background: 'none',
+                cursor: 'pointer',
+                width: '100%',
+                textAlign: 'left' as const,
+              }}
+            >
+              <span style={spacerStyle} />
+              <User size={16} color="var(--text-muted)" />
+              <span style={labelStyle}>Primary</span>
+              <span
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 10,
-                  paddingTop: 12,
-                  paddingBottom: 12,
-                  border: 'none',
-                  borderBottom: '1px solid var(--border-light)',
-                  background: 'none',
-                  cursor: 'pointer',
-                  width: '100%',
-                  textAlign: 'left' as const,
+                  flex: 1,
+                  fontSize: 14,
+                  color: primaryContact ? 'var(--text-primary)' : 'var(--text-muted)',
+                  textAlign: 'left',
                 }}
               >
-                <span style={spacerStyle} />
-                <UsersFour size={16} color="var(--text-muted)" />
-                <span style={labelStyle}>Groups</span>
-                <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                  {selectedGroups.length > 0 ? (
-                    selectedGroups.map((g) => (
-                      <span
-                        key={g.id}
-                        style={{
-                          fontSize: 11,
-                          fontWeight: 500,
-                          padding: '0.125rem 0.5rem',
-                          borderRadius: 'var(--radius-pill)',
-                          background: 'var(--blue-light)',
-                          color: 'var(--blue)',
-                          flexShrink: 0,
-                        }}
-                      >
-                        {g.name}
-                      </span>
-                    ))
-                  ) : (
-                    <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>None</span>
-                  )}
-                </div>
-                <CaretRight size={14} color="var(--text-muted)" />
-              </button>
+                {primaryContact ? fullName(primaryContact) : 'Not set'}
+              </span>
+              <CaretRight size={14} color="var(--text-muted)" />
+            </button>
 
-              {/* Shepherds */}
-              <button
-                className="field-row-hover"
-                onClick={() => setShowShepherdPicker(true)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 10,
-                  paddingTop: 12,
-                  paddingBottom: 12,
-                  border: 'none',
-                  borderBottom: '1px solid var(--border-light)',
-                  background: 'none',
-                  cursor: 'pointer',
-                  width: '100%',
-                  textAlign: 'left' as const,
-                }}
-              >
-                <span style={spacerStyle} />
-                <HandHeart size={16} color="var(--text-muted)" />
-                <span style={labelStyle}>Shepherd</span>
-                <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                  {selectedShepherds.length > 0 ? (
-                    selectedShepherds.map((p) => (
-                      <span
-                        key={p.id}
-                        style={{
-                          fontSize: 11,
-                          fontWeight: 500,
-                          padding: '0.125rem 0.5rem',
-                          borderRadius: 'var(--radius-pill)',
-                          background: 'var(--sage-light)',
-                          color: 'var(--sage)',
-                          flexShrink: 0,
-                        }}
-                      >
-                        {p.name}
-                      </span>
-                    ))
-                  ) : (
-                    <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>None</span>
-                  )}
-                </div>
-                <CaretRight size={14} color="var(--text-muted)" />
-              </button>
-            </DrawerSection>
-          </div>
+            {/* Fellowship Groups */}
+            <button
+              ref={groupBtnRef}
+              className="field-row-hover"
+              onClick={() => setShowGroupPicker((v) => !v)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 10,
+                paddingTop: 12,
+                paddingBottom: 12,
+                border: 'none',
+                borderBottom: '1px solid var(--border-light)',
+                background: 'none',
+                cursor: 'pointer',
+                width: '100%',
+                textAlign: 'left' as const,
+              }}
+            >
+              <span style={spacerStyle} />
+              <UsersFour size={16} color="var(--text-muted)" />
+              <span style={labelStyle}>Groups</span>
+              <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                {selectedGroups.length > 0 ? (
+                  selectedGroups.map((g) => (
+                    <span
+                      key={g.id}
+                      style={{
+                        fontSize: 11,
+                        fontWeight: 500,
+                        padding: '0.125rem 0.5rem',
+                        borderRadius: 'var(--radius-pill)',
+                        background: 'var(--blue-light)',
+                        color: 'var(--blue)',
+                        flexShrink: 0,
+                      }}
+                    >
+                      {g.name}
+                    </span>
+                  ))
+                ) : (
+                  <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>None</span>
+                )}
+              </div>
+              <CaretRight size={14} color="var(--text-muted)" />
+            </button>
+
+            {/* Shepherds */}
+            <button
+              className="field-row-hover"
+              onClick={() => setShowShepherdPicker(true)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 10,
+                paddingTop: 12,
+                paddingBottom: 12,
+                border: 'none',
+                borderBottom: '1px solid var(--border-light)',
+                background: 'none',
+                cursor: 'pointer',
+                width: '100%',
+                textAlign: 'left' as const,
+              }}
+            >
+              <span style={spacerStyle} />
+              <HandHeart size={16} color="var(--text-muted)" />
+              <span style={labelStyle}>Shepherd</span>
+              <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                {selectedShepherds.length > 0 ? (
+                  selectedShepherds.map((p) => (
+                    <span
+                      key={p.id}
+                      style={{
+                        fontSize: 11,
+                        fontWeight: 500,
+                        padding: '0.125rem 0.5rem',
+                        borderRadius: 'var(--radius-pill)',
+                        background: 'var(--sage-light)',
+                        color: 'var(--sage)',
+                        flexShrink: 0,
+                      }}
+                    >
+                      {p.name}
+                    </span>
+                  ))
+                ) : (
+                  <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>None</span>
+                )}
+              </div>
+              <CaretRight size={14} color="var(--text-muted)" />
+            </button>
+          </DrawerSection>
+        </div>
       </BottomSheet>
 
       {/* Primary Contact Picker */}
@@ -453,7 +466,6 @@ const inputInlineStyle: React.CSSProperties = {
 
 // ── Sub-components ─────────────────────────────────────────────────────────────
 
-
 function MemberPickerSheet({
   pool,
   currentMemberIds,
@@ -508,7 +520,6 @@ function MemberPickerSheet({
           overflow: 'hidden',
         }}
       >
-
         {/* Header */}
         <div
           style={{

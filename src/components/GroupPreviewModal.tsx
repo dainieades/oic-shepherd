@@ -24,301 +24,310 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
   return (
     <BottomSheet
       onClose={onClose}
-      contentStyle={{ height: 'auto', maxHeight: 'calc(100dvh - 5rem)', paddingBottom: 'env(safe-area-inset-bottom, 1rem)' }}
+      variant="dialog"
+      contentStyle={{
+        height: 'auto',
+        maxHeight: 'calc(100dvh - 5rem)',
+        paddingBottom: 'env(safe-area-inset-bottom, 1rem)',
+      }}
     >
-
-        {/* Header */}
-        <div
+      {/* Header */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '0.75rem 1.25rem 0.75rem',
+          flexShrink: 0,
+          borderBottom: '1px solid var(--border-light)',
+        }}
+      >
+        <button
+          onClick={onClose}
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '0.75rem 1.25rem 0.75rem',
-            flexShrink: 0,
-            borderBottom: '1px solid var(--border-light)',
+            fontSize: 14,
+            color: 'var(--text-secondary)',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: 0,
           }}
         >
-          <button
-            onClick={onClose}
-            style={{
-              fontSize: 14,
-              color: 'var(--text-secondary)',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-            }}
-          >
-            Close
-          </button>
-          <span
-            style={{
-              fontSize: 15,
-              fontWeight: 600,
-              color: 'var(--text-primary)',
-              flex: 1,
-              textAlign: 'center',
-              padding: '0 0.5rem',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {group.name}
-          </span>
-          <Link
-            href={`/groups/${group.id}`}
-            onClick={onClose}
-            style={{
-              fontSize: 13,
-              color: 'var(--sage)',
-              textDecoration: 'none',
-              whiteSpace: 'nowrap',
-              flexShrink: 0,
-            }}
-          >
-            View full group
-          </Link>
-        </div>
-
-        {/* Scrollable content */}
-        <div
-          style={{ flex: 1, overflowY: 'auto', padding: '1rem 1.25rem 0.5rem', background: 'var(--bg)' }}
+          Close
+        </button>
+        <span
+          style={{
+            fontSize: 15,
+            fontWeight: 600,
+            color: 'var(--text-primary)',
+            flex: 1,
+            textAlign: 'center',
+            padding: '0 0.5rem',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}
         >
-          {/* Stats + description */}
+          {group.name}
+        </span>
+        <Link
+          href={`/groups/${group.id}`}
+          onClick={onClose}
+          style={{
+            fontSize: 13,
+            color: 'var(--sage)',
+            textDecoration: 'none',
+            whiteSpace: 'nowrap',
+            flexShrink: 0,
+          }}
+        >
+          View full group
+        </Link>
+      </div>
+
+      {/* Scrollable content */}
+      <div
+        style={{
+          flex: 1,
+          overflowY: 'auto',
+          padding: '1rem 1.25rem 0.5rem',
+          background: 'var(--bg)',
+        }}
+      >
+        {/* Stats + description */}
+        <div
+          style={{
+            background: 'var(--surface)',
+            borderRadius: 'var(--radius)',
+            border: '1px solid var(--border-light)',
+            padding: '0.875rem 1rem',
+            marginBottom: 14,
+          }}
+        >
           <div
             style={{
-              background: 'var(--surface)',
-              borderRadius: 'var(--radius)',
-              border: '1px solid var(--border-light)',
-              padding: '0.875rem 1rem',
-              marginBottom: 14,
+              display: 'flex',
+              gap: 8,
+              flexWrap: 'wrap',
+              marginBottom: group.description ? 12 : 0,
             }}
           >
-            <div
+            <span
               style={{
-                display: 'flex',
-                gap: 8,
-                flexWrap: 'wrap',
-                marginBottom: group.description ? 12 : 0,
+                fontSize: 11,
+                fontWeight: 500,
+                padding: '0.1875rem 0.625rem',
+                borderRadius: 'var(--radius-pill)',
+                background: 'var(--sage-light)',
+                color: 'var(--sage)',
               }}
             >
-              <span
-                style={{
-                  fontSize: 11,
-                  fontWeight: 500,
-                  padding: '0.1875rem 0.625rem',
-                  borderRadius: 'var(--radius-pill)',
-                  background: 'var(--sage-light)',
-                  color: 'var(--sage)',
-                }}
-              >
-                {group.memberIds.length} {group.memberIds.length === 1 ? 'member' : 'members'}
-              </span>
-              <span
-                style={{
-                  fontSize: 11,
-                  fontWeight: 500,
-                  padding: '0.1875rem 0.625rem',
-                  borderRadius: 'var(--radius-pill)',
-                  background: 'var(--blue-light)',
-                  color: 'var(--blue)',
-                }}
-              >
-                {leaders.length} {leaders.length === 1 ? 'leader' : 'leaders'}
-              </span>
-            </div>
-            {group.description && (
-              <p
-                style={{
-                  fontSize: 13,
-                  color: 'var(--text-secondary)',
-                  lineHeight: 1.6,
-                  paddingLeft: 12,
-                  borderLeft: '0.125rem solid var(--sage-mid)',
-                  margin: 0,
-                }}
-              >
-                {group.description}
-              </p>
-            )}
+              {group.memberIds.length} {group.memberIds.length === 1 ? 'member' : 'members'}
+            </span>
+            <span
+              style={{
+                fontSize: 11,
+                fontWeight: 500,
+                padding: '0.1875rem 0.625rem',
+                borderRadius: 'var(--radius-pill)',
+                background: 'var(--blue-light)',
+                color: 'var(--blue)',
+              }}
+            >
+              {leaders.length} {leaders.length === 1 ? 'leader' : 'leaders'}
+            </span>
           </div>
-
-          {/* Leaders */}
-          {leaders.length > 0 && (
-            <div style={{ marginBottom: 14 }}>
-              <p
-                style={{
-                  fontSize: 10,
-                  fontWeight: 600,
-                  color: 'var(--text-muted)',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
-                  marginBottom: 8,
-                }}
-              >
-                Leaders
-              </p>
-              <div
-                className="no-last-border"
-                style={{
-                  background: 'var(--surface)',
-                  borderRadius: 'var(--radius)',
-                  border: '1px solid var(--border-light)',
-                  overflow: 'hidden',
-                }}
-              >
-                {leaders.map((leader, i) => {
-                  const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
-                  const initials = fullName(leader)
-                    .split(' ')
-                    .map((n) => n[0])
-                    .join('')
-                    .toUpperCase()
-                    .slice(0, 2);
-                  return (
-                    <div
-                      key={leader.id}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 12,
-                        padding: '0.625rem 1rem',
-                        borderBottom: '1px solid var(--border-light)',
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: 36,
-                          height: 36,
-                          borderRadius: '50%',
-                          background: palette.bg,
-                          color: palette.color,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: 12,
-                          fontWeight: 600,
-                          flexShrink: 0,
-                        }}
-                      >
-                        {initials}
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 6,
-                            flexWrap: 'wrap',
-                          }}
-                        >
-                          <p
-                            style={{
-                              fontSize: 14,
-                              fontWeight: 600,
-                              color: 'var(--text-primary)',
-                              margin: 0,
-                            }}
-                          >
-                            {fullName(leader)}
-                          </p>
-                        </div>
-                        <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0 }}>
-                          {getMembershipLabel(leader.membershipStatus)}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+          {group.description && (
+            <p
+              style={{
+                fontSize: 13,
+                color: 'var(--text-secondary)',
+                lineHeight: 1.6,
+                paddingLeft: 12,
+                borderLeft: '0.125rem solid var(--sage-mid)',
+                margin: 0,
+              }}
+            >
+              {group.description}
+            </p>
           )}
+        </div>
 
-          {/* Members */}
-          {members.length > 0 && (
-            <div style={{ marginBottom: 8 }}>
-              <p
-                style={{
-                  fontSize: 10,
-                  fontWeight: 600,
-                  color: 'var(--text-muted)',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
-                  marginBottom: 8,
-                }}
-              >
-                Members · {members.length}
-              </p>
-              <div
-                className="no-last-border"
-                style={{
-                  background: 'var(--surface)',
-                  borderRadius: 'var(--radius)',
-                  border: '1px solid var(--border-light)',
-                  overflow: 'hidden',
-                }}
-              >
-                {members.map((m, i) => {
-                  const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
-                  const initials = fullName(m)
-                    .split(' ')
-                    .map((n) => n[0])
-                    .join('')
-                    .toUpperCase()
-                    .slice(0, 2);
-                  return (
+        {/* Leaders */}
+        {leaders.length > 0 && (
+          <div style={{ marginBottom: 14 }}>
+            <p
+              style={{
+                fontSize: 10,
+                fontWeight: 600,
+                color: 'var(--text-muted)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+                marginBottom: 8,
+              }}
+            >
+              Leaders
+            </p>
+            <div
+              className="no-last-border"
+              style={{
+                background: 'var(--surface)',
+                borderRadius: 'var(--radius)',
+                border: '1px solid var(--border-light)',
+                overflow: 'hidden',
+              }}
+            >
+              {leaders.map((leader, i) => {
+                const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
+                const initials = fullName(leader)
+                  .split(' ')
+                  .map((n) => n[0])
+                  .join('')
+                  .toUpperCase()
+                  .slice(0, 2);
+                return (
+                  <div
+                    key={leader.id}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 12,
+                      padding: '0.625rem 1rem',
+                      borderBottom: '1px solid var(--border-light)',
+                    }}
+                  >
                     <div
-                      key={m.id}
                       style={{
+                        width: 36,
+                        height: 36,
+                        borderRadius: '50%',
+                        background: palette.bg,
+                        color: palette.color,
                         display: 'flex',
                         alignItems: 'center',
-                        gap: 12,
-                        padding: '0.625rem 1rem',
-                        borderBottom: '1px solid var(--border-light)',
+                        justifyContent: 'center',
+                        fontSize: 12,
+                        fontWeight: 600,
+                        flexShrink: 0,
                       }}
                     >
+                      {initials}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
                       <div
                         style={{
-                          width: 36,
-                          height: 36,
-                          borderRadius: '50%',
-                          background: palette.bg,
-                          color: palette.color,
                           display: 'flex',
                           alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: 12,
-                          fontWeight: 600,
-                          flexShrink: 0,
+                          gap: 6,
+                          flexWrap: 'wrap',
                         }}
                       >
-                        {initials}
-                      </div>
-                      <div>
                         <p
                           style={{
                             fontSize: 14,
-                            fontWeight: 500,
+                            fontWeight: 600,
                             color: 'var(--text-primary)',
                             margin: 0,
                           }}
                         >
-                          {fullName(m)}
+                          {fullName(leader)}
                         </p>
-                        {m.alternativeName && (
-                          <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0 }}>
-                            {m.alternativeName}
-                          </p>
-                        )}
                       </div>
+                      <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0 }}>
+                        {getMembershipLabel(leader.membershipStatus)}
+                      </p>
                     </div>
-                  );
-                })}
-              </div>
+                  </div>
+                );
+              })}
             </div>
-          )}
-        </div>
+          </div>
+        )}
+
+        {/* Members */}
+        {members.length > 0 && (
+          <div style={{ marginBottom: 8 }}>
+            <p
+              style={{
+                fontSize: 10,
+                fontWeight: 600,
+                color: 'var(--text-muted)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+                marginBottom: 8,
+              }}
+            >
+              Members · {members.length}
+            </p>
+            <div
+              className="no-last-border"
+              style={{
+                background: 'var(--surface)',
+                borderRadius: 'var(--radius)',
+                border: '1px solid var(--border-light)',
+                overflow: 'hidden',
+              }}
+            >
+              {members.map((m, i) => {
+                const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
+                const initials = fullName(m)
+                  .split(' ')
+                  .map((n) => n[0])
+                  .join('')
+                  .toUpperCase()
+                  .slice(0, 2);
+                return (
+                  <div
+                    key={m.id}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 12,
+                      padding: '0.625rem 1rem',
+                      borderBottom: '1px solid var(--border-light)',
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: 36,
+                        height: 36,
+                        borderRadius: '50%',
+                        background: palette.bg,
+                        color: palette.color,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: 12,
+                        fontWeight: 600,
+                        flexShrink: 0,
+                      }}
+                    >
+                      {initials}
+                    </div>
+                    <div>
+                      <p
+                        style={{
+                          fontSize: 14,
+                          fontWeight: 500,
+                          color: 'var(--text-primary)',
+                          margin: 0,
+                        }}
+                      >
+                        {fullName(m)}
+                      </p>
+                      {m.alternativeName && (
+                        <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0 }}>
+                          {m.alternativeName}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
     </BottomSheet>
   );
 }

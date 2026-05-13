@@ -72,7 +72,9 @@ describe('PersonRowSchema', () => {
   });
 
   it('rejects an invalid membership_status value', () => {
-    expect(() => PersonRowSchema.parse({ ...minimalPerson, membership_status: 'visitor' })).toThrow();
+    expect(() =>
+      PersonRowSchema.parse({ ...minimalPerson, membership_status: 'visitor' })
+    ).toThrow();
   });
 
   it('rejects an invalid gender value', () => {
@@ -84,7 +86,9 @@ describe('PersonRowSchema', () => {
   });
 
   it('rejects an invalid church_attendance value', () => {
-    expect(() => PersonRowSchema.parse({ ...minimalPerson, church_attendance: 'occasional' })).toThrow();
+    expect(() =>
+      PersonRowSchema.parse({ ...minimalPerson, church_attendance: 'occasional' })
+    ).toThrow();
   });
 
   it('allows nullish optional fields', () => {
@@ -232,8 +236,16 @@ describe('NoticeRowSchema', () => {
   });
 
   it('accepts all valid category values', () => {
-    const categories = ['physical-need', 'spiritual-need', 'social-need', 'psychological-need', 'other'] as const;
-    expect(() => NoticeRowSchema.parse({ ...minimalNotice, categories: [...categories] })).not.toThrow();
+    const categories = [
+      'physical-need',
+      'spiritual-need',
+      'social-need',
+      'psychological-need',
+      'other',
+    ] as const;
+    expect(() =>
+      NoticeRowSchema.parse({ ...minimalNotice, categories: [...categories] })
+    ).not.toThrow();
   });
 
   it('accepts all valid privacy values', () => {
@@ -247,7 +259,9 @@ describe('NoticeRowSchema', () => {
   });
 
   it('rejects an invalid category value', () => {
-    expect(() => NoticeRowSchema.parse({ ...minimalNotice, categories: ['financial-need'] })).toThrow();
+    expect(() =>
+      NoticeRowSchema.parse({ ...minimalNotice, categories: ['financial-need'] })
+    ).toThrow();
   });
 
   it('rejects a row missing content', () => {

@@ -24,9 +24,7 @@ test.describe('Unapproved email → blocked', () => {
     await page.getByLabel('Email address').fill('stranger@example.com');
     await page.getByRole('button', { name: /^continue$/i }).click();
 
-    await expect(
-      page.getByText(/access is by invitation only/i),
-    ).toBeVisible({ timeout: 5_000 });
+    await expect(page.getByText(/access is by invitation only/i)).toBeVisible({ timeout: 5_000 });
   });
 
   test('does not navigate away from the sign-in page', async ({ page }) => {

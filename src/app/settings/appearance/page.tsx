@@ -6,10 +6,30 @@ import { CaretLeft, Sun, Moon, CircleHalf, Check } from '@phosphor-icons/react';
 import type { ThemePreference } from '@/lib/types';
 import { useApp } from '@/lib/context';
 
-const OPTIONS: { value: ThemePreference; icon: React.ReactNode; label: string; description: string }[] = [
-  { value: 'light', icon: <Sun size={22} weight="regular" />, label: 'Light', description: 'Always use light mode' },
-  { value: 'dark', icon: <Moon size={22} weight="regular" />, label: 'Dark', description: 'Always use dark mode' },
-  { value: 'system', icon: <CircleHalf size={22} weight="regular" />, label: 'System', description: 'Match your device settings' },
+const OPTIONS: {
+  value: ThemePreference;
+  icon: React.ReactNode;
+  label: string;
+  description: string;
+}[] = [
+  {
+    value: 'light',
+    icon: <Sun size={22} weight="regular" />,
+    label: 'Light',
+    description: 'Always use light mode',
+  },
+  {
+    value: 'dark',
+    icon: <Moon size={22} weight="regular" />,
+    label: 'Dark',
+    description: 'Always use dark mode',
+  },
+  {
+    value: 'system',
+    icon: <CircleHalf size={22} weight="regular" />,
+    label: 'System',
+    description: 'Match your device settings',
+  },
 ];
 
 export default function AppearancePage() {
@@ -19,7 +39,7 @@ export default function AppearancePage() {
   return (
     <div style={{ paddingBottom: 48 }}>
       {/* Nav bar */}
-      <div style={navBarStyle}>
+      <div className="settings-subpage-navbar" style={navBarStyle}>
         <button onClick={() => router.push('/settings')} style={backBtnStyle}>
           <CaretLeft size={16} weight="bold" />
           Settings
@@ -63,7 +83,9 @@ export default function AppearancePage() {
                     width: 36,
                     height: 36,
                     borderRadius: 'var(--radius-sm)',
-                    background: active ? 'color-mix(in srgb, var(--sage) 15%, transparent)' : 'var(--surface-raised, var(--border-light))',
+                    background: active
+                      ? 'color-mix(in srgb, var(--sage) 15%, transparent)'
+                      : 'var(--surface-raised, var(--border-light))',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -94,7 +116,16 @@ export default function AppearancePage() {
                     {description}
                   </span>
                 </span>
-                <span style={{ width: 22, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <span
+                  style={{
+                    width: 22,
+                    height: 22,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}
+                >
                   {active && <Check size={20} color="var(--sage)" weight="bold" />}
                 </span>
               </button>

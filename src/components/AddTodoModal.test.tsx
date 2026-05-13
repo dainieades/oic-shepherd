@@ -82,7 +82,7 @@ function renderModal(onClose = vi.fn()) {
   return render(
     <ToastProvider>
       <AddTodoModal onClose={onClose} />
-    </ToastProvider>,
+    </ToastProvider>
   );
 }
 
@@ -112,7 +112,7 @@ describe('AddTodoModal', () => {
     const { getByRole, getByPlaceholderText } = render(
       <ToastProvider>
         <AddTodoModal onClose={vi.fn()} />
-      </ToastProvider>,
+      </ToastProvider>
     );
 
     fireEvent.change(getByPlaceholderText(/To-dos are upcoming/i), {
@@ -167,7 +167,7 @@ describe('AddTodoModal', () => {
     const { getByRole, getByPlaceholderText, getByText } = render(
       <ToastProvider>
         <AddTodoModal onClose={vi.fn()} />
-      </ToastProvider>,
+      </ToastProvider>
     );
 
     fireEvent.change(getByPlaceholderText(/To-dos are upcoming/i), {

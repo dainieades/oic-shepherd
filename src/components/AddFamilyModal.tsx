@@ -12,7 +12,6 @@ interface AddFamilyModalProps {
   onClose: () => void;
 }
 
-
 function suggestFamilyName(
   memberIds: string[],
   people: { id: string; preferredName: string; lastName?: string }[]
@@ -96,319 +95,320 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
   const selectedPeople = data.people.filter((p) => selectedIds.includes(p.id));
 
   return (
-    <BottomSheet onClose={onClose} aria-labelledby="add-family-title">
+    <BottomSheet onClose={onClose} variant="dialog" aria-labelledby="add-family-title">
+      {/* ── Step: members ── */}
+      {step === 'members' && (
+        <>
+          <ModalHeader
+            title="Select members"
+            titleId="add-family-title"
+            onCancel={onClose}
+            onAction={() => setStep('name')}
+            actionLabel={selectedIds.length > 0 ? `Next (${selectedIds.length})` : 'Next'}
+            actionDisabled={selectedIds.length === 0}
+            actionVariant="pill"
+          />
 
-        {/* ── Step: members ── */}
-        {step === 'members' && (
-          <>
-            <ModalHeader
-              title="Select members"
-              titleId="add-family-title"
-              onCancel={onClose}
-              onAction={() => setStep('name')}
-              actionLabel={selectedIds.length > 0 ? `Next (${selectedIds.length})` : 'Next'}
-              actionDisabled={selectedIds.length === 0}
-              actionVariant="pill"
-            />
-
-            {/* Search */}
-            <div style={{ padding: '0.75rem 1rem 0.5rem', flexShrink: 0 }}>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  background: 'var(--bg)',
-                  borderRadius: 'var(--radius-sm)',
-                  padding: '0.5rem 0.75rem',
-                }}
-              >
-                <MagnifyingGlass size={16} color="var(--text-muted)" />
-                <input
-                  ref={searchRef}
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search people…"
-                  style={{
-                    flex: 1,
-                    background: 'none',
-                    border: 'none',
-                    outline: 'none',
-                    fontSize: 14,
-                    color: 'var(--text-primary)',
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* List */}
-            <div style={{ flex: 1, overflowY: 'auto', padding: '0 1rem 2rem' }}>
-              {sorted.length === 0 && (
-                <p
-                  style={{
-                    fontSize: 13,
-                    color: 'var(--text-muted)',
-                    textAlign: 'center',
-                    paddingTop: 32,
-                    fontStyle: 'italic',
-                  }}
-                >
-                  {q ? 'No people match your search.' : 'All individuals are already in families.'}
-                </p>
-              )}
-              {sorted.map((p) => {
-                const isSelected = selectedIds.includes(p.id);
-                const initials = fullName(p)
-                  .split(' ')
-                  .map((n) => n[0])
-                  .slice(0, 2)
-                  .join('')
-                  .toUpperCase();
-                const palette =
-                  MEMBER_AVATAR_PALETTE[p.preferredName.charCodeAt(0) % MEMBER_AVATAR_PALETTE.length];
-                return (
-                  <button
-                    key={p.id}
-                    onClick={() => toggle(p.id)}
-                    style={{
-                      width: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 12,
-                      padding: '0.625rem 0',
-                      background: isSelected ? 'var(--sage-light)' : 'none',
-                      border: 'none',
-                      borderBottom: '1px solid var(--border-light)',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      borderRadius: 0,
-                      margin: 0,
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: 36,
-                        height: 36,
-                        borderRadius: '50%',
-                        flexShrink: 0,
-                        background: isSelected ? 'var(--sage)' : palette.bg,
-                        color: isSelected ? 'var(--on-sage)' : palette.color,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: 12,
-                        fontWeight: 700,
-                      }}
-                    >
-                      {initials}
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <p
-                        style={{
-                          fontSize: 14,
-                          fontWeight: isSelected ? 600 : 500,
-                          color: isSelected ? 'var(--sage)' : 'var(--text-primary)',
-                          margin: 0,
-                        }}
-                      >
-                        {fullName(p)}
-                      </p>
-                      {p.alternativeName && (
-                        <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0 }}>
-                          {p.alternativeName}
-                        </p>
-                      )}
-                    </div>
-                    <div
-                      style={{
-                        width: 20,
-                        height: 20,
-                        borderRadius: 5,
-                        flexShrink: 0,
-                        border: isSelected ? 'none' : '0.09375rem solid var(--border)',
-                        background: isSelected ? 'var(--sage)' : 'transparent',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        transition: 'background 0.15s',
-                      }}
-                    >
-                      {isSelected && <Check size={11} color="var(--on-sage)" weight="bold" />}
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </>
-        )}
-
-        {/* ── Step: name ── */}
-        {step === 'name' && !submitted && (
-          <>
-            <ModalHeader
-              title="Name family"
-              titleId="add-family-title"
-              onCancel={() => setStep('members')}
-              cancelLabel="Back"
-              onAction={handleCreate}
-              actionLabel="Create"
-              actionDisabled={!familyName.trim()}
-            />
-
+          {/* Search */}
+          <div style={{ padding: '0.75rem 1rem 0.5rem', flexShrink: 0 }}>
             <div
               style={{
-                flex: 1,
-                overflowY: 'auto',
-                padding: '1.5rem 1.25rem 3rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
                 background: 'var(--bg)',
+                borderRadius: 'var(--radius-sm)',
+                padding: '0.5rem 0.75rem',
               }}
             >
-              {/* Members preview */}
-              <div style={{ marginBottom: 24 }}>
-                <p
-                  style={{
-                    fontSize: 10,
-                    fontWeight: 600,
-                    color: 'var(--text-muted)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.06em',
-                    marginBottom: 8,
-                  }}
-                >
-                  Members ({selectedPeople.length})
-                </p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                  {selectedPeople.map((p) => {
-                    const initials = fullName(p)
-                      .split(' ')
-                      .map((n) => n[0])
-                      .slice(0, 2)
-                      .join('')
-                      .toUpperCase();
-                    const palette =
-                      MEMBER_AVATAR_PALETTE[p.preferredName.charCodeAt(0) % MEMBER_AVATAR_PALETTE.length];
-                    return (
-                      <div
-                        key={p.id}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 6,
-                          background: 'var(--surface)',
-                          borderRadius: 'var(--radius-xl)',
-                          padding: '0.25rem 0.625rem 0.25rem 0.25rem',
-                          border: '1px solid var(--border-light)',
-                        }}
-                      >
-                        <div
-                          style={{
-                            width: 24,
-                            height: 24,
-                            borderRadius: '50%',
-                            background: palette.bg,
-                            color: palette.color,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: 10,
-                            fontWeight: 700,
-                            flexShrink: 0,
-                          }}
-                        >
-                          {initials}
-                        </div>
-                        <span
-                          style={{ fontSize: 13, color: 'var(--text-primary)', fontWeight: 500 }}
-                        >
-                          {p.preferredName}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
+              <MagnifyingGlass size={16} color="var(--text-muted)" />
+              <input
+                ref={searchRef}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search people…"
+                style={{
+                  flex: 1,
+                  background: 'none',
+                  border: 'none',
+                  outline: 'none',
+                  fontSize: 14,
+                  color: 'var(--text-primary)',
+                }}
+              />
+            </div>
+          </div>
 
-              {/* Family name input */}
-              <div style={{ marginBottom: 24 }}>
-                <p
+          {/* List */}
+          <div style={{ flex: 1, overflowY: 'auto', padding: '0 1rem 2rem' }}>
+            {sorted.length === 0 && (
+              <p
+                style={{
+                  fontSize: 13,
+                  color: 'var(--text-muted)',
+                  textAlign: 'center',
+                  paddingTop: 32,
+                  fontStyle: 'italic',
+                }}
+              >
+                {q ? 'No people match your search.' : 'All individuals are already in families.'}
+              </p>
+            )}
+            {sorted.map((p) => {
+              const isSelected = selectedIds.includes(p.id);
+              const initials = fullName(p)
+                .split(' ')
+                .map((n) => n[0])
+                .slice(0, 2)
+                .join('')
+                .toUpperCase();
+              const palette =
+                MEMBER_AVATAR_PALETTE[p.preferredName.charCodeAt(0) % MEMBER_AVATAR_PALETTE.length];
+              return (
+                <button
+                  key={p.id}
+                  onClick={() => toggle(p.id)}
                   style={{
-                    fontSize: 10,
-                    fontWeight: 600,
-                    color: 'var(--text-muted)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.06em',
-                    marginBottom: 4,
-                  }}
-                >
-                  Last name
-                </p>
-                <div
-                  style={{
-                    background: 'var(--surface)',
-                    borderRadius: 'var(--radius)',
-                    border: '1px solid var(--border-light)',
-                    padding: '0 1rem',
+                    width: '100%',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 4,
+                    gap: 12,
+                    padding: '0.625rem 0',
+                    background: isSelected ? 'var(--sage-light)' : 'none',
+                    border: 'none',
+                    borderBottom: '1px solid var(--border-light)',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    borderRadius: 0,
+                    margin: 0,
                   }}
                 >
-                  <input
-                    ref={nameRef}
-                    value={familyName}
-                    onChange={(e) => setFamilyName(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
-                    placeholder="e.g. Smith"
+                  <div
                     style={{
-                      flex: 1,
-                      padding: '0.875rem 0',
-                      background: 'none',
-                      border: 'none',
-                      outline: 'none',
-                      fontSize: 16,
-                      color: 'var(--text-primary)',
+                      width: 36,
+                      height: 36,
+                      borderRadius: '50%',
+                      flexShrink: 0,
+                      background: isSelected ? 'var(--sage)' : palette.bg,
+                      color: isSelected ? 'var(--on-sage)' : palette.color,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 12,
+                      fontWeight: 700,
                     }}
-                  />
-                  <span style={{ fontSize: 16, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
-                    Family
-                  </span>
-                </div>
-              </div>
-            </div>
-          </>
-        )}
+                  >
+                    {initials}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p
+                      style={{
+                        fontSize: 14,
+                        fontWeight: isSelected ? 600 : 500,
+                        color: isSelected ? 'var(--sage)' : 'var(--text-primary)',
+                        margin: 0,
+                      }}
+                    >
+                      {fullName(p)}
+                    </p>
+                    {p.alternativeName && (
+                      <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0 }}>
+                        {p.alternativeName}
+                      </p>
+                    )}
+                  </div>
+                  <div
+                    style={{
+                      width: 20,
+                      height: 20,
+                      borderRadius: 5,
+                      flexShrink: 0,
+                      border: isSelected ? 'none' : '0.09375rem solid var(--border)',
+                      background: isSelected ? 'var(--sage)' : 'transparent',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transition: 'background 0.15s',
+                    }}
+                  >
+                    {isSelected && <Check size={11} color="var(--on-sage)" weight="bold" />}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
 
-        {/* ── Success state ── */}
-        {submitted && (
+      {/* ── Step: name ── */}
+      {step === 'name' && !submitted && (
+        <>
+          <ModalHeader
+            title="Name family"
+            titleId="add-family-title"
+            onCancel={() => setStep('members')}
+            cancelLabel="Back"
+            onAction={handleCreate}
+            actionLabel="Create"
+            actionDisabled={!familyName.trim()}
+          />
+
           <div
             style={{
               flex: 1,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 12,
+              overflowY: 'auto',
+              padding: '1.5rem 1.25rem 3rem',
+              background: 'var(--bg)',
             }}
           >
-            <div
-              style={{
-                width: 56,
-                height: 56,
-                borderRadius: '50%',
-                background: 'var(--sage-light)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <Check size={24} color="var(--sage)" weight="bold" />
+            {/* Members preview */}
+            <div style={{ marginBottom: 24 }}>
+              <p
+                style={{
+                  fontSize: 10,
+                  fontWeight: 600,
+                  color: 'var(--text-muted)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                  marginBottom: 8,
+                }}
+              >
+                Members ({selectedPeople.length})
+              </p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {selectedPeople.map((p) => {
+                  const initials = fullName(p)
+                    .split(' ')
+                    .map((n) => n[0])
+                    .slice(0, 2)
+                    .join('')
+                    .toUpperCase();
+                  const palette =
+                    MEMBER_AVATAR_PALETTE[
+                      p.preferredName.charCodeAt(0) % MEMBER_AVATAR_PALETTE.length
+                    ];
+                  return (
+                    <div
+                      key={p.id}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        background: 'var(--surface)',
+                        borderRadius: 'var(--radius-xl)',
+                        padding: '0.25rem 0.625rem 0.25rem 0.25rem',
+                        border: '1px solid var(--border-light)',
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 24,
+                          height: 24,
+                          borderRadius: '50%',
+                          background: palette.bg,
+                          color: palette.color,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: 10,
+                          fontWeight: 700,
+                          flexShrink: 0,
+                        }}
+                      >
+                        {initials}
+                      </div>
+                      <span style={{ fontSize: 13, color: 'var(--text-primary)', fontWeight: 500 }}>
+                        {p.preferredName}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-            <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)' }}>
-              Family created
-            </p>
-            <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>{familyName} Family has been added.</p>
+
+            {/* Family name input */}
+            <div style={{ marginBottom: 24 }}>
+              <p
+                style={{
+                  fontSize: 10,
+                  fontWeight: 600,
+                  color: 'var(--text-muted)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                  marginBottom: 4,
+                }}
+              >
+                Last name
+              </p>
+              <div
+                style={{
+                  background: 'var(--surface)',
+                  borderRadius: 'var(--radius)',
+                  border: '1px solid var(--border-light)',
+                  padding: '0 1rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 4,
+                }}
+              >
+                <input
+                  ref={nameRef}
+                  value={familyName}
+                  onChange={(e) => setFamilyName(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
+                  placeholder="e.g. Smith"
+                  style={{
+                    flex: 1,
+                    padding: '0.875rem 0',
+                    background: 'none',
+                    border: 'none',
+                    outline: 'none',
+                    fontSize: 16,
+                    color: 'var(--text-primary)',
+                  }}
+                />
+                <span style={{ fontSize: 16, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+                  Family
+                </span>
+              </div>
+            </div>
           </div>
-        )}
+        </>
+      )}
+
+      {/* ── Success state ── */}
+      {submitted && (
+        <div
+          style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 12,
+          }}
+        >
+          <div
+            style={{
+              width: 56,
+              height: 56,
+              borderRadius: '50%',
+              background: 'var(--sage-light)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Check size={24} color="var(--sage)" weight="bold" />
+          </div>
+          <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)' }}>
+            Family created
+          </p>
+          <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+            {familyName} Family has been added.
+          </p>
+        </div>
+      )}
     </BottomSheet>
   );
 }

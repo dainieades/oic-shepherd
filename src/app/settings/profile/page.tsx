@@ -17,7 +17,7 @@ export default function SettingsProfilePage() {
   if (!person) {
     return (
       <div style={{ minHeight: '100dvh' }}>
-        <div style={navBarStyle}>
+        <div className="settings-subpage-navbar" style={navBarStyle}>
           <button onClick={() => router.push('/settings')} style={backBtnStyle}>
             <CaretLeft size={16} />
             Settings
@@ -51,6 +51,7 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
   return (
     <>
       <div
+        className="settings-subpage-navbar"
         style={{
           position: 'fixed',
           top: 0,
@@ -108,7 +109,7 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
         </div>
       </div>
 
-      <div style={{ height: 54 }} />
+      <div className="settings-subpage-spacer" style={{ height: 54 }} />
 
       <PersonFormBody
         ref={formRef}

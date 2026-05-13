@@ -44,7 +44,12 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
   }, [imageSrc]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    dragRef.current = { startX: e.clientX, startY: e.clientY, startOX: offset.x, startOY: offset.y };
+    dragRef.current = {
+      startX: e.clientX,
+      startY: e.clientY,
+      startOX: offset.x,
+      startOY: offset.y,
+    };
   };
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!dragRef.current) return;
@@ -53,7 +58,9 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
       y: dragRef.current.startOY + e.clientY - dragRef.current.startY,
     });
   };
-  const handleMouseUp = () => { dragRef.current = null; };
+  const handleMouseUp = () => {
+    dragRef.current = null;
+  };
 
   const handleTouchStart = (e: React.TouchEvent) => {
     if (e.touches.length === 1) {
@@ -86,7 +93,10 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
       const dy = e.touches[0].clientY - e.touches[1].clientY;
       const dist = Math.sqrt(dx * dx + dy * dy);
       setScale(
-        Math.max(minScale, Math.min(MAX_SCALE, pinchRef.current.initialScale * (dist / pinchRef.current.initialDist)))
+        Math.max(
+          minScale,
+          Math.min(MAX_SCALE, pinchRef.current.initialScale * (dist / pinchRef.current.initialDist))
+        )
       );
     }
   };
@@ -134,7 +144,13 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
         OUTPUT_SIZE,
         OUTPUT_SIZE
       );
-      canvas.toBlob((blob) => { if (blob) onConfirm(blob); }, 'image/jpeg', 0.9);
+      canvas.toBlob(
+        (blob) => {
+          if (blob) onConfirm(blob);
+        },
+        'image/jpeg',
+        0.9
+      );
     };
     img.src = imageSrc;
   };
@@ -166,15 +182,31 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
       >
         <button
           onClick={onCancel}
-          style={{ background: 'none', border: 'none', color: '#fff', padding: 8, cursor: 'pointer', lineHeight: 0 }}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: '#fff',
+            padding: 8,
+            cursor: 'pointer',
+            lineHeight: 0,
+          }}
           aria-label="Cancel"
         >
           <X size={24} />
         </button>
-        <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.01em' }}>Move and Scale</span>
+        <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.01em' }}>
+          Move and Scale
+        </span>
         <button
           onClick={handleConfirm}
-          style={{ background: 'none', border: 'none', color: '#fff', padding: 8, cursor: 'pointer', lineHeight: 0 }}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: '#fff',
+            padding: 8,
+            cursor: 'pointer',
+            lineHeight: 0,
+          }}
           aria-label="Confirm crop"
         >
           <Check size={24} weight="bold" />
@@ -182,7 +214,14 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
       </div>
 
       <div
-        style={{ flex: 1, position: 'relative', overflow: 'hidden', cursor: 'grab', touchAction: 'none', userSelect: 'none' }}
+        style={{
+          flex: 1,
+          position: 'relative',
+          overflow: 'hidden',
+          cursor: 'grab',
+          touchAction: 'none',
+          userSelect: 'none',
+        }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -216,7 +255,13 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
         )}
 
         <svg
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            pointerEvents: 'none',
+          }}
         >
           <defs>
             <mask id="imagecrop-overlay-mask">
@@ -224,7 +269,12 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
               <circle cx="50%" cy="50%" r={CROP_DIAMETER / 2} fill="black" />
             </mask>
           </defs>
-          <rect width="100%" height="100%" fill="rgba(0,0,0,0.55)" mask="url(#imagecrop-overlay-mask)" />
+          <rect
+            width="100%"
+            height="100%"
+            fill="rgba(0,0,0,0.55)"
+            mask="url(#imagecrop-overlay-mask)"
+          />
           <circle
             cx="50%"
             cy="50%"
@@ -253,7 +303,8 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
           min={0}
           max={100}
           value={Math.round(
-            ((Math.log(scale) - Math.log(minScale)) / (Math.log(MAX_SCALE) - Math.log(minScale))) * 100
+            ((Math.log(scale) - Math.log(minScale)) / (Math.log(MAX_SCALE) - Math.log(minScale))) *
+              100
           )}
           onChange={(e) => {
             const t = Number(e.target.value) / 100;

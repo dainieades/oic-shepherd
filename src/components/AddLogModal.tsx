@@ -43,7 +43,6 @@ const NOTE_TYPES: { value: NoteType; label: string; icon: React.ReactNode }[] = 
   { value: 'general', label: 'General note', icon: <NotePencil size={16} /> },
 ];
 
-
 export default function AddLogModal({
   onClose,
   prefillFamilyId,
@@ -140,72 +139,75 @@ export default function AddLogModal({
 
   return (
     <>
-      <BottomSheet onClose={onClose} aria-labelledby="add-log-title">
-          {showWhoPicker && (
-            <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-              <PersonFamilyPicker
-                data={data}
-                initialFamilyIds={familyIds}
-                initialPersonIds={personIds}
-                allowedPersonIds={currentPersona.role !== 'admin' ? currentPersona.assignedPeopleIds : undefined}
-                onConfirm={(fIds, pIds) => {
-                  setFamilyIds(fIds);
-                  setPersonIds(pIds);
-                  setShowWhoPicker(false);
-                }}
-                onBack={() => setShowWhoPicker(false)}
-              />
-            </div>
-          )}
-
-          {/* Floating delete button */}
-          {isEditing && note && !showWhoPicker && (
-            <button
-              onClick={() => setShowDeleteConfirm(true)}
-              style={{
-                position: 'absolute',
-                bottom: 28,
-                left: 24,
-                width: 44,
-                height: 44,
-                borderRadius: '50%',
-                background: 'var(--red-light)',
-                border: '0.09375rem solid var(--red-border)',
-                color: 'var(--red)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                boxShadow: 'var(--shadow-card)',
+      <BottomSheet onClose={onClose} variant="dialog" aria-labelledby="add-log-title">
+        {showWhoPicker && (
+          <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            <PersonFamilyPicker
+              data={data}
+              initialFamilyIds={familyIds}
+              initialPersonIds={personIds}
+              allowedPersonIds={
+                currentPersona.role !== 'admin' ? currentPersona.assignedPeopleIds : undefined
+              }
+              onConfirm={(fIds, pIds) => {
+                setFamilyIds(fIds);
+                setPersonIds(pIds);
+                setShowWhoPicker(false);
               }}
-              title="Delete log"
+              onBack={() => setShowWhoPicker(false)}
+            />
+          </div>
+        )}
+
+        {/* Floating delete button */}
+        {isEditing && note && !showWhoPicker && (
+          <button
+            onClick={() => setShowDeleteConfirm(true)}
+            style={{
+              position: 'absolute',
+              bottom: 28,
+              left: 24,
+              width: 44,
+              height: 44,
+              borderRadius: '50%',
+              background: 'var(--red-light)',
+              border: '0.09375rem solid var(--red-border)',
+              color: 'var(--red)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              boxShadow: 'var(--shadow-card)',
+            }}
+            title="Delete log"
+          >
+            <Trash size={18} />
+          </button>
+        )}
+
+        {!showWhoPicker && (
+          <>
+            <ModalHeader
+              title={isEditing ? 'Edit log' : 'Add log'}
+              titleId="add-log-title"
+              onCancel={onClose}
+              onAction={handleSave}
+              actionLabel="Save"
+            />
+
+            {/* Scrollable body */}
+            <div
+              style={{
+                flex: 1,
+                overflowY: 'auto',
+                padding: `1rem 1.25rem ${isEditing ? 80 : 16}px`,
+                background: 'var(--bg)',
+                display: 'flex',
+                flexDirection: 'column',
+              }}
             >
-              <Trash size={18} />
-            </button>
-          )}
-
-          {!showWhoPicker && (
-            <>
-              <ModalHeader
-                title={isEditing ? 'Edit log' : 'Add log'}
-                titleId="add-log-title"
-                onCancel={onClose}
-                onAction={handleSave}
-                actionLabel="Save"
-              />
-
-              {/* Scrollable body */}
-              <div
-                style={{
-                  flex: 1,
-                  overflowY: 'auto',
-                  padding: `1rem 1.25rem ${isEditing ? 80 : 16}px`,
-                  background: 'var(--bg)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                }}
-              >
-                {linkedTodo && (() => {
+              {linkedTodo &&
+                (() => {
                   const interactive = !!onOpenTodo;
                   const chipStyle: React.CSSProperties = {
                     display: 'inline-flex',
@@ -252,119 +254,119 @@ export default function AddLogModal({
                   );
                 })()}
 
-                {/* Fields */}
+              {/* Fields */}
+              <div
+                style={{
+                  background: 'var(--surface)',
+                  borderRadius: 'var(--radius)',
+                  border: '1px solid var(--border-light)',
+                  overflow: 'hidden',
+                  padding: '0 1rem',
+                  marginBottom: 16,
+                  flexShrink: 0,
+                }}
+              >
                 <div
-                  style={{
-                    background: 'var(--surface)',
-                    borderRadius: 'var(--radius)',
-                    border: '1px solid var(--border-light)',
-                    overflow: 'hidden',
-                    padding: '0 1rem',
-                    marginBottom: 16,
-                    flexShrink: 0,
-                  }}
+                  className="no-last-border"
+                  style={{ display: 'flex', flexDirection: 'column', gap: 0 }}
                 >
-                  <div
-                    className="no-last-border"
-                    style={{ display: 'flex', flexDirection: 'column', gap: 0 }}
-                  >
-                    {/* Type */}
-                    <FieldRow
-                      btnRef={typeBtnRef}
-                      icon={typeItem.icon}
-                      label="Type"
-                      value={typeItem.label}
-                      onClick={() => setShowTypePicker(true)}
-                    />
+                  {/* Type */}
+                  <FieldRow
+                    btnRef={typeBtnRef}
+                    icon={typeItem.icon}
+                    label="Type"
+                    value={typeItem.label}
+                    onClick={() => setShowTypePicker(true)}
+                  />
 
-                    {/* For */}
-                    <FieldRow
-                      icon={<User size={16} />}
-                      label="For"
-                      value={whoLabel ?? 'Select…'}
-                      valueColor={!whoLabel ? 'var(--text-muted)' : undefined}
-                      onClick={() => setShowWhoPicker(true)}
-                      trailingIcon={<PlusCircle size={22} color="var(--sage)" weight="fill" />}
-                    />
+                  {/* For */}
+                  <FieldRow
+                    icon={<User size={16} />}
+                    label="For"
+                    value={whoLabel ?? 'Select…'}
+                    valueColor={!whoLabel ? 'var(--text-muted)' : undefined}
+                    onClick={() => setShowWhoPicker(true)}
+                    trailingIcon={<PlusCircle size={22} color="var(--sage)" weight="fill" />}
+                  />
 
-                    {/* Date & Time */}
-                    <FieldRow
-                      icon={<CalendarBlank size={16} />}
-                      label="Date"
-                      value={fmtDateTime(dateStr, timeStr, includeTime)}
-                      onClick={() => setShowDatePicker(true)}
-                    />
+                  {/* Date & Time */}
+                  <FieldRow
+                    icon={<CalendarBlank size={16} />}
+                    label="Date"
+                    value={fmtDateTime(dateStr, timeStr, includeTime)}
+                    onClick={() => setShowDatePicker(true)}
+                  />
 
-                    {/* Created by — edit mode only */}
-                    {isEditing &&
-                      note &&
-                      (() => {
-                        const creator = data.personas.find((p) => p.id === note.createdBy);
-                        return (
-                          <div
+                  {/* Created by — edit mode only */}
+                  {isEditing &&
+                    note &&
+                    (() => {
+                      const creator = data.personas.find((p) => p.id === note.createdBy);
+                      return (
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 10,
+                            paddingTop: 12,
+                            paddingBottom: 12,
+                          }}
+                        >
+                          <span
                             style={{
+                              width: 24,
                               display: 'flex',
-                              alignItems: 'center',
-                              gap: 10,
-                              paddingTop: 12,
-                              paddingBottom: 12,
+                              justifyContent: 'center',
+                              flexShrink: 0,
+                              color: 'var(--text-muted)',
                             }}
                           >
-                            <span
-                              style={{
-                                width: 24,
-                                display: 'flex',
-                                justifyContent: 'center',
-                                flexShrink: 0,
-                                color: 'var(--text-muted)',
-                              }}
-                            >
-                              <UserPlus size={16} />
-                            </span>
-                            <span
-                              style={{
-                                fontSize: 12,
-                                color: 'var(--text-muted)',
-                                width: 60,
-                                flexShrink: 0,
-                              }}
-                            >
-                              Created by
-                            </span>
-                            <span style={{ flex: 1, fontSize: 14, color: 'var(--text-secondary)' }}>
-                              {creator?.name ?? 'Unknown'}
-                            </span>
-                          </div>
-                        );
-                      })()}
-                  </div>
+                            <UserPlus size={16} />
+                          </span>
+                          <span
+                            style={{
+                              fontSize: 12,
+                              color: 'var(--text-muted)',
+                              width: 60,
+                              flexShrink: 0,
+                            }}
+                          >
+                            Created by
+                          </span>
+                          <span style={{ flex: 1, fontSize: 14, color: 'var(--text-secondary)' }}>
+                            {creator?.name ?? 'Unknown'}
+                          </span>
+                        </div>
+                      );
+                    })()}
                 </div>
-
-                {/* Note content */}
-                <textarea
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  placeholder="Logs capture past interactions — a conversation, a check-in, a prayer request, or a moment you shared together."
-                  style={{
-                    flex: 1,
-                    width: '100%',
-                    marginTop: 0,
-                    padding: 12,
-                    minHeight: 220,
-                    background: 'var(--surface)',
-                    border: '1px solid var(--border-light)',
-                    borderRadius: 'var(--radius-sm)',
-                    fontSize: 14,
-                    color: 'var(--text-primary)',
-                    resize: 'vertical',
-                    outline: 'none',
-                    lineHeight: 1.5,
-                    boxSizing: 'border-box',
-                  }}
-                />
               </div>
-            </>
-          )}
+
+              {/* Note content */}
+              <textarea
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                placeholder="Logs capture past interactions — a conversation, a check-in, a prayer request, or a moment you shared together."
+                style={{
+                  flex: 1,
+                  width: '100%',
+                  marginTop: 0,
+                  padding: 12,
+                  minHeight: 220,
+                  background: 'var(--surface)',
+                  border: '1px solid var(--border-light)',
+                  borderRadius: 'var(--radius-sm)',
+                  fontSize: 14,
+                  color: 'var(--text-primary)',
+                  resize: 'vertical',
+                  outline: 'none',
+                  lineHeight: 1.5,
+                  boxSizing: 'border-box',
+                }}
+              />
+            </div>
+          </>
+        )}
       </BottomSheet>
 
       {showDatePicker && (

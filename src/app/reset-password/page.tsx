@@ -19,7 +19,9 @@ export default function ResetPasswordPage() {
   const [mounted, setMounted] = React.useState(false);
   const supabase = createClient();
 
-  React.useEffect(() => { setMounted(true); }, []);
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const isLoading = status.type === 'loading';
 
@@ -45,97 +47,98 @@ export default function ResetPasswordPage() {
     }
   }
 
-  const content = status.type === 'success' ? (
-    <div style={outerStyle}>
-      <div style={cardStyle}>
-        <div style={{ textAlign: 'center' }}>
-          <h2
-            className="font-display"
-            style={{ fontSize: 22, fontWeight: 700, marginBottom: 10 }}
-          >
-            Password updated
-          </h2>
-          <p
-            style={{
-              fontSize: 15,
-              color: 'var(--text-secondary)',
-              lineHeight: 1.6,
-              marginBottom: 24,
-            }}
-          >
-            Your new password is active.
-          </p>
-          <button
-            onClick={() => router.push('/')}
-            style={primaryButtonStyle}
-          >
-            Continue to app
-          </button>
+  const content =
+    status.type === 'success' ? (
+      <div style={outerStyle}>
+        <div style={cardStyle}>
+          <div style={{ textAlign: 'center' }}>
+            <h2
+              className="font-display"
+              style={{ fontSize: 22, fontWeight: 700, marginBottom: 10 }}
+            >
+              Password updated
+            </h2>
+            <p
+              style={{
+                fontSize: 15,
+                color: 'var(--text-secondary)',
+                lineHeight: 1.6,
+                marginBottom: 24,
+              }}
+            >
+              Your new password is active.
+            </p>
+            <button onClick={() => router.push('/')} style={primaryButtonStyle}>
+              Continue to app
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  ) : (
-    <div style={outerStyle}>
-      <div style={cardStyle}>
-        <div style={{ textAlign: 'center', marginBottom: 24 }}>
-          <h1 className="font-display" style={headingStyle}>
-            Set new password
-          </h1>
-          <p style={{ fontSize: 15, color: 'var(--text-secondary)' }}>
-            Choose a password for your account.
-          </p>
-        </div>
-
-        {status.type === 'error' && <ErrorBanner message={status.message} />}
-
-        <form
-          onSubmit={(e) => { e.preventDefault(); handleReset(); }}
-          style={{ display: 'contents' }}
-        >
-          <div style={{ marginBottom: 12 }}>
-            <label style={labelStyle}>New password</label>
-            <input
-              type="password"
-              name="password"
-              autoComplete="new-password"
-              placeholder="At least 8 characters"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={isLoading}
-              autoFocus
-              style={inputStyle}
-            />
+    ) : (
+      <div style={outerStyle}>
+        <div style={cardStyle}>
+          <div style={{ textAlign: 'center', marginBottom: 24 }}>
+            <h1 className="font-display" style={headingStyle}>
+              Set new password
+            </h1>
+            <p style={{ fontSize: 15, color: 'var(--text-secondary)' }}>
+              Choose a password for your account.
+            </p>
           </div>
 
-          <div style={{ marginBottom: 20 }}>
-            <label style={labelStyle}>Confirm password</label>
-            <input
-              type="password"
-              name="confirm-password"
-              autoComplete="new-password"
-              placeholder="••••••••"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              disabled={isLoading}
-              style={inputStyle}
-            />
-          </div>
+          {status.type === 'error' && <ErrorBanner message={status.message} />}
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            style={{
-              ...primaryButtonStyle,
-              opacity: isLoading ? 0.6 : 1,
-              cursor: isLoading ? 'not-allowed' : 'pointer',
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleReset();
             }}
+            style={{ display: 'contents' }}
           >
-            {isLoading ? 'Saving…' : 'Set password'}
-          </button>
-        </form>
+            <div style={{ marginBottom: 12 }}>
+              <label style={labelStyle}>New password</label>
+              <input
+                type="password"
+                name="password"
+                autoComplete="new-password"
+                placeholder="At least 8 characters"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
+                autoFocus
+                style={inputStyle}
+              />
+            </div>
+
+            <div style={{ marginBottom: 20 }}>
+              <label style={labelStyle}>Confirm password</label>
+              <input
+                type="password"
+                name="confirm-password"
+                autoComplete="new-password"
+                placeholder="••••••••"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                disabled={isLoading}
+                style={inputStyle}
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              style={{
+                ...primaryButtonStyle,
+                opacity: isLoading ? 0.6 : 1,
+                cursor: isLoading ? 'not-allowed' : 'pointer',
+              }}
+            >
+              {isLoading ? 'Saving…' : 'Set password'}
+            </button>
+          </form>
+        </div>
       </div>
-    </div>
-  );
+    );
 
   if (!mounted) return null;
   return ReactDOM.createPortal(content, document.body);

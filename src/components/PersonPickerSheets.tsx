@@ -43,107 +43,107 @@ export function GroupPickerSheet({
         actionLabel={selectedIds.length > 0 ? `Done (${selectedIds.length})` : 'Done'}
         actionVariant="pill"
       />
+      <div
+        style={{
+          padding: '0.75rem 1.25rem',
+          flexShrink: 0,
+          borderBottom: '1px solid var(--border-light)',
+        }}
+      >
         <div
           style={{
-            padding: '0.75rem 1.25rem',
-            flexShrink: 0,
-            borderBottom: '1px solid var(--border-light)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            background: 'var(--bg)',
+            border: '1px solid var(--border)',
+            borderRadius: 'var(--radius-sm)',
+            padding: '0.5625rem 0.75rem',
           }}
         >
-          <div
+          <MagnifyingGlass size={14} color="var(--text-muted)" />
+          <input
+            ref={searchRef}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search groups…"
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              background: 'var(--bg)',
-              border: '1px solid var(--border)',
-              borderRadius: 'var(--radius-sm)',
-              padding: '0.5625rem 0.75rem',
+              flex: 1,
+              fontSize: 14,
+              color: 'var(--text-primary)',
+              background: 'none',
+              border: 'none',
+              outline: 'none',
             }}
-          >
-            <MagnifyingGlass size={14} color="var(--text-muted)" />
-            <input
-              ref={searchRef}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search groups…"
+          />
+          {search && (
+            <button
+              onClick={() => setSearch('')}
               style={{
-                flex: 1,
-                fontSize: 14,
-                color: 'var(--text-primary)',
                 background: 'none',
                 border: 'none',
-                outline: 'none',
-              }}
-            />
-            {search && (
-              <button
-                onClick={() => setSearch('')}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: 'var(--text-muted)',
-                  fontSize: 18,
-                  lineHeight: 1,
-                  padding: 0,
-                }}
-              >
-                ×
-              </button>
-            )}
-          </div>
-        </div>
-        <div style={{ flex: 1, overflowY: 'auto' }}>
-          {filtered.map((g) => {
-            const isSel = selectedIds.includes(g.id);
-            return (
-              <button
-                key={g.id}
-                onClick={() => toggle(g.id)}
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 12,
-                  padding: '0.75rem 1.25rem',
-                  background: isSel ? 'var(--blue-light)' : 'none',
-                  border: 'none',
-                  borderBottom: '1px solid var(--border-light)',
-                  cursor: 'pointer',
-                  textAlign: 'left' as const,
-                }}
-              >
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p
-                    style={{
-                      fontSize: 14,
-                      fontWeight: isSel ? 600 : 400,
-                      color: isSel ? 'var(--blue)' : 'var(--text-primary)',
-                      margin: 0,
-                    }}
-                  >
-                    {g.name}
-                  </p>
-                </div>
-                <CheckboxMark checked={isSel} />
-              </button>
-            );
-          })}
-          {filtered.length === 0 && (
-            <p
-              style={{
-                padding: '1.5rem 1.25rem',
-                fontSize: 13,
+                cursor: 'pointer',
                 color: 'var(--text-muted)',
-                textAlign: 'center',
-                fontStyle: 'italic',
+                fontSize: 18,
+                lineHeight: 1,
+                padding: 0,
               }}
             >
-              No groups found.
-            </p>
+              ×
+            </button>
           )}
         </div>
+      </div>
+      <div style={{ flex: 1, overflowY: 'auto' }}>
+        {filtered.map((g) => {
+          const isSel = selectedIds.includes(g.id);
+          return (
+            <button
+              key={g.id}
+              onClick={() => toggle(g.id)}
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                padding: '0.75rem 1.25rem',
+                background: isSel ? 'var(--blue-light)' : 'none',
+                border: 'none',
+                borderBottom: '1px solid var(--border-light)',
+                cursor: 'pointer',
+                textAlign: 'left' as const,
+              }}
+            >
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p
+                  style={{
+                    fontSize: 14,
+                    fontWeight: isSel ? 600 : 400,
+                    color: isSel ? 'var(--blue)' : 'var(--text-primary)',
+                    margin: 0,
+                  }}
+                >
+                  {g.name}
+                </p>
+              </div>
+              <CheckboxMark checked={isSel} />
+            </button>
+          );
+        })}
+        {filtered.length === 0 && (
+          <p
+            style={{
+              padding: '1.5rem 1.25rem',
+              fontSize: 13,
+              color: 'var(--text-muted)',
+              textAlign: 'center',
+              fontStyle: 'italic',
+            }}
+          >
+            No groups found.
+          </p>
+        )}
+      </div>
     </BottomSheet>
   );
 }
@@ -154,7 +154,13 @@ export function SheepPickerSheet({
   onConfirm,
   onBack,
 }: {
-  people: { id: string; preferredName: string; lastName?: string; alternativeName?: string; photo?: string }[];
+  people: {
+    id: string;
+    preferredName: string;
+    lastName?: string;
+    alternativeName?: string;
+    photo?: string;
+  }[];
   currentIds: string[];
   onConfirm: (ids: string[]) => void;
   onBack: () => void;
@@ -190,120 +196,120 @@ export function SheepPickerSheet({
         actionLabel={selectedIds.length > 0 ? `Done (${selectedIds.length})` : 'Done'}
         actionVariant="pill"
       />
+      <div
+        style={{
+          padding: '0.75rem 1.25rem',
+          flexShrink: 0,
+          borderBottom: '1px solid var(--border-light)',
+        }}
+      >
         <div
           style={{
-            padding: '0.75rem 1.25rem',
-            flexShrink: 0,
-            borderBottom: '1px solid var(--border-light)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            background: 'var(--bg)',
+            border: '1px solid var(--border)',
+            borderRadius: 'var(--radius-sm)',
+            padding: '0.5625rem 0.75rem',
           }}
         >
-          <div
+          <MagnifyingGlass size={14} color="var(--text-muted)" />
+          <input
+            ref={searchRef}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search people…"
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              background: 'var(--bg)',
-              border: '1px solid var(--border)',
-              borderRadius: 'var(--radius-sm)',
-              padding: '0.5625rem 0.75rem',
+              flex: 1,
+              fontSize: 14,
+              color: 'var(--text-primary)',
+              background: 'none',
+              border: 'none',
+              outline: 'none',
             }}
-          >
-            <MagnifyingGlass size={14} color="var(--text-muted)" />
-            <input
-              ref={searchRef}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search people…"
+          />
+          {search && (
+            <button
+              onClick={() => setSearch('')}
               style={{
-                flex: 1,
-                fontSize: 14,
-                color: 'var(--text-primary)',
                 background: 'none',
                 border: 'none',
-                outline: 'none',
-              }}
-            />
-            {search && (
-              <button
-                onClick={() => setSearch('')}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: 'var(--text-muted)',
-                  fontSize: 18,
-                  lineHeight: 1,
-                  padding: 0,
-                }}
-              >
-                ×
-              </button>
-            )}
-          </div>
-        </div>
-        <div style={{ flex: 1, overflowY: 'auto' }}>
-          {sorted.length === 0 && (
-            <p
-              style={{
-                fontSize: 13,
+                cursor: 'pointer',
                 color: 'var(--text-muted)',
-                fontStyle: 'italic',
-                paddingTop: 24,
-                textAlign: 'center',
+                fontSize: 18,
+                lineHeight: 1,
+                padding: 0,
               }}
             >
-              No matching people.
-            </p>
+              ×
+            </button>
           )}
-          {sorted.map((p, i) => {
-            const isSel = selectedIds.includes(p.id);
-            const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
-            return (
-              <button
-                key={p.id}
-                onClick={() => toggle(p.id)}
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 12,
-                  padding: '0.75rem 1.25rem',
-                  background: isSel ? 'var(--sage-light)' : 'none',
-                  border: 'none',
-                  borderBottom: '1px solid var(--border-light)',
-                  cursor: 'pointer',
-                  textAlign: 'left' as const,
-                }}
-              >
-                <AvatarBadge
-                  name={fullName(p)}
-                  photo={p.photo}
-                  size={36}
-                  bg={isSel ? 'var(--sage)' : palette.bg}
-                  color={isSel ? 'var(--on-sage)' : palette.color}
-                />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p
-                    style={{
-                      fontSize: 14,
-                      fontWeight: isSel ? 600 : 400,
-                      color: isSel ? 'var(--sage)' : 'var(--text-primary)',
-                      margin: 0,
-                    }}
-                  >
-                    {fullName(p)}
-                  </p>
-                  {p.alternativeName && (
-                    <p style={{ fontSize: 11, color: 'var(--text-muted)', margin: 0 }}>
-                      {p.alternativeName}
-                    </p>
-                  )}
-                </div>
-                <CheckboxMark checked={isSel} />
-              </button>
-            );
-          })}
         </div>
+      </div>
+      <div style={{ flex: 1, overflowY: 'auto' }}>
+        {sorted.length === 0 && (
+          <p
+            style={{
+              fontSize: 13,
+              color: 'var(--text-muted)',
+              fontStyle: 'italic',
+              paddingTop: 24,
+              textAlign: 'center',
+            }}
+          >
+            No matching people.
+          </p>
+        )}
+        {sorted.map((p, i) => {
+          const isSel = selectedIds.includes(p.id);
+          const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
+          return (
+            <button
+              key={p.id}
+              onClick={() => toggle(p.id)}
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                padding: '0.75rem 1.25rem',
+                background: isSel ? 'var(--sage-light)' : 'none',
+                border: 'none',
+                borderBottom: '1px solid var(--border-light)',
+                cursor: 'pointer',
+                textAlign: 'left' as const,
+              }}
+            >
+              <AvatarBadge
+                name={fullName(p)}
+                photo={p.photo}
+                size={36}
+                bg={isSel ? 'var(--sage)' : palette.bg}
+                color={isSel ? 'var(--on-sage)' : palette.color}
+              />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p
+                  style={{
+                    fontSize: 14,
+                    fontWeight: isSel ? 600 : 400,
+                    color: isSel ? 'var(--sage)' : 'var(--text-primary)',
+                    margin: 0,
+                  }}
+                >
+                  {fullName(p)}
+                </p>
+                {p.alternativeName && (
+                  <p style={{ fontSize: 11, color: 'var(--text-muted)', margin: 0 }}>
+                    {p.alternativeName}
+                  </p>
+                )}
+              </div>
+              <CheckboxMark checked={isSel} />
+            </button>
+          );
+        })}
+      </div>
     </BottomSheet>
   );
 }
@@ -342,118 +348,118 @@ export function ShepherdPickerSheet({
         actionLabel={selectedIds.length > 0 ? `Done (${selectedIds.length})` : 'Done'}
         actionVariant="pill"
       />
+      <div
+        style={{
+          padding: '0.75rem 1.25rem',
+          flexShrink: 0,
+          borderBottom: '1px solid var(--border-light)',
+        }}
+      >
         <div
           style={{
-            padding: '0.75rem 1.25rem',
-            flexShrink: 0,
-            borderBottom: '1px solid var(--border-light)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            background: 'var(--bg)',
+            border: '1px solid var(--border)',
+            borderRadius: 'var(--radius-sm)',
+            padding: '0.5625rem 0.75rem',
           }}
         >
-          <div
+          <MagnifyingGlass size={14} color="var(--text-muted)" />
+          <input
+            ref={searchRef}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search shepherds…"
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              background: 'var(--bg)',
-              border: '1px solid var(--border)',
-              borderRadius: 'var(--radius-sm)',
-              padding: '0.5625rem 0.75rem',
+              flex: 1,
+              fontSize: 14,
+              color: 'var(--text-primary)',
+              background: 'none',
+              border: 'none',
+              outline: 'none',
             }}
-          >
-            <MagnifyingGlass size={14} color="var(--text-muted)" />
-            <input
-              ref={searchRef}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search shepherds…"
+          />
+          {search && (
+            <button
+              onClick={() => setSearch('')}
               style={{
-                flex: 1,
-                fontSize: 14,
-                color: 'var(--text-primary)',
                 background: 'none',
                 border: 'none',
-                outline: 'none',
-              }}
-            />
-            {search && (
-              <button
-                onClick={() => setSearch('')}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: 'var(--text-muted)',
-                  fontSize: 18,
-                  lineHeight: 1,
-                  padding: 0,
-                }}
-              >
-                ×
-              </button>
-            )}
-          </div>
-        </div>
-        <div style={{ flex: 1, overflowY: 'auto' }}>
-          {filtered.map((entry, i) => {
-            const isSel = selectedIds.includes(entry.id);
-            const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
-            return (
-              <button
-                key={entry.id}
-                onClick={() => toggle(entry.id)}
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 12,
-                  padding: '0.75rem 1.25rem',
-                  background: isSel ? 'var(--sage-light)' : 'none',
-                  border: 'none',
-                  borderBottom: '1px solid var(--border-light)',
-                  cursor: 'pointer',
-                  textAlign: 'left' as const,
-                }}
-              >
-                <AvatarBadge
-                  name={entry.name}
-                  photo={entry.photo}
-                  size={36}
-                  bg={isSel ? 'var(--sage)' : palette.bg}
-                  color={isSel ? 'var(--on-sage)' : palette.color}
-                />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p
-                    style={{
-                      fontSize: 14,
-                      fontWeight: isSel ? 600 : 400,
-                      color: isSel ? 'var(--sage)' : 'var(--text-primary)',
-                      margin: 0,
-                    }}
-                  >
-                    {entry.name}
-                  </p>
-                  <p style={{ fontSize: 11, color: 'var(--text-muted)', margin: 0 }}>
-                    {entry.subtitle}
-                  </p>
-                </div>
-                <CheckboxMark checked={isSel} />
-              </button>
-            );
-          })}
-          {filtered.length === 0 && (
-            <p
-              style={{
-                padding: '1.5rem 1.25rem',
-                fontSize: 13,
+                cursor: 'pointer',
                 color: 'var(--text-muted)',
-                textAlign: 'center',
-                fontStyle: 'italic',
+                fontSize: 18,
+                lineHeight: 1,
+                padding: 0,
               }}
             >
-              No shepherds found.
-            </p>
+              ×
+            </button>
           )}
         </div>
+      </div>
+      <div style={{ flex: 1, overflowY: 'auto' }}>
+        {filtered.map((entry, i) => {
+          const isSel = selectedIds.includes(entry.id);
+          const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
+          return (
+            <button
+              key={entry.id}
+              onClick={() => toggle(entry.id)}
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                padding: '0.75rem 1.25rem',
+                background: isSel ? 'var(--sage-light)' : 'none',
+                border: 'none',
+                borderBottom: '1px solid var(--border-light)',
+                cursor: 'pointer',
+                textAlign: 'left' as const,
+              }}
+            >
+              <AvatarBadge
+                name={entry.name}
+                photo={entry.photo}
+                size={36}
+                bg={isSel ? 'var(--sage)' : palette.bg}
+                color={isSel ? 'var(--on-sage)' : palette.color}
+              />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p
+                  style={{
+                    fontSize: 14,
+                    fontWeight: isSel ? 600 : 400,
+                    color: isSel ? 'var(--sage)' : 'var(--text-primary)',
+                    margin: 0,
+                  }}
+                >
+                  {entry.name}
+                </p>
+                <p style={{ fontSize: 11, color: 'var(--text-muted)', margin: 0 }}>
+                  {entry.subtitle}
+                </p>
+              </div>
+              <CheckboxMark checked={isSel} />
+            </button>
+          );
+        })}
+        {filtered.length === 0 && (
+          <p
+            style={{
+              padding: '1.5rem 1.25rem',
+              fontSize: 13,
+              color: 'var(--text-muted)',
+              textAlign: 'center',
+              fontStyle: 'italic',
+            }}
+          >
+            No shepherds found.
+          </p>
+        )}
+      </div>
     </BottomSheet>
   );
 }
@@ -492,107 +498,107 @@ export function PositionPickerSheet({
         actionLabel={selectedPositions.length > 0 ? `Done (${selectedPositions.length})` : 'Done'}
         actionVariant="pill"
       />
+      <div
+        style={{
+          padding: '0.75rem 1.25rem',
+          flexShrink: 0,
+          borderBottom: '1px solid var(--border-light)',
+        }}
+      >
         <div
           style={{
-            padding: '0.75rem 1.25rem',
-            flexShrink: 0,
-            borderBottom: '1px solid var(--border-light)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            background: 'var(--bg)',
+            border: '1px solid var(--border)',
+            borderRadius: 'var(--radius-sm)',
+            padding: '0.5625rem 0.75rem',
           }}
         >
-          <div
+          <MagnifyingGlass size={14} color="var(--text-muted)" />
+          <input
+            ref={searchRef}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search positions…"
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              background: 'var(--bg)',
-              border: '1px solid var(--border)',
-              borderRadius: 'var(--radius-sm)',
-              padding: '0.5625rem 0.75rem',
+              flex: 1,
+              fontSize: 14,
+              color: 'var(--text-primary)',
+              background: 'none',
+              border: 'none',
+              outline: 'none',
             }}
-          >
-            <MagnifyingGlass size={14} color="var(--text-muted)" />
-            <input
-              ref={searchRef}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search positions…"
+          />
+          {search && (
+            <button
+              onClick={() => setSearch('')}
               style={{
-                flex: 1,
-                fontSize: 14,
-                color: 'var(--text-primary)',
                 background: 'none',
                 border: 'none',
-                outline: 'none',
-              }}
-            />
-            {search && (
-              <button
-                onClick={() => setSearch('')}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: 'var(--text-muted)',
-                  fontSize: 18,
-                  lineHeight: 1,
-                  padding: 0,
-                }}
-              >
-                ×
-              </button>
-            )}
-          </div>
-        </div>
-        <div style={{ flex: 1, overflowY: 'auto' }}>
-          {filtered.map((pos) => {
-            const isSel = selectedPositions.includes(pos);
-            return (
-              <button
-                key={pos}
-                onClick={() => toggle(pos)}
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 12,
-                  padding: '0.75rem 1.25rem',
-                  background: isSel ? 'var(--sage-light)' : 'none',
-                  border: 'none',
-                  borderBottom: '1px solid var(--border-light)',
-                  cursor: 'pointer',
-                  textAlign: 'left' as const,
-                }}
-              >
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p
-                    style={{
-                      fontSize: 14,
-                      fontWeight: isSel ? 600 : 400,
-                      color: isSel ? 'var(--sage)' : 'var(--text-primary)',
-                      margin: 0,
-                    }}
-                  >
-                    {pos}
-                  </p>
-                </div>
-                <CheckboxMark checked={isSel} />
-              </button>
-            );
-          })}
-          {filtered.length === 0 && (
-            <p
-              style={{
-                padding: '1.5rem 1.25rem',
-                fontSize: 13,
+                cursor: 'pointer',
                 color: 'var(--text-muted)',
-                textAlign: 'center',
-                fontStyle: 'italic',
+                fontSize: 18,
+                lineHeight: 1,
+                padding: 0,
               }}
             >
-              No positions found.
-            </p>
+              ×
+            </button>
           )}
         </div>
+      </div>
+      <div style={{ flex: 1, overflowY: 'auto' }}>
+        {filtered.map((pos) => {
+          const isSel = selectedPositions.includes(pos);
+          return (
+            <button
+              key={pos}
+              onClick={() => toggle(pos)}
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                padding: '0.75rem 1.25rem',
+                background: isSel ? 'var(--sage-light)' : 'none',
+                border: 'none',
+                borderBottom: '1px solid var(--border-light)',
+                cursor: 'pointer',
+                textAlign: 'left' as const,
+              }}
+            >
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p
+                  style={{
+                    fontSize: 14,
+                    fontWeight: isSel ? 600 : 400,
+                    color: isSel ? 'var(--sage)' : 'var(--text-primary)',
+                    margin: 0,
+                  }}
+                >
+                  {pos}
+                </p>
+              </div>
+              <CheckboxMark checked={isSel} />
+            </button>
+          );
+        })}
+        {filtered.length === 0 && (
+          <p
+            style={{
+              padding: '1.5rem 1.25rem',
+              fontSize: 13,
+              color: 'var(--text-muted)',
+              textAlign: 'center',
+              fontStyle: 'italic',
+            }}
+          >
+            No positions found.
+          </p>
+        )}
+      </div>
     </BottomSheet>
   );
 }
@@ -637,178 +643,178 @@ export function FamilyPickerSheet({
         actionLabel="Done"
         actionVariant="pill"
       />
+      <div
+        style={{
+          padding: '0.75rem 1.25rem',
+          flexShrink: 0,
+          borderBottom: '1px solid var(--border-light)',
+        }}
+      >
         <div
           style={{
-            padding: '0.75rem 1.25rem',
-            flexShrink: 0,
-            borderBottom: '1px solid var(--border-light)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            background: 'var(--bg)',
+            border: '1px solid var(--border)',
+            borderRadius: 'var(--radius-sm)',
+            padding: '0.5625rem 0.75rem',
           }}
         >
-          <div
+          <MagnifyingGlass size={14} color="var(--text-muted)" />
+          <input
+            ref={searchRef}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search families…"
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              background: 'var(--bg)',
-              border: '1px solid var(--border)',
-              borderRadius: 'var(--radius-sm)',
-              padding: '0.5625rem 0.75rem',
+              flex: 1,
+              fontSize: 14,
+              color: 'var(--text-primary)',
+              background: 'none',
+              border: 'none',
+              outline: 'none',
             }}
-          >
-            <MagnifyingGlass size={14} color="var(--text-muted)" />
-            <input
-              ref={searchRef}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search families…"
+          />
+          {search && (
+            <button
+              onClick={() => setSearch('')}
               style={{
-                flex: 1,
-                fontSize: 14,
-                color: 'var(--text-primary)',
                 background: 'none',
                 border: 'none',
-                outline: 'none',
+                cursor: 'pointer',
+                color: 'var(--text-muted)',
+                fontSize: 18,
+                lineHeight: 1,
+                padding: 0,
               }}
-            />
-            {search && (
-              <button
-                onClick={() => setSearch('')}
+            >
+              ×
+            </button>
+          )}
+        </div>
+      </div>
+      <div style={{ flex: 1, overflowY: 'auto' }}>
+        {!q && (
+          <button
+            onClick={() => setSelectedId(undefined)}
+            style={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              padding: '0.75rem 1.25rem',
+              background: !selectedId ? 'var(--sage-light)' : 'none',
+              border: 'none',
+              borderBottom: '1px solid var(--border-light)',
+              cursor: 'pointer',
+              textAlign: 'left' as const,
+            }}
+          >
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p
                 style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: 'var(--text-muted)',
-                  fontSize: 18,
-                  lineHeight: 1,
-                  padding: 0,
+                  fontSize: 14,
+                  fontWeight: !selectedId ? 600 : 400,
+                  color: !selectedId ? 'var(--sage)' : 'var(--text-muted)',
+                  margin: 0,
+                  fontStyle: 'italic',
                 }}
               >
-                ×
-              </button>
-            )}
-          </div>
-        </div>
-        <div style={{ flex: 1, overflowY: 'auto' }}>
-          {!q && (
+                None
+              </p>
+            </div>
+            <RadioDot selected={!selectedId} />
+          </button>
+        )}
+        {filtered.map((f, fi) => {
+          const isSel = selectedId === f.id;
+          const palette = SHEPHERD_AVATAR_PALETTE[fi % SHEPHERD_AVATAR_PALETTE.length];
+          const initials = f.label
+            .split(' ')
+            .map((w) => w[0])
+            .join('')
+            .toUpperCase()
+            .slice(0, 2);
+          const members = people.filter((p) => f.memberIds.includes(p.id));
+          return (
             <button
-              onClick={() => setSelectedId(undefined)}
+              key={f.id}
+              onClick={() => setSelectedId(f.id)}
               style={{
                 width: '100%',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 12,
                 padding: '0.75rem 1.25rem',
-                background: !selectedId ? 'var(--sage-light)' : 'none',
+                background: isSel ? 'var(--sage-light)' : 'none',
                 border: 'none',
                 borderBottom: '1px solid var(--border-light)',
                 cursor: 'pointer',
                 textAlign: 'left' as const,
               }}
             >
+              <div
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: '50%',
+                  flexShrink: 0,
+                  background: isSel ? 'var(--sage)' : palette.bg,
+                  color: isSel ? 'var(--on-sage)' : palette.color,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 12,
+                  fontWeight: 700,
+                }}
+              >
+                {initials}
+              </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p
                   style={{
                     fontSize: 14,
-                    fontWeight: !selectedId ? 600 : 400,
-                    color: !selectedId ? 'var(--sage)' : 'var(--text-muted)',
+                    fontWeight: isSel ? 600 : 400,
+                    color: isSel ? 'var(--sage)' : 'var(--text-primary)',
                     margin: 0,
-                    fontStyle: 'italic',
                   }}
                 >
-                  None
+                  {f.label}
                 </p>
-              </div>
-              <RadioDot selected={!selectedId} />
-            </button>
-          )}
-          {filtered.map((f, fi) => {
-            const isSel = selectedId === f.id;
-            const palette = SHEPHERD_AVATAR_PALETTE[fi % SHEPHERD_AVATAR_PALETTE.length];
-            const initials = f.label
-              .split(' ')
-              .map((w) => w[0])
-              .join('')
-              .toUpperCase()
-              .slice(0, 2);
-            const members = people.filter((p) => f.memberIds.includes(p.id));
-            return (
-              <button
-                key={f.id}
-                onClick={() => setSelectedId(f.id)}
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 12,
-                  padding: '0.75rem 1.25rem',
-                  background: isSel ? 'var(--sage-light)' : 'none',
-                  border: 'none',
-                  borderBottom: '1px solid var(--border-light)',
-                  cursor: 'pointer',
-                  textAlign: 'left' as const,
-                }}
-              >
-                <div
-                  style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: '50%',
-                    flexShrink: 0,
-                    background: isSel ? 'var(--sage)' : palette.bg,
-                    color: isSel ? 'var(--on-sage)' : palette.color,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: 12,
-                    fontWeight: 700,
-                  }}
-                >
-                  {initials}
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
+                {members.length > 0 && (
                   <p
                     style={{
-                      fontSize: 14,
-                      fontWeight: isSel ? 600 : 400,
-                      color: isSel ? 'var(--sage)' : 'var(--text-primary)',
+                      fontSize: 11,
+                      color: 'var(--text-muted)',
                       margin: 0,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
                     }}
                   >
-                    {f.label}
+                    {members.map((m) => m.preferredName).join(', ')}
                   </p>
-                  {members.length > 0 && (
-                    <p
-                      style={{
-                        fontSize: 11,
-                        color: 'var(--text-muted)',
-                        margin: 0,
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {members.map((m) => m.preferredName).join(', ')}
-                    </p>
-                  )}
-                </div>
-                <RadioDot selected={isSel} />
-              </button>
-            );
-          })}
-          {filtered.length === 0 && (
-            <p
-              style={{
-                padding: '1.5rem 1.25rem',
-                fontSize: 13,
-                color: 'var(--text-muted)',
-                textAlign: 'center',
-                fontStyle: 'italic',
-              }}
-            >
-              No families found.
-            </p>
-          )}
-        </div>
+                )}
+              </div>
+              <RadioDot selected={isSel} />
+            </button>
+          );
+        })}
+        {filtered.length === 0 && (
+          <p
+            style={{
+              padding: '1.5rem 1.25rem',
+              fontSize: 13,
+              color: 'var(--text-muted)',
+              textAlign: 'center',
+              fontStyle: 'italic',
+            }}
+          >
+            No families found.
+          </p>
+        )}
+      </div>
     </BottomSheet>
   );
 }
@@ -839,7 +845,14 @@ export function InvitePersonPickerSheet({
   onSelect,
   onBack,
 }: {
-  people: { id: string; preferredName: string; lastName?: string; alternativeName?: string; photo?: string; appRole?: string }[];
+  people: {
+    id: string;
+    preferredName: string;
+    lastName?: string;
+    alternativeName?: string;
+    photo?: string;
+    appRole?: string;
+  }[];
   onSelect: (person: { id: string; preferredName: string; lastName?: string }) => void;
   onBack: () => void;
 }) {
@@ -871,11 +884,28 @@ export function InvitePersonPickerSheet({
       >
         <button
           onClick={onBack}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-secondary)', padding: 0, marginRight: 'auto' }}
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: 14,
+            color: 'var(--text-secondary)',
+            padding: 0,
+            marginRight: 'auto',
+          }}
         >
           Cancel
         </button>
-        <span style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
+        <span
+          style={{
+            position: 'absolute',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            fontSize: 15,
+            fontWeight: 600,
+            color: 'var(--text-primary)',
+          }}
+        >
           Who are you inviting?
         </span>
       </div>
@@ -978,7 +1008,16 @@ export function InvitePersonPickerSheet({
                   )}
                 </p>
                 {hasAccess && (
-                  <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: '0.125rem 0 0', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <p
+                    style={{
+                      fontSize: 12,
+                      color: 'var(--text-muted)',
+                      margin: '0.125rem 0 0',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 4,
+                    }}
+                  >
                     <IdentificationCard size={12} />
                     Already has access
                   </p>
@@ -988,7 +1027,14 @@ export function InvitePersonPickerSheet({
           );
         })}
         {filtered.length === 0 && (
-          <p style={{ fontSize: 14, color: 'var(--text-muted)', textAlign: 'center', padding: '2rem 1.25rem' }}>
+          <p
+            style={{
+              fontSize: 14,
+              color: 'var(--text-muted)',
+              textAlign: 'center',
+              padding: '2rem 1.25rem',
+            }}
+          >
             No people found
           </p>
         )}

@@ -4,11 +4,11 @@ export type Role = 'admin' | 'shepherd' | 'welcome-team';
 export type AppRole = 'admin' | 'shepherd' | 'welcome-team' | 'no-access';
 
 export interface NotificationPreferences {
-  personAdded:      boolean;
-  noticeAdded:      boolean;
+  personAdded: boolean;
+  noticeAdded: boolean;
   shepherdAssigned: boolean;
-  personUpdated:    boolean;
-  todoCreated:      boolean;
+  personUpdated: boolean;
+  todoCreated: boolean;
 }
 
 /** @deprecated No longer read by UI — ICS feeds are stateless, app cannot verify which client subscribed. DB column retained until a future cleanup migration. */
@@ -28,6 +28,7 @@ export interface Persona {
   calendarFeedToken?: string | null;
   /** @deprecated No longer used by UI — see CalendarConnectedApp. */
   calendarConnectedApp?: CalendarConnectedApp | null;
+  isTest?: boolean;
 }
 
 export type MembershipStatus = 'member' | 'non-member' | 'membership-track';
@@ -92,6 +93,7 @@ export interface Person {
   createdBy?: string; // persona ID
   lastEditedAt?: string;
   lastEditedByName?: string;
+  isTest?: boolean;
 }
 
 export interface Family {
@@ -105,6 +107,7 @@ export interface Family {
   primaryContactId?: string;
   createdAt?: string;
   createdBy?: string; // persona ID
+  isTest?: boolean;
 }
 
 export interface Group {
@@ -114,6 +117,7 @@ export interface Group {
   leaderIds: string[];
   memberIds: string[];
   relatedFamilyIds: string[];
+  isTest?: boolean;
 }
 
 export type NoteType = 'check-in' | 'prayer-request' | 'event' | 'general';
@@ -166,7 +170,12 @@ export interface Todo {
   createdAt: string; // ISO datetime
 }
 
-export type NoticeCategory = 'physical-need' | 'spiritual-need' | 'social-need' | 'psychological-need' | 'other';
+export type NoticeCategory =
+  | 'physical-need'
+  | 'spiritual-need'
+  | 'social-need'
+  | 'psychological-need'
+  | 'other';
 export type NoticeUrgency = 'urgent' | 'moderate' | 'ongoing';
 export type NoticePrivacy = 'pastor-only' | 'pastor-and-shepherds' | 'everyone';
 
@@ -204,7 +213,12 @@ export const REFERRAL_SOURCES: readonly ReferralSource[] = [
 ] as const;
 
 export type Interest = 'salvation' | 'growth' | 'serving' | 'small-groups';
-export const INTERESTS: readonly Interest[] = ['salvation', 'growth', 'serving', 'small-groups'] as const;
+export const INTERESTS: readonly Interest[] = [
+  'salvation',
+  'growth',
+  'serving',
+  'small-groups',
+] as const;
 
 export type VisitorSubmissionSource = 'app' | 'qr';
 export type VisitorSubmissionStatus = 'pending' | 'promoted' | 'discarded';

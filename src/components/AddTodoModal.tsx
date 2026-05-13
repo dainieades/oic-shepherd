@@ -144,214 +144,218 @@ export default function AddTodoModal({
 
   return (
     <>
-      <BottomSheet onClose={onClose} aria-labelledby="add-todo-title">
-          {/* Floating delete button */}
-          {isEditing && todo && !showWhoPicker && (
-            <button
-              onClick={() => setShowDeleteConfirm(true)}
-              style={{
-                position: 'absolute',
-                bottom: 28,
-                left: 24,
-                width: 44,
-                height: 44,
-                borderRadius: '50%',
-                background: 'var(--red-light)',
-                border: '0.09375rem solid var(--red-border)',
-                color: 'var(--red)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                boxShadow: 'var(--shadow-card)',
+      <BottomSheet onClose={onClose} variant="dialog" aria-labelledby="add-todo-title">
+        {/* Floating delete button */}
+        {isEditing && todo && !showWhoPicker && (
+          <button
+            onClick={() => setShowDeleteConfirm(true)}
+            style={{
+              position: 'absolute',
+              bottom: 28,
+              left: 24,
+              width: 44,
+              height: 44,
+              borderRadius: '50%',
+              background: 'var(--red-light)',
+              border: '0.09375rem solid var(--red-border)',
+              color: 'var(--red)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              boxShadow: 'var(--shadow-card)',
+            }}
+            title="Delete to-do"
+          >
+            <Trash size={18} />
+          </button>
+        )}
+
+        {showWhoPicker && (
+          <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            <PersonFamilyPicker
+              data={data}
+              initialFamilyIds={familyIds}
+              initialPersonIds={personIds}
+              allowedPersonIds={
+                currentPersona.role !== 'admin' ? currentPersona.assignedPeopleIds : undefined
+              }
+              onConfirm={(fIds, pIds) => {
+                setFamilyIds(fIds);
+                setPersonIds(pIds);
+                setShowWhoPicker(false);
               }}
-              title="Delete to-do"
+              onBack={() => setShowWhoPicker(false)}
+            />
+          </div>
+        )}
+
+        {!showWhoPicker && (
+          <>
+            <ModalHeader
+              title={isEditing ? 'Edit to-do' : 'Add to-do'}
+              titleId="add-todo-title"
+              onCancel={onBack ?? onClose}
+              cancelLabel={onBack ? 'Back' : 'Cancel'}
+              onAction={handleSave}
+              actionLabel="Save"
+              actionDisabled={!title.trim()}
+            />
+
+            {/* Scrollable body */}
+            <div
+              style={{
+                flex: 1,
+                overflowY: 'auto',
+                padding: `1rem 1.25rem ${isEditing ? 80 : 16}px`,
+                background: 'var(--bg)',
+                display: 'flex',
+                flexDirection: 'column',
+              }}
             >
-              <Trash size={18} />
-            </button>
-          )}
-
-          {showWhoPicker && (
-            <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-              <PersonFamilyPicker
-                data={data}
-                initialFamilyIds={familyIds}
-                initialPersonIds={personIds}
-                allowedPersonIds={currentPersona.role !== 'admin' ? currentPersona.assignedPeopleIds : undefined}
-                onConfirm={(fIds, pIds) => {
-                  setFamilyIds(fIds);
-                  setPersonIds(pIds);
-                  setShowWhoPicker(false);
-                }}
-                onBack={() => setShowWhoPicker(false)}
-              />
-            </div>
-          )}
-
-          {!showWhoPicker && (
-            <>
-              <ModalHeader
-                title={isEditing ? 'Edit to-do' : 'Add to-do'}
-                titleId="add-todo-title"
-                onCancel={onBack ?? onClose}
-                cancelLabel={onBack ? 'Back' : 'Cancel'}
-                onAction={handleSave}
-                actionLabel="Save"
-                actionDisabled={!title.trim()}
-              />
-
-              {/* Scrollable body */}
+              {/* Field rows */}
               <div
                 style={{
-                  flex: 1,
-                  overflowY: 'auto',
-                  padding: `1rem 1.25rem ${isEditing ? 80 : 16}px`,
-                  background: 'var(--bg)',
-                  display: 'flex',
-                  flexDirection: 'column',
+                  background: 'var(--surface)',
+                  borderRadius: 'var(--radius)',
+                  border: '1px solid var(--border-light)',
+                  overflow: 'hidden',
+                  padding: '0 1rem',
+                  flexShrink: 0,
                 }}
               >
-                {/* Field rows */}
                 <div
-                  style={{
-                    background: 'var(--surface)',
-                    borderRadius: 'var(--radius)',
-                    border: '1px solid var(--border-light)',
-                    overflow: 'hidden',
-                    padding: '0 1rem',
-                    flexShrink: 0,
-                  }}
+                  className="no-last-border"
+                  style={{ display: 'flex', flexDirection: 'column' }}
                 >
-                  <div
-                    className="no-last-border"
-                    style={{ display: 'flex', flexDirection: 'column' }}
-                  >
-                    {/* For */}
-                    <FieldRow
-                      icon={<User size={16} />}
-                      label="For"
-                      value={whoLabel ?? 'Select…'}
-                      valueColor={!whoLabel ? 'var(--text-muted)' : undefined}
-                      onClick={() => setShowWhoPicker(true)}
-                      trailingIcon={<PlusCircle size={22} color="var(--sage)" weight="fill" />}
-                    />
+                  {/* For */}
+                  <FieldRow
+                    icon={<User size={16} />}
+                    label="For"
+                    value={whoLabel ?? 'Select…'}
+                    valueColor={!whoLabel ? 'var(--text-muted)' : undefined}
+                    onClick={() => setShowWhoPicker(true)}
+                    trailingIcon={<PlusCircle size={22} color="var(--sage)" weight="fill" />}
+                  />
 
-                    {/* Date */}
-                    <FieldRow
-                      icon={<CalendarBlank size={16} />}
-                      label="Date"
-                      value={
-                        includeEndDate && endDateStr
-                          ? `${fmtDateTime(dateStr, timeStr, includeTime)} → ${fmtDateTime(endDateStr, '00:00', false)}`
-                          : fmtDateTime(dateStr, timeStr, includeTime)
-                      }
-                      onClick={() => setShowDatePicker(true)}
-                    />
+                  {/* Date */}
+                  <FieldRow
+                    icon={<CalendarBlank size={16} />}
+                    label="Date"
+                    value={
+                      includeEndDate && endDateStr
+                        ? `${fmtDateTime(dateStr, timeStr, includeTime)} → ${fmtDateTime(endDateStr, '00:00', false)}`
+                        : fmtDateTime(dateStr, timeStr, includeTime)
+                    }
+                    onClick={() => setShowDatePicker(true)}
+                  />
 
-                    {/* Reminder */}
-                    <FieldRow
-                      btnRef={reminderBtnRef}
-                      icon={<Bell size={16} />}
-                      label="Reminder"
-                      value={reminderLabel}
-                      valueColor={reminder === 'none' ? 'var(--text-muted)' : undefined}
-                      onClick={() => setShowReminderPicker(true)}
-                    />
+                  {/* Reminder */}
+                  <FieldRow
+                    btnRef={reminderBtnRef}
+                    icon={<Bell size={16} />}
+                    label="Reminder"
+                    value={reminderLabel}
+                    valueColor={reminder === 'none' ? 'var(--text-muted)' : undefined}
+                    onClick={() => setShowReminderPicker(true)}
+                  />
 
-                    {/* Add to Calendar / Sync status */}
-                    <FieldRow
-                      icon={
-                        calendarSyncEnabled
-                          ? <CheckCircle size={16} weight="fill" color="var(--sage)" />
-                          : <CalendarPlus size={16} />
-                      }
-                      label="Calendar"
-                      value={calendarSyncEnabled ? 'Synced to your calendar' : 'Add to calendar'}
-                      valueColor={calendarSyncEnabled ? 'var(--sage)' : 'var(--text-muted)'}
-                      onClick={() => setShowCalendarSheet(true)}
-                    />
+                  {/* Add to Calendar / Sync status */}
+                  <FieldRow
+                    icon={
+                      calendarSyncEnabled ? (
+                        <CheckCircle size={16} weight="fill" color="var(--sage)" />
+                      ) : (
+                        <CalendarPlus size={16} />
+                      )
+                    }
+                    label="Calendar"
+                    value={calendarSyncEnabled ? 'Synced to your calendar' : 'Add to calendar'}
+                    valueColor={calendarSyncEnabled ? 'var(--sage)' : 'var(--text-muted)'}
+                    onClick={() => setShowCalendarSheet(true)}
+                  />
 
-                    {/* Repeat */}
-                    <FieldRow
-                      btnRef={repeatBtnRef}
-                      icon={<ArrowsClockwise size={16} />}
-                      label="Repeat"
-                      value={repeatLabel}
-                      valueColor={repeat === 'none' ? 'var(--text-muted)' : undefined}
-                      onClick={() => setShowRepeatPicker(true)}
-                    />
+                  {/* Repeat */}
+                  <FieldRow
+                    btnRef={repeatBtnRef}
+                    icon={<ArrowsClockwise size={16} />}
+                    label="Repeat"
+                    value={repeatLabel}
+                    valueColor={repeat === 'none' ? 'var(--text-muted)' : undefined}
+                    onClick={() => setShowRepeatPicker(true)}
+                  />
 
-                    {/* Created by — edit mode only */}
-                    {isEditing &&
-                      todo &&
-                      (() => {
-                        const creator = data.personas.find((p) => p.id === todo.createdBy);
-                        return (
-                          <div
+                  {/* Created by — edit mode only */}
+                  {isEditing &&
+                    todo &&
+                    (() => {
+                      const creator = data.personas.find((p) => p.id === todo.createdBy);
+                      return (
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 10,
+                            paddingTop: 12,
+                            paddingBottom: 12,
+                          }}
+                        >
+                          <span
                             style={{
+                              width: 24,
                               display: 'flex',
-                              alignItems: 'center',
-                              gap: 10,
-                              paddingTop: 12,
-                              paddingBottom: 12,
+                              justifyContent: 'center',
+                              flexShrink: 0,
+                              color: 'var(--text-muted)',
                             }}
                           >
-                            <span
-                              style={{
-                                width: 24,
-                                display: 'flex',
-                                justifyContent: 'center',
-                                flexShrink: 0,
-                                color: 'var(--text-muted)',
-                              }}
-                            >
-                              <UserPlus size={16} />
-                            </span>
-                            <span
-                              style={{
-                                fontSize: 12,
-                                color: 'var(--text-muted)',
-                                width: 60,
-                                flexShrink: 0,
-                              }}
-                            >
-                              Created by
-                            </span>
-                            <span style={{ flex: 1, fontSize: 14, color: 'var(--text-secondary)' }}>
-                              {creator?.name ?? 'Unknown'}
-                            </span>
-                          </div>
-                        );
-                      })()}
-                  </div>
+                            <UserPlus size={16} />
+                          </span>
+                          <span
+                            style={{
+                              fontSize: 12,
+                              color: 'var(--text-muted)',
+                              width: 60,
+                              flexShrink: 0,
+                            }}
+                          >
+                            Created by
+                          </span>
+                          <span style={{ flex: 1, fontSize: 14, color: 'var(--text-secondary)' }}>
+                            {creator?.name ?? 'Unknown'}
+                          </span>
+                        </div>
+                      );
+                    })()}
                 </div>
-
-                {/* Title */}
-                <textarea
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="To-dos are upcoming things to act on — a call to make, a visit to plan, or anything you want to follow up on."
-                  autoFocus
-                  style={{
-                    flex: 1,
-                    width: '100%',
-                    marginTop: 16,
-                    padding: 12,
-                    minHeight: 220,
-                    background: 'var(--surface)',
-                    border: '1px solid var(--border-light)',
-                    borderRadius: 'var(--radius-sm)',
-                    fontSize: 15,
-                    color: 'var(--text-primary)',
-                    resize: 'vertical',
-                    outline: 'none',
-                    lineHeight: 1.5,
-                    boxSizing: 'border-box',
-                  }}
-                />
               </div>
-            </>
-          )}
+
+              {/* Title */}
+              <textarea
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="To-dos are upcoming things to act on — a call to make, a visit to plan, or anything you want to follow up on."
+                autoFocus
+                style={{
+                  flex: 1,
+                  width: '100%',
+                  marginTop: 16,
+                  padding: 12,
+                  minHeight: 220,
+                  background: 'var(--surface)',
+                  border: '1px solid var(--border-light)',
+                  borderRadius: 'var(--radius-sm)',
+                  fontSize: 15,
+                  color: 'var(--text-primary)',
+                  resize: 'vertical',
+                  outline: 'none',
+                  lineHeight: 1.5,
+                  boxSizing: 'border-box',
+                }}
+              />
+            </div>
+          </>
+        )}
       </BottomSheet>
 
       {showDatePicker && (
@@ -404,23 +408,24 @@ export default function AddTodoModal({
           onClose={() => setShowReminderPicker(false)}
         />
       )}
-      {showCalendarSheet && (() => {
-        const start = new Date(`${dateStr}T${includeTime ? timeStr : '00:00'}:00`);
-        const end = addHours(start, 1);
-        return (
-          <CalendarSyncSheet
-            onClose={() => setShowCalendarSheet(false)}
-            singleEvent={{
-              title: title.trim() || 'To-do',
-              start,
-              end,
-              allDay: !includeTime,
-              repeat: repeat !== 'none' ? repeat : undefined,
-              reminder: reminder !== 'none' ? reminder : undefined,
-            }}
-          />
-        );
-      })()}
+      {showCalendarSheet &&
+        (() => {
+          const start = new Date(`${dateStr}T${includeTime ? timeStr : '00:00'}:00`);
+          const end = addHours(start, 1);
+          return (
+            <CalendarSyncSheet
+              onClose={() => setShowCalendarSheet(false)}
+              singleEvent={{
+                title: title.trim() || 'To-do',
+                start,
+                end,
+                allDay: !includeTime,
+                repeat: repeat !== 'none' ? repeat : undefined,
+                reminder: reminder !== 'none' ? reminder : undefined,
+              }}
+            />
+          );
+        })()}
     </>
   );
 }

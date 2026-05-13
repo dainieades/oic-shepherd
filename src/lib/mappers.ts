@@ -1,5 +1,16 @@
 import React from 'react';
-import { type AppData, type Persona, type Person, type Family, type Note, type Todo, type Notice, type AuditLog, type VisitorSubmission, type Interest } from './types';
+import {
+  type AppData,
+  type Persona,
+  type Person,
+  type Family,
+  type Note,
+  type Todo,
+  type Notice,
+  type AuditLog,
+  type VisitorSubmission,
+  type Interest,
+} from './types';
 import {
   PersonRowSchema,
   FamilyRowSchema,
@@ -77,6 +88,7 @@ export function mapPerson(
     createdBy: r.created_by ?? undefined,
     lastEditedAt: r.last_edited_at ?? undefined,
     lastEditedByName: r.last_edited_by_name ?? undefined,
+    isTest: r.is_test ?? false,
   };
 }
 
@@ -93,6 +105,7 @@ export function mapFamily(row: Record<string, unknown>, memberIds: string[]): Fa
     memberIds,
     createdAt: r.created_at ?? undefined,
     createdBy: r.created_by ?? undefined,
+    isTest: r.is_test ?? false,
   };
 }
 
@@ -108,15 +121,16 @@ export function mapPersona(row: Record<string, unknown>, assignedPeopleIds: stri
     themePreference: r.theme_preference ?? undefined,
     mapProvider: r.map_provider ?? undefined,
     notificationPrefs: {
-      personAdded:      r.notify_person_added      ?? true,
-      noticeAdded:      r.notify_notice_added      ?? true,
+      personAdded: r.notify_person_added ?? true,
+      noticeAdded: r.notify_notice_added ?? true,
       shepherdAssigned: r.notify_shepherd_assigned ?? true,
-      personUpdated:    r.notify_person_updated    ?? true,
-      todoCreated:      r.notify_todo_created      ?? true,
+      personUpdated: r.notify_person_updated ?? true,
+      todoCreated: r.notify_todo_created ?? true,
     },
-    calendarSyncEnabled:  r.calendar_sync_enabled ?? false,
-    calendarFeedToken:    r.calendar_feed_token ?? null,
+    calendarSyncEnabled: r.calendar_sync_enabled ?? false,
+    calendarFeedToken: r.calendar_feed_token ?? null,
     calendarConnectedApp: r.calendar_connected_app ?? null,
+    isTest: r.is_test ?? false,
   };
 }
 

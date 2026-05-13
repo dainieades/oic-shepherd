@@ -20,18 +20,18 @@ Breaking changes from prior versions. Read the relevant guide in `node_modules/n
 
 ## Pages
 
-| Route | File |
-|-------|------|
-| Dashboard | `src/app/page.tsx` (55KB — targeted reads only) |
-| Person detail | `src/app/person/[id]/page.tsx` |
-| Family detail | `src/app/family/[id]/page.tsx` |
-| Group detail | `src/app/groups/[id]/page.tsx` |
-| Add person | `src/app/add/page.tsx` |
-| Profile | `src/app/profile/page.tsx` |
-| Settings — profile | `src/app/settings/profile/page.tsx` |
-| Settings — access | `src/app/settings/access/page.tsx` |
-| Todos | `src/app/todos/page.tsx` |
-| Logs | `src/app/logs/page.tsx` |
+| Route              | File                                            |
+| ------------------ | ----------------------------------------------- |
+| Dashboard          | `src/app/page.tsx` (55KB — targeted reads only) |
+| Person detail      | `src/app/person/[id]/page.tsx`                  |
+| Family detail      | `src/app/family/[id]/page.tsx`                  |
+| Group detail       | `src/app/groups/[id]/page.tsx`                  |
+| Add person         | `src/app/add/page.tsx`                          |
+| Profile            | `src/app/profile/page.tsx`                      |
+| Settings — profile | `src/app/settings/profile/page.tsx`             |
+| Settings — access  | `src/app/settings/access/page.tsx`              |
+| Todos              | `src/app/todos/page.tsx`                        |
+| Logs               | `src/app/logs/page.tsx`                         |
 
 Large modals/drawers: `EditPersonDrawer`, `AddPersonModal`, `EditFamilyDrawer`, `AddFamilyModal`, `AddTodoModal`, `AddLogModal`, `AddNoticeModal`, `DatePickerSheet`, `GroupPreviewModal`.
 

@@ -200,7 +200,10 @@ export default function SignInPage() {
           {status.type === 'error' && <ErrorBanner message={status.message} />}
 
           <form
-            onSubmit={(e) => { e.preventDefault(); handleCreatePassword(); }}
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleCreatePassword();
+            }}
             style={{ display: 'contents' }}
           >
             {/* Hidden email so password managers link the new password to this account */}
@@ -279,7 +282,10 @@ export default function SignInPage() {
           {status.type === 'error' && <ErrorBanner message={status.message} />}
 
           <form
-            onSubmit={(e) => { e.preventDefault(); handleSignIn(); }}
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSignIn();
+            }}
             style={{ display: 'contents' }}
           >
             {/* Hidden email so password managers know which account's password to fill */}
@@ -456,7 +462,13 @@ export default function SignInPage() {
         </div>
 
         {/* Email field */}
-        <form onSubmit={(e) => { e.preventDefault(); handleContinue(); }} style={{ display: 'contents' }}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleContinue();
+          }}
+          style={{ display: 'contents' }}
+        >
           <div style={{ marginBottom: 12 }}>
             <label style={labelStyle}>Email address</label>
             <input

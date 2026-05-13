@@ -6,15 +6,9 @@ import { CaretLeft, Check } from '@phosphor-icons/react';
 import { createClient } from '@/utils/supabase/client';
 import type { User } from '@supabase/supabase-js';
 
-type Status =
-  | { type: 'idle' }
-  | { type: 'loading' }
-  | { type: 'error'; message: string };
+type Status = { type: 'idle' } | { type: 'loading' } | { type: 'error'; message: string };
 
-type Step =
-  | { type: 'form' }
-  | { type: 'reset-sent'; email: string }
-  | { type: 'success' };
+type Step = { type: 'form' } | { type: 'reset-sent'; email: string } | { type: 'success' };
 
 export default function ChangePasswordPage() {
   const router = useRouter();
@@ -115,7 +109,7 @@ export default function ChangePasswordPage() {
 
   return (
     <div style={{ paddingBottom: 48 }}>
-      <div style={navBarStyle}>
+      <div className="settings-subpage-navbar" style={navBarStyle}>
         <button
           onClick={() => router.push('/settings')}
           disabled={!canGoBack}
@@ -144,10 +138,7 @@ export default function ChangePasswordPage() {
           <p style={{ fontSize: 14, color: 'var(--text-muted)', margin: '0 0 1.5rem' }}>
             Your new password is active.
           </p>
-          <button
-            onClick={() => router.push('/settings')}
-            style={primaryButtonStyle}
-          >
+          <button onClick={() => router.push('/settings')} style={primaryButtonStyle}>
             Done
           </button>
         </div>
@@ -178,10 +169,7 @@ export default function ChangePasswordPage() {
             <br />
             Click the link in the email to set a new password.
           </p>
-          <button
-            onClick={() => router.push('/settings')}
-            style={primaryButtonStyle}
-          >
+          <button onClick={() => router.push('/settings')} style={primaryButtonStyle}>
             Back to settings
           </button>
         </div>
@@ -229,7 +217,9 @@ export default function ChangePasswordPage() {
               overflow: 'hidden',
             }}
           >
-            <div style={{ padding: '0.875rem 1rem', borderBottom: '1px solid var(--border-light)' }}>
+            <div
+              style={{ padding: '0.875rem 1rem', borderBottom: '1px solid var(--border-light)' }}
+            >
               <label style={labelStyle}>Current password</label>
               <input
                 type="password"
@@ -248,11 +238,11 @@ export default function ChangePasswordPage() {
                   borderColor: currentPasswordError ? 'var(--red)' : 'var(--border)',
                 }}
               />
-              {currentPasswordError && (
-                <p style={helperErrorStyle}>{currentPasswordError}</p>
-              )}
+              {currentPasswordError && <p style={helperErrorStyle}>{currentPasswordError}</p>}
             </div>
-            <div style={{ padding: '0.875rem 1rem', borderBottom: '1px solid var(--border-light)' }}>
+            <div
+              style={{ padding: '0.875rem 1rem', borderBottom: '1px solid var(--border-light)' }}
+            >
               <label style={labelStyle}>New password</label>
               <input
                 type="password"
@@ -289,11 +279,7 @@ export default function ChangePasswordPage() {
                       transition: 'color 0.15s',
                     }}
                   >
-                    <Check
-                      size={12}
-                      weight="bold"
-                      style={{ opacity: rule.met ? 1 : 0.3 }}
-                    />
+                    <Check size={12} weight="bold" style={{ opacity: rule.met ? 1 : 0.3 }} />
                     {rule.label}
                   </span>
                 ))}
@@ -314,9 +300,7 @@ export default function ChangePasswordPage() {
                   borderColor: confirmMismatch ? 'var(--red)' : 'var(--border)',
                 }}
               />
-              {confirmMismatch && (
-                <p style={helperErrorStyle}>Passwords don&apos;t match</p>
-              )}
+              {confirmMismatch && <p style={helperErrorStyle}>Passwords don&apos;t match</p>}
             </div>
           </div>
 

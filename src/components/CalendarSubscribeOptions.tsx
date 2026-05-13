@@ -40,21 +40,21 @@ export function CalendarSubscribeOptions({
         style={disclosureBtnStyle}
         aria-expanded={showAdvanced}
       >
-        {showAdvanced
-          ? <CaretDown size={14} weight="bold" color="var(--text-muted)" />
-          : <CaretRight size={14} weight="bold" color="var(--text-muted)" />}
+        {showAdvanced ? (
+          <CaretDown size={14} weight="bold" color="var(--text-muted)" />
+        ) : (
+          <CaretRight size={14} weight="bold" color="var(--text-muted)" />
+        )}
         <span>Use a different calendar app</span>
       </button>
 
       {showAdvanced && (
         <div style={{ marginTop: '0.5rem' }}>
           <p style={advancedHintStyle}>
-            Copy this URL and add it as a subscribed calendar inside your app (Outlook,
-            Fantastical, etc.).
+            Copy this URL and add it as a subscribed calendar inside your app (Outlook, Fantastical,
+            etc.).
           </p>
-          <div style={feedUrlBoxStyle}>
-            {feedUrl || 'Generating…'}
-          </div>
+          <div style={feedUrlBoxStyle}>{feedUrl || 'Generating…'}</div>
           <button onClick={onCopy} style={copyBtnStyle}>
             <Copy size={16} color="var(--text-muted)" />
             <span style={{ flex: 1, textAlign: 'left' }}>Copy feed URL</span>
@@ -92,7 +92,9 @@ function AppRow({
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.875rem' }}>
         <span style={{ flexShrink: 0 }}>{icon}</span>
-        <span style={{ flex: 1, fontSize: '0.9375rem', color: 'var(--text-primary)' }}>{label}</span>
+        <span style={{ flex: 1, fontSize: '0.9375rem', color: 'var(--text-primary)' }}>
+          {label}
+        </span>
         <CaretRight size={16} weight="bold" color="var(--text-muted)" />
       </div>
       <p style={hintStyle}>{hint}</p>

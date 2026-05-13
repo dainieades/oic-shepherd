@@ -24,7 +24,7 @@ function getFrom() {
 function getAdminClient() {
   return createSupabaseAdmin(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 }
 
@@ -56,11 +56,19 @@ type NotifyPayload =
       changes?: ProfileChange[];
     }
   | { type: 'invite.sent'; invitedEmail: string; invitedByName: string }
-  | { type: 'todo.created'; creatorEmail: string; title: string; dueDate: string; reminder: TodoReminder };
+  | {
+      type: 'todo.created';
+      creatorEmail: string;
+      title: string;
+      dueDate: string;
+      reminder: TodoReminder;
+    };
 
 async function resolveEmailsForUserIds(userIds: string[], exclude: string): Promise<string[]> {
   const admin = getAdminClient();
-  const { data: { users } } = await admin.auth.admin.listUsers({ perPage: 1000 });
+  const {
+    data: { users },
+  } = await admin.auth.admin.listUsers({ perPage: 1000 });
   const userIdSet = new Set(userIds);
   return users
     .filter((u) => userIdSet.has(u.id) && u.email && u.email !== exclude)
@@ -71,7 +79,7 @@ async function getEmailsByRole(
   supabase: Awaited<ReturnType<typeof createClient>>,
   roles: string[],
   exclude: string,
-  notifyColumn: string,
+  notifyColumn: string
 ): Promise<string[]> {
   const { data } = await supabase
     .from('personas')
@@ -87,7 +95,7 @@ async function getEmailsByPersonaIds(
   supabase: Awaited<ReturnType<typeof createClient>>,
   ids: string[],
   exclude: string,
-  notifyColumn: string,
+  notifyColumn: string
 ): Promise<string[]> {
   if (ids.length === 0) return [];
   const { data } = await supabase
@@ -104,11 +112,7 @@ async function send(emails: string[], subject: string, html: string): Promise<vo
   if (emails.length === 0) return;
   const resend = await getResend();
   const from = getFrom();
-  await Promise.all(
-    emails.map((to) =>
-      resend.emails.send({ from, to, subject, html })
-    )
-  );
+  await Promise.all(emails.map((to) => resend.emails.send({ from, to, subject, html })));
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
@@ -123,7 +127,12 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   try {
     if (body.type === 'person.added') {
-      const emails = await getEmailsByRole(supabase, ['admin'], body.actorEmail, 'notify_person_added');
+      const emails = await getEmailsByRole(
+        supabase,
+        ['admin'],
+        body.actorEmail,
+        'notify_person_added'
+      );
       const { subject, html } = personAddedEmail(body.personName, body.addedByName);
       await send(emails, subject, html);
     }
@@ -140,7 +149,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         body.content,
         body.urgency,
         body.privacy,
-        body.addedByName,
+        body.addedByName
       );
       await send(emails, subject, html);
     }
@@ -150,7 +159,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         supabase,
         body.shepherdPersonaIds,
         body.actorEmail,
-        'notify_shepherd_assigned',
+        'notify_shepherd_assigned'
       );
       const { subject, html } = shepherdAssignedEmail(body.personName, body.assignedByName);
       await send(emails, subject, html);
@@ -158,13 +167,25 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
     if (body.type === 'person.updated') {
       const [shepherdEmails, personEmails] = await Promise.all([
-        getEmailsByPersonaIds(supabase, body.shepherdPersonaIds, body.actorEmail, 'notify_person_updated'),
+        getEmailsByPersonaIds(
+          supabase,
+          body.shepherdPersonaIds,
+          body.actorEmail,
+          'notify_person_updated'
+        ),
         body.personUserId
           ? resolveEmailsForUserIds([body.personUserId], body.actorEmail)
           : Promise.resolve([] as string[]),
       ]);
-      const { subject, html } = personUpdatedEmail(body.personName, body.updatedByName, body.changes);
-      const { subject: selfSubject, html: selfHtml } = ownProfileUpdatedEmail(body.updatedByName, body.changes);
+      const { subject, html } = personUpdatedEmail(
+        body.personName,
+        body.updatedByName,
+        body.changes
+      );
+      const { subject: selfSubject, html: selfHtml } = ownProfileUpdatedEmail(
+        body.updatedByName,
+        body.changes
+      );
       await Promise.all([
         send(shepherdEmails, subject, html),
         send(personEmails, selfSubject, selfHtml),

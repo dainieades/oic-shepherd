@@ -16,12 +16,17 @@ export default function PersonaSwitcherBar() {
   const router = useRouter();
   const isSignIn = pathname === '/signin';
 
-  // Only show in development mode
-  if (process.env.NODE_ENV !== 'development') return null;
+  const isDev = process.env.NODE_ENV === 'development';
+  const viewerIsTest = currentPersona.isTest === true;
+  // Visible in dev (any persona), and in prod only when signed in as a test persona.
+  if (!isDev && !viewerIsTest) return null;
   if (pathname === '/signup') return null;
 
+  // In prod test-persona mode, restrict the switcher to other test personas only.
+  const switcherPersonas = isDev ? data.personas : data.personas.filter((p) => p.isTest);
+
   return (
-    <div className="dev-rail fixed top-0 right-0 left-0 z-50">
+    <div className="dev-rail fixed top-0 right-0 left-0 z-50 md:hidden">
       <div className="mx-auto flex h-9 max-w-[26.875rem] items-center gap-3 px-3">
         {/* DEV badge */}
         <span
@@ -36,7 +41,7 @@ export default function PersonaSwitcherBar() {
             flexShrink: 0,
           }}
         >
-          DEV
+          {isDev ? 'DEV' : 'TEST'}
         </span>
 
         {/* Divider */}
@@ -44,7 +49,7 @@ export default function PersonaSwitcherBar() {
 
         {/* Persona pills */}
         <div className="no-scrollbar flex flex-1 gap-1.5 overflow-x-auto">
-          {data.personas.map((persona) => {
+          {switcherPersonas.map((persona) => {
             const isActive = currentPersona.id === persona.id;
             return (
               <button

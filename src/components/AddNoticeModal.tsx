@@ -42,12 +42,48 @@ interface AddNoticeModalProps {
   notice?: Notice;
 }
 
-const CATEGORIES: { value: NoticeCategory; label: string; icon: React.ReactNode; activeColor: string; activeBg: string }[] = [
-  { value: 'physical-need', label: 'Physical Need', icon: <FirstAid size={15} />, activeColor: 'var(--blue)', activeBg: 'var(--blue-light)' },
-  { value: 'spiritual-need', label: 'Spiritual Need', icon: <HandsPraying size={15} />, activeColor: 'var(--sage)', activeBg: 'var(--sage-light)' },
-  { value: 'social-need', label: 'Social Need', icon: <UsersThree size={15} />, activeColor: 'var(--amber)', activeBg: 'var(--amber-light)' },
-  { value: 'psychological-need', label: 'Psychological Need', icon: <Brain size={15} />, activeColor: 'var(--teal)', activeBg: 'var(--teal-light)' },
-  { value: 'other', label: 'Other', icon: <DotsThree size={15} />, activeColor: 'var(--text-muted)', activeBg: 'var(--border-light)' },
+const CATEGORIES: {
+  value: NoticeCategory;
+  label: string;
+  icon: React.ReactNode;
+  activeColor: string;
+  activeBg: string;
+}[] = [
+  {
+    value: 'physical-need',
+    label: 'Physical Need',
+    icon: <FirstAid size={15} />,
+    activeColor: 'var(--blue)',
+    activeBg: 'var(--blue-light)',
+  },
+  {
+    value: 'spiritual-need',
+    label: 'Spiritual Need',
+    icon: <HandsPraying size={15} />,
+    activeColor: 'var(--sage)',
+    activeBg: 'var(--sage-light)',
+  },
+  {
+    value: 'social-need',
+    label: 'Social Need',
+    icon: <UsersThree size={15} />,
+    activeColor: 'var(--amber)',
+    activeBg: 'var(--amber-light)',
+  },
+  {
+    value: 'psychological-need',
+    label: 'Psychological Need',
+    icon: <Brain size={15} />,
+    activeColor: 'var(--teal)',
+    activeBg: 'var(--teal-light)',
+  },
+  {
+    value: 'other',
+    label: 'Other',
+    icon: <DotsThree size={15} />,
+    activeColor: 'var(--text-muted)',
+    activeBg: 'var(--border-light)',
+  },
 ];
 
 const PRIVACIES: { value: NoticePrivacy; label: string; icon: React.ReactNode }[] = [
@@ -82,10 +118,28 @@ const URGENCIES: {
   },
 ];
 
-export const URGENCY_STYLE: Record<NoticeUrgency, { bg: string; color: string; border: string; pillBg: string }> = {
-  urgent: { bg: 'var(--surface)', color: 'var(--red)', border: 'var(--border-light)', pillBg: 'var(--red-light)' },
-  moderate: { bg: 'var(--surface)', color: 'var(--amber)', border: 'var(--border-light)', pillBg: 'var(--amber-light)' },
-  ongoing: { bg: 'var(--surface)', color: 'var(--blue)', border: 'var(--border-light)', pillBg: 'var(--blue-light)' },
+export const URGENCY_STYLE: Record<
+  NoticeUrgency,
+  { bg: string; color: string; border: string; pillBg: string }
+> = {
+  urgent: {
+    bg: 'var(--surface)',
+    color: 'var(--red)',
+    border: 'var(--border-light)',
+    pillBg: 'var(--red-light)',
+  },
+  moderate: {
+    bg: 'var(--surface)',
+    color: 'var(--amber)',
+    border: 'var(--border-light)',
+    pillBg: 'var(--amber-light)',
+  },
+  ongoing: {
+    bg: 'var(--surface)',
+    color: 'var(--blue)',
+    border: 'var(--border-light)',
+    pillBg: 'var(--blue-light)',
+  },
 };
 
 export default function AddNoticeModal({
@@ -100,7 +154,9 @@ export default function AddNoticeModal({
 
   const [categories, setCategories] = React.useState<NoticeCategory[]>(notice?.categories ?? []);
   const [urgency, setUrgency] = React.useState<NoticeUrgency>(notice?.urgency ?? 'moderate');
-  const [privacy, setPrivacy] = React.useState<NoticePrivacy>(notice?.privacy ?? 'pastor-and-shepherds');
+  const [privacy, setPrivacy] = React.useState<NoticePrivacy>(
+    notice?.privacy ?? 'pastor-and-shepherds'
+  );
   const [content, setContent] = React.useState(notice?.content ?? '');
   const [familyIds, setFamilyIds] = React.useState<string[]>(
     notice?.familyId ? [notice.familyId] : prefillFamilyId ? [prefillFamilyId] : []
@@ -145,9 +201,7 @@ export default function AddNoticeModal({
   const canSave = content.trim().length > 0 && (familyIds.length > 0 || personIds.length > 0);
 
   const toggleCategory = (cat: NoticeCategory) => {
-    setCategories((prev) =>
-      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
-    );
+    setCategories((prev) => (prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]));
   };
 
   const handleSave = () => {
@@ -179,248 +233,255 @@ export default function AddNoticeModal({
 
   return (
     <>
-      <BottomSheet onClose={onClose}>
-          {showWhoPicker && (
-            <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-              <PersonFamilyPicker
-                data={data}
-                initialFamilyIds={familyIds}
-                initialPersonIds={personIds}
-                onConfirm={(fIds, pIds) => {
-                  setFamilyIds(fIds);
-                  setPersonIds(pIds);
-                  setShowWhoPicker(false);
-                }}
-                onBack={() => setShowWhoPicker(false)}
-              />
-            </div>
-          )}
-
-          {/* Floating delete button */}
-          {isEditing && notice && !showWhoPicker && (
-            <button
-              onClick={() => setShowDeleteConfirm(true)}
-              style={{
-                position: 'absolute',
-                bottom: 28,
-                left: 24,
-                width: 44,
-                height: 44,
-                borderRadius: '50%',
-                background: 'var(--red-light)',
-                border: '0.09375rem solid var(--red-border)',
-                color: 'var(--red)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                boxShadow: 'var(--shadow-card)',
+      <BottomSheet onClose={onClose} variant="dialog">
+        {showWhoPicker && (
+          <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            <PersonFamilyPicker
+              data={data}
+              initialFamilyIds={familyIds}
+              initialPersonIds={personIds}
+              onConfirm={(fIds, pIds) => {
+                setFamilyIds(fIds);
+                setPersonIds(pIds);
+                setShowWhoPicker(false);
               }}
-              title="Delete notice"
+              onBack={() => setShowWhoPicker(false)}
+            />
+          </div>
+        )}
+
+        {/* Floating delete button */}
+        {isEditing && notice && !showWhoPicker && (
+          <button
+            onClick={() => setShowDeleteConfirm(true)}
+            style={{
+              position: 'absolute',
+              bottom: 28,
+              left: 24,
+              width: 44,
+              height: 44,
+              borderRadius: '50%',
+              background: 'var(--red-light)',
+              border: '0.09375rem solid var(--red-border)',
+              color: 'var(--red)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              boxShadow: 'var(--shadow-card)',
+            }}
+            title="Delete notice"
+          >
+            <Trash size={18} />
+          </button>
+        )}
+
+        {!showWhoPicker && (
+          <>
+            <ModalHeader
+              title={isEditing ? 'Edit notice' : 'Add notice'}
+              onCancel={onClose}
+              onAction={handleSave}
+              actionLabel="Save"
+              actionDisabled={!canSave}
+            />
+
+            {/* Scrollable body */}
+            <div
+              style={{
+                flex: 1,
+                overflowY: 'auto',
+                padding: `1rem 1.25rem ${isEditing ? 80 : 16}px`,
+                background: 'var(--bg)',
+                display: 'flex',
+                flexDirection: 'column',
+              }}
             >
-              <Trash size={18} />
-            </button>
-          )}
-
-          {!showWhoPicker && (
-            <>
-              <ModalHeader
-                title={isEditing ? 'Edit notice' : 'Add notice'}
-                onCancel={onClose}
-                onAction={handleSave}
-                actionLabel="Save"
-                actionDisabled={!canSave}
-              />
-
-              {/* Scrollable body */}
+              {/* Fields card */}
               <div
                 style={{
-                  flex: 1,
-                  overflowY: 'auto',
-                  padding: `1rem 1.25rem ${isEditing ? 80 : 16}px`,
-                  background: 'var(--bg)',
-                  display: 'flex',
-                  flexDirection: 'column',
+                  background: 'var(--surface)',
+                  borderRadius: 'var(--radius)',
+                  border: '1px solid var(--border-light)',
+                  overflow: 'hidden',
+                  padding: '0 1rem',
+                  marginBottom: 16,
+                  flexShrink: 0,
                 }}
               >
-                {/* Fields card */}
                 <div
-                  style={{
-                    background: 'var(--surface)',
-                    borderRadius: 'var(--radius)',
-                    border: '1px solid var(--border-light)',
-                    overflow: 'hidden',
-                    padding: '0 1rem',
-                    marginBottom: 16,
-                    flexShrink: 0,
-                  }}
+                  className="no-last-border"
+                  style={{ display: 'flex', flexDirection: 'column', gap: 0 }}
                 >
-                  <div
-                    className="no-last-border"
-                    style={{ display: 'flex', flexDirection: 'column', gap: 0 }}
+                  {/* For whom — top row */}
+                  <FieldRow
+                    icon={<User size={16} />}
+                    label="For"
+                    value={whoLabel ?? 'Select…'}
+                    valueColor={!whoLabel ? 'var(--text-muted)' : undefined}
+                    onClick={() => setShowWhoPicker(true)}
+                    trailingIcon={<PlusCircle size={22} color="var(--sage)" weight="fill" />}
+                  />
+
+                  {/* Category */}
+                  <FieldRow
+                    btnRef={categoryBtnRef}
+                    icon={
+                      categories.length === 1 ? (
+                        CATEGORIES.find((c) => c.value === categories[0])?.icon
+                      ) : (
+                        <DotsThree size={16} />
+                      )
+                    }
+                    label="Category"
+                    value={
+                      categories.length === 0
+                        ? 'Select…'
+                        : categories.length === 1
+                          ? (CATEGORIES.find((c) => c.value === categories[0])?.label ?? '')
+                          : `${categories.length} selected`
+                    }
+                    valueColor={categories.length === 0 ? 'var(--text-muted)' : undefined}
+                    onClick={() => setShowCategoryPicker(true)}
+                  />
+
+                  {/* Urgency */}
+                  <button
+                    ref={urgencyBtnRef}
+                    className="field-row-hover"
+                    onClick={() => setShowUrgencyPicker(true)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 10,
+                      paddingTop: 12,
+                      paddingBottom: 12,
+                      background: 'none',
+                      border: 'none',
+                      borderBottom: '1px solid var(--border-light)',
+                      cursor: 'pointer',
+                      textAlign: 'left' as const,
+                    }}
                   >
-                    {/* For whom — top row */}
-                    <FieldRow
-                      icon={<User size={16} />}
-                      label="For"
-                      value={whoLabel ?? 'Select…'}
-                      valueColor={!whoLabel ? 'var(--text-muted)' : undefined}
-                      onClick={() => setShowWhoPicker(true)}
-                      trailingIcon={<PlusCircle size={22} color="var(--sage)" weight="fill" />}
-                    />
-
-                    {/* Category */}
-                    <FieldRow
-                      btnRef={categoryBtnRef}
-                      icon={categories.length === 1 ? CATEGORIES.find((c) => c.value === categories[0])?.icon : <DotsThree size={16} />}
-                      label="Category"
-                      value={
-                        categories.length === 0
-                          ? 'Select…'
-                          : categories.length === 1
-                            ? (CATEGORIES.find((c) => c.value === categories[0])?.label ?? '')
-                            : `${categories.length} selected`
-                      }
-                      valueColor={categories.length === 0 ? 'var(--text-muted)' : undefined}
-                      onClick={() => setShowCategoryPicker(true)}
-                    />
-
-                    {/* Urgency */}
-                    <button
-                      ref={urgencyBtnRef}
-                      className="field-row-hover"
-                      onClick={() => setShowUrgencyPicker(true)}
+                    <span
                       style={{
+                        width: 24,
                         display: 'flex',
-                        alignItems: 'center',
-                        gap: 10,
-                        paddingTop: 12,
-                        paddingBottom: 12,
-                        background: 'none',
-                        border: 'none',
-                        borderBottom: '1px solid var(--border-light)',
-                        cursor: 'pointer',
-                        textAlign: 'left' as const,
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                        color: 'var(--text-muted)',
                       }}
                     >
-                      <span
-                        style={{
-                          width: 24,
-                          display: 'flex',
-                          justifyContent: 'center',
-                          flexShrink: 0,
-                          color: 'var(--text-muted)',
-                        }}
-                      >
-                        <Warning size={16} />
-                      </span>
+                      <Warning size={16} />
+                    </span>
+                    <span
+                      style={{
+                        fontSize: 12,
+                        color: 'var(--text-muted)',
+                        width: 60,
+                        flexShrink: 0,
+                      }}
+                    >
+                      Urgency
+                    </span>
+                    <span style={{ flex: 1 }}>
                       <span
                         style={{
                           fontSize: 12,
-                          color: 'var(--text-muted)',
-                          width: 60,
-                          flexShrink: 0,
+                          fontWeight: 600,
+                          padding: '0.1875rem 0.5625rem',
+                          borderRadius: 'var(--radius-pill)',
+                          background: urgencyStyle.bg,
+                          color: urgencyStyle.color,
+                          border: `1px solid ${urgencyStyle.border}`,
                         }}
                       >
-                        Urgency
+                        {urgencyItem.label}
                       </span>
-                      <span style={{ flex: 1 }}>
-                        <span
+                    </span>
+                    <CaretRight size={14} color="var(--text-muted)" />
+                  </button>
+
+                  {/* Privacy */}
+                  <FieldRow
+                    btnRef={privacyBtnRef}
+                    icon={<Eye size={16} />}
+                    label="Visible to"
+                    value={privacyItem.label}
+                    onClick={() => setShowPrivacyPicker(true)}
+                  />
+
+                  {/* Created by — edit mode */}
+                  {isEditing &&
+                    notice &&
+                    (() => {
+                      const creator = data.personas.find((p) => p.id === notice.createdBy);
+                      return (
+                        <div
                           style={{
-                            fontSize: 12,
-                            fontWeight: 600,
-                            padding: '0.1875rem 0.5625rem',
-                            borderRadius: 'var(--radius-pill)',
-                            background: urgencyStyle.bg,
-                            color: urgencyStyle.color,
-                            border: `1px solid ${urgencyStyle.border}`,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 10,
+                            paddingTop: 12,
+                            paddingBottom: 12,
                           }}
                         >
-                          {urgencyItem.label}
-                        </span>
-                      </span>
-                      <CaretRight size={14} color="var(--text-muted)" />
-                    </button>
-
-                    {/* Privacy */}
-                    <FieldRow
-                      btnRef={privacyBtnRef}
-                      icon={<Eye size={16} />}
-                      label="Visible to"
-                      value={privacyItem.label}
-                      onClick={() => setShowPrivacyPicker(true)}
-                    />
-
-                    {/* Created by — edit mode */}
-                    {isEditing &&
-                      notice &&
-                      (() => {
-                        const creator = data.personas.find((p) => p.id === notice.createdBy);
-                        return (
-                          <div
+                          <span
                             style={{
+                              width: 24,
                               display: 'flex',
-                              alignItems: 'center',
-                              gap: 10,
-                              paddingTop: 12,
-                              paddingBottom: 12,
+                              justifyContent: 'center',
+                              flexShrink: 0,
+                              color: 'var(--text-muted)',
                             }}
                           >
-                            <span
-                              style={{
-                                width: 24,
-                                display: 'flex',
-                                justifyContent: 'center',
-                                flexShrink: 0,
-                                color: 'var(--text-muted)',
-                              }}
-                            >
-                              <UserPlus size={16} />
-                            </span>
-                            <span
-                              style={{
-                                fontSize: 12,
-                                color: 'var(--text-muted)',
-                                width: 60,
-                                flexShrink: 0,
-                              }}
-                            >
-                              Added by
-                            </span>
-                            <span style={{ flex: 1, fontSize: 14, color: 'var(--text-secondary)' }}>
-                              {creator?.name ?? 'Unknown'} · {format(parseISO(notice.createdAt), 'MMM d, yyyy')}
-                            </span>
-                          </div>
-                        );
-                      })()}
-                  </div>
+                            <UserPlus size={16} />
+                          </span>
+                          <span
+                            style={{
+                              fontSize: 12,
+                              color: 'var(--text-muted)',
+                              width: 60,
+                              flexShrink: 0,
+                            }}
+                          >
+                            Added by
+                          </span>
+                          <span style={{ flex: 1, fontSize: 14, color: 'var(--text-secondary)' }}>
+                            {creator?.name ?? 'Unknown'} ·{' '}
+                            {format(parseISO(notice.createdAt), 'MMM d, yyyy')}
+                          </span>
+                        </div>
+                      );
+                    })()}
                 </div>
-
-                {/* Content textarea */}
-                <textarea
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  placeholder="Notices are things worth flagging for your shepherds or pastor — a health condition, a difficult season, or anything that calls for collective awareness."
-                  autoFocus={!isEditing}
-                  style={{
-                    flex: 1,
-                    width: '100%',
-                    padding: 12,
-                    minHeight: 200,
-                    background: 'var(--surface)',
-                    border: '1px solid var(--border-light)',
-                    borderRadius: 'var(--radius-sm)',
-                    fontSize: 14,
-                    color: 'var(--text-primary)',
-                    resize: 'vertical',
-                    outline: 'none',
-                    lineHeight: 1.5,
-                    boxSizing: 'border-box',
-                  }}
-                />
               </div>
-            </>
-          )}
+
+              {/* Content textarea */}
+              <textarea
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                placeholder="Notices are things worth flagging for your shepherds or pastor — a health condition, a difficult season, or anything that calls for collective awareness."
+                autoFocus={!isEditing}
+                style={{
+                  flex: 1,
+                  width: '100%',
+                  padding: 12,
+                  minHeight: 200,
+                  background: 'var(--surface)',
+                  border: '1px solid var(--border-light)',
+                  borderRadius: 'var(--radius-sm)',
+                  fontSize: 14,
+                  color: 'var(--text-primary)',
+                  resize: 'vertical',
+                  outline: 'none',
+                  lineHeight: 1.5,
+                  boxSizing: 'border-box',
+                }}
+              />
+            </div>
+          </>
+        )}
       </BottomSheet>
 
       {showCategoryPicker && (

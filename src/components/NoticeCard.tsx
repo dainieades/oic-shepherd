@@ -41,13 +41,7 @@ export const PRIVACY_LABEL: Record<string, string> = {
   everyone: 'Everyone',
 };
 
-export function NoticeCard({
-  notice,
-  onClick,
-}: {
-  notice: Notice;
-  onClick: () => void;
-}) {
+export function NoticeCard({ notice, onClick }: { notice: Notice; onClick: () => void }) {
   const style = URGENCY_STYLE[notice.urgency as NoticeUrgency];
   return (
     <button
@@ -114,7 +108,16 @@ export function NoticeCard({
       >
         {notice.content}
       </p>
-      <p style={{ fontSize: 11, color: 'var(--text-muted)', margin: 0, display: 'flex', alignItems: 'center', gap: 4 }}>
+      <p
+        style={{
+          fontSize: 11,
+          color: 'var(--text-muted)',
+          margin: 0,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 4,
+        }}
+      >
         <Eye size={11} />
         {PRIVACY_LABEL[notice.privacy] ?? notice.privacy}
       </p>

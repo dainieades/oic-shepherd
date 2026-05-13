@@ -36,7 +36,7 @@ export default function AccessGate() {
       <div
         style={{
           width: '100%',
-          maxWidth: 360,
+          maxWidth: '22.5rem',
           background: 'var(--surface)',
           borderRadius: 'var(--radius-xl)',
           border: '1px solid var(--border)',

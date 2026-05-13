@@ -55,9 +55,9 @@ test.describe('Persona switch → data scope changes', () => {
     await page.getByRole('button', { name: 'Shepherd 1' }).click();
 
     // A todo that exists only in shepherd-1's seed data
-    await expect(
-      page.getByText("Follow up with Daini about Jacob's job situation"),
-    ).toBeVisible({ timeout: 5_000 });
+    await expect(page.getByText("Follow up with Daini about Jacob's job situation")).toBeVisible({
+      timeout: 5_000,
+    });
   });
 
   test('switching back to Admin restores the original data scope', async ({ page }) => {
@@ -69,8 +69,8 @@ test.describe('Persona switch → data scope changes', () => {
     await page.getByRole('button', { name: 'Admin' }).click();
 
     // Admin-specific todo should be back
-    await expect(
-      page.getByText('Coffee with Tyler — pastoral follow-up'),
-    ).toBeVisible({ timeout: 5_000 });
+    await expect(page.getByText('Coffee with Tyler — pastoral follow-up')).toBeVisible({
+      timeout: 5_000,
+    });
   });
 });

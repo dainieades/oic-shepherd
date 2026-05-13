@@ -124,7 +124,13 @@ export default function PhotoAvatar({
           <img
             src={photo}
             alt={name}
-            style={{ width: 72, height: 72, borderRadius: '50%', objectFit: 'cover', display: 'block' }}
+            style={{
+              width: 72,
+              height: 72,
+              borderRadius: '50%',
+              objectFit: 'cover',
+              display: 'block',
+            }}
           />
         ) : (
           <div
@@ -180,7 +186,8 @@ export default function PhotoAvatar({
         />
       )}
 
-      {showPreview && photo &&
+      {showPreview &&
+        photo &&
         createPortal(
           <div
             style={{
@@ -217,14 +224,23 @@ export default function PhotoAvatar({
             </button>
 
             {uploading ? (
-              <SpinnerGap size={48} color="#fff" style={{ animation: 'spin 0.8s linear infinite' }} />
+              <SpinnerGap
+                size={48}
+                color="#fff"
+                style={{ animation: 'spin 0.8s linear infinite' }}
+              />
             ) : (
               <>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={photo}
                   alt={name}
-                  style={{ maxWidth: '90vw', maxHeight: '65vh', borderRadius: '0.75rem', objectFit: 'contain' }}
+                  style={{
+                    maxWidth: '90vw',
+                    maxHeight: '65vh',
+                    borderRadius: '0.75rem',
+                    objectFit: 'contain',
+                  }}
                   onClick={(e) => e.stopPropagation()}
                 />
                 <div
@@ -234,10 +250,17 @@ export default function PhotoAvatar({
                   <button
                     onClick={handleEditPhoto}
                     style={{
-                      display: 'flex', alignItems: 'center', gap: '0.5rem',
-                      background: 'rgba(255,255,255,0.15)', border: 'none',
-                      borderRadius: '2rem', padding: '0.625rem 1.25rem',
-                      cursor: 'pointer', color: '#fff', fontSize: '0.9375rem', fontWeight: 500,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                      background: 'rgba(255,255,255,0.15)',
+                      border: 'none',
+                      borderRadius: '2rem',
+                      padding: '0.625rem 1.25rem',
+                      cursor: 'pointer',
+                      color: '#fff',
+                      fontSize: '0.9375rem',
+                      fontWeight: 500,
                     }}
                   >
                     <PencilSimple size={16} color="#fff" weight="bold" />
@@ -246,10 +269,17 @@ export default function PhotoAvatar({
                   <button
                     onClick={handleRemove}
                     style={{
-                      display: 'flex', alignItems: 'center', gap: '0.5rem',
-                      background: 'rgba(220,53,69,0.25)', border: 'none',
-                      borderRadius: '2rem', padding: '0.625rem 1.25rem',
-                      cursor: 'pointer', color: '#ff6b6b', fontSize: '0.9375rem', fontWeight: 500,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                      background: 'rgba(220,53,69,0.25)',
+                      border: 'none',
+                      borderRadius: '2rem',
+                      padding: '0.625rem 1.25rem',
+                      cursor: 'pointer',
+                      color: '#ff6b6b',
+                      fontSize: '0.9375rem',
+                      fontWeight: 500,
                     }}
                   >
                     <Trash size={16} color="#ff6b6b" weight="bold" />

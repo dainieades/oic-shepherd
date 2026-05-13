@@ -19,16 +19,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '@/lib/context';
 import { type Note, type Todo } from '@/lib/types';
 import { groupByMonth, getNoteTypeLabel, fullName } from '@/lib/utils';
-import {
-  MagnifyingGlass,
-  Funnel,
-  X,
-  CaretDown,
-  Plus,
-} from '@phosphor-icons/react';
+import { MagnifyingGlass, Funnel, X, CaretDown, Plus } from '@phosphor-icons/react';
 import AddLogModal from '@/components/AddLogModal';
 import AddTodoModal from '@/components/AddTodoModal';
 import { EmptyState } from '@/components/EmptyState';
+import PageContainer from '@/components/PageContainer';
 import { LogItem } from '@/components/LogItem';
 import LogsFilterPanel, {
   type LogsFilters,
@@ -42,7 +37,10 @@ function getPresetInterval(preset: DatePreset): { start: Date; end: Date } | nul
     case 'today':
       return { start: startOfDay(now), end: endOfDay(now) };
     case 'this-week':
-      return { start: startOfWeek(now, { weekStartsOn: 0 }), end: endOfWeek(now, { weekStartsOn: 0 }) };
+      return {
+        start: startOfWeek(now, { weekStartsOn: 0 }),
+        end: endOfWeek(now, { weekStartsOn: 0 }),
+      };
     case 'this-month':
       return { start: startOfMonth(now), end: endOfMonth(now) };
     case 'last-30':
@@ -121,8 +119,7 @@ export default function LogsPage() {
   const noteMatchesShepherd = (n: Note): boolean => {
     if (filters.shepherds.length === 0) return true;
     return filters.shepherds.some((sid) => {
-      const ids =
-        sid === 'mine' ? currentPersona.assignedPeopleIds : shepherdPeopleIds(sid);
+      const ids = sid === 'mine' ? currentPersona.assignedPeopleIds : shepherdPeopleIds(sid);
       if (n.personId) return ids.includes(n.personId);
       if (n.familyId) {
         const family = data.families.find((f) => f.id === n.familyId);
@@ -158,7 +155,10 @@ export default function LogsPage() {
     if (n.content?.toLowerCase().includes(q)) return true;
     if (n.personId) {
       const p = data.people.find((p) => p.id === n.personId);
-      if (p && (fullName(p).toLowerCase().includes(q) || p.alternativeName?.toLowerCase().includes(q)))
+      if (
+        p &&
+        (fullName(p).toLowerCase().includes(q) || p.alternativeName?.toLowerCase().includes(q))
+      )
         return true;
     }
     if (n.familyId) {
@@ -176,7 +176,10 @@ export default function LogsPage() {
       if (n.personId && currentPersona.assignedPeopleIds.includes(n.personId)) return true;
       if (n.familyId) {
         const family = data.families.find((f) => f.id === n.familyId);
-        if (family && family.memberIds.some((mid) => currentPersona.assignedPeopleIds.includes(mid)))
+        if (
+          family &&
+          family.memberIds.some((mid) => currentPersona.assignedPeopleIds.includes(mid))
+        )
           return true;
       }
       return false;
@@ -186,9 +189,7 @@ export default function LogsPage() {
   const grouped = groupByMonth(visibleNotes);
 
   const activeFilterCount =
-    filters.types.length +
-    (filters.datePreset ? 1 : 0) +
-    (isAdmin ? filters.shepherds.length : 0);
+    filters.types.length + (filters.datePreset ? 1 : 0) + (isAdmin ? filters.shepherds.length : 0);
   const filterActive = activeFilterCount > 0;
 
   const shepherdEntries = (() => {
@@ -308,18 +309,16 @@ export default function LogsPage() {
   );
 
   return (
+    <PageContainer>
     <div style={{ paddingBottom: 32 }}>
       {/* Sticky collapsing header */}
       <div
+        className="-mx-4 px-4 lg:mx-0 lg:px-0"
         style={{
           position: 'sticky',
           top: 0,
           zIndex: 'var(--z-sticky)',
           background: 'var(--bg)',
-          marginLeft: -16,
-          marginRight: -16,
-          paddingLeft: 16,
-          paddingRight: 16,
           borderBottom: scrolled ? '1px solid var(--border-light)' : 'none',
         }}
       >
@@ -422,7 +421,16 @@ export default function LogsPage() {
             <FilterChip onRemove={() => removeChip({ datePreset: '', dateFrom: '', dateTo: '' })}>
               {filters.datePreset === 'custom'
                 ? [filters.dateFrom, filters.dateTo].filter(Boolean).join(' – ') || 'Custom'
-                : ({ today: 'Today', 'this-week': 'This week', 'this-month': 'This month', 'last-30': 'Last 30 days', 'last-3-months': 'Last 3 months', 'this-year': 'This year' } as Record<string, string>)[filters.datePreset] ?? filters.datePreset}
+                : ((
+                    {
+                      today: 'Today',
+                      'this-week': 'This week',
+                      'this-month': 'This month',
+                      'last-30': 'Last 30 days',
+                      'last-3-months': 'Last 3 months',
+                      'this-year': 'This year',
+                    } as Record<string, string>
+                  )[filters.datePreset] ?? filters.datePreset)}
             </FilterChip>
           )}
           {isAdmin &&
@@ -535,6 +543,7 @@ export default function LogsPage() {
         currentPersonaName={currentPersona.name}
       />
     </div>
+    </PageContainer>
   );
 }
 

@@ -6,7 +6,7 @@ import { todoCreatedEmail } from '@/lib/emails/templates';
 function getAdminClient() {
   return createSupabaseAdmin(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 }
 
@@ -51,27 +51,44 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     .in('id', personaIds);
 
   const personaMap = new Map(
-    (personas ?? []).map((p: { id: string; user_id: string | null; notify_todo_created: boolean | null }) => [
-      p.id,
-      { userId: p.user_id, notifyEnabled: p.notify_todo_created !== false },
-    ])
+    (personas ?? []).map(
+      (p: { id: string; user_id: string | null; notify_todo_created: boolean | null }) => [
+        p.id,
+        { userId: p.user_id, notifyEnabled: p.notify_todo_created !== false },
+      ]
+    )
   );
 
   const resend = await getResend();
   const from = process.env.RESEND_FROM_EMAIL ?? 'onboarding@resend.dev';
   let sent = 0;
 
-  for (const todo of todos as Array<{ id: string; title: string; due_date: string; reminder: TodoReminder; created_by: string }>) {
+  for (const todo of todos as Array<{
+    id: string;
+    title: string;
+    due_date: string;
+    reminder: TodoReminder;
+    created_by: string;
+  }>) {
     const persona = personaMap.get(todo.created_by);
     if (!persona?.userId || !persona.notifyEnabled) {
       // Still mark as sent so we don't retry endlessly
-      await admin.from('todos').update({ reminder_sent_at: new Date().toISOString() }).eq('id', todo.id);
+      await admin
+        .from('todos')
+        .update({ reminder_sent_at: new Date().toISOString() })
+        .eq('id', todo.id);
       continue;
     }
 
-    const { data: { user }, error: userErr } = await admin.auth.admin.getUserById(persona.userId);
+    const {
+      data: { user },
+      error: userErr,
+    } = await admin.auth.admin.getUserById(persona.userId);
     if (userErr || !user?.email) {
-      await admin.from('todos').update({ reminder_sent_at: new Date().toISOString() }).eq('id', todo.id);
+      await admin
+        .from('todos')
+        .update({ reminder_sent_at: new Date().toISOString() })
+        .eq('id', todo.id);
       continue;
     }
 
@@ -83,7 +100,10 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       console.error(`[cron/todo-reminders] send failed for todo ${todo.id}`, err);
     }
 
-    await admin.from('todos').update({ reminder_sent_at: new Date().toISOString() }).eq('id', todo.id);
+    await admin
+      .from('todos')
+      .update({ reminder_sent_at: new Date().toISOString() })
+      .eq('id', todo.id);
   }
 
   return NextResponse.json({ sent });

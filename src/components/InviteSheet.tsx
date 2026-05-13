@@ -90,7 +90,11 @@ export default function InviteSheet({
       res = await fetch('/api/invite', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: trimmed, label: personName ?? null, personId: personId ?? null }),
+        body: JSON.stringify({
+          email: trimmed,
+          label: personName ?? null,
+          personId: personId ?? null,
+        }),
       });
       data = await res.json();
     } catch {
@@ -163,7 +167,9 @@ export default function InviteSheet({
             </p>
             {personName && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
-                <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
+                <p
+                  style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}
+                >
                   {personName}
                 </p>
                 {onChangePerson && (
@@ -207,7 +213,12 @@ export default function InviteSheet({
         {status === 'success' ? (
           /* ── Success state ── */
           <div style={{ padding: '2rem 1.5rem 1rem', textAlign: 'center' }}>
-            <CheckCircle size={48} color="var(--sage)" weight="fill" style={{ display: 'block', margin: '0 auto 1rem' }} />
+            <CheckCircle
+              size={48}
+              color="var(--sage)"
+              weight="fill"
+              style={{ display: 'block', margin: '0 auto 1rem' }}
+            />
             <p
               style={{
                 fontSize: 17,
@@ -249,7 +260,12 @@ export default function InviteSheet({
         ) : (
           /* ── Form ── */
           <div
-            style={{ padding: '1rem 1rem 0.5rem', display: 'flex', flexDirection: 'column', gap: 14 }}
+            style={{
+              padding: '1rem 1rem 0.5rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 14,
+            }}
           >
             {/* Email */}
             <div>
@@ -289,7 +305,9 @@ export default function InviteSheet({
                 }}
               />
               {errorMsg && (
-                <p role="alert" style={{ fontSize: 12, color: 'var(--red)', marginTop: 4 }}>{errorMsg}</p>
+                <p role="alert" style={{ fontSize: 12, color: 'var(--red)', marginTop: 4 }}>
+                  {errorMsg}
+                </p>
               )}
             </div>
 
@@ -337,7 +355,13 @@ export default function InviteSheet({
                       >
                         {r.label}
                       </p>
-                      <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: '0.0625rem 0 0' }}>
+                      <p
+                        style={{
+                          fontSize: 12,
+                          color: 'var(--text-muted)',
+                          margin: '0.0625rem 0 0',
+                        }}
+                      >
                         {r.description}
                       </p>
                     </div>

@@ -17,7 +17,7 @@ describe('ToastProvider / useToast', () => {
     const { getByText, queryByText } = render(
       <ToastProvider>
         <Trigger message="Saved!" />
-      </ToastProvider>,
+      </ToastProvider>
     );
     expect(queryByText('Saved!')).toBeNull();
     await act(async () => {
@@ -30,7 +30,7 @@ describe('ToastProvider / useToast', () => {
     const { getByText } = render(
       <ToastProvider>
         <Trigger message="Something went wrong" type="error" />
-      </ToastProvider>,
+      </ToastProvider>
     );
     await act(async () => {
       getByText('Show').click();
@@ -43,7 +43,7 @@ describe('ToastProvider / useToast', () => {
     const { getByText, queryByText } = render(
       <ToastProvider>
         <Trigger message="Done!" />
-      </ToastProvider>,
+      </ToastProvider>
     );
     await act(async () => {
       getByText('Show').click();
@@ -60,7 +60,7 @@ describe('ToastProvider / useToast', () => {
       <ToastProvider>
         <Trigger message="First" />
         <Trigger message="Second" />
-      </ToastProvider>,
+      </ToastProvider>
     );
     await act(async () => {
       getAllByText('Show').forEach((btn) => btn.click());
@@ -72,7 +72,7 @@ describe('ToastProvider / useToast', () => {
   it('throws when useToast is used outside ToastProvider', () => {
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
     expect(() => render(<Trigger message="test" />)).toThrow(
-      'useToast must be used within ToastProvider',
+      'useToast must be used within ToastProvider'
     );
     consoleError.mockRestore();
   });

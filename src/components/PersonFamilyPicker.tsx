@@ -18,8 +18,22 @@ interface PersonFamilyPickerProps {
 }
 
 type PickerItem =
-  | { kind: 'family'; id: string; label: string; subtitle: string; photo?: string; paletteIndex: number }
-  | { kind: 'person'; id: string; label: string; subtitle?: string; photo?: string; paletteIndex: number };
+  | {
+      kind: 'family';
+      id: string;
+      label: string;
+      subtitle: string;
+      photo?: string;
+      paletteIndex: number;
+    }
+  | {
+      kind: 'person';
+      id: string;
+      label: string;
+      subtitle?: string;
+      photo?: string;
+      paletteIndex: number;
+    };
 
 export default function PersonFamilyPicker({
   data,
@@ -48,14 +62,16 @@ export default function PersonFamilyPicker({
 
   const familyItems: PickerItem[] = data.families
     .filter((f) => {
-      if (allowedPersonIds && !f.memberIds.some((id) => allowedPersonIds.includes(id))) return false;
+      if (allowedPersonIds && !f.memberIds.some((id) => allowedPersonIds.includes(id)))
+        return false;
       if (!q) return true;
       if (f.label.toLowerCase().includes(q)) return true;
       return data.people
         .filter((p) => f.memberIds.includes(p.id))
         .some(
           (m) =>
-            fullName(m).toLowerCase().includes(q) || (m.alternativeName && m.alternativeName.includes(q))
+            fullName(m).toLowerCase().includes(q) ||
+            (m.alternativeName && m.alternativeName.includes(q))
         );
     })
     .map((f, fi) => ({
@@ -237,14 +253,14 @@ export default function PersonFamilyPicker({
 
       <div style={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
         {items.map((item) => {
-          const palette = SHEPHERD_AVATAR_PALETTE[item.paletteIndex % SHEPHERD_AVATAR_PALETTE.length];
+          const palette =
+            SHEPHERD_AVATAR_PALETTE[item.paletteIndex % SHEPHERD_AVATAR_PALETTE.length];
           const selected =
             item.kind === 'family'
               ? selectedFamilyIds.includes(item.id)
               : selectedPersonIds.includes(item.id);
-          const onToggle = item.kind === 'family'
-            ? () => toggleFamily(item.id)
-            : () => togglePerson(item.id);
+          const onToggle =
+            item.kind === 'family' ? () => toggleFamily(item.id) : () => togglePerson(item.id);
 
           return (
             <button

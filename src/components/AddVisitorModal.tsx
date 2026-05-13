@@ -30,7 +30,7 @@ export default function AddVisitorModal({ onClose }: AddVisitorModalProps) {
   };
 
   return (
-    <BottomSheet onClose={onClose} aria-labelledby="add-visitor-title">
+    <BottomSheet onClose={onClose} variant="dialog" aria-labelledby="add-visitor-title">
       <ModalHeader
         title="Add visitor"
         titleId="add-visitor-title"
@@ -47,11 +47,7 @@ export default function AddVisitorModal({ onClose }: AddVisitorModalProps) {
           background: 'var(--bg)',
         }}
       >
-        <VisitorIntakeForm
-          ref={formRef}
-          onSaved={handleSaved}
-          onValidityChange={setCanSave}
-        />
+        <VisitorIntakeForm ref={formRef} onSaved={handleSaved} onValidityChange={setCanSave} />
       </div>
     </BottomSheet>
   );
