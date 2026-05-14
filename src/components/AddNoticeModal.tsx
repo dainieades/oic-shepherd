@@ -202,9 +202,10 @@ export default function AddNoticeModal({
   const [showVisibilityWarning, setShowVisibilityWarning] = React.useState(false);
 
   const audienceCount = React.useMemo(() => {
-    if (privacy === 'everyone') return data.personas.length;
+    const real = data.personas.filter((p) => !p.isTest);
+    if (privacy === 'everyone') return real.length;
     if (privacy === 'pastor-and-shepherds') {
-      return data.personas.filter((p) => p.role === 'admin' || p.role === 'shepherd').length;
+      return real.filter((p) => p.role === 'admin' || p.role === 'shepherd').length;
     }
     return 0;
   }, [data.personas, privacy]);

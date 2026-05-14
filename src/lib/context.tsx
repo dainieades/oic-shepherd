@@ -1461,11 +1461,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     });
     const supabase = createClient();
     try {
-      await supabase.from('person_shepherds').delete().eq('person_id', personId);
-      await supabase.from('family_members').delete().eq('person_id', personId);
-      await supabase.from('notes').delete().eq('person_id', personId);
-      await supabase.from('todos').delete().eq('person_id', personId);
-      await supabase.from('people').delete().eq('id', personId);
+      await supabase.from('people').delete().eq('id', personId).throwOnError();
     } catch {
       if (snapshot) setData(snapshot);
       showToast('Failed to delete person. Try again.', 'error');

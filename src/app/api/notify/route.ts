@@ -79,6 +79,7 @@ async function getEmailsByRole(
     .select('user_id')
     .in('role', roles)
     .not('user_id', 'is', null)
+    .neq('is_test', true)
     .neq(notifyColumn, false);
   const userIds = (data ?? []).map((r: { user_id: string }) => r.user_id).filter(Boolean);
   return resolveEmailsForUserIds(userIds, exclude);
@@ -96,6 +97,7 @@ async function getEmailsByPersonaIds(
     .select('user_id')
     .in('id', ids)
     .not('user_id', 'is', null)
+    .neq('is_test', true)
     .neq(notifyColumn, false);
   const userIds = (data ?? []).map((r: { user_id: string }) => r.user_id).filter(Boolean);
   return resolveEmailsForUserIds(userIds, exclude);

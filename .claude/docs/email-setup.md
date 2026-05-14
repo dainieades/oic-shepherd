@@ -90,6 +90,17 @@ Password reset and signup confirmation go through Supabase, **not** our mailer. 
 
 When you change the Gmail account, update this too — otherwise reset/confirmation emails still go from the old address.
 
+### Styling the signup confirmation template
+
+The default Supabase signup confirmation email is plain and unbranded. To use the OIC Shepherd-styled version (logo + branded button):
+
+1. Run the app locally (`npm run dev`) and visit [/email-preview](http://localhost:3000/email-preview).
+2. Find **Signup confirmation (Supabase auth)** and click **Copy HTML**. The HTML already contains the `{{ .ConfirmationURL }}` placeholder Supabase expects.
+3. In Supabase Dashboard → **Authentication → Email Templates → Confirm signup**, paste the HTML into the message body and save.
+4. Optionally update the subject to: `Confirm your email for OIC Shepherd`.
+
+To edit the design, change [`signupConfirmationEmail`](../../src/lib/emails/templates.ts) and repeat steps 1–3. Other auth templates (password reset, magic link, etc.) can follow the same pattern — add a new function in `templates.ts`, register it in `EMAIL_PREVIEW_REGISTRY` with the matching Supabase variable, and paste the output into the corresponding template slot.
+
 ---
 
 ## Troubleshooting

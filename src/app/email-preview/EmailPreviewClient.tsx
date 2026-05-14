@@ -9,6 +9,14 @@ interface EmailEntry {
 }
 
 export default function EmailPreviewClient({ emails }: { emails: EmailEntry[] }) {
+  const [copiedLabel, setCopiedLabel] = React.useState<string | null>(null);
+
+  const handleCopy = async (label: string, html: string) => {
+    await navigator.clipboard.writeText(html);
+    setCopiedLabel(label);
+    setTimeout(() => setCopiedLabel((current) => (current === label ? null : current)), 1500);
+  };
+
   return (
     <div
       style={{
@@ -43,9 +51,25 @@ export default function EmailPreviewClient({ emails }: { emails: EmailEntry[] })
               >
                 {label}
               </span>
-              <span style={{ fontSize: '0.8125rem', color: '#444' }}>
+              <span style={{ fontSize: '0.8125rem', color: '#444', flex: 1 }}>
                 Subject: <strong>{subject}</strong>
               </span>
+              <button
+                type="button"
+                onClick={() => handleCopy(label, html)}
+                style={{
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                  padding: '0.375rem 0.75rem',
+                  border: '1px solid #ccc',
+                  borderRadius: '0.375rem',
+                  background: copiedLabel === label ? '#705a8c' : '#fff',
+                  color: copiedLabel === label ? '#fff' : '#333',
+                  cursor: 'pointer',
+                }}
+              >
+                {copiedLabel === label ? 'Copied' : 'Copy HTML'}
+              </button>
             </div>
             <iframe
               srcDoc={html}
