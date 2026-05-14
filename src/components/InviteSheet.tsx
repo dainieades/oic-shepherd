@@ -57,7 +57,7 @@ export default function InviteSheet({
   personId,
   onChangePerson,
 }: Props) {
-  const { currentPersona, updatePerson } = useApp();
+  const { data: appData, currentPersona, updatePerson } = useApp();
   const [email, setEmail] = React.useState(initialEmail);
   const [role, setRole] = React.useState<InviteRole>(initialRole);
   const [status, setStatus] = React.useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -111,6 +111,11 @@ export default function InviteSheet({
 
     if (personId) {
       await updatePerson(personId, { appRole: role, email: trimmed });
+    } else {
+      const matched = appData.people.find((p) => p.email?.toLowerCase() === trimmed);
+      if (matched) {
+        await updatePerson(matched.id, { appRole: role });
+      }
     }
 
     setStatus('success');

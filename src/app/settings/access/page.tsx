@@ -218,7 +218,6 @@ export default function AccessManagementPage() {
             return (
               <button
                 key={e.email}
-                className="field-row-hover"
                 onClick={() => setRoleEditEmail(e.email)}
                 style={{
                   width: '100%',
