@@ -127,6 +127,7 @@ const VisitorIntakeForm = React.forwardRef<VisitorIntakeFormHandle, Props>(
             inputRef={firstNameRef}
             value={preferredName}
             onChange={setPreferredName}
+            autoComplete="given-name"
           />
           <TextInputRow
             icon={<TextT size={16} color="var(--text-muted)" />}
@@ -134,6 +135,7 @@ const VisitorIntakeForm = React.forwardRef<VisitorIntakeFormHandle, Props>(
             inputRef={lastNameRef}
             value={lastName}
             onChange={setLastName}
+            autoComplete="family-name"
           />
         </Section>
 
@@ -145,6 +147,7 @@ const VisitorIntakeForm = React.forwardRef<VisitorIntakeFormHandle, Props>(
             value={phone}
             onChange={setPhone}
             type="tel"
+            autoComplete="tel"
           />
           <p style={consentNoteStyle}>
             By providing your phone number, you agree for a member or group leader to contact you.
@@ -156,6 +159,7 @@ const VisitorIntakeForm = React.forwardRef<VisitorIntakeFormHandle, Props>(
             value={email}
             onChange={setEmail}
             type="email"
+            autoComplete="email"
           />
         </Section>
 

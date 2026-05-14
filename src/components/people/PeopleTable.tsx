@@ -3,13 +3,21 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { differenceInCalendarDays, format } from 'date-fns';
+import { differenceInCalendarDays } from 'date-fns';
 import { CaretUp, CaretDown, CaretUpDown, HandHeart, House } from '@phosphor-icons/react';
 import { useApp, type HomeSortKey } from '@/lib/context';
 import { AvatarBadge } from '@/components/AvatarBadge';
 import { StatusBadge } from '@/components/StatusBadge';
 import { EmptyState } from '@/components/EmptyState';
-import { fullName, getMembershipLabel, getChurchAttendanceLabel } from '@/lib/utils';
+import LogStatusTag from '@/components/people/LogStatusTag';
+import RowActionsCell from '@/components/people/RowActionsCell';
+import {
+  fullName,
+  getMembershipLabel,
+  getChurchAttendanceLabel,
+  aggregateMembership,
+  aggregateAttendance,
+} from '@/lib/utils';
 import type { PeopleEntry } from '@/lib/usePeopleRows';
 import type { Family, Group } from '@/lib/types';
 
@@ -24,7 +32,7 @@ const headerCellStyle: React.CSSProperties = {
   top: 0,
   background: 'var(--surface)',
   borderBottom: '1px solid var(--border)',
-  padding: '0.625rem 0.875rem',
+  padding: '0.625rem 0.5rem',
   fontSize: 11,
   fontWeight: 600,
   letterSpacing: '0.04em',
@@ -36,7 +44,7 @@ const headerCellStyle: React.CSSProperties = {
 };
 
 const cellStyle: React.CSSProperties = {
-  padding: '0.625rem 0.875rem',
+  padding: '0.625rem 0.5rem',
   borderBottom: '1px solid var(--border-light)',
   fontSize: 13,
   color: 'var(--text-primary)',
@@ -72,6 +80,12 @@ export default function PeopleTable({ entries }: PeopleTableProps) {
     for (const family of data.families) map.set(family.id, family);
     return map;
   }, [data.families]);
+
+  const groupsById = React.useMemo(() => {
+    const map = new Map<string, Group>();
+    for (const group of data.groups) map.set(group.id, group);
+    return map;
+  }, [data.groups]);
 
   const openTodosByPerson = React.useMemo(() => {
     const map = new Map<string, number>();
@@ -173,6 +187,7 @@ export default function PeopleTable({ entries }: PeopleTableProps) {
                 setHomeSortKey((k) => toggleSort(k, 'last-contacted', 'last-contacted-recent'))
               }
             />
+            <th style={{ ...headerCellStyle, width: '2.5rem' }} aria-label="Actions" />
           </tr>
         </thead>
         <tbody>
@@ -195,6 +210,7 @@ export default function PeopleTable({ entries }: PeopleTableProps) {
                   key={entry.family.id}
                   entry={entry}
                   counts={counts}
+                  groupsById={groupsById}
                   onRowClick={onRowClick}
                 />
               );
@@ -208,6 +224,7 @@ export default function PeopleTable({ entries }: PeopleTableProps) {
                 key={entry.fromFamilySearch ? `${entry.person.id}-search` : entry.person.id}
                 entry={entry}
                 familiesById={familiesById}
+                groupsById={groupsById}
                 counts={counts}
                 onRowClick={onRowClick}
               />
@@ -259,15 +276,19 @@ function SortableHeader({
 function FamilyTableRow({
   entry,
   counts,
+  groupsById,
   onRowClick,
 }: {
   entry: Extract<PeopleEntry, { type: 'family' }>;
   counts: Counts;
+  groupsById: Map<string, Group>;
   onRowClick: (href: string) => (e: React.MouseEvent<HTMLTableRowElement>) => void;
 }) {
-  const { family, members, lastNoteTs, group } = entry;
+  const { family, members, lastNoteTs } = entry;
   const allGroupIds = [...new Set(members.flatMap((m) => m.groupIds))];
-  const extraGroups = Math.max(0, allGroupIds.length - 1);
+  const allGroups = allGroupIds
+    .map((id) => groupsById.get(id))
+    .filter((g): g is Group => g !== undefined);
   const shepherdIds = [...new Set(members.flatMap((m) => m.assignedShepherdIds))];
   const adultsLabel = `Family · ${members.length} member${members.length !== 1 ? 's' : ''}${
     family.childCount ? ` · ${family.childCount} kid${family.childCount !== 1 ? 's' : ''}` : ''
@@ -300,36 +321,38 @@ function FamilyTableRow({
           />
           <div style={{ minWidth: 0 }}>
             <div style={{ fontWeight: 600, whiteSpace: 'nowrap' }}>{family.label}</div>
-            <div
-              style={{
-                fontSize: 11,
-                color: 'var(--text-muted)',
-                textDecoration: 'underline',
-                textDecorationStyle: 'dotted',
-              }}
-            >
-              {adultsLabel}
-            </div>
+            <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{adultsLabel}</div>
           </div>
         </Link>
       </td>
       <td style={cellStyle}>
         {shepherdIds.length === 0 ? (
-          <StatusBadge
-            label="No shepherd"
-            bg="var(--amber-light)"
-            color="var(--amber)"
-            border="1px solid var(--amber-border)"
-          />
+          <span
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}
+          >
+            <StatusBadge
+              label="No shepherd"
+              bg="var(--amber-light)"
+              color="var(--amber)"
+              border="1px solid var(--amber-border)"
+            />
+            <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+              {aggregateMembership(members)}
+            </span>
+          </span>
         ) : (
-          <span style={{ color: 'var(--text-muted)' }}>—</span>
+          <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+            {aggregateMembership(members)}
+          </span>
         )}
       </td>
       <td style={cellStyle}>
-        <span style={{ color: 'var(--text-muted)' }}>—</span>
+        <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+          {aggregateAttendance(members)}
+        </span>
       </td>
       <td style={cellStyle}>
-        <GroupCells group={group} extra={extraGroups} />
+        <GroupCells groups={allGroups} />
       </td>
       <td style={cellStyle}>
         <CountCell value={counts.todos} />
@@ -340,6 +363,7 @@ function FamilyTableRow({
       <td style={cellStyle}>
         <LastContactCell lastNoteTs={lastNoteTs} />
       </td>
+      <RowActionsCell target={{ kind: 'family', family }} />
     </tr>
   );
 }
@@ -347,16 +371,20 @@ function FamilyTableRow({
 function IndividualTableRow({
   entry,
   familiesById,
+  groupsById,
   counts,
   onRowClick,
 }: {
   entry: Extract<PeopleEntry, { type: 'individual' }>;
   familiesById: Map<string, Family>;
+  groupsById: Map<string, Group>;
   counts: Counts;
   onRowClick: (href: string) => (e: React.MouseEvent<HTMLTableRowElement>) => void;
 }) {
-  const { person, lastNoteTs, group } = entry;
-  const extraGroups = Math.max(0, person.groupIds.length - 1);
+  const { person, lastNoteTs } = entry;
+  const personGroups = person.groupIds
+    .map((id) => groupsById.get(id))
+    .filter((g): g is Group => g !== undefined);
   const family = person.familyId ? familiesById.get(person.familyId) : undefined;
   const subtitle = family ? family.label : person.alternativeName;
 
@@ -441,7 +469,7 @@ function IndividualTableRow({
         </span>
       </td>
       <td style={cellStyle}>
-        <GroupCells group={group} extra={extraGroups} />
+        <GroupCells groups={personGroups} />
       </td>
       <td style={cellStyle}>
         <CountCell value={counts.todos} />
@@ -452,6 +480,7 @@ function IndividualTableRow({
       <td style={cellStyle}>
         <LastContactCell lastNoteTs={lastNoteTs} />
       </td>
+      <RowActionsCell target={{ kind: 'person', person }} />
     </tr>
   );
 }
@@ -469,65 +498,75 @@ function CountCell({ value }: { value: number }) {
   );
 }
 
-function GroupCells({ group, extra }: { group: Group | null; extra: number }) {
-  if (!group) return <span style={{ color: 'var(--text-muted)' }}>—</span>;
+const groupChipStyle: React.CSSProperties = {
+  fontSize: 10,
+  padding: '0.125rem 0.4375rem',
+  borderRadius: 'var(--radius-pill)',
+  background: 'var(--blue-light)',
+  color: 'var(--blue)',
+  fontWeight: 600,
+  whiteSpace: 'nowrap',
+  flexShrink: 0,
+};
+
+function GroupCells({ groups }: { groups: Group[] }) {
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const [visibleCount, setVisibleCount] = React.useState(groups.length);
+
+  React.useLayoutEffect(() => {
+    setVisibleCount(groups.length);
+  }, [groups]);
+
+  React.useLayoutEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const children = Array.from(el.children) as HTMLElement[];
+    if (children.length === 0) return;
+    const tops = new Set(children.map((c) => c.offsetTop));
+    if (tops.size > 2 && visibleCount > 1) {
+      setVisibleCount((v) => Math.max(1, v - 1));
+    }
+  });
+
+  React.useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(() => setVisibleCount(groups.length));
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [groups]);
+
+  if (groups.length === 0) {
+    return <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>No group</span>;
+  }
+
+  const visible = groups.slice(0, visibleCount);
+  const hidden = groups.length - visible.length;
+
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
-      <span
-        style={{
-          fontSize: 10,
-          padding: '0.125rem 0.4375rem',
-          borderRadius: 'var(--radius-pill)',
-          background: 'var(--blue-light)',
-          color: 'var(--blue)',
-          fontWeight: 600,
-        }}
-      >
-        {group.name}
-      </span>
-      {extra > 0 && (
-        <span
-          style={{
-            fontSize: 10,
-            padding: '0.125rem 0.375rem',
-            borderRadius: 'var(--radius-pill)',
-            background: 'var(--blue-light)',
-            color: 'var(--blue)',
-            fontWeight: 600,
-          }}
-        >
-          +{extra}
+    <div
+      ref={containerRef}
+      style={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        gap: '0.25rem',
+      }}
+    >
+      {visible.map((g) => (
+        <span key={g.id} style={groupChipStyle}>
+          {g.name}
         </span>
-      )}
-    </span>
+      ))}
+      {hidden > 0 && <span style={groupChipStyle}>+{hidden}</span>}
+    </div>
   );
 }
 
 function LastContactCell({ lastNoteTs }: { lastNoteTs: number | null }) {
-  if (lastNoteTs === null) {
-    return <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>Never</span>;
-  }
-  const days = differenceInCalendarDays(new Date(), new Date(lastNoteTs));
-  const label =
-    days <= 0
-      ? 'Today'
-      : days === 1
-        ? 'Yesterday'
-        : days < 7
-          ? `${days}d ago`
-          : days < 30
-            ? `${days}d ago`
-            : format(new Date(lastNoteTs), 'MMM d, yyyy');
-  return (
-    <span
-      style={{
-        fontSize: 12,
-        color: days > 30 ? 'var(--text-muted)' : 'var(--text-primary)',
-      }}
-    >
-      {label}
-    </span>
-  );
+  const daysSince =
+    lastNoteTs !== null ? differenceInCalendarDays(new Date(), new Date(lastNoteTs)) : null;
+  return <LogStatusTag daysSince={daysSince} lastNoteTs={lastNoteTs} />;
 }
 
 function getSortDirection(

@@ -19,7 +19,7 @@ export default function PageContainer({
   className = '',
 }: PageContainerProps) {
   return (
-    <div className={`mx-auto w-full lg:px-8 lg:py-6 ${WIDTH_CLASS[width]} ${className}`}>
+    <div className={`mx-auto w-full lg:px-4 lg:py-6 xl:px-8 ${WIDTH_CLASS[width]} ${className}`}>
       {children}
     </div>
   );

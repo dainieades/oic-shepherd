@@ -7,6 +7,7 @@ import { Crown, Plus } from '@phosphor-icons/react';
 import { BACKDROP_COLOR, SHEET_MAX_WIDTH, SHEET_BORDER_RADIUS } from '@/lib/constants';
 import { Button } from '@/components/Button';
 import PageContainer from '@/components/PageContainer';
+import GroupSidePreview from '@/components/GroupSidePreview';
 
 export default function GroupsPage() {
   const { data, currentPersona, addGroup } = useApp();
@@ -14,6 +15,7 @@ export default function GroupsPage() {
   const [showAdd, setShowAdd] = React.useState(false);
   const [newName, setNewName] = React.useState('');
   const [newDesc, setNewDesc] = React.useState('');
+  const [previewId, setPreviewId] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -156,7 +158,24 @@ export default function GroupsPage() {
           const iAmInvolved = iAmLeader;
 
           return (
-            <Link key={group.id} href={`/groups/${group.id}`} style={{ textDecoration: 'none' }}>
+            <Link
+              key={group.id}
+              href={`/groups/${group.id}`}
+              style={{ textDecoration: 'none' }}
+              onClick={(e) => {
+                if (
+                  typeof window !== 'undefined' &&
+                  window.matchMedia('(min-width: 64rem)').matches &&
+                  !e.metaKey &&
+                  !e.ctrlKey &&
+                  !e.shiftKey &&
+                  e.button === 0
+                ) {
+                  e.preventDefault();
+                  setPreviewId(group.id);
+                }
+              }}
+            >
               <div
                 className="row-card-hover"
                 style={{
@@ -166,6 +185,9 @@ export default function GroupsPage() {
                     ? '0.09375rem solid var(--sage-mid)'
                     : '0.0625rem solid var(--border-light)',
                   padding: '0.875rem 1rem',
+                  outline:
+                    previewId === group.id ? '0.125rem solid var(--sage)' : undefined,
+                  outlineOffset: previewId === group.id ? '-0.125rem' : undefined,
                 }}
               >
                 <div
@@ -375,6 +397,9 @@ export default function GroupsPage() {
         </div>
       )}
     </div>
+    {previewId && (
+      <GroupSidePreview groupId={previewId} onClose={() => setPreviewId(null)} />
+    )}
     </PageContainer>
   );
 }

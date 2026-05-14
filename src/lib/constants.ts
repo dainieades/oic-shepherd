@@ -35,6 +35,10 @@ export const MEMBER_AVATAR_PALETTE: Array<{ bg: string; color: string }> = [
 
 export const SAVE_ERROR_MSG = 'Failed to save changes. Try again.';
 
+export const NOTICE_VISIBILITY_WARNING_STORAGE_KEY =
+  'shepherd-app-notice-visibility-warning-dismissed-at';
+export const NOTICE_VISIBILITY_WARNING_DISMISS_DAYS = 30;
+
 export const REFERRAL_LABELS: Record<ReferralSource, string> = {
   flyer: 'Flyer',
   online: 'Online',

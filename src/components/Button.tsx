@@ -9,6 +9,8 @@ interface ButtonProps {
   onClick?: () => void;
   type?: 'button' | 'submit' | 'reset';
   style?: React.CSSProperties;
+  className?: string;
+  'aria-label'?: string;
   children: React.ReactNode;
 }
 
@@ -19,6 +21,8 @@ export function Button({
   onClick,
   type = 'button',
   style: styleProp,
+  className,
+  'aria-label': ariaLabel,
   children,
 }: ButtonProps) {
   const height = size === 'sm' ? 32 : 40;
@@ -68,6 +72,8 @@ export function Button({
       type={type}
       onClick={disabled ? undefined : onClick}
       disabled={disabled}
+      className={className}
+      aria-label={ariaLabel}
       style={{ ...base, ...variants[variant], ...styleProp }}
     >
       {children}

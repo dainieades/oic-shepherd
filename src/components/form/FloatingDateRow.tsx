@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { format, getDaysInMonth, getDay } from 'date-fns';
 import { CaretLeft, CaretRight } from '@phosphor-icons/react';
 import { fmtDate } from '@/lib/utils';
@@ -131,7 +132,7 @@ function FloatingCalendar({
     flexShrink: 0,
   };
 
-  return (
+  return createPortal(
     <>
       <div
         role="presentation"
@@ -313,7 +314,8 @@ function FloatingCalendar({
           })}
         </div>
       </div>
-    </>
+    </>,
+    document.body
   );
 }
 

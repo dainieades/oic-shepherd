@@ -117,6 +117,7 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
         onSaved={onBack}
         showPhotoUpload
         onValidityChange={setCanSave}
+        ownContact
       />
     </>
   );

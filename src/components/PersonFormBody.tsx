@@ -99,10 +99,11 @@ interface Props {
   showPhotoUpload?: boolean;
   showInviteRow?: boolean;
   onValidityChange?: (valid: boolean) => void;
+  ownContact?: boolean;
 }
 
 const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function PersonFormBody(
-  { person, onSaved, showPhotoUpload, showInviteRow, onValidityChange },
+  { person, onSaved, showPhotoUpload, showInviteRow, onValidityChange, ownContact },
   ref
 ) {
   const {
@@ -522,6 +523,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
             value={firstName}
             onChange={setFirstName}
             placeholder="Preferred name"
+            autoComplete={ownContact ? 'given-name' : undefined}
           />
           <TextInputRow
             icon={<User size={16} color="var(--text-muted)" style={{ opacity: 0 }} />}
@@ -530,6 +532,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
             value={lastName}
             onChange={setLastName}
             placeholder="Last name"
+            autoComplete={ownContact ? 'family-name' : undefined}
           />
           <TextInputRow
             icon={<TextT size={16} color="var(--text-muted)" />}
@@ -836,6 +839,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
             onChange={(v) => setPhone(formatPhone(v))}
             placeholder="(555) 000-0000"
             type="tel"
+            autoComplete={ownContact ? 'tel' : undefined}
           />
           <TextInputRow
             icon={<PhoneCall size={16} color="var(--text-muted)" />}
@@ -845,6 +849,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
             onChange={(v) => setHomePhone(formatPhone(v))}
             placeholder="(555) 000-0000"
             type="tel"
+            autoComplete={ownContact ? 'home tel' : undefined}
           />
           <TextInputRow
             icon={<Envelope size={16} color="var(--text-muted)" />}
@@ -854,6 +859,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
             onChange={setEmail}
             placeholder="Email address"
             type="email"
+            autoComplete={ownContact ? 'email' : undefined}
           />
           <TextareaRow
             icon={<House size={16} color="var(--text-muted)" />}

@@ -31,9 +31,38 @@ import {
   type NoticePrivacy,
 } from '@/lib/types';
 import { fullName } from '@/lib/utils';
+import {
+  BACKDROP_COLOR,
+  NOTICE_VISIBILITY_WARNING_DISMISS_DAYS,
+  NOTICE_VISIBILITY_WARNING_STORAGE_KEY,
+  Z_NESTED,
+} from '@/lib/constants';
 import PersonFamilyPicker from './PersonFamilyPicker';
 import PickerMenu from './PickerMenu';
+import { CheckRow } from './CheckRow';
 import { DeleteConfirmDialog } from './AddLogModal';
+
+type ElevatedPrivacy = Exclude<NoticePrivacy, 'pastor-only'>;
+
+function isElevatedPrivacy(privacy: NoticePrivacy): privacy is ElevatedPrivacy {
+  return privacy === 'pastor-and-shepherds' || privacy === 'everyone';
+}
+
+function isVisibilityWarningDismissed(): boolean {
+  if (typeof window === 'undefined') return false;
+  const raw = window.localStorage.getItem(NOTICE_VISIBILITY_WARNING_STORAGE_KEY);
+  if (!raw) return false;
+  const dismissedAt = Date.parse(raw);
+  if (Number.isNaN(dismissedAt)) return false;
+  const ageMs = Date.now() - dismissedAt;
+  const windowMs = NOTICE_VISIBILITY_WARNING_DISMISS_DAYS * 24 * 60 * 60 * 1000;
+  return ageMs < windowMs;
+}
+
+function rememberVisibilityWarningDismissal(): void {
+  if (typeof window === 'undefined') return;
+  window.localStorage.setItem(NOTICE_VISIBILITY_WARNING_STORAGE_KEY, new Date().toISOString());
+}
 
 interface AddNoticeModalProps {
   onClose: () => void;
@@ -170,6 +199,15 @@ export default function AddNoticeModal({
   const [showUrgencyPicker, setShowUrgencyPicker] = React.useState(false);
   const [showPrivacyPicker, setShowPrivacyPicker] = React.useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
+  const [showVisibilityWarning, setShowVisibilityWarning] = React.useState(false);
+
+  const audienceCount = React.useMemo(() => {
+    if (privacy === 'everyone') return data.personas.length;
+    if (privacy === 'pastor-and-shepherds') {
+      return data.personas.filter((p) => p.role === 'admin' || p.role === 'shepherd').length;
+    }
+    return 0;
+  }, [data.personas, privacy]);
 
   const categoryBtnRef = React.useRef<HTMLButtonElement>(null);
   const urgencyBtnRef = React.useRef<HTMLButtonElement>(null);
@@ -204,8 +242,7 @@ export default function AddNoticeModal({
     setCategories((prev) => (prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]));
   };
 
-  const handleSave = () => {
-    if (!canSave) return;
+  const persistNotice = () => {
     if (isEditing && notice) {
       updateNotice(notice.id, {
         categories,
@@ -226,6 +263,15 @@ export default function AddNoticeModal({
       showToast('Notice added');
     }
     onClose();
+  };
+
+  const handleSave = () => {
+    if (!canSave) return;
+    if (isElevatedPrivacy(privacy) && !isVisibilityWarningDismissed()) {
+      setShowVisibilityWarning(true);
+      return;
+    }
+    persistNotice();
   };
   const urgencyItem = URGENCIES.find((u) => u.value === urgency) ?? URGENCIES[1];
   const urgencyStyle = URGENCY_STYLE[urgency];
@@ -532,6 +578,19 @@ export default function AddNoticeModal({
           }}
         />
       )}
+
+      {showVisibilityWarning && isElevatedPrivacy(privacy) && (
+        <NoticeVisibilityWarningDialog
+          privacy={privacy}
+          audienceCount={audienceCount}
+          onCancel={() => setShowVisibilityWarning(false)}
+          onConfirm={(dontShowAgain) => {
+            if (dontShowAgain) rememberVisibilityWarningDismissal();
+            setShowVisibilityWarning(false);
+            persistNotice();
+          }}
+        />
+      )}
     </>
   );
 }
@@ -597,5 +656,147 @@ function FieldRow({
       </span>
       {trailingIcon ?? <CaretRight size={14} color="var(--text-muted)" />}
     </button>
+  );
+}
+
+function NoticeVisibilityWarningDialog({
+  privacy,
+  audienceCount,
+  onCancel,
+  onConfirm,
+}: {
+  privacy: ElevatedPrivacy;
+  audienceCount: number;
+  onCancel: () => void;
+  onConfirm: (dontShowAgain: boolean) => void;
+}) {
+  const [dontShowAgain, setDontShowAgain] = React.useState(false);
+  const audienceLabel =
+    privacy === 'everyone' ? 'everyone with app access' : 'all pastors and shepherds';
+  const peopleLabel = audienceCount === 1 ? '1 person' : `${audienceCount} people`;
+  const Icon = privacy === 'everyone' ? Globe : Users;
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: Z_NESTED,
+        background: BACKDROP_COLOR,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '0 2rem',
+      }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onCancel();
+      }}
+    >
+      <div
+        style={{
+          background: 'var(--surface)',
+          borderRadius: 16,
+          width: '100%',
+          maxWidth: 360,
+          overflow: 'hidden',
+        }}
+      >
+        <div style={{ padding: '1.5rem 1.25rem 1rem', textAlign: 'center' }}>
+          <div
+            style={{
+              width: 44,
+              height: 44,
+              borderRadius: '50%',
+              background: 'var(--amber-light)',
+              color: 'var(--amber)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 0.75rem',
+            }}
+          >
+            <Icon size={22} weight="bold" />
+          </div>
+          <p
+            style={{
+              fontSize: 16,
+              fontWeight: 600,
+              color: 'var(--text-primary)',
+              margin: '0 0 0.5rem',
+            }}
+          >
+            Post this notice?
+          </p>
+          <p
+            style={{
+              fontSize: 14,
+              color: 'var(--text-secondary)',
+              margin: '0 0 0.5rem',
+              lineHeight: 1.45,
+            }}
+          >
+            It will be visible to{' '}
+            <strong style={{ color: 'var(--text-primary)' }}>
+              {audienceLabel} ({peopleLabel})
+            </strong>
+            .
+          </p>
+          <p
+            style={{
+              fontSize: 13,
+              color: 'var(--text-muted)',
+              margin: 0,
+              lineHeight: 1.45,
+            }}
+          >
+            They may receive an email notification when you post it.
+          </p>
+        </div>
+        <div
+          style={{
+            padding: '0 1.25rem 0.75rem',
+            display: 'flex',
+            justifyContent: 'center',
+          }}
+        >
+          <CheckRow checked={dontShowAgain} onToggle={() => setDontShowAgain((v) => !v)}>
+            Don&rsquo;t show this warning for {NOTICE_VISIBILITY_WARNING_DISMISS_DAYS} days
+          </CheckRow>
+        </div>
+        <div style={{ borderTop: '1px solid var(--border-light)', display: 'flex' }}>
+          <button
+            onClick={onCancel}
+            style={{
+              flex: 1,
+              height: 50,
+              background: 'none',
+              border: 'none',
+              borderRight: '1px solid var(--border-light)',
+              fontSize: 15,
+              color: 'var(--text-secondary)',
+              cursor: 'pointer',
+              fontWeight: 500,
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => onConfirm(dontShowAgain)}
+            style={{
+              flex: 1,
+              height: 50,
+              background: 'none',
+              border: 'none',
+              fontSize: 15,
+              color: 'var(--sage)',
+              cursor: 'pointer',
+              fontWeight: 600,
+            }}
+          >
+            Post notice
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }

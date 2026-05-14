@@ -7,8 +7,7 @@ import BottomNav from '@/components/BottomNav';
 import AuthSync from '@/components/AuthSync';
 import AccessGate from '@/components/AccessGate';
 import { ToastProvider } from '@/components/Toast';
-import PageTransition from '@/components/PageTransition';
-import SideNav from '@/components/SideNav';
+import AppShell from '@/components/AppShell';
 
 const lora = Lora({
   subsets: ['latin'],
@@ -17,7 +16,7 @@ const lora = Lora({
 });
 
 export const metadata: Metadata = {
-  title: 'Shepherd Care · OIC',
+  title: 'Shepherd · OIC',
   description: 'Shepherding care app for One In Christ Church',
 };
 
@@ -42,12 +41,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <AppProvider>
             <AuthSync />
             <AccessGate />
-            <div className="lg:grid lg:min-h-screen lg:grid-cols-[16rem_1fr]">
-              <SideNav />
-              <main className="mx-auto min-h-screen w-full max-w-[26.875rem] px-4 pb-20 lg:mx-0 lg:max-w-none lg:px-0 lg:pb-0">
-                <PageTransition>{children}</PageTransition>
-              </main>
-            </div>
+            <AppShell>{children}</AppShell>
             <BottomNav />
           </AppProvider>
         </ToastProvider>

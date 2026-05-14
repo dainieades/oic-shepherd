@@ -25,6 +25,7 @@ import AddTodoModal from '@/components/AddTodoModal';
 import { EmptyState } from '@/components/EmptyState';
 import PageContainer from '@/components/PageContainer';
 import { LogItem } from '@/components/LogItem';
+import HeaderInlineSearch from '@/components/HeaderInlineSearch';
 import LogsFilterPanel, {
   type LogsFilters,
   type DatePreset,
@@ -80,6 +81,7 @@ export default function LogsPage() {
   const [showSearch, setShowSearch] = useState(false);
   const [search, setSearch] = useState('');
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const desktopSearchInputRef = useRef<HTMLInputElement>(null);
 
   // Filter panel
   const [filters, setFilters] = useState<LogsFilters>({
@@ -210,36 +212,53 @@ export default function LogsPage() {
   const btnFont = scrolled ? 13 : 14;
   const btnPad = scrolled ? '0 0.75rem' : '0 0.875rem';
 
-  const ActionButtons = () => (
+  const actionButtons = (
     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-      {/* Search */}
-      <button
-        onClick={() => {
-          if (showSearch) {
-            setShowSearch(false);
-            setSearch('');
-          } else {
-            setShowSearch(true);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            setTimeout(() => searchInputRef.current?.focus(), 50);
-          }
-        }}
-        style={{
-          width: btnSize,
-          height: btnSize,
-          borderRadius: 'var(--radius-xs)',
-          background: showSearch || search ? 'var(--sage-light)' : 'transparent',
-          border: showSearch || search ? '1px solid var(--sage-mid)' : '1px solid var(--border)',
-          color: showSearch || search ? 'var(--sage)' : 'var(--text-secondary)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer',
-          flexShrink: 0,
-        }}
-      >
-        <MagnifyingGlass size={14} />
-      </button>
+      {/* Search — hidden on desktop when expanded */}
+      <div className={showSearch ? 'lg:hidden' : undefined}>
+        <button
+          type="button"
+          aria-label={showSearch ? 'Close search' : 'Search'}
+          onClick={() => {
+            if (showSearch) {
+              setShowSearch(false);
+              setSearch('');
+            } else {
+              setShowSearch(true);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+              setTimeout(() => {
+                searchInputRef.current?.focus();
+                desktopSearchInputRef.current?.focus();
+              }, 50);
+            }
+          }}
+          style={{
+            width: btnSize,
+            height: btnSize,
+            borderRadius: 'var(--radius-xs)',
+            background: showSearch || search ? 'var(--sage-light)' : 'transparent',
+            border: showSearch || search ? '1px solid var(--sage-mid)' : '1px solid var(--border)',
+            color: showSearch || search ? 'var(--sage)' : 'var(--text-secondary)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            flexShrink: 0,
+          }}
+        >
+          <MagnifyingGlass size={14} />
+        </button>
+      </div>
+      <HeaderInlineSearch
+        search={search}
+        setSearch={setSearch}
+        show={showSearch}
+        inputRef={desktopSearchInputRef}
+        placeholder="Search logs…"
+        ariaLabel="Search logs"
+        height={btnSize}
+        onClose={() => setShowSearch(false)}
+      />
 
       {/* Filter */}
       <div style={{ position: 'relative', flexShrink: 0 }}>
@@ -341,7 +360,7 @@ export default function LogsPage() {
             >
               Logs
             </span>
-            <ActionButtons />
+            {actionButtons}
           </div>
         ) : (
           <div
@@ -364,14 +383,17 @@ export default function LogsPage() {
             >
               Logs
             </h1>
-            <ActionButtons />
+            {actionButtons}
           </div>
         )}
       </div>
 
       {/* Search bar */}
       {(showSearch || search) && (
-        <div style={{ position: 'relative', marginBottom: 10, marginTop: 8 }}>
+        <div
+          className="lg:hidden"
+          style={{ position: 'relative', marginBottom: 10, marginTop: 8 }}
+        >
           <MagnifyingGlass
             size={14}
             color="var(--text-muted)"

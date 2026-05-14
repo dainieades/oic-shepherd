@@ -199,6 +199,7 @@ export default function AddLogModal({
             <div
               style={{
                 flex: 1,
+                minHeight: 0,
                 overflowY: 'auto',
                 padding: `1rem 1.25rem ${isEditing ? 80 : 16}px`,
                 background: 'var(--bg)',

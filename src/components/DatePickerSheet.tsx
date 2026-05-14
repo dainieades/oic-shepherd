@@ -424,7 +424,7 @@ export default function DatePickerSheet({
       </div>
 
       {/* Scrollable body */}
-      <div style={{ flex: 1, overflowY: 'auto', paddingBottom: 40 }}>
+      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', paddingBottom: '2.5rem' }}>
         {/* Date pill inputs */}
         <div
           style={{

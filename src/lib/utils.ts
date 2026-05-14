@@ -60,6 +60,7 @@ import {
   type Todo,
   type Family,
   type ChurchAttendance,
+  type MembershipStatus,
   type Notice,
   type TodoRepeat,
   type TodoReminder,
@@ -249,6 +250,58 @@ export function getChurchAttendanceLabel(status: ChurchAttendance): string {
     archived: 'Archived',
   };
   return labels[status] || status;
+}
+
+const MEMBERSHIP_AGGREGATE_LABEL: Record<MembershipStatus, [string, string]> = {
+  member: ['Member', 'Members'],
+  'non-member': ['Non-Member', 'Non-Members'],
+  'membership-track': ['On Track', 'On Track'],
+};
+
+const MEMBERSHIP_AGGREGATE_ORDER: MembershipStatus[] = [
+  'member',
+  'membership-track',
+  'non-member',
+];
+
+export function aggregateMembership(people: Person[]): string {
+  if (people.length === 0) return '';
+  const counts = new Map<MembershipStatus, number>();
+  for (const p of people) counts.set(p.membershipStatus, (counts.get(p.membershipStatus) ?? 0) + 1);
+  return MEMBERSHIP_AGGREGATE_ORDER.filter((k) => counts.has(k))
+    .map((k) => {
+      const n = counts.get(k)!;
+      return `${n} ${MEMBERSHIP_AGGREGATE_LABEL[k][n === 1 ? 0 : 1]}`;
+    })
+    .join(' · ');
+}
+
+const ATTENDANCE_AGGREGATE_LABEL: Record<ChurchAttendance, [string, string]> = {
+  regular: ['Regular', 'Regulars'],
+  visitor: ['Visitor', 'Visitors'],
+  'fellowship-group-only': ['FG Only', 'FG Only'],
+  'on-leave': ['On Leave', 'On Leave'],
+  archived: ['Archived', 'Archived'],
+};
+
+const ATTENDANCE_AGGREGATE_ORDER: ChurchAttendance[] = [
+  'regular',
+  'visitor',
+  'fellowship-group-only',
+  'on-leave',
+  'archived',
+];
+
+export function aggregateAttendance(people: Person[]): string {
+  if (people.length === 0) return '';
+  const counts = new Map<ChurchAttendance, number>();
+  for (const p of people) counts.set(p.churchAttendance, (counts.get(p.churchAttendance) ?? 0) + 1);
+  return ATTENDANCE_AGGREGATE_ORDER.filter((k) => counts.has(k))
+    .map((k) => {
+      const n = counts.get(k)!;
+      return `${n} ${ATTENDANCE_AGGREGATE_LABEL[k][n === 1 ? 0 : 1]}`;
+    })
+    .join(' · ');
 }
 
 export function getNoteTypeLabel(type: Note['type']): string {

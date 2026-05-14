@@ -256,7 +256,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
 
   return (
     <div className="person-page-shell">
-      <div style={{ paddingBottom: 32 }}>
+      <div className="person-content-wrapper" style={{ paddingBottom: 32 }}>
       {/* ── Nav bar ── */}
       <div
         style={{
@@ -289,6 +289,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
         </button>
 
         <span
+          className="person-nav-title"
           style={{
             fontSize: 14,
             fontWeight: 500,
@@ -595,31 +596,52 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
             const active = activeTab === t;
             const count =
               t === 'todos' ? incompleteTodosCount : t === 'notices' ? notices.length : 0;
+
+            let onAction: (() => void) | null = null;
+            let actionIcon: React.ReactNode = null;
+            let actionLabel = '';
+            if (t === 'logs' && canManage) {
+              onAction = () => setShowAddLog(true);
+              actionIcon = <Plus size={13} weight="bold" />;
+              actionLabel = 'Add log';
+            } else if (t === 'todos' && canManage) {
+              onAction = () => setShowAddTodo(true);
+              actionIcon = <Plus size={13} weight="bold" />;
+              actionLabel = 'Add to-do';
+            } else if (t === 'notices' && canManage) {
+              onAction = () => setShowAddNotice(true);
+              actionIcon = <Plus size={13} weight="bold" />;
+              actionLabel = 'Add notice';
+            } else if (t === 'info' && canEdit) {
+              onAction = () => setShowEditPerson(true);
+              actionIcon = <PencilSimpleIcon size={12} weight="bold" />;
+              actionLabel = 'Edit info';
+            }
+
             return (
-              <button
-                key={t}
-                onClick={() => setTab(t as Tab)}
-                className="person-tab-item"
-                data-active={active}
-              >
-                <TabIcon tab={t as Tab} active={active} />
-                <span style={{ flex: 1, textAlign: 'left' }}>{TAB_LABELS[t as Tab]}</span>
-                {count > 0 && (
-                  <span
-                    style={{
-                      fontSize: 11,
-                      fontWeight: 600,
-                      background: 'var(--sage)',
-                      color: 'var(--on-sage)',
-                      borderRadius: 'var(--radius-sm)',
-                      padding: '0.0625rem 0.375rem',
-                      lineHeight: 1.5,
-                    }}
-                  >
-                    {count}
+              <div key={t} className="person-tab-row" data-active={active}>
+                <button
+                  onClick={() => setTab(t as Tab)}
+                  className="person-tab-item"
+                  data-active={active}
+                >
+                  <TabIcon tab={t as Tab} active={active} />
+                  <span className="person-tab-label-group">
+                    <span>{TAB_LABELS[t as Tab]}</span>
+                    {count > 0 && <span className="person-tab-badge">{count}</span>}
                   </span>
+                </button>
+                {onAction && (
+                  <button
+                    type="button"
+                    onClick={onAction}
+                    className="person-tab-action"
+                    aria-label={actionLabel}
+                  >
+                    {actionIcon}
+                  </button>
                 )}
-              </button>
+              </div>
             );
           })}
         </nav>

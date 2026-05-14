@@ -36,6 +36,7 @@ const InviteSheet = React.lazy(() => import('@/components/InviteSheet'));
 const FilterPanel = React.lazy(() => import('@/components/FilterPanel'));
 const SortControls = React.lazy(() => import('@/components/SortControls'));
 const SearchBar = React.lazy(() => import('@/components/SearchBar'));
+import HeaderInlineSearch from '@/components/HeaderInlineSearch';
 const InvitePersonPickerSheet = React.lazy(() =>
   import('@/components/PersonPickerSheets').then((m) => ({ default: m.InvitePersonPickerSheet }))
 );
@@ -91,6 +92,7 @@ export default function PeoplePage() {
   const [showSearch, setShowSearch] = React.useState(false);
   const [showFilter, setShowFilter] = React.useState(false);
   const searchInputRef = React.useRef<HTMLInputElement>(null);
+  const desktopSearchInputRef = React.useRef<HTMLInputElement>(null);
   const addBtnRef = React.useRef<HTMLDivElement>(null);
   const [showAddChoice, setShowAddChoice] = React.useState(false);
   const [showAddPerson, setShowAddPerson] = React.useState(false);
@@ -264,34 +266,49 @@ export default function PeoplePage() {
   const searchActive = showSearch || !!search;
   const filterActive = activeFilterCount > 0;
 
-  const ActionButtons = () => (
+  const actionButtons = (
     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-      {/* Search button */}
-      <Button
-        variant="ghost"
-        aria-label={searchActive ? 'Close search' : 'Search'}
-        onClick={() => {
-          if (showSearch) {
-            setShowSearch(false);
-            setSearch('');
-          } else {
-            setShowSearch(true);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            setTimeout(() => searchInputRef.current?.focus(), 50);
-          }
-        }}
-        style={{
-          width: btnSize,
-          height: btnSize,
-          background: searchActive ? 'var(--sage-light)' : 'transparent',
-          border: searchActive ? '1px solid var(--sage-mid)' : '1px solid var(--border)',
-          color: searchActive ? 'var(--sage)' : 'var(--text-secondary)',
-          flexShrink: 0,
-          padding: 0,
-        }}
-      >
-        <MagnifyingGlass size={14} />
-      </Button>
+      {/* Search button — hidden on desktop when search is expanded */}
+      <div className={showSearch ? 'lg:hidden' : undefined}>
+        <Button
+          variant="ghost"
+          aria-label={searchActive ? 'Close search' : 'Search'}
+          onClick={() => {
+            if (showSearch) {
+              setShowSearch(false);
+              setSearch('');
+            } else {
+              setShowSearch(true);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+              setTimeout(() => {
+                searchInputRef.current?.focus();
+                desktopSearchInputRef.current?.focus();
+              }, 50);
+            }
+          }}
+          style={{
+            width: btnSize,
+            height: btnSize,
+            background: searchActive ? 'var(--sage-light)' : 'transparent',
+            border: searchActive ? '1px solid var(--sage-mid)' : '1px solid var(--border)',
+            color: searchActive ? 'var(--sage)' : 'var(--text-secondary)',
+            flexShrink: 0,
+            padding: 0,
+          }}
+        >
+          <MagnifyingGlass size={14} />
+        </Button>
+      </div>
+      <HeaderInlineSearch
+        search={search}
+        setSearch={setSearch}
+        show={showSearch}
+        inputRef={desktopSearchInputRef}
+        placeholder="Search by name…"
+        ariaLabel="Search people by name"
+        height={btnSize}
+        onClose={() => setShowSearch(false)}
+      />
       {/* Filter button */}
       <div style={{ position: 'relative', flexShrink: 0 }}>
         <Button
@@ -512,7 +529,7 @@ export default function PeoplePage() {
               >
                 People
               </span>
-              <ActionButtons />
+              {actionButtons}
             </div>
           ) : (
             <div
@@ -535,21 +552,23 @@ export default function PeoplePage() {
               >
                 People
               </h1>
-              <ActionButtons />
+              {actionButtons}
             </div>
           )}
         </header>
 
         <main>
           {/* ── Search (expandable) ─────────────── */}
-          <React.Suspense fallback={null}>
-            <SearchBar
-              search={search}
-              setSearch={setSearch}
-              show={showSearch}
-              inputRef={searchInputRef}
-            />
-          </React.Suspense>
+          <div className="lg:hidden">
+            <React.Suspense fallback={null}>
+              <SearchBar
+                search={search}
+                setSearch={setSearch}
+                show={showSearch}
+                inputRef={searchInputRef}
+              />
+            </React.Suspense>
+          </div>
 
           {/* ── Active filter chips ────────────── */}
           {chips.length > 0 && (

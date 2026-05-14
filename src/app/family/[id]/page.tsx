@@ -150,7 +150,15 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
     return parts.join(' · ');
   })();
 
+  const visibleTabs: Tab[] = [
+    'logs',
+    'todos',
+    ...(canSeeNotices ? (['notices'] as Tab[]) : []),
+    'info',
+  ];
+
   return (
+    <div className="family-page-shell">
     <div style={{ paddingBottom: 40 }}>
       {/* ── Nav bar ── */}
       <div
@@ -299,6 +307,8 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
         </div>
       </div>
 
+      <div className="family-body">
+      <div className="family-sidebar-col">
       {/* ── Page header — scrolls away ── */}
       <div style={{ padding: '1.75rem 0 1.25rem', display: 'flex', alignItems: 'center', gap: 16 }}>
         {/* Avatar / Photo */}
@@ -356,8 +366,68 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
         </div>
       </div>
 
-      {/* ── Tabs — sticky below nav bar ── */}
+      {/* ── Tabs (desktop sidebar variant) ── */}
+      {visibleTabs.length > 1 && (
+        <nav className="family-tabs-desktop">
+          {visibleTabs.map((t) => {
+            const active = tab === t;
+            const count =
+              t === 'todos' ? incompleteTodosCount : t === 'notices' ? notices.length : 0;
+
+            let onAction: (() => void) | null = null;
+            let actionIcon: React.ReactNode = null;
+            let actionLabel = '';
+            if (t === 'logs') {
+              onAction = () => setShowAddLog(true);
+              actionIcon = <Plus size={13} weight="bold" />;
+              actionLabel = 'Add log';
+            } else if (t === 'todos') {
+              onAction = () => setShowAddTodo(true);
+              actionIcon = <Plus size={13} weight="bold" />;
+              actionLabel = 'Add to-do';
+            } else if (t === 'notices' && canManageFamily) {
+              onAction = () => setShowAddNotice(true);
+              actionIcon = <Plus size={13} weight="bold" />;
+              actionLabel = 'Add notice';
+            } else if (t === 'info') {
+              onAction = () => setShowEditFamily(true);
+              actionIcon = <PencilSimpleIcon size={12} weight="bold" />;
+              actionLabel = 'Edit info';
+            }
+
+            return (
+              <div key={t} className="family-tab-row" data-active={active}>
+                <button
+                  onClick={() => setTab(t)}
+                  className="family-tab-item"
+                  data-active={active}
+                >
+                  <TabIcon tab={t} active={active} />
+                  <span className="family-tab-label-group">
+                    <span>{TAB_LABELS[t]}</span>
+                    {count > 0 && <span className="family-tab-badge">{count}</span>}
+                  </span>
+                </button>
+                {onAction && (
+                  <button
+                    type="button"
+                    onClick={onAction}
+                    className="family-tab-action"
+                    aria-label={actionLabel}
+                  >
+                    {actionIcon}
+                  </button>
+                )}
+              </div>
+            );
+          })}
+        </nav>
+      )}
+      </div>
+      <div className="family-main-col">
+      {/* ── Tabs — sticky below nav bar (mobile) ── */}
       <div
+        className="family-tabs-mobile"
         style={{
           position: 'sticky',
           top: 54,
@@ -368,7 +438,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
           marginBottom: 20,
         }}
       >
-        {(['logs', 'todos', ...(canSeeNotices ? ['notices'] : []), 'info'] as Tab[]).map((t) => (
+        {visibleTabs.map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -830,6 +900,8 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
           )}
         </div>
       )}
+      </div>
+      </div>
 
       {showAddLog && !viewingLinkedTodo && (
         <AddLogModal
@@ -906,6 +978,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
           onSkip={() => setTodoLogPrompt(null)}
         />
       )}
+    </div>
     </div>
   );
 }

@@ -12,6 +12,7 @@ export function TextInputRow({
   onChange,
   placeholder,
   type = 'text',
+  autoComplete,
 }: {
   icon: React.ReactNode;
   label: string;
@@ -21,6 +22,7 @@ export function TextInputRow({
   onChange: (v: string) => void;
   placeholder?: string;
   type?: string;
+  autoComplete?: string;
 }) {
   return (
     <div
@@ -50,6 +52,7 @@ export function TextInputRow({
         onChange={(e) => onChange(e.target.value)}
         type={type}
         placeholder={placeholder}
+        autoComplete={autoComplete}
         style={inputStyle}
       />
     </div>

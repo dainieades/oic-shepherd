@@ -187,6 +187,7 @@ export default function WelcomePage() {
           inputRef={firstNameRef}
           value={preferredName}
           onChange={setPreferredName}
+          autoComplete="given-name"
         />
         <TextInputRow
           icon={<TextT size={16} color="var(--text-muted)" />}
@@ -194,6 +195,7 @@ export default function WelcomePage() {
           inputRef={lastNameRef}
           value={lastName}
           onChange={setLastName}
+          autoComplete="family-name"
         />
       </Section>
 
@@ -205,6 +207,7 @@ export default function WelcomePage() {
           value={phone}
           onChange={setPhone}
           type="tel"
+          autoComplete="tel"
         />
         <p style={consentNoteStyle}>
           By providing your phone number, you agree for a member or group leader to contact you.
@@ -216,6 +219,7 @@ export default function WelcomePage() {
           value={email}
           onChange={setEmail}
           type="email"
+          autoComplete="email"
         />
       </Section>
 

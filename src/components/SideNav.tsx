@@ -28,14 +28,14 @@ export default function SideNav() {
       <Link
         href="/"
         className="flex items-center gap-3 px-5 py-5"
-        style={{ textDecoration: 'none', color: 'var(--text-primary)' }}
+        style={{ textDecoration: 'none', color: 'var(--logo-color)' }}
       >
         <Logo height={32} />
         <span
           className="font-display"
           style={{ fontSize: '1.0625rem', fontWeight: 600, letterSpacing: '-0.01em' }}
         >
-          Shepherd Care
+          Shepherd
         </span>
       </Link>
 
