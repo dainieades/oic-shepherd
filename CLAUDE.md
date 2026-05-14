@@ -12,6 +12,12 @@ After completing any item, update `.claude/docs/tech-debt.md`: mark done with �
 
 ---
 
+## Email
+
+App emails (invites, notifications, todo reminders) send via Gmail SMTP through `src/lib/emails/mailer.ts`. Sender account is env-driven (`GMAIL_USER`, `GMAIL_APP_PASSWORD`) — to swap accounts (e.g. to `oicinfoteam@gmail.com`), see `.claude/docs/email-setup.md`. No code changes required.
+
+---
+
 ## ⚠️ Next.js 16
 
 Breaking changes from prior versions. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code.

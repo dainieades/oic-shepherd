@@ -33,6 +33,7 @@ export async function proxy(request: NextRequest) {
     request.nextUrl.pathname.startsWith('/signin') ||
     request.nextUrl.pathname.startsWith('/signup') ||
     request.nextUrl.pathname.startsWith('/auth') ||
+    request.nextUrl.pathname.startsWith('/welcome') ||
     request.nextUrl.pathname.startsWith('/api/');
 
   const isDev = process.env.NODE_ENV === 'development';
