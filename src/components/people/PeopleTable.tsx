@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { differenceInCalendarDays, format } from 'date-fns';
 import { CaretUp, CaretDown, CaretUpDown, HandHeart, House } from '@phosphor-icons/react';
 import { useApp, type HomeSortKey } from '@/lib/context';
@@ -47,8 +48,24 @@ interface Counts {
   notices: number;
 }
 
+function useRowNavigate() {
+  const router = useRouter();
+  return React.useCallback(
+    (href: string) =>
+      (e: React.MouseEvent<HTMLTableRowElement>) => {
+        if (e.defaultPrevented) return;
+        if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        const target = e.target as HTMLElement;
+        if (target.closest('a, button, input, select, textarea, label')) return;
+        router.push(href);
+      },
+    [router]
+  );
+}
+
 export default function PeopleTable({ entries }: PeopleTableProps) {
   const { data, homeSortKey, setHomeSortKey } = useApp();
+  const onRowClick = useRowNavigate();
 
   const familiesById = React.useMemo(() => {
     const map = new Map<string, Family>();
@@ -173,7 +190,14 @@ export default function PeopleTable({ entries }: PeopleTableProps) {
                 todos: memberTodos + (openTodosByFamily.get(entry.family.id) ?? 0),
                 notices: memberNotices + (noticesByFamily.get(entry.family.id) ?? 0),
               };
-              return <FamilyTableRow key={entry.family.id} entry={entry} counts={counts} />;
+              return (
+                <FamilyTableRow
+                  key={entry.family.id}
+                  entry={entry}
+                  counts={counts}
+                  onRowClick={onRowClick}
+                />
+              );
             }
             const counts: Counts = {
               todos: openTodosByPerson.get(entry.person.id) ?? 0,
@@ -185,6 +209,7 @@ export default function PeopleTable({ entries }: PeopleTableProps) {
                 entry={entry}
                 familiesById={familiesById}
                 counts={counts}
+                onRowClick={onRowClick}
               />
             );
           })}
@@ -234,9 +259,11 @@ function SortableHeader({
 function FamilyTableRow({
   entry,
   counts,
+  onRowClick,
 }: {
   entry: Extract<PeopleEntry, { type: 'family' }>;
   counts: Counts;
+  onRowClick: (href: string) => (e: React.MouseEvent<HTMLTableRowElement>) => void;
 }) {
   const { family, members, lastNoteTs, group } = entry;
   const allGroupIds = [...new Set(members.flatMap((m) => m.groupIds))];
@@ -247,7 +274,11 @@ function FamilyTableRow({
   }`;
 
   return (
-    <tr className="people-row" data-href={`/family/${family.id}`}>
+    <tr
+      className="people-row"
+      data-href={`/family/${family.id}`}
+      onClick={onRowClick(`/family/${family.id}`)}
+    >
       <td style={cellStyle}>
         <Link
           href={`/family/${family.id}`}
@@ -317,10 +348,12 @@ function IndividualTableRow({
   entry,
   familiesById,
   counts,
+  onRowClick,
 }: {
   entry: Extract<PeopleEntry, { type: 'individual' }>;
   familiesById: Map<string, Family>;
   counts: Counts;
+  onRowClick: (href: string) => (e: React.MouseEvent<HTMLTableRowElement>) => void;
 }) {
   const { person, lastNoteTs, group } = entry;
   const extraGroups = Math.max(0, person.groupIds.length - 1);
@@ -328,7 +361,11 @@ function IndividualTableRow({
   const subtitle = family ? family.label : person.alternativeName;
 
   return (
-    <tr className="people-row" data-href={`/person/${person.id}`}>
+    <tr
+      className="people-row"
+      data-href={`/person/${person.id}`}
+      onClick={onRowClick(`/person/${person.id}`)}
+    >
       <td style={cellStyle}>
         <Link
           href={`/person/${person.id}`}

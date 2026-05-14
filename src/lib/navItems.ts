@@ -42,7 +42,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
     href: '/settings',
     label: 'Settings',
     icon: Gear,
-    matches: (p) => p === '/settings',
+    matches: (p) => p === '/settings' || p.startsWith('/settings/'),
   },
 ];
 

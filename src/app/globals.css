@@ -405,6 +405,7 @@ body {
 /* ── People table (desktop) ────────────────────── */
 .people-row {
   transition: background-color 0.14s ease;
+  cursor: pointer;
 }
 .people-row:hover {
   background-color: var(--sage-light);
