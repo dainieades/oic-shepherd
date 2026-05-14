@@ -10,7 +10,7 @@ import InviteSheet from '@/components/InviteSheet';
 import { Button } from '@/components/Button';
 import AppRolePickerSheet from '@/components/AppRolePickerSheet';
 import { type AppRole } from '@/lib/types';
-import { deleteApprovedEmail } from './actions';
+import { deleteApprovedEmail, updateApprovedEmail } from './actions';
 
 type ApprovedEmail = { email: string; label: string | null; created_at: string };
 
@@ -292,6 +292,7 @@ export default function AccessManagementPage() {
             <AppRolePickerSheet
               currentRole={linkedPerson ? role : undefined}
               noPersonLinked={!linkedPerson}
+              currentEmail={roleEditEmail}
               onSelect={async (newRole) => {
                 if (!linkedPerson) return;
                 await updatePerson(linkedPerson.id, { appRole: newRole });
@@ -302,8 +303,16 @@ export default function AccessManagementPage() {
                 if (linkedPerson) {
                   await updatePerson(linkedPerson.id, { appRole: 'no-access' });
                 }
-                setRoleEditEmail(null);
                 await load();
+              }}
+              onUpdateEmail={async (newEmail) => {
+                const result = await updateApprovedEmail(roleEditEmail, newEmail);
+                if (result.error) return result;
+                if (linkedPerson) {
+                  await updatePerson(linkedPerson.id, { email: newEmail });
+                }
+                await load();
+                return {};
               }}
               onClose={() => setRoleEditEmail(null)}
               isAdmin

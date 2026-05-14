@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { type AppRole } from '@/lib/types';
-import { Warning, Check } from '@phosphor-icons/react';
+import { Warning, Check, PencilSimple } from '@phosphor-icons/react';
 import { Z_SHEET } from '@/lib/constants';
 import { BottomSheet } from '@/components/BottomSheet';
 
@@ -27,8 +27,10 @@ const ROLE_OPTIONS: { value: AppRole; label: string; description: string }[] = [
 interface Props {
   currentRole: AppRole | undefined;
   noPersonLinked?: boolean;
+  currentEmail?: string;
   onSelect: (role: AppRole) => void;
-  onRemove: () => void;
+  onRemove: () => Promise<void> | void;
+  onUpdateEmail?: (newEmail: string) => Promise<{ error?: string } | void>;
   onClose: () => void;
   isAdmin: boolean;
   personName?: string;
@@ -37,16 +39,55 @@ interface Props {
 export default function AppRolePickerSheet({
   currentRole,
   noPersonLinked,
+  currentEmail,
   onSelect,
   onRemove,
+  onUpdateEmail,
   onClose,
   isAdmin,
   personName,
 }: Props) {
+  const canEditEmail = Boolean(onUpdateEmail && currentEmail);
   const [confirmRemove, setConfirmRemove] = React.useState(false);
+  const [editingEmail, setEditingEmail] = React.useState(false);
+  const [emailDraft, setEmailDraft] = React.useState(currentEmail ?? '');
+  const [emailError, setEmailError] = React.useState('');
+  const [saving, setSaving] = React.useState(false);
+  const emailInputRef = React.useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    if (editingEmail) {
+      setEmailDraft(currentEmail ?? '');
+      setEmailError('');
+      const t = window.setTimeout(() => emailInputRef.current?.focus(), 50);
+      return () => window.clearTimeout(t);
+    }
+  }, [editingEmail, currentEmail]);
+
+  async function handleSaveEmail() {
+    if (!onUpdateEmail) return;
+    const trimmed = emailDraft.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      setEmailError('Enter a valid email address.');
+      return;
+    }
+    if (trimmed === (currentEmail ?? '').toLowerCase()) {
+      setEditingEmail(false);
+      return;
+    }
+    setSaving(true);
+    const result = await onUpdateEmail(trimmed);
+    setSaving(false);
+    if (result && 'error' in result && result.error) {
+      setEmailError(result.error);
+      return;
+    }
+    setEditingEmail(false);
+    onClose();
+  }
 
   return (
-    <BottomSheet onClose={onClose} compact zIndex={Z_SHEET}>
+    <BottomSheet onClose={onClose} compact zIndex={Z_SHEET} variant="dialog">
       {/* Title */}
       <p
         style={{
@@ -63,73 +104,103 @@ export default function AppRolePickerSheet({
         App Role
       </p>
 
-      {noPersonLinked ? (
-        /* ── No person record linked ── */
-        <div style={{ padding: '1.5rem 1.25rem 1.25rem', textAlign: 'center' }}>
-          <div
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: '50%',
-              background: 'var(--border-light)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              margin: '0 auto 1rem',
-            }}
-          >
-            <Warning size={20} color="var(--text-muted)" />
-          </div>
-          <p
-            style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 8 }}
-          >
-            No person record linked
-          </p>
+      {editingEmail ? (
+        /* ── Edit email address ── */
+        <div style={{ padding: '1.25rem 1.25rem 0.5rem' }}>
           <p
             style={{
               fontSize: 13,
               color: 'var(--text-secondary)',
+              textAlign: 'center',
               lineHeight: 1.5,
-              marginBottom: 24,
+              marginTop: 0,
+              marginBottom: 16,
             }}
           >
-            To manage this person&apos;s role, open their person record and add this email address
-            to their profile.
+            Update the email {personName ? `${personName} uses` : 'used'} to sign in.
           </p>
-          {isAdmin && (
-            <button
-              onClick={() => setConfirmRemove(true)}
-              style={{
-                width: '100%',
-                padding: '0.875rem',
-                background: 'none',
-                border: '1px solid var(--border-light)',
-                color: 'var(--red)',
-                borderRadius: 'var(--radius-md)',
-                fontSize: 15,
-                fontWeight: 600,
-                cursor: 'pointer',
-                marginBottom: 10,
-              }}
-            >
-              Remove Access
-            </button>
+          <label
+            style={{
+              display: 'block',
+              fontSize: 12,
+              fontWeight: 600,
+              color: 'var(--text-muted)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.06em',
+              marginBottom: 6,
+            }}
+          >
+            Email address
+          </label>
+          <input
+            ref={emailInputRef}
+            type="email"
+            value={emailDraft}
+            onChange={(e) => {
+              setEmailDraft(e.target.value);
+              setEmailError('');
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleSaveEmail();
+            }}
+            placeholder="name@example.com"
+            autoComplete="email"
+            style={{
+              width: '100%',
+              padding: '0.6875rem 0.875rem',
+              borderRadius: 'var(--radius-sm)',
+              border: `0.09375rem solid ${emailError ? 'var(--red)' : 'var(--border)'}`,
+              fontSize: 15,
+              color: 'var(--text-primary)',
+              background: 'var(--bg)',
+              outline: 'none',
+              boxSizing: 'border-box',
+              marginBottom: emailError ? 4 : 16,
+            }}
+          />
+          {emailError && (
+            <p role="alert" style={{ fontSize: 12, color: 'var(--red)', margin: '0 0 12px' }}>
+              {emailError}
+            </p>
           )}
           <button
-            onClick={onClose}
+            onClick={handleSaveEmail}
+            disabled={saving}
             style={{
               width: '100%',
               padding: '0.875rem',
-              background: 'var(--surface)',
-              border: '1px solid var(--border-light)',
-              color: 'var(--text-primary)',
+              background: 'var(--sage)',
+              color: 'var(--on-sage)',
+              border: 'none',
               borderRadius: 'var(--radius-md)',
               fontSize: 15,
-              fontWeight: 500,
-              cursor: 'pointer',
+              fontWeight: 600,
+              cursor: saving ? 'not-allowed' : 'pointer',
+              opacity: saving ? 0.6 : 1,
+              marginBottom: 10,
             }}
           >
-            Done
+            {saving ? 'Saving…' : 'Save Email'}
+          </button>
+          <button
+            onClick={() => {
+              setEditingEmail(false);
+              setEmailError('');
+            }}
+            disabled={saving}
+            style={{
+              width: '100%',
+              padding: '0.875rem',
+              background: 'none',
+              color: 'var(--text-secondary)',
+              border: 'none',
+              fontSize: 15,
+              fontWeight: 500,
+              cursor: saving ? 'not-allowed' : 'pointer',
+              marginBottom: 4,
+            }}
+          >
+            Cancel
           </button>
         </div>
       ) : confirmRemove ? (
@@ -173,10 +244,13 @@ export default function AppRolePickerSheet({
             the app.
           </p>
           <button
-            onClick={() => {
-              onRemove();
+            onClick={async () => {
+              setSaving(true);
+              await onRemove();
+              setSaving(false);
               onClose();
             }}
+            disabled={saving}
             style={{
               width: '100%',
               padding: '0.875rem',
@@ -186,14 +260,16 @@ export default function AppRolePickerSheet({
               borderRadius: 'var(--radius-md)',
               fontSize: 15,
               fontWeight: 600,
-              cursor: 'pointer',
+              cursor: saving ? 'not-allowed' : 'pointer',
+              opacity: saving ? 0.6 : 1,
               marginBottom: 10,
             }}
           >
-            Remove Access
+            {saving ? 'Removing…' : 'Remove Access'}
           </button>
           <button
             onClick={() => setConfirmRemove(false)}
+            disabled={saving}
             style={{
               width: '100%',
               padding: '0.875rem',
@@ -202,11 +278,106 @@ export default function AppRolePickerSheet({
               border: 'none',
               fontSize: 15,
               fontWeight: 500,
-              cursor: 'pointer',
+              cursor: saving ? 'not-allowed' : 'pointer',
               marginBottom: 4,
             }}
           >
             Cancel
+          </button>
+        </div>
+      ) : noPersonLinked ? (
+        /* ── No person record linked ── */
+        <div style={{ padding: '1.5rem 1.25rem 1.25rem', textAlign: 'center' }}>
+          <div
+            style={{
+              width: 44,
+              height: 44,
+              borderRadius: '50%',
+              background: 'var(--border-light)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 1rem',
+            }}
+          >
+            <Warning size={20} color="var(--text-muted)" />
+          </div>
+          <p
+            style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 8 }}
+          >
+            No person record linked
+          </p>
+          <p
+            style={{
+              fontSize: 13,
+              color: 'var(--text-secondary)',
+              lineHeight: 1.5,
+              marginBottom: 24,
+            }}
+          >
+            To manage this person&apos;s role, open their person record and add this email address
+            to their profile.
+          </p>
+          {isAdmin && (
+            <>
+              {canEditEmail && (
+                <button
+                  onClick={() => setEditingEmail(true)}
+                  style={{
+                    width: '100%',
+                    padding: '0.875rem',
+                    background: 'none',
+                    border: '1px solid var(--border-light)',
+                    color: 'var(--text-primary)',
+                    borderRadius: 'var(--radius-md)',
+                    fontSize: 15,
+                    fontWeight: 500,
+                    cursor: 'pointer',
+                    marginBottom: 10,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 8,
+                  }}
+                >
+                  <PencilSimple size={15} />
+                  Edit Email
+                </button>
+              )}
+              <button
+                onClick={() => setConfirmRemove(true)}
+                style={{
+                  width: '100%',
+                  padding: '0.875rem',
+                  background: 'none',
+                  border: '1px solid var(--border-light)',
+                  color: 'var(--red)',
+                  borderRadius: 'var(--radius-md)',
+                  fontSize: 15,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  marginBottom: 10,
+                }}
+              >
+                Remove Access
+              </button>
+            </>
+          )}
+          <button
+            onClick={onClose}
+            style={{
+              width: '100%',
+              padding: '0.875rem',
+              background: 'var(--surface)',
+              border: '1px solid var(--border-light)',
+              color: 'var(--text-primary)',
+              borderRadius: 'var(--radius-md)',
+              fontSize: 15,
+              fontWeight: 500,
+              cursor: 'pointer',
+            }}
+          >
+            Done
           </button>
         </div>
       ) : (
@@ -263,23 +434,48 @@ export default function AppRolePickerSheet({
           })}
 
           {isAdmin && (
-            <button
-              onClick={() => setConfirmRemove(true)}
-              style={{
-                width: '100%',
-                padding: '0.9375rem 1.25rem',
-                background: 'none',
-                border: 'none',
-                borderBottom: '1px solid var(--border-light)',
-                fontSize: 15,
-                fontWeight: 500,
-                color: 'var(--red)',
-                cursor: 'pointer',
-                textAlign: 'left',
-              }}
-            >
-              Remove Access
-            </button>
+            <>
+              {canEditEmail && (
+                <button
+                  onClick={() => setEditingEmail(true)}
+                  style={{
+                    width: '100%',
+                    padding: '0.9375rem 1.25rem',
+                    background: 'none',
+                    border: 'none',
+                    borderBottom: '1px solid var(--border-light)',
+                    fontSize: 15,
+                    fontWeight: 500,
+                    color: 'var(--text-primary)',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                  }}
+                >
+                  <PencilSimple size={16} color="var(--text-muted)" />
+                  Edit Email
+                </button>
+              )}
+              <button
+                onClick={() => setConfirmRemove(true)}
+                style={{
+                  width: '100%',
+                  padding: '0.9375rem 1.25rem',
+                  background: 'none',
+                  border: 'none',
+                  borderBottom: '1px solid var(--border-light)',
+                  fontSize: 15,
+                  fontWeight: 500,
+                  color: 'var(--red)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                Remove Access
+              </button>
+            </>
           )}
         </>
       )}
