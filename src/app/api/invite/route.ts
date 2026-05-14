@@ -3,6 +3,7 @@ import { createClient } from '@/utils/supabase/server';
 import { createClient as createSupabaseAdmin } from '@supabase/supabase-js';
 import { z } from 'zod';
 import { inviteEmail } from '@/lib/emails/templates';
+import { isMailerConfigured, sendEmail } from '@/lib/emails/mailer';
 
 const BodySchema = z.object({
   email: z.string().email(),
@@ -57,33 +58,18 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const invitedByName =
     (persona as { english_name?: string } | null)?.english_name ?? user.email ?? 'Your pastor';
 
-  // Send invite email via Resend
-  const resendKey = process.env.RESEND_API_KEY;
-  if (resendKey) {
-    try {
-      const { Resend } = await import('resend');
-      const resend = new Resend(resendKey);
-      const from = process.env.RESEND_FROM_EMAIL ?? 'onboarding@resend.dev';
-      const { subject, html } = inviteEmail(invitedByName);
-      const { error: emailError } = await resend.emails.send({
-        from,
-        to: normalizedEmail,
-        subject,
-        html,
-      });
-      if (emailError) {
-        console.error('[invite] Resend error:', emailError);
-        return NextResponse.json(
-          { error: `Email delivery failed: ${emailError.message}` },
-          { status: 500 }
-        );
-      }
-    } catch (err) {
-      console.error('[invite] Resend exception:', err);
-      return NextResponse.json({ error: 'Email delivery failed' }, { status: 500 });
+  if (isMailerConfigured()) {
+    const { subject, html } = inviteEmail(invitedByName);
+    const { error: emailError } = await sendEmail({ to: normalizedEmail, subject, html });
+    if (emailError) {
+      console.error('[invite] Email error:', emailError);
+      return NextResponse.json(
+        { error: `Email delivery failed: ${emailError.message}` },
+        { status: 500 }
+      );
     }
   } else {
-    console.warn('[invite] RESEND_API_KEY not set — invite email not sent');
+    console.warn('[invite] Mailer not configured — invite email not sent');
   }
 
   return NextResponse.json({ ok: true });

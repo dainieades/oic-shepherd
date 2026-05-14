@@ -2,17 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient as createSupabaseAdmin } from '@supabase/supabase-js';
 import type { TodoReminder } from '@/lib/types';
 import { todoCreatedEmail } from '@/lib/emails/templates';
+import { sendEmail } from '@/lib/emails/mailer';
 
 function getAdminClient() {
   return createSupabaseAdmin(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
-}
-
-async function getResend() {
-  const { Resend } = await import('resend');
-  return new Resend(process.env.RESEND_API_KEY);
 }
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
@@ -59,8 +55,6 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     )
   );
 
-  const resend = await getResend();
-  const from = process.env.RESEND_FROM_EMAIL ?? 'onboarding@resend.dev';
   let sent = 0;
 
   for (const todo of todos as Array<{
@@ -92,12 +86,12 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       continue;
     }
 
-    try {
-      const { subject, html } = todoCreatedEmail(todo.title, todo.due_date, todo.reminder);
-      await resend.emails.send({ from, to: user.email, subject, html });
+    const { subject, html } = todoCreatedEmail(todo.title, todo.due_date, todo.reminder);
+    const { error: sendErr } = await sendEmail({ to: user.email, subject, html });
+    if (sendErr) {
+      console.error(`[cron/todo-reminders] send failed for todo ${todo.id}`, sendErr);
+    } else {
       sent++;
-    } catch (err) {
-      console.error(`[cron/todo-reminders] send failed for todo ${todo.id}`, err);
     }
 
     await admin

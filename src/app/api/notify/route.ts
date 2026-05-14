@@ -12,14 +12,7 @@ import {
   todoCreatedEmail,
   type ProfileChange,
 } from '@/lib/emails/templates';
-
-async function getResend() {
-  const { Resend } = await import('resend');
-  return new Resend(process.env.RESEND_API_KEY);
-}
-function getFrom() {
-  return process.env.RESEND_FROM_EMAIL ?? 'onboarding@resend.dev';
-}
+import { sendEmail } from '@/lib/emails/mailer';
 
 function getAdminClient() {
   return createSupabaseAdmin(
@@ -110,9 +103,7 @@ async function getEmailsByPersonaIds(
 
 async function send(emails: string[], subject: string, html: string): Promise<void> {
   if (emails.length === 0) return;
-  const resend = await getResend();
-  const from = getFrom();
-  await Promise.all(emails.map((to) => resend.emails.send({ from, to, subject, html })));
+  await Promise.all(emails.map((to) => sendEmail({ to, subject, html })));
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
