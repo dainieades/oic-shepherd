@@ -6,7 +6,7 @@ import { AvatarBadge } from '@/components/AvatarBadge';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/lib/context';
-import { getTimeAgo, getDueLabel, fullName } from '@/lib/utils';
+import { getTimeAgo, fullName } from '@/lib/utils';
 import { PencilSimpleIcon, CaretRight, Crown, CaretLeft } from '@phosphor-icons/react';
 import { SHEPHERD_AVATAR_PALETTE } from '@/lib/constants';
 import PageContainer from '@/components/PageContainer';
@@ -281,7 +281,6 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
           >
             {members.map((m, i) => {
               const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
-              const due = getDueLabel(m.nextFollowUpDate);
 
               return (
                 <Link
@@ -322,17 +321,6 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
                       {m.lastContactDate && (
                         <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
                           &nbsp;· {getTimeAgo(m.lastContactDate)}
-                        </span>
-                      )}
-                      {due.status !== 'ok' && due.status !== 'none' && (
-                        <span
-                          style={{
-                            fontSize: 12,
-                            color: due.status === 'overdue' ? 'var(--red)' : 'var(--amber)',
-                            fontWeight: 500,
-                          }}
-                        >
-                          &nbsp;· {due.label}
                         </span>
                       )}
                     </div>

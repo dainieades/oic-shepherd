@@ -1,6 +1,6 @@
 'use client';
 
-import { addDays, parseISO, formatISO } from 'date-fns';
+import { formatISO } from 'date-fns';
 import {
   createContext,
   useContext,
@@ -99,7 +99,7 @@ import {
 } from './utils';
 import { createClient } from '@/utils/supabase/client';
 import { useToast } from '@/components/Toast';
-import { DEFAULT_FOLLOW_UP_DAYS, SAVE_ERROR_MSG } from '@/lib/constants';
+import { SAVE_ERROR_MSG } from '@/lib/constants';
 
 interface AppContextType {
   data: AppData;
@@ -126,10 +126,7 @@ interface AppContextType {
   deleteTodo: (todoId: string) => void;
   toggleTodo: (todoId: string) => void;
   addPerson: (
-    person: Omit<
-      Person,
-      'id' | 'createdAt' | 'assignedShepherdIds' | 'groupIds' | 'followUpFrequencyDays'
-    >
+    person: Omit<Person, 'id' | 'createdAt' | 'assignedShepherdIds' | 'groupIds'>
   ) => Promise<string>;
   deletePerson: (personId: string) => void;
   addFamily: (label: string, memberIds: string[]) => Promise<string>;
@@ -156,7 +153,6 @@ interface AppContextType {
         | 'birthday'
         | 'baptismDate'
         | 'anniversary'
-        | 'followUpFrequencyDays'
         | 'isShepherd'
         | 'isBeingDiscipled'
         | 'churchPositions'
@@ -199,7 +195,6 @@ interface AppContextType {
   assignGroupsToPerson: (personId: string, groupIds: string[]) => Promise<void>;
   assignGroupsToFamily: (familyId: string, groupIds: string[]) => Promise<void>;
   assignShepherdsToFamily: (familyId: string, shepherdIds: string[]) => Promise<void>;
-  setFollowUpFrequency: (personId: string, days: number) => void;
   fetchAuditLogs: (personId: string) => Promise<import('./types').AuditLog[]>;
   canViewNote: (note: Note) => boolean;
   addNotice: (notice: Omit<Notice, 'id' | 'createdBy' | 'createdAt'>) => void;
@@ -259,7 +254,6 @@ const AUDIT_FIELD_KEYS = [
   'birthday',
   'baptismDate',
   'anniversary',
-  'followUpFrequencyDays',
   'isShepherd',
   'isBeingDiscipled',
   'churchPositions',
@@ -826,32 +820,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
         snapshot = prev;
         const newData = { ...prev, notes: [note, ...prev.notes] };
         if (note.personId) {
-          newData.people = prev.people.map((p) => {
-            if (p.id === note.personId) {
-              const now = new Date();
-              return {
-                ...p,
-                lastContactDate: formatISO(now),
-                nextFollowUpDate: formatISO(addDays(now, p.followUpFrequencyDays)),
-              };
-            }
-            return p;
-          });
+          newData.people = prev.people.map((p) =>
+            p.id === note.personId ? { ...p, lastContactDate: formatISO(new Date()) } : p
+          );
         }
         if (note.familyId) {
           const family = prev.families.find((f) => f.id === note.familyId);
           if (family) {
-            newData.people = (newData.people || prev.people).map((p) => {
-              if (family.memberIds.includes(p.id)) {
-                const now = new Date();
-                return {
-                  ...p,
-                  lastContactDate: formatISO(now),
-                  nextFollowUpDate: formatISO(addDays(now, p.followUpFrequencyDays)),
-                };
-              }
-              return p;
-            });
+            newData.people = (newData.people || prev.people).map((p) =>
+              family.memberIds.includes(p.id) ? { ...p, lastContactDate: formatISO(new Date()) } : p
+            );
           }
         }
         return newData;
@@ -873,28 +851,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
           created_at: note.createdAt,
         });
 
-        // Update last_contact_date in DB
         if (note.personId) {
-          const person = (
-            await supabase
-              .from('people')
-              .select('follow_up_frequency_days')
-              .eq('id', note.personId)
-              .single()
-          ).data;
-          if (person) {
-            const days =
-              (person as { follow_up_frequency_days: number }).follow_up_frequency_days ??
-              DEFAULT_FOLLOW_UP_DAYS;
-            const now = new Date();
-            await supabase
-              .from('people')
-              .update({
-                last_contact_date: formatISO(now),
-                next_follow_up_date: formatISO(addDays(now, days)),
-              })
-              .eq('id', note.personId);
-          }
+          await supabase
+            .from('people')
+            .update({ last_contact_date: formatISO(new Date()) })
+            .eq('id', note.personId);
         }
       } catch {
         if (snapshot) setData(snapshot);
@@ -1088,17 +1049,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // ── People ────────────────────────────────────────────────────────────
   const addPerson = useCallback(
     async (
-      personData: Omit<
-        Person,
-        'id' | 'createdAt' | 'assignedShepherdIds' | 'groupIds' | 'followUpFrequencyDays'
-      >
+      personData: Omit<Person, 'id' | 'createdAt' | 'assignedShepherdIds' | 'groupIds'>
     ): Promise<string> => {
       const person: Person = {
         ...personData,
         id: generateId(),
         assignedShepherdIds: [],
         groupIds: [],
-        followUpFrequencyDays: DEFAULT_FOLLOW_UP_DAYS,
         createdAt: new Date().toISOString(),
         createdBy: currentPersona.id,
         isTest: currentPersona.isTest === true,
@@ -1133,7 +1090,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
           church_attendance: person.churchAttendance,
           language: person.language,
           family_id: person.familyId ?? null,
-          follow_up_frequency_days: DEFAULT_FOLLOW_UP_DAYS,
           created_at: person.createdAt,
           created_by: person.createdBy ?? null,
           is_test: person.isTest ?? false,
@@ -1312,7 +1268,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
           | 'birthday'
           | 'baptismDate'
           | 'anniversary'
-          | 'followUpFrequencyDays'
           | 'isShepherd'
           | 'isBeingDiscipled'
           | 'churchPositions'
@@ -1356,8 +1311,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (updates.birthday !== undefined) dbUpdates.birthday = updates.birthday;
       if (updates.baptismDate !== undefined) dbUpdates.baptism_date = updates.baptismDate;
       if (updates.anniversary !== undefined) dbUpdates.anniversary = updates.anniversary;
-      if (updates.followUpFrequencyDays !== undefined)
-        dbUpdates.follow_up_frequency_days = updates.followUpFrequencyDays;
       if (updates.isShepherd !== undefined) dbUpdates.is_shepherd = updates.isShepherd;
       if (updates.isBeingDiscipled !== undefined)
         dbUpdates.is_being_discipled = updates.isBeingDiscipled;
@@ -1840,41 +1793,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     []
   );
 
-  const setFollowUpFrequency = useCallback(
-    async (personId: string, days: number): Promise<void> => {
-      let nextFollowUpDate: string | undefined;
-      let snapshot: AppData | undefined;
-      setData((prev) => {
-        snapshot = prev;
-        return {
-          ...prev,
-          people: prev.people.map((p) => {
-            if (p.id === personId) {
-              const base = p.lastContactDate ? parseISO(p.lastContactDate) : new Date();
-              nextFollowUpDate = formatISO(addDays(base, days));
-              return { ...p, followUpFrequencyDays: days, nextFollowUpDate };
-            }
-            return p;
-          }),
-        };
-      });
-      const supabase = createClient();
-      try {
-        await supabase
-          .from('people')
-          .update({
-            follow_up_frequency_days: days,
-            next_follow_up_date: nextFollowUpDate ?? null,
-          })
-          .eq('id', personId);
-      } catch {
-        if (snapshot) setData(snapshot);
-        showToast(SAVE_ERROR_MSG, 'error');
-      }
-    },
-    []
-  );
-
   // ── Notices ───────────────────────────────────────────────────────────
   const addNotice = useCallback(
     async (noticeData: Omit<Notice, 'id' | 'createdBy' | 'createdAt'>): Promise<void> => {
@@ -2063,7 +1981,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         assignGroupsToPerson,
         assignGroupsToFamily,
         assignShepherdsToFamily,
-        setFollowUpFrequency,
         fetchAuditLogs,
         canViewNote,
         homeFilters,

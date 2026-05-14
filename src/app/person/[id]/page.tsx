@@ -25,6 +25,7 @@ import TodoLogPrompt from '@/components/TodoLogPrompt';
 import EditPersonDrawer from '@/components/EditPersonDrawer';
 import GroupPreviewModal from '@/components/GroupPreviewModal';
 import PhotoAvatar from '@/components/PhotoAvatar';
+import ConfirmActionSheet from '@/components/ConfirmActionSheet';
 import {
   Notepad,
   CheckCircle,
@@ -62,12 +63,10 @@ import {
   GraduationCap,
 } from '@phosphor-icons/react';
 import {
-  BACKDROP_COLOR,
-  SHEET_MAX_WIDTH,
-  SHEET_BORDER_RADIUS,
   SHEPHERD_AVATAR_PALETTE,
-  Z_SHEET,
   Z_SUBHEADER,
+  archiveConfirmCopy,
+  deletePersonConfirmCopy,
 } from '@/lib/constants';
 import { InfoRow } from '@/components/InfoRow';
 import { VisitorCardPanel } from '@/components/VisitorCardPanel';
@@ -1377,161 +1376,21 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
         />
       )}
 
-      {/* ── Archive / Delete confirmation sheet ── */}
-      {confirmAction && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: BACKDROP_COLOR,
-            zIndex: Z_SHEET,
-            display: 'flex',
-            alignItems: 'flex-end',
-            justifyContent: 'center',
-          }}
-          onClick={() => setConfirmAction(null)}
-        >
-          <div
-            className="animate-slide-up"
-            style={{
-              background: 'var(--surface)',
-              borderRadius: SHEET_BORDER_RADIUS,
-              width: '100%',
-              maxWidth: SHEET_MAX_WIDTH,
-              padding: '0 1.25rem 2.25rem',
-              overflow: 'hidden',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div
-              style={{
-                width: 36,
-                height: 4,
-                background: 'var(--border)',
-                borderRadius: 2,
-                margin: '0.875rem auto 1.25rem',
-              }}
-            />
-            {confirmAction === 'archive' ? (
-              <>
-                <p
-                  style={{
-                    fontSize: 17,
-                    fontWeight: 700,
-                    color: 'var(--text-primary)',
-                    textAlign: 'center',
-                    marginBottom: 6,
-                  }}
-                >
-                  {person.churchAttendance === 'archived' ? 'Unarchive' : 'Archive'} {firstName}?
-                </p>
-                <p
-                  style={{
-                    fontSize: 13,
-                    color: 'var(--text-muted)',
-                    textAlign: 'center',
-                    marginBottom: 24,
-                  }}
-                >
-                  {person.churchAttendance === 'archived'
-                    ? 'They will be visible in the directory again.'
-                    : 'They will be hidden from the main directory but their history will be preserved.'}
-                </p>
-                <button
-                  onClick={handleArchive}
-                  style={{
-                    width: '100%',
-                    height: 50,
-                    borderRadius: 'var(--radius)',
-                    background: 'var(--sage)',
-                    color: 'var(--on-sage)',
-                    fontSize: 16,
-                    fontWeight: 600,
-                    border: 'none',
-                    cursor: 'pointer',
-                    marginBottom: 10,
-                  }}
-                >
-                  {person.churchAttendance === 'archived' ? 'Unarchive' : 'Archive'}
-                </button>
-                <button
-                  onClick={() => setConfirmAction(null)}
-                  style={{
-                    width: '100%',
-                    height: 50,
-                    borderRadius: 'var(--radius)',
-                    background: 'var(--bg)',
-                    color: 'var(--text-secondary)',
-                    fontSize: 16,
-                    fontWeight: 500,
-                    border: 'none',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Cancel
-                </button>
-              </>
-            ) : (
-              <>
-                <p
-                  style={{
-                    fontSize: 17,
-                    fontWeight: 700,
-                    color: 'var(--red)',
-                    textAlign: 'center',
-                    marginBottom: 6,
-                  }}
-                >
-                  Delete {firstName}?
-                </p>
-                <p
-                  style={{
-                    fontSize: 13,
-                    color: 'var(--text-muted)',
-                    textAlign: 'center',
-                    marginBottom: 24,
-                  }}
-                >
-                  This will permanently remove {firstName} and all their logs and to-dos. This
-                  cannot be undone.
-                </p>
-                <button
-                  onClick={handleDelete}
-                  style={{
-                    width: '100%',
-                    height: 50,
-                    borderRadius: 'var(--radius)',
-                    background: 'var(--red)',
-                    color: 'var(--on-red)',
-                    fontSize: 16,
-                    fontWeight: 600,
-                    border: 'none',
-                    cursor: 'pointer',
-                    marginBottom: 10,
-                  }}
-                >
-                  Delete permanently
-                </button>
-                <button
-                  onClick={() => setConfirmAction(null)}
-                  style={{
-                    width: '100%',
-                    height: 50,
-                    borderRadius: 'var(--radius)',
-                    background: 'var(--bg)',
-                    color: 'var(--text-secondary)',
-                    fontSize: 16,
-                    fontWeight: 500,
-                    border: 'none',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Cancel
-                </button>
-              </>
-            )}
-          </div>
-        </div>
+      {confirmAction === 'archive' && (
+        <ConfirmActionSheet
+          {...archiveConfirmCopy(firstName, person.churchAttendance === 'archived')}
+          tone="neutral"
+          onConfirm={handleArchive}
+          onCancel={() => setConfirmAction(null)}
+        />
+      )}
+      {confirmAction === 'delete' && (
+        <ConfirmActionSheet
+          {...deletePersonConfirmCopy(firstName)}
+          tone="danger"
+          onConfirm={handleDelete}
+          onCancel={() => setConfirmAction(null)}
+        />
       )}
       </div>
     </div>

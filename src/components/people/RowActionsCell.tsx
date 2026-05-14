@@ -8,18 +8,23 @@ import {
   ListChecks,
   Megaphone,
   PencilSimple,
+  Archive,
+  Trash,
 } from '@phosphor-icons/react';
-import { Z_DROPDOWN } from '@/lib/constants';
+import { Z_DROPDOWN, archiveConfirmCopy, deletePersonConfirmCopy } from '@/lib/constants';
+import { useApp } from '@/lib/context';
 import AddLogModal from '@/components/AddLogModal';
 import AddTodoModal from '@/components/AddTodoModal';
 import AddNoticeModal from '@/components/AddNoticeModal';
 import EditPersonDrawer from '@/components/EditPersonDrawer';
 import EditFamilyDrawer from '@/components/EditFamilyDrawer';
+import ConfirmActionSheet from '@/components/ConfirmActionSheet';
 import type { Person, Family } from '@/lib/types';
 
 type Target = { kind: 'person'; person: Person } | { kind: 'family'; family: Family };
 
 type ActiveModal = 'log' | 'todo' | 'notice' | 'edit' | null;
+type ConfirmAction = 'archive' | 'delete' | null;
 
 const cellStyle: React.CSSProperties = {
   padding: '0.625rem 0.5rem',
@@ -58,8 +63,31 @@ const menuItemStyle: React.CSSProperties = {
 };
 
 export default function RowActionsCell({ target }: { target: Target }) {
+  const { currentPersona, updatePerson, deletePerson } = useApp();
   const [open, setOpen] = React.useState(false);
   const [active, setActive] = React.useState<ActiveModal>(null);
+  const [confirmAction, setConfirmAction] = React.useState<ConfirmAction>(null);
+
+  const canEdit =
+    currentPersona.role === 'admin' || currentPersona.role === 'shepherd';
+  const isPerson = target.kind === 'person';
+  const isArchived =
+    isPerson && target.person.churchAttendance === 'archived';
+  const personFirstName = isPerson ? target.person.preferredName : '';
+
+  const handleArchive = () => {
+    if (!isPerson) return;
+    updatePerson(target.person.id, {
+      churchAttendance: isArchived ? 'regular' : 'archived',
+    });
+    setConfirmAction(null);
+  };
+
+  const handleDelete = () => {
+    if (!isPerson) return;
+    deletePerson(target.person.id);
+    setConfirmAction(null);
+  };
 
   const { refs, floatingStyles } = useFloating({
     placement: 'bottom-end',
@@ -164,13 +192,6 @@ export default function RowActionsCell({ target }: { target: Target }) {
             <Megaphone size={15} color="var(--text-muted)" />
             Add notice
           </button>
-          <div
-            style={{
-              height: 1,
-              background: 'var(--border-light)',
-              margin: '0.25rem 0',
-            }}
-          />
           <button
             type="button"
             role="menuitem"
@@ -181,6 +202,43 @@ export default function RowActionsCell({ target }: { target: Target }) {
             <PencilSimple size={15} color="var(--text-muted)" />
             {editLabel}
           </button>
+          {isPerson && canEdit && (
+            <>
+              <div
+                style={{
+                  height: '1px',
+                  background: 'var(--border-light)',
+                  margin: '0.25rem 0',
+                }}
+              />
+              <button
+                type="button"
+                role="menuitem"
+                style={menuItemStyle}
+                className="row-actions-item"
+                onClick={() => {
+                  setOpen(false);
+                  setConfirmAction('archive');
+                }}
+              >
+                <Archive size={15} color="var(--text-muted)" />
+                {isArchived ? 'Unarchive' : 'Archive'}
+              </button>
+              <button
+                type="button"
+                role="menuitem"
+                style={{ ...menuItemStyle, color: 'var(--red)' }}
+                className="row-actions-item"
+                onClick={() => {
+                  setOpen(false);
+                  setConfirmAction('delete');
+                }}
+              >
+                <Trash size={15} color="var(--red)" />
+                Delete
+              </button>
+            </>
+          )}
         </div>
       )}
 
@@ -210,6 +268,23 @@ export default function RowActionsCell({ target }: { target: Target }) {
       )}
       {active === 'edit' && target.kind === 'family' && (
         <EditFamilyDrawer family={target.family} onClose={() => setActive(null)} />
+      )}
+
+      {confirmAction === 'archive' && isPerson && (
+        <ConfirmActionSheet
+          {...archiveConfirmCopy(personFirstName, isArchived)}
+          tone="neutral"
+          onConfirm={handleArchive}
+          onCancel={() => setConfirmAction(null)}
+        />
+      )}
+      {confirmAction === 'delete' && isPerson && (
+        <ConfirmActionSheet
+          {...deletePersonConfirmCopy(personFirstName)}
+          tone="danger"
+          onConfirm={handleDelete}
+          onCancel={() => setConfirmAction(null)}
+        />
       )}
     </td>
   );

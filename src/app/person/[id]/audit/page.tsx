@@ -27,7 +27,6 @@ const FIELD_LABELS: Record<string, string> = {
   birthday: 'Birthday',
   baptismDate: 'Baptism Date',
   anniversary: 'Anniversary',
-  followUpFrequencyDays: 'Follow-up Frequency',
   isShepherd: 'Is Shepherd',
   isBeingDiscipled: 'Being Discipled',
   churchPositions: 'Church Positions',

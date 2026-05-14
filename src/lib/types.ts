@@ -86,9 +86,7 @@ export interface Person {
   assignedShepherdIds: string[];
   familyId?: string;
   groupIds: string[];
-  followUpFrequencyDays: number;
   lastContactDate?: string; // ISO date
-  nextFollowUpDate?: string; // ISO date
   createdAt: string;
   createdBy?: string; // persona ID
   lastEditedAt?: string;

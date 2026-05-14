@@ -7,10 +7,8 @@ import {
   truncateWhoLabel,
   getTimeAgo,
   getDaysAgoNumber,
-  getDueLabel,
   getPriorityScore,
   getFamilyPriorityScore,
-  getFamilyUrgency,
   getFamilyLastContact,
   searchPeople,
   categorizeTodos,
@@ -38,7 +36,6 @@ function makePerson(overrides: Partial<Person> = {}): Person {
     language: ['english'],
     assignedShepherdIds: ['s1'],
     groupIds: ['g1'],
-    followUpFrequencyDays: 14,
     createdAt: '2025-01-01T00:00:00Z',
     ...overrides,
   };
@@ -215,43 +212,10 @@ describe('getDaysAgoNumber', () => {
 });
 
 // ---------------------------------------------------------------------------
-// getDueLabel
-// ---------------------------------------------------------------------------
-
-describe('getDueLabel', () => {
-  it('returns none status when no date provided', () => {
-    expect(getDueLabel(undefined)).toEqual({ label: 'No follow-up set', status: 'none' });
-  });
-  it('returns overdue for past date', () => {
-    const result = getDueLabel('2025-06-10');
-    expect(result.status).toBe('overdue');
-    expect(result.label).toMatch(/Overdue by 5 days/);
-  });
-  it('returns due-soon for today', () => {
-    const result = getDueLabel('2025-06-15');
-    expect(result).toEqual({ label: 'Due today', status: 'due-soon' });
-  });
-  it('returns due-soon for within 7 days', () => {
-    const result = getDueLabel('2025-06-20');
-    expect(result.status).toBe('due-soon');
-    expect(result.label).toMatch(/Due in 5 days/);
-  });
-  it('returns ok for more than 7 days out', () => {
-    const result = getDueLabel('2025-07-01');
-    expect(result.status).toBe('ok');
-  });
-});
-
-// ---------------------------------------------------------------------------
 // getPriorityScore
 // ---------------------------------------------------------------------------
 
 describe('getPriorityScore', () => {
-  it('scores higher when overdue', () => {
-    const overdue = makePerson({ nextFollowUpDate: '2025-06-01', lastContactDate: '2025-06-01' });
-    const ok = makePerson({ nextFollowUpDate: '2025-07-01', lastContactDate: '2025-06-14' });
-    expect(getPriorityScore(overdue)).toBeGreaterThan(getPriorityScore(ok));
-  });
   it('adds score when no shepherd assigned', () => {
     const unassigned = makePerson({ assignedShepherdIds: [] });
     const assigned = makePerson({ assignedShepherdIds: ['s1'] });
@@ -295,26 +259,6 @@ describe('getFamilyPriorityScore', () => {
     const high = makePerson({ id: 'p1', assignedShepherdIds: [], groupIds: [] });
     const low = makePerson({ id: 'p2', lastContactDate: '2025-06-14' });
     expect(getFamilyPriorityScore([high, low])).toBe(getPriorityScore(high));
-  });
-});
-
-// ---------------------------------------------------------------------------
-// getFamilyUrgency
-// ---------------------------------------------------------------------------
-
-describe('getFamilyUrgency', () => {
-  it('returns none for empty members', () => {
-    expect(getFamilyUrgency([])).toEqual({ label: '', status: 'none' });
-  });
-  it('returns most urgent status across members', () => {
-    const overdueMember = makePerson({ nextFollowUpDate: '2025-06-01' });
-    const okMember = makePerson({ nextFollowUpDate: '2025-07-01' });
-    expect(getFamilyUrgency([overdueMember, okMember]).status).toBe('overdue');
-  });
-  it('returns ok when all members are on track', () => {
-    const ok1 = makePerson({ nextFollowUpDate: '2025-07-01' });
-    const ok2 = makePerson({ nextFollowUpDate: '2025-07-10' });
-    expect(getFamilyUrgency([ok1, ok2]).status).toBe('ok');
   });
 });
 

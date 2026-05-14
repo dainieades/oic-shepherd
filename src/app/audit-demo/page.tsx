@@ -25,7 +25,6 @@ const FIELD_LABELS: Record<string, string> = {
   birthday: 'Birthday',
   baptismDate: 'Baptism Date',
   anniversary: 'Anniversary',
-  followUpFrequencyDays: 'Follow-up Frequency',
   isShepherd: 'Is Shepherd',
   isBeingDiscipled: 'Being Discipled',
   churchPositions: 'Church Positions',
@@ -122,16 +121,6 @@ const MOCK_LOGS: AuditLog[] = [
     oldValue: 'English',
     newValue: 'English, Mandarin Chinese',
     createdAt: '2026-04-03T13:05:00.000Z',
-  },
-  {
-    id: '10',
-    personId: 'p1',
-    changedByPersonaId: 'persona-1',
-    changedByName: 'Pastor David',
-    fieldName: 'followUpFrequencyDays',
-    oldValue: '14',
-    newValue: '7',
-    createdAt: '2026-03-28T10:00:00.000Z',
   },
 ];
 

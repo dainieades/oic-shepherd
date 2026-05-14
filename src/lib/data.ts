@@ -113,7 +113,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['david-kao', 'shepherd-1'],
       groupIds: ['students'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -129,7 +128,6 @@ export const initialData: AppData = {
       assignedShepherdIds: ['admin'],
       familyId: 'cheng-household',
       groupIds: ['students', 'young-family-group'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -144,7 +142,6 @@ export const initialData: AppData = {
       assignedShepherdIds: ['luke-zhang', 'shannon-tsai'],
       familyId: 'kao-household',
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -158,7 +155,6 @@ export const initialData: AppData = {
       assignedShepherdIds: ['david-kao', 'melinda-li'],
       familyId: 'kao-household',
       groupIds: ['students'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -170,7 +166,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: ['forty-plus-seniors'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -182,7 +177,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['john-thompson'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -194,7 +188,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['john-thompson'],
       groupIds: ['seekers'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -206,7 +199,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['john-thompson'],
       groupIds: ['forty-plus-seniors'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -219,7 +211,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['jay-song'],
       groupIds: ['cornerstone-seniors'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -231,7 +222,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['admin'],
       groupIds: ['forest-young-family'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -244,7 +234,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['john-thompson'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -256,7 +245,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -268,7 +256,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['john-thompson'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -280,7 +267,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['admin'],
       groupIds: ['forest-young-family'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -292,7 +278,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: ['students'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -304,7 +289,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['admin'],
       groupIds: ['students'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -317,7 +301,6 @@ export const initialData: AppData = {
       assignedShepherdIds: ['shepherd-1'],
       familyId: 'eades-family',
       groupIds: ['life-young-professional', 'young-family-group'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -332,7 +315,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['gillian-tang', 'lin-ho'],
       groupIds: ['life-young-professional'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -344,7 +326,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['jay-song'],
       groupIds: ['cornerstone-seniors'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -358,7 +339,6 @@ export const initialData: AppData = {
       assignedShepherdIds: [],
       familyId: 'cheng-household',
       groupIds: ['students', 'young-family-group'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -370,7 +350,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['john-thompson'],
       groupIds: ['men'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -382,7 +361,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['john-thompson'],
       groupIds: ['seekers'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -396,7 +374,6 @@ export const initialData: AppData = {
       assignedShepherdIds: ['shepherd-1', 'admin'],
       familyId: 'eades-family',
       groupIds: ['life-young-professional', 'young-family-group'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -408,7 +385,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['john-thompson'],
       groupIds: ['seekers'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -420,7 +396,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['jay-song'],
       groupIds: ['cornerstone-seniors'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -432,7 +407,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['jay-song'],
       groupIds: ['cornerstone-seniors'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -446,7 +420,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: ['students'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -458,7 +431,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: ['forest-young-family'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -473,7 +445,6 @@ export const initialData: AppData = {
       assignedShepherdIds: ['shepherd-2'],
       familyId: 'tang-household',
       groupIds: ['life-young-professional'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -485,7 +456,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: ['cornerstone-seniors'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -501,7 +471,6 @@ export const initialData: AppData = {
       assignedShepherdIds: ['gillian-tang', 'shepherd-2'],
       familyId: 'levin-household',
       groupIds: ['life-young-professional'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -514,7 +483,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['kevin-tang', 'lin-ho', 'gillian-tang', 'tyler-levin'],
       groupIds: ['forest-young-family'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -526,7 +494,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['john-thompson'],
       groupIds: ['forty-plus-seniors'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -541,7 +508,6 @@ export const initialData: AppData = {
       assignedShepherdIds: ['shannon-tsai', 'shepherd-2'],
       familyId: 'zhang-household',
       groupIds: ['students'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -554,7 +520,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['admin'],
       groupIds: ['life-young-professional'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -567,7 +532,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['lin-ho', 'gillian-tang', 'melinda-li'],
       groupIds: ['life-young-professional'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -579,7 +543,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['jay-song'],
       groupIds: ['cornerstone-seniors'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -594,7 +557,6 @@ export const initialData: AppData = {
       assignedShepherdIds: ['admin', 'john-thompson', 'kevin-tang'],
       familyId: 'levin-household',
       groupIds: ['life-young-professional'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -606,7 +568,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['john-thompson'],
       groupIds: ['forty-plus-seniors'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -621,7 +582,6 @@ export const initialData: AppData = {
       assignedShepherdIds: [],
       familyId: 'liu-family',
       groupIds: ['forest-young-family'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -633,7 +593,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['admin'],
       groupIds: ['forest-young-family'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -645,7 +604,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['john-thompson', 'admin'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -657,7 +615,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: ['forty-plus-seniors'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -674,7 +631,6 @@ export const initialData: AppData = {
       assignedShepherdIds: ['jay-song', 'john-thompson'],
       familyId: 'liu-family',
       groupIds: ['forest-young-family'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -686,7 +642,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['admin'],
       groupIds: ['forty-plus-seniors'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -699,7 +654,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['kevin-tang', 'tyler-levin', 'admin'],
       groupIds: ['life-young-professional'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -711,7 +665,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['john-thompson', 'admin'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -723,7 +676,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['john-thompson'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -735,7 +687,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: ['life-young-professional'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -747,7 +698,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['john-thompson', 'shepherd-2'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -759,7 +709,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['admin'],
       groupIds: ['forty-plus-seniors'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -772,7 +721,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['david-kao'],
       groupIds: ['students'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -784,7 +732,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['john-thompson'],
       groupIds: ['forty-plus-seniors'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -798,7 +745,6 @@ export const initialData: AppData = {
       assignedShepherdIds: ['shepherd-1', 'shepherd-2'],
       familyId: 'sparklin-family',
       groupIds: ['life-young-professional', 'young-family-group'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -813,7 +759,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['melinda-li', 'shepherd-2', 'shannon-tsai'],
       groupIds: ['students'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -826,7 +771,6 @@ export const initialData: AppData = {
       assignedShepherdIds: ['kevin-tang', 'tyler-levin', 'shepherd-1'],
       familyId: 'sparklin-family',
       groupIds: ['life-young-professional', 'young-family-group'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -838,7 +782,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['john-thompson'],
       groupIds: ['forty-plus-seniors'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -851,7 +794,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['admin', 'john-thompson'],
       groupIds: ['cornerstone-seniors'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -865,7 +807,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['jay-song', 'admin'],
       groupIds: ['forty-plus-seniors'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -877,7 +818,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['john-thompson'],
       groupIds: ['seekers'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -889,7 +829,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: ['life-young-professional'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -901,7 +840,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['admin', 'rachel-liu'],
       groupIds: ['forest-young-family'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -913,7 +851,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['jay-song'],
       groupIds: ['cornerstone-seniors'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -926,7 +863,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['shannon-tsai', 'shepherd-2', 'melinda-li'],
       groupIds: ['students'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -939,7 +875,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['shannon-tsai'],
       groupIds: ['students'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -951,7 +886,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: ['forest-young-family'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -963,7 +897,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['melinda-li', 'shannon-tsai'],
       groupIds: ['students'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -975,7 +908,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['jay-song'],
       groupIds: ['cornerstone-seniors'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -989,7 +921,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['kevin-tang'],
       groupIds: ['students'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1001,7 +932,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['admin'],
       groupIds: ['forest-young-family'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1013,7 +943,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: ['forest-young-family'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1027,7 +956,6 @@ export const initialData: AppData = {
       assignedShepherdIds: ['david-kao'],
       familyId: 'zhang-household',
       groupIds: ['students'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1040,7 +968,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['admin'],
       groupIds: ['forest-young-family'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1052,7 +979,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['david-kao', 'admin'],
       groupIds: ['students'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1063,7 +989,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1074,7 +999,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1087,7 +1011,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1098,7 +1021,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1109,7 +1031,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1120,7 +1041,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1131,7 +1051,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1143,7 +1062,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(4),
     },
     {
@@ -1154,7 +1072,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1165,7 +1082,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1177,7 +1093,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(8),
     },
     {
@@ -1188,7 +1103,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1200,7 +1114,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1212,7 +1125,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(2),
     },
     {
@@ -1224,7 +1136,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1236,7 +1147,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1247,7 +1157,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1258,7 +1167,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1269,7 +1177,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1282,7 +1189,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['shepherd-1'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1293,7 +1199,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1304,7 +1209,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1315,7 +1219,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1327,7 +1230,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['admin'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1339,7 +1241,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1351,7 +1252,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1363,7 +1263,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1374,7 +1273,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1385,7 +1283,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1397,7 +1294,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1409,7 +1305,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1420,7 +1315,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1432,7 +1326,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1444,7 +1337,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1456,7 +1348,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1467,7 +1358,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1478,7 +1368,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1489,7 +1378,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1501,7 +1389,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1512,7 +1399,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1524,7 +1410,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['charley-xia'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1538,7 +1423,6 @@ export const initialData: AppData = {
       assignedShepherdIds: ['shepherd-1'],
       familyId: 'braswell-family',
       groupIds: ['young-family-group'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1550,7 +1434,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['jessica-wang'],
       groupIds: ['students'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1562,7 +1445,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1575,7 +1457,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['melinda-li'],
       groupIds: ['students'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1587,7 +1468,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['shannon-tsai'],
       groupIds: ['students'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1600,7 +1480,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['shepherd-1', 'luke-zhang'],
       groupIds: ['students'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1612,7 +1491,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['shepherd-1'],
       groupIds: ['students'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1624,7 +1502,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['moana-xia', 'charley-xia'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1636,7 +1513,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1648,7 +1524,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['david-kao'],
       groupIds: ['students'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1661,7 +1536,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['shannon-tsai', 'melinda-li'],
       groupIds: ['students'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1673,7 +1547,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['shannon-tsai', 'melinda-li'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1685,7 +1558,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1697,7 +1569,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['admin', 'shepherd-1'],
       groupIds: ['students'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1709,7 +1580,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: ['students'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1724,7 +1594,6 @@ export const initialData: AppData = {
       assignedShepherdIds: ['tyler-levin'],
       familyId: 'tang-household',
       groupIds: ['life-young-professional'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1736,7 +1605,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1749,7 +1617,6 @@ export const initialData: AppData = {
       assignedShepherdIds: ['lin-ho', 'gillian-tang'],
       familyId: 'liu-family',
       groupIds: ['youth'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1761,7 +1628,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['david-kao', 'luke-zhang'],
       groupIds: ['students'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1773,7 +1639,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['john-thompson', 'admin'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1785,7 +1650,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['admin', 'shepherd-1'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1797,7 +1661,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: ['youth'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1810,7 +1673,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['shepherd-2', 'john-thompson'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1822,7 +1684,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: ['students'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1834,7 +1695,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1846,7 +1706,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1858,7 +1717,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['moana-xia', 'shepherd-2'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1870,7 +1728,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['kevin-tang', 'tyler-levin'],
       groupIds: ['youth'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1883,7 +1740,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['shannon-tsai', 'jessica-wang'],
       groupIds: ['students'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1898,7 +1754,6 @@ export const initialData: AppData = {
       assignedShepherdIds: ['kevin-tang', 'tyler-levin'],
       familyId: 'xia-family',
       groupIds: ['life-young-professional'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1913,7 +1768,6 @@ export const initialData: AppData = {
       assignedShepherdIds: ['shepherd-2'],
       familyId: 'xia-family',
       groupIds: ['life-young-professional'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1925,7 +1779,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['shepherd-1', 'luke-zhang'],
       groupIds: ['students'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1937,7 +1790,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1949,7 +1801,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1961,7 +1812,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1973,7 +1823,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1985,7 +1834,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -1997,7 +1845,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2009,7 +1856,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2021,7 +1867,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2033,7 +1878,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2045,7 +1889,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2057,7 +1900,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2069,7 +1911,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2081,7 +1922,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2093,7 +1933,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2105,7 +1944,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2117,7 +1955,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['melinda-li'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2129,7 +1966,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2141,7 +1977,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2153,7 +1988,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2165,7 +1999,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2177,7 +2010,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2189,7 +2021,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2201,7 +2032,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2213,7 +2043,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2225,7 +2054,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2237,7 +2065,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2249,7 +2076,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2261,7 +2087,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2274,7 +2099,6 @@ export const initialData: AppData = {
       assignedShepherdIds: ['gillian-tang', 'lin-ho'],
       familyId: 'liu-family',
       groupIds: ['youth'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2286,7 +2110,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['gillian-tang', 'lin-ho'],
       groupIds: ['life-young-professional'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2298,7 +2121,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2310,7 +2132,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['gillian-tang', 'lin-ho'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2322,7 +2143,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['tyler-levin', 'kevin-tang', 'john-thompson'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2335,7 +2155,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['shepherd-1', 'melinda-li', 'shannon-tsai'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2347,7 +2166,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['jessica-wang', 'shepherd-1'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2360,7 +2178,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['shepherd-1', 'luke-zhang'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2374,7 +2191,6 @@ export const initialData: AppData = {
       assignedShepherdIds: ['admin', 'shepherd-1'],
       familyId: 'braswell-family',
       groupIds: ['young-family-group'],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2386,7 +2202,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['tyler-levin'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2399,7 +2214,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2411,7 +2225,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['shepherd-2', 'rachel-liu'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2423,7 +2236,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['jessica-wang', 'shepherd-1'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2436,7 +2248,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['shepherd-1', 'luke-zhang'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2448,7 +2259,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['jessica-wang'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2460,7 +2270,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['melinda-li'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2473,7 +2282,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['admin', 'jay-song', 'john-thompson'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2486,7 +2294,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2499,7 +2306,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2511,7 +2317,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2524,7 +2329,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2536,7 +2340,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['luke-zhang'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2548,7 +2351,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['luke-zhang', 'shepherd-1'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2560,7 +2362,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['jessica-wang'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2572,7 +2373,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['jessica-wang'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2584,7 +2384,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['john-thompson'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2596,7 +2395,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['jessica-wang'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2608,7 +2406,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['jessica-wang'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2620,7 +2417,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['jessica-wang'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2632,7 +2428,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['jessica-wang'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2645,7 +2440,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['david-kao'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2658,7 +2452,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: ['melinda-li'],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
     {
@@ -2672,7 +2465,6 @@ export const initialData: AppData = {
       language: ['English'],
       assignedShepherdIds: [],
       groupIds: [],
-      followUpFrequencyDays: 14,
       createdAt: daysAgo(365),
     },
   ],

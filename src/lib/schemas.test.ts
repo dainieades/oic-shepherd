@@ -48,9 +48,7 @@ describe('PersonRowSchema', () => {
       church_attendance: 'regular',
       language: 'English',
       family_id: 'f1',
-      follow_up_frequency_days: 14,
       last_contact_date: '2024-03-01',
-      next_follow_up_date: '2024-03-15',
       created_by: 'user1',
     };
     expect(() => PersonRowSchema.parse(full)).not.toThrow();

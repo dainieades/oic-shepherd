@@ -1,8 +1,6 @@
 import type { HomeSortKey } from '@/lib/context';
 import type { ReferralSource, Interest } from '@/lib/types';
 
-export const DEFAULT_FOLLOW_UP_DAYS = 14;
-
 export const SORT_OPTIONS: Array<{ key: HomeSortKey; label: string }> = [
   { key: 'last-contacted', label: 'Logged longest ago' },
   { key: 'last-contacted-recent', label: 'Logged most recently' },
@@ -34,6 +32,20 @@ export const MEMBER_AVATAR_PALETTE: Array<{ bg: string; color: string }> = [
 ];
 
 export const SAVE_ERROR_MSG = 'Failed to save changes. Try again.';
+
+export const archiveConfirmCopy = (firstName: string, isArchived: boolean) => ({
+  title: `${isArchived ? 'Unarchive' : 'Archive'} ${firstName}?`,
+  description: isArchived
+    ? 'They will be visible in the directory again.'
+    : "They'll be hidden from the default directory. You can unarchive them anytime — nothing is deleted.",
+  confirmLabel: isArchived ? 'Unarchive' : 'Archive',
+});
+
+export const deletePersonConfirmCopy = (firstName: string) => ({
+  title: `Delete ${firstName}?`,
+  description: `This will permanently remove ${firstName} and all their logs and to-dos. This cannot be undone.`,
+  confirmLabel: 'Delete permanently',
+});
 
 export const NOTICE_VISIBILITY_WARNING_STORAGE_KEY =
   'shepherd-app-notice-visibility-warning-dismissed-at';

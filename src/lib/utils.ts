@@ -85,26 +85,8 @@ export function getDaysAgoNumber(dateStr?: string): number {
   return differenceInCalendarDays(new Date(), parseISO(dateStr));
 }
 
-export function getDueLabel(dateStr?: string): {
-  label: string;
-  status: 'overdue' | 'due-soon' | 'ok' | 'none';
-} {
-  if (!dateStr) return { label: 'No follow-up set', status: 'none' };
-
-  const diffDays = differenceInCalendarDays(parseISO(dateStr), startOfToday());
-
-  if (diffDays < 0) return { label: `Overdue by ${Math.abs(diffDays)} days`, status: 'overdue' };
-  if (diffDays === 0) return { label: 'Due today', status: 'due-soon' };
-  if (diffDays <= 7) return { label: `Due in ${diffDays} days`, status: 'due-soon' };
-  return { label: `Due in ${diffDays} days`, status: 'ok' };
-}
-
 export function getPriorityScore(person: Person): number {
   let score = 0;
-  const due = getDueLabel(person.nextFollowUpDate);
-
-  if (due.status === 'overdue') score += 100;
-  if (due.status === 'due-soon') score += 50;
   if (person.groupIds.length === 0) score += 30;
   if (person.assignedShepherdIds.length === 0) score += 40;
 
@@ -116,22 +98,6 @@ export function getPriorityScore(person: Person): number {
   }
 
   return score;
-}
-
-/** Get the most urgent due status across a set of people */
-export function getFamilyUrgency(members: Person[]): {
-  label: string;
-  status: 'overdue' | 'due-soon' | 'ok' | 'none';
-} {
-  type DueResult = { label: string; status: 'overdue' | 'due-soon' | 'ok' | 'none' };
-  const rank: Record<DueResult['status'], number> = { overdue: 3, 'due-soon': 2, ok: 1, none: 0 };
-  return members.reduce<DueResult>(
-    (worst, p) => {
-      const due = getDueLabel(p.nextFollowUpDate);
-      return rank[due.status] > rank[worst.status] ? due : worst;
-    },
-    { label: '', status: 'none' }
-  );
 }
 
 /** Get the most recent contact date across family members */

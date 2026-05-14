@@ -27,7 +27,6 @@ import {
   type TodoRow,
 } from './schemas';
 import { createClient } from '@/utils/supabase/client';
-import { DEFAULT_FOLLOW_UP_DAYS } from '@/lib/constants';
 
 // ── DB row → AppData mappers ──────────────────────────────────────────────
 
@@ -79,9 +78,7 @@ export function mapPerson(
       return [legacyMap[raw] ?? 'English'];
     })(),
     familyId: r.family_id ?? undefined,
-    followUpFrequencyDays: r.follow_up_frequency_days ?? DEFAULT_FOLLOW_UP_DAYS,
     lastContactDate: r.last_contact_date ?? undefined,
-    nextFollowUpDate: r.next_follow_up_date ?? undefined,
     assignedShepherdIds: shepherdIds,
     groupIds,
     createdAt: r.created_at,
