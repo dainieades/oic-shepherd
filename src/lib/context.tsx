@@ -161,12 +161,6 @@ interface AppContextType {
       >
     >
   ) => Promise<void>;
-  submitVisitorIntake: (
-    input: Omit<
-      import('./types').VisitorSubmission,
-      'id' | 'submittedAt' | 'submittedBy' | 'source' | 'status' | 'personId'
-    >
-  ) => Promise<{ personId: string; submissionId: string }>;
   promoteVisitorSubmission: (submissionId: string) => Promise<string>;
   discardVisitorSubmission: (submissionId: string) => Promise<void>;
   updateVisitorSubmission: (
@@ -849,29 +843,33 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       // Persist to Supabase
       const supabase = createClient();
-      try {
-        await supabase.from('notes').insert({
-          id: note.id,
-          person_id: note.personId ?? null,
-          family_id: note.familyId ?? null,
-          todo_id: note.todoId ?? null,
-          type: note.type,
-          visibility: note.visibility,
-          content: note.content ?? null,
-          mentions: note.mentions ?? [],
-          created_by: note.createdBy,
-          created_at: note.createdAt,
-        });
-
-        if (note.personId) {
-          await supabase
-            .from('people')
-            .update({ last_contact_date: formatISO(new Date()) })
-            .eq('id', note.personId);
-        }
-      } catch {
+      const { error: noteInsertError } = await supabase.from('notes').insert({
+        id: note.id,
+        person_id: note.personId ?? null,
+        family_id: note.familyId ?? null,
+        todo_id: note.todoId ?? null,
+        type: note.type,
+        visibility: note.visibility,
+        content: note.content ?? null,
+        mentions: note.mentions ?? [],
+        created_by: note.createdBy,
+        created_at: note.createdAt,
+      });
+      if (noteInsertError) {
+        console.error('notes insert failed:', JSON.stringify(noteInsertError, null, 2));
         if (snapshot) setData(snapshot);
         showToast(SAVE_ERROR_MSG, 'error');
+        return;
+      }
+
+      if (note.personId) {
+        const { error: contactDateError } = await supabase
+          .from('people')
+          .update({ last_contact_date: formatISO(new Date()) })
+          .eq('id', note.personId);
+        if (contactDateError) {
+          console.error('people last_contact_date update failed:', JSON.stringify(contactDateError, null, 2));
+        }
       }
     },
     [currentPersona.id]
@@ -900,9 +898,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (updates.personId !== undefined) dbUpdates.person_id = updates.personId;
       if (updates.visibility !== undefined) dbUpdates.visibility = updates.visibility;
       if (updates.createdAt !== undefined) dbUpdates.created_at = updates.createdAt;
-      try {
-        await supabase.from('notes').update(dbUpdates).eq('id', noteId);
-      } catch {
+      const { error } = await supabase.from('notes').update(dbUpdates).eq('id', noteId);
+      if (error) {
+        console.error('notes update failed:', JSON.stringify(error, null, 2));
         if (snapshot) setData(snapshot);
         showToast(SAVE_ERROR_MSG, 'error');
       }
@@ -917,9 +915,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       return { ...prev, notes: prev.notes.filter((n) => n.id !== noteId) };
     });
     const supabase = createClient();
-    try {
-      await supabase.from('notes').delete().eq('id', noteId);
-    } catch {
+    const { error } = await supabase.from('notes').delete().eq('id', noteId);
+    if (error) {
+      console.error('notes delete failed:', JSON.stringify(error, null, 2));
       if (snapshot) setData(snapshot);
       showToast('Failed to delete log. Try again.', 'error');
     }
@@ -941,22 +939,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
         return { ...prev, todos: [todo, ...prev.todos] };
       });
       const supabase = createClient();
-      try {
-        await supabase.from('todos').insert({
-          id: todo.id,
-          person_id: todo.personId ?? null,
-          family_id: todo.familyId ?? null,
-          title: todo.title,
-          due_date: todo.dueDate ?? null,
-          end_date: todo.endDate ?? null,
-          repeat: todo.repeat ?? null,
-          reminder: todo.reminder ?? null,
-          reminder_due_at: calcReminderDueAt(todo.dueDate, todo.reminder),
-          completed: false,
-          created_by: todo.createdBy,
-          created_at: todo.createdAt,
-        });
-      } catch {
+      const { error } = await supabase.from('todos').insert({
+        id: todo.id,
+        person_id: todo.personId ?? null,
+        family_id: todo.familyId ?? null,
+        title: todo.title,
+        due_date: todo.dueDate ?? null,
+        end_date: todo.endDate ?? null,
+        repeat: todo.repeat ?? null,
+        reminder: todo.reminder ?? null,
+        reminder_due_at: calcReminderDueAt(todo.dueDate, todo.reminder),
+        completed: false,
+        created_by: todo.createdBy,
+        created_at: todo.createdAt,
+      });
+      if (error) {
+        console.error('todos insert failed:', JSON.stringify(error, null, 2));
         if (snapshot) setData(snapshot);
         showToast(SAVE_ERROR_MSG, 'error');
       }
@@ -1000,9 +998,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         dbUpdates.reminder_due_at = calcReminderDueAt(newDueDate, newReminder);
         dbUpdates.reminder_sent_at = null;
       }
-      try {
-        await supabase.from('todos').update(dbUpdates).eq('id', todoId);
-      } catch {
+      const { error } = await supabase.from('todos').update(dbUpdates).eq('id', todoId);
+      if (error) {
+        console.error('todos update failed:', JSON.stringify(error, null, 2));
         if (snapshot) setData(snapshot);
         showToast(SAVE_ERROR_MSG, 'error');
       }
@@ -1017,9 +1015,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       return { ...prev, todos: prev.todos.filter((t) => t.id !== todoId) };
     });
     const supabase = createClient();
-    try {
-      await supabase.from('todos').delete().eq('id', todoId);
-    } catch {
+    const { error } = await supabase.from('todos').delete().eq('id', todoId);
+    if (error) {
+      console.error('todos delete failed:', JSON.stringify(error, null, 2));
       if (snapshot) setData(snapshot);
       showToast('Failed to delete to-do. Try again.', 'error');
     }
@@ -1044,15 +1042,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
       };
     });
     const supabase = createClient();
-    try {
-      await supabase
-        .from('todos')
-        .update({
-          completed: newCompleted,
-          completed_at: completedAt ?? null,
-        })
-        .eq('id', todoId);
-    } catch {
+    const { error } = await supabase
+      .from('todos')
+      .update({
+        completed: newCompleted,
+        completed_at: completedAt ?? null,
+      })
+      .eq('id', todoId);
+    if (error) {
+      console.error('todos toggle failed:', JSON.stringify(error, null, 2));
       if (snapshot) setData(snapshot);
       showToast('Failed to update to-do. Try again.', 'error');
     }
@@ -1130,60 +1128,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
       return person.id;
     },
     [currentPersona.id, currentPersona.name, currentUserEmail, addTodo]
-  );
-
-  const submitVisitorIntake = useCallback(
-    async (
-      input: Omit<
-        import('./types').VisitorSubmission,
-        'id' | 'submittedAt' | 'submittedBy' | 'source' | 'status' | 'personId'
-      >
-    ): Promise<{ personId: string; submissionId: string }> => {
-      const personId = await addPerson({
-        preferredName: input.preferredName,
-        lastName: input.lastName,
-        alternativeName: input.alternativeName,
-        phone: input.phone,
-        email: input.email,
-        isStudent: input.isStudent,
-        language: input.languages.length > 0 ? input.languages : ['English'],
-        membershipStatus: 'non-member',
-        churchAttendance: 'visitor',
-      });
-
-      const submissionId = crypto.randomUUID();
-      const submittedAt = new Date().toISOString();
-      const supabase = createClient();
-      const { error: submissionError } = await supabase.from('visitor_submissions').insert({
-        id: submissionId,
-        submitted_at: submittedAt,
-        submitted_by: currentPersona.id,
-        source: 'app',
-        status: 'promoted',
-        person_id: personId,
-        preferred_name: input.preferredName,
-        last_name: input.lastName ?? null,
-        alternative_name: input.alternativeName ?? null,
-        phone: input.phone ?? null,
-        email: input.email ?? null,
-        is_student: input.isStudent,
-        languages: input.languages,
-        referral_source: input.referralSource ?? null,
-        referral_detail: input.referralDetail ?? null,
-        interests: input.interests,
-        prayer_request: input.prayerRequest ?? null,
-      });
-      if (submissionError) {
-        console.error(
-          'visitor_submissions insert failed:',
-          JSON.stringify(submissionError, null, 2)
-        );
-        showToast('Visitor saved, but card data could not be stored', 'error');
-      }
-
-      return { personId, submissionId };
-    },
-    [addPerson, currentPersona.id, showToast]
   );
 
   const promoteVisitorSubmission = useCallback(
@@ -1356,25 +1300,31 @@ export function AppProvider({ children }: { children: ReactNode }) {
             ];
           })
         : [];
-      try {
-        await Promise.all([
-          supabase.from('people').update(dbUpdates).eq('id', personId),
-          auditRows.length > 0 ? supabase.from('audit_logs').insert(auditRows) : Promise.resolve(),
-        ]);
-        if (auditRows.length > 0) {
-          setData((prev) => ({
-            ...prev,
-            people: prev.people.map((p) =>
-              p.id === personId
-                ? { ...p, lastEditedAt: now, lastEditedByName: currentPersona.name }
-                : p
-            ),
-          }));
-        }
-      } catch {
+      const [{ error: personUpdateError }, auditResult] = await Promise.all([
+        supabase.from('people').update(dbUpdates).eq('id', personId),
+        auditRows.length > 0
+          ? supabase.from('audit_logs').insert(auditRows)
+          : Promise.resolve({ error: null }),
+      ]);
+      const auditError = auditResult.error;
+      if (personUpdateError || auditError) {
+        console.error(
+          'updatePerson failed:',
+          JSON.stringify(personUpdateError ?? auditError, null, 2)
+        );
         if (snapshot) setData(snapshot);
         showToast(SAVE_ERROR_MSG, 'error');
         return;
+      }
+      if (auditRows.length > 0) {
+        setData((prev) => ({
+          ...prev,
+          people: prev.people.map((p) =>
+            p.id === personId
+              ? { ...p, lastEditedAt: now, lastEditedByName: currentPersona.name }
+              : p
+          ),
+        }));
       }
       if (currentPerson && currentPerson.assignedShepherdIds.length > 0) {
         void fetch('/api/notify', {
@@ -1428,9 +1378,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       };
     });
     const supabase = createClient();
-    try {
-      await supabase.from('people').delete().eq('id', personId).throwOnError();
-    } catch {
+    const { error } = await supabase.from('people').delete().eq('id', personId);
+    if (error) {
+      console.error('people delete failed:', JSON.stringify(error, null, 2));
       if (snapshot) setData(snapshot);
       showToast('Failed to delete person. Try again.', 'error');
     }
@@ -1477,17 +1427,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
         };
       });
       const supabase = createClient();
-      try {
-        await supabase.from('person_shepherds').delete().eq('person_id', personId);
-        if (shepherdIds.length > 0) {
-          await supabase
-            .from('person_shepherds')
-            .insert(shepherdIds.map((sid) => ({ person_id: personId, shepherd_id: sid })));
-        }
-      } catch {
+      const { error: deleteError } = await supabase
+        .from('person_shepherds')
+        .delete()
+        .eq('person_id', personId);
+      if (deleteError) {
+        console.error('person_shepherds delete failed:', JSON.stringify(deleteError, null, 2));
         if (snapshot) setData(snapshot);
         showToast(SAVE_ERROR_MSG, 'error');
         return;
+      }
+      if (shepherdIds.length > 0) {
+        const { error: insertError } = await supabase
+          .from('person_shepherds')
+          .insert(shepherdIds.map((sid) => ({ person_id: personId, shepherd_id: sid })));
+        if (insertError) {
+          console.error('person_shepherds insert failed:', JSON.stringify(insertError, null, 2));
+          if (snapshot) setData(snapshot);
+          showToast(SAVE_ERROR_MSG, 'error');
+          return;
+        }
       }
       if (shepherdIds.length > 0 && personName) {
         void fetch('/api/notify', {
@@ -1521,21 +1480,36 @@ export function AppProvider({ children }: { children: ReactNode }) {
       };
     });
     const supabase = createClient();
-    try {
-      await supabase.from('families').insert({ id: familyId, label, tags: [], is_test: isTest });
-      if (memberIds.length > 0) {
-        await supabase
-          .from('family_members')
-          .insert(memberIds.map((pid) => ({ family_id: familyId, person_id: pid })));
-        await Promise.all(
-          memberIds.map((pid) =>
-            supabase.from('people').update({ family_id: familyId }).eq('id', pid)
-          )
-        );
-      }
-    } catch {
+    const { error: familyInsertError } = await supabase
+      .from('families')
+      .insert({ id: familyId, label, tags: [], is_test: isTest });
+    if (familyInsertError) {
+      console.error('families insert failed:', JSON.stringify(familyInsertError, null, 2));
       if (snapshot) setData(snapshot);
       showToast(SAVE_ERROR_MSG, 'error');
+      return familyId;
+    }
+    if (memberIds.length > 0) {
+      const { error: membersInsertError } = await supabase
+        .from('family_members')
+        .insert(memberIds.map((pid) => ({ family_id: familyId, person_id: pid })));
+      if (membersInsertError) {
+        console.error('family_members insert failed:', JSON.stringify(membersInsertError, null, 2));
+        if (snapshot) setData(snapshot);
+        showToast(SAVE_ERROR_MSG, 'error');
+        return familyId;
+      }
+      const peopleResults = await Promise.all(
+        memberIds.map((pid) =>
+          supabase.from('people').update({ family_id: familyId }).eq('id', pid)
+        )
+      );
+      const peopleError = peopleResults.find((r) => r.error)?.error;
+      if (peopleError) {
+        console.error('people family_id update failed:', JSON.stringify(peopleError, null, 2));
+        if (snapshot) setData(snapshot);
+        showToast(SAVE_ERROR_MSG, 'error');
+      }
     }
     return familyId;
   }, [currentPersona.isTest]);
@@ -1563,9 +1537,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (updates.primaryContactId !== undefined)
         dbUpdates.primary_contact_id = updates.primaryContactId;
       if (updates.childCount !== undefined) dbUpdates.child_count = updates.childCount;
-      try {
-        await supabase.from('families').update(dbUpdates).eq('id', familyId);
-      } catch {
+      const { error } = await supabase.from('families').update(dbUpdates).eq('id', familyId);
+      if (error) {
+        console.error('families update failed:', JSON.stringify(error, null, 2));
         if (snapshot) setData(snapshot);
         showToast(SAVE_ERROR_MSG, 'error');
       }
@@ -1597,19 +1571,35 @@ export function AppProvider({ children }: { children: ReactNode }) {
       });
 
       const supabase = createClient();
-      try {
-        await supabase.from('family_members').delete().eq('family_id', familyId);
-        if (newMemberIds.length > 0) {
-          await supabase
-            .from('family_members')
-            .insert(newMemberIds.map((pid) => ({ family_id: familyId, person_id: pid })));
+      const { error: deleteError } = await supabase
+        .from('family_members')
+        .delete()
+        .eq('family_id', familyId);
+      if (deleteError) {
+        console.error('family_members delete failed:', JSON.stringify(deleteError, null, 2));
+        if (snapshot) setData(snapshot);
+        showToast(SAVE_ERROR_MSG, 'error');
+        return;
+      }
+      if (newMemberIds.length > 0) {
+        const { error: insertError } = await supabase
+          .from('family_members')
+          .insert(newMemberIds.map((pid) => ({ family_id: familyId, person_id: pid })));
+        if (insertError) {
+          console.error('family_members insert failed:', JSON.stringify(insertError, null, 2));
+          if (snapshot) setData(snapshot);
+          showToast(SAVE_ERROR_MSG, 'error');
+          return;
         }
-        await Promise.all(
-          newMemberIds.map((pid) =>
-            supabase.from('people').update({ family_id: familyId }).eq('id', pid)
-          )
-        );
-      } catch {
+      }
+      const peopleResults = await Promise.all(
+        newMemberIds.map((pid) =>
+          supabase.from('people').update({ family_id: familyId }).eq('id', pid)
+        )
+      );
+      const peopleError = peopleResults.find((r) => r.error)?.error;
+      if (peopleError) {
+        console.error('people family_id update failed:', JSON.stringify(peopleError, null, 2));
         if (snapshot) setData(snapshot);
         showToast(SAVE_ERROR_MSG, 'error');
       }
@@ -1634,11 +1624,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
       return { ...prev, groups: [...prev.groups, group] };
     });
     const supabase = createClient();
-    try {
-      await supabase
-        .from('groups')
-        .insert({ id: group.id, name, description: description ?? null, is_test: isTest });
-    } catch {
+    const { error } = await supabase
+      .from('groups')
+      .insert({ id: group.id, name, description: description ?? null, is_test: isTest });
+    if (error) {
+      console.error('groups insert failed:', JSON.stringify(error, null, 2));
       if (snapshot) setData(snapshot);
       showToast(SAVE_ERROR_MSG, 'error');
     }
@@ -1662,9 +1652,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (updates.name !== undefined) dbUpdates.name = updates.name;
       if (updates.description !== undefined) dbUpdates.description = updates.description ?? null;
       if (updates.leaderIds !== undefined) dbUpdates.leader_ids = updates.leaderIds;
-      try {
-        await supabase.from('groups').update(dbUpdates).eq('id', groupId);
-      } catch {
+      const { error } = await supabase.from('groups').update(dbUpdates).eq('id', groupId);
+      if (error) {
+        console.error('groups update failed:', JSON.stringify(error, null, 2));
         if (snapshot) setData(snapshot);
         showToast(SAVE_ERROR_MSG, 'error');
       }
@@ -1689,16 +1679,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
         return { ...prev, groups: newGroups, people: newPeople };
       });
       const supabase = createClient();
-      try {
-        await supabase.from('group_members').delete().eq('group_id', groupId);
-        if (memberIds.length > 0) {
-          await supabase
-            .from('group_members')
-            .insert(memberIds.map((pid) => ({ group_id: groupId, person_id: pid })));
-        }
-      } catch {
+      const { error: deleteError } = await supabase
+        .from('group_members')
+        .delete()
+        .eq('group_id', groupId);
+      if (deleteError) {
+        console.error('group_members delete failed:', JSON.stringify(deleteError, null, 2));
         if (snapshot) setData(snapshot);
         showToast(SAVE_ERROR_MSG, 'error');
+        return;
+      }
+      if (memberIds.length > 0) {
+        const { error: insertError } = await supabase
+          .from('group_members')
+          .insert(memberIds.map((pid) => ({ group_id: groupId, person_id: pid })));
+        if (insertError) {
+          console.error('group_members insert failed:', JSON.stringify(insertError, null, 2));
+          if (snapshot) setData(snapshot);
+          showToast(SAVE_ERROR_MSG, 'error');
+        }
       }
     },
     []
@@ -1722,14 +1721,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
         return { ...prev, people: newPeople, groups: newGroups };
       });
       const supabase = createClient();
-      try {
-        await supabase.from('group_members').delete().eq('person_id', personId);
-        for (const gid of groupIds) {
-          await supabase.from('group_members').insert({ group_id: gid, person_id: personId });
-        }
-      } catch {
+      const { error: deleteError } = await supabase
+        .from('group_members')
+        .delete()
+        .eq('person_id', personId);
+      if (deleteError) {
+        console.error('group_members delete failed:', JSON.stringify(deleteError, null, 2));
         if (snapshot) setData(snapshot);
         showToast(SAVE_ERROR_MSG, 'error');
+        return;
+      }
+      for (const gid of groupIds) {
+        const { error: insertError } = await supabase
+          .from('group_members')
+          .insert({ group_id: gid, person_id: personId });
+        if (insertError) {
+          console.error('group_members insert failed:', JSON.stringify(insertError, null, 2));
+          if (snapshot) setData(snapshot);
+          showToast(SAVE_ERROR_MSG, 'error');
+          return;
+        }
       }
     },
     []
@@ -1761,23 +1772,41 @@ export function AppProvider({ children }: { children: ReactNode }) {
       });
 
       const supabase = createClient();
-      try {
-        const { data: fmRows } = await supabase
-          .from('family_members')
-          .select('person_id')
-          .eq('family_id', familyId);
-        const memberIds = (fmRows ?? []).map((r: { person_id: string }) => r.person_id);
-        for (const mid of memberIds) {
-          await supabase.from('group_members').delete().eq('person_id', mid);
-        }
-        for (const gid of groupIds) {
-          for (const mid of memberIds) {
-            await supabase.from('group_members').insert({ group_id: gid, person_id: mid });
-          }
-        }
-      } catch {
+      const { data: fmRows, error: selectError } = await supabase
+        .from('family_members')
+        .select('person_id')
+        .eq('family_id', familyId);
+      if (selectError) {
+        console.error('family_members select failed:', JSON.stringify(selectError, null, 2));
         if (snapshot) setData(snapshot);
         showToast(SAVE_ERROR_MSG, 'error');
+        return;
+      }
+      const memberIds = (fmRows ?? []).map((r: { person_id: string }) => r.person_id);
+      for (const mid of memberIds) {
+        const { error: deleteError } = await supabase
+          .from('group_members')
+          .delete()
+          .eq('person_id', mid);
+        if (deleteError) {
+          console.error('group_members delete failed:', JSON.stringify(deleteError, null, 2));
+          if (snapshot) setData(snapshot);
+          showToast(SAVE_ERROR_MSG, 'error');
+          return;
+        }
+      }
+      for (const gid of groupIds) {
+        for (const mid of memberIds) {
+          const { error: insertError } = await supabase
+            .from('group_members')
+            .insert({ group_id: gid, person_id: mid });
+          if (insertError) {
+            console.error('group_members insert failed:', JSON.stringify(insertError, null, 2));
+            if (snapshot) setData(snapshot);
+            showToast(SAVE_ERROR_MSG, 'error');
+            return;
+          }
+        }
       }
     },
     []
@@ -1798,23 +1827,39 @@ export function AppProvider({ children }: { children: ReactNode }) {
       });
 
       const supabase = createClient();
-      try {
-        const { data: fmRows } = await supabase
-          .from('family_members')
-          .select('person_id')
-          .eq('family_id', familyId);
-        const memberIds = (fmRows ?? []).map((r: { person_id: string }) => r.person_id);
-        for (const pid of memberIds) {
-          await supabase.from('person_shepherds').delete().eq('person_id', pid);
-          if (shepherdIds.length > 0) {
-            await supabase
-              .from('person_shepherds')
-              .insert(shepherdIds.map((sid) => ({ person_id: pid, shepherd_id: sid })));
-          }
-        }
-      } catch {
+      const { data: fmRows, error: selectError } = await supabase
+        .from('family_members')
+        .select('person_id')
+        .eq('family_id', familyId);
+      if (selectError) {
+        console.error('family_members select failed:', JSON.stringify(selectError, null, 2));
         if (snapshot) setData(snapshot);
         showToast(SAVE_ERROR_MSG, 'error');
+        return;
+      }
+      const memberIds = (fmRows ?? []).map((r: { person_id: string }) => r.person_id);
+      for (const pid of memberIds) {
+        const { error: deleteError } = await supabase
+          .from('person_shepherds')
+          .delete()
+          .eq('person_id', pid);
+        if (deleteError) {
+          console.error('person_shepherds delete failed:', JSON.stringify(deleteError, null, 2));
+          if (snapshot) setData(snapshot);
+          showToast(SAVE_ERROR_MSG, 'error');
+          return;
+        }
+        if (shepherdIds.length > 0) {
+          const { error: insertError } = await supabase
+            .from('person_shepherds')
+            .insert(shepherdIds.map((sid) => ({ person_id: pid, shepherd_id: sid })));
+          if (insertError) {
+            console.error('person_shepherds insert failed:', JSON.stringify(insertError, null, 2));
+            if (snapshot) setData(snapshot);
+            showToast(SAVE_ERROR_MSG, 'error');
+            return;
+          }
+        }
       }
     },
     []
@@ -1842,19 +1887,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
         return { ...prev, notices: [notice, ...prev.notices] };
       });
       const supabase = createClient();
-      try {
-        await supabase.from('notices').insert({
-          id: notice.id,
-          person_id: notice.personId ?? null,
-          family_id: notice.familyId ?? null,
-          categories: notice.categories,
-          urgency: notice.urgency,
-          privacy: notice.privacy,
-          content: notice.content,
-          created_by: notice.createdBy,
-          created_at: notice.createdAt,
-        });
-      } catch {
+      const { error } = await supabase.from('notices').insert({
+        id: notice.id,
+        person_id: notice.personId ?? null,
+        family_id: notice.familyId ?? null,
+        categories: notice.categories,
+        urgency: notice.urgency,
+        privacy: notice.privacy,
+        content: notice.content,
+        created_by: notice.createdBy,
+        created_at: notice.createdAt,
+      });
+      if (error) {
+        console.error('notices insert failed:', JSON.stringify(error, null, 2));
         if (snapshot) setData(snapshot);
         showToast(SAVE_ERROR_MSG, 'error');
         return;
@@ -1899,9 +1944,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (updates.content !== undefined) dbUpdates.content = updates.content;
       if (updates.personId !== undefined) dbUpdates.person_id = updates.personId;
       if (updates.familyId !== undefined) dbUpdates.family_id = updates.familyId;
-      try {
-        await supabase.from('notices').update(dbUpdates).eq('id', noticeId);
-      } catch {
+      const { error } = await supabase.from('notices').update(dbUpdates).eq('id', noticeId);
+      if (error) {
+        console.error('notices update failed:', JSON.stringify(error, null, 2));
         if (snapshot) setData(snapshot);
         showToast(SAVE_ERROR_MSG, 'error');
       }
@@ -1916,9 +1961,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       return { ...prev, notices: prev.notices.filter((n) => n.id !== noticeId) };
     });
     const supabase = createClient();
-    try {
-      await supabase.from('notices').delete().eq('id', noticeId);
-    } catch {
+    const { error } = await supabase.from('notices').delete().eq('id', noticeId);
+    if (error) {
+      console.error('notices delete failed:', JSON.stringify(error, null, 2));
       if (snapshot) setData(snapshot);
       showToast('Failed to delete notice. Try again.', 'error');
     }
@@ -1991,7 +2036,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         updateNotice,
         deleteNotice,
         addPerson,
-        submitVisitorIntake,
         promoteVisitorSubmission,
         discardVisitorSubmission,
         updateVisitorSubmission,

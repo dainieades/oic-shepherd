@@ -16,6 +16,15 @@ export default function WelcomePage() {
   const [done, setDone] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [honeypot, setHoneypot] = React.useState('');
+  const [formKey, setFormKey] = React.useState(0);
+
+  const handleReset = () => {
+    setDone(false);
+    setError(null);
+    setHoneypot('');
+    setCanSubmit(false);
+    setFormKey((k) => k + 1);
+  };
 
   const handleSubmit = async (values: VisitorIntakeValues) => {
     if (honeypot.trim().length > 0) {
@@ -87,9 +96,26 @@ export default function WelcomePage() {
           Thank you for visiting!
         </h1>
         <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.5, maxWidth: 320 }}>
-          We've got your card. Someone from our Welcome Team will reach out to you soon. We're so
-          glad you're here.
+          We've received your info. Someone from our Welcome Team will reach out to you soon. We're
+          so glad you're here.
         </p>
+        <button
+          type="button"
+          onClick={handleReset}
+          style={{
+            marginTop: 8,
+            padding: '0.75rem 1.25rem',
+            borderRadius: 'var(--radius-md)',
+            border: '1px solid var(--border)',
+            background: 'transparent',
+            color: 'var(--text-secondary)',
+            fontSize: 15,
+            fontWeight: 600,
+            cursor: 'pointer',
+          }}
+        >
+          Welcome another visitor
+        </button>
       </div>
     );
   }
@@ -121,6 +147,7 @@ export default function WelcomePage() {
       />
 
       <VisitorIntakeForm
+        key={formKey}
         ref={formRef}
         onSubmit={handleSubmit}
         onValidityChange={setCanSubmit}

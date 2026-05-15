@@ -3,16 +3,17 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useApp } from '@/lib/context';
-import { NAV_ITEMS, isHiddenRoute } from '@/lib/navItems';
+import { NAV_ITEMS, isHiddenRoute, isNavItemVisible } from '@/lib/navItems';
+import { usePendingVisitorCount } from '@/lib/usePendingVisitorCount';
 
 export default function BottomNav() {
   const pathname = usePathname();
   const { currentPersona, fullPageModalOpen } = useApp();
-  const isWelcome = currentPersona.role === 'welcome-team';
+  const pendingVisitorCount = usePendingVisitorCount();
 
   if (isHiddenRoute(pathname) || fullPageModalOpen) return null;
 
-  const items = NAV_ITEMS.filter((item) => !(isWelcome && item.shepherdOnly));
+  const items = NAV_ITEMS.filter((item) => isNavItemVisible(item, currentPersona.role));
 
   return (
     <nav
@@ -26,6 +27,8 @@ export default function BottomNav() {
         {items.map((item) => {
           const Icon = item.icon;
           const active = item.matches(pathname);
+          const showBadge =
+            item.href === '/visitors/pending' && pendingVisitorCount > 0;
           return (
             <Link
               key={item.href}
@@ -36,7 +39,31 @@ export default function BottomNav() {
                 textDecoration: 'none',
               }}
             >
-              <Icon size={24} weight={active ? 'fill' : 'regular'} />
+              <span style={{ position: 'relative', lineHeight: 0 }}>
+                <Icon size={24} weight={active ? 'fill' : 'regular'} />
+                {showBadge && (
+                  <span
+                    aria-label={`${pendingVisitorCount} pending`}
+                    style={{
+                      position: 'absolute',
+                      top: -4,
+                      right: -8,
+                      minWidth: '1.125rem',
+                      height: '1.125rem',
+                      padding: '0 0.25rem',
+                      fontSize: '0.625rem',
+                      fontWeight: 700,
+                      lineHeight: '1.125rem',
+                      textAlign: 'center',
+                      borderRadius: 'var(--radius-pill)',
+                      background: 'var(--sage)',
+                      color: 'var(--on-sage)',
+                    }}
+                  >
+                    {pendingVisitorCount}
+                  </span>
+                )}
+              </span>
               <span style={{ fontSize: 10, fontWeight: active ? 600 : 400 }}>{item.label}</span>
             </Link>
           );

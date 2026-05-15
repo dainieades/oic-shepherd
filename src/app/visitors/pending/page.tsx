@@ -1,10 +1,8 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
-  CaretLeft,
   CheckCircle,
   X,
   Phone,
@@ -15,12 +13,15 @@ import {
   GraduationCap,
   Globe,
   HandWaving,
+  ArrowSquareOut,
 } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { useToast } from '@/components/Toast';
 import { createClient } from '@/utils/supabase/client';
 import { mapVisitorSubmission } from '@/lib/mappers';
 import { type VisitorSubmission, type Interest, type ReferralSource } from '@/lib/types';
+import PageContainer from '@/components/PageContainer';
+import ConfirmActionSheet from '@/components/ConfirmActionSheet';
 
 const REFERRAL_LABELS: Record<ReferralSource, string> = {
   flyer: 'Flyer',
@@ -38,6 +39,113 @@ const INTEREST_LABELS: Record<Interest, string> = {
   'small-groups': 'Small Groups',
 };
 
+const MOCK_PREFIX = 'mock-';
+const isMockId = (id: string) => id.startsWith(MOCK_PREFIX);
+
+function buildMockSubmissions(): VisitorSubmission[] {
+  const now = Date.now();
+  const hoursAgo = (h: number) => new Date(now - h * 3_600_000).toISOString();
+  return [
+    {
+      id: `${MOCK_PREFIX}1`,
+      submittedAt: hoursAgo(2),
+      submittedBy: null,
+      source: 'qr',
+      status: 'pending',
+      personId: null,
+      preferredName: 'Maria',
+      lastName: 'Garcia',
+      phone: '+1-555-0142',
+      email: 'maria.garcia@example.com',
+      isStudent: false,
+      languages: ['English', 'Spanish'],
+      referralSource: 'friend',
+      referralDetail: 'Invited by Sarah Williams',
+      interests: ['salvation', 'small-groups'],
+      prayerRequest: 'Please pray for my mother who is in the hospital.',
+    },
+    {
+      id: `${MOCK_PREFIX}2`,
+      submittedAt: hoursAgo(26),
+      submittedBy: null,
+      source: 'qr',
+      status: 'pending',
+      personId: null,
+      preferredName: 'Jonathan',
+      lastName: 'Chen',
+      phone: '+1-555-0193',
+      email: 'jchen.student@example.edu',
+      isStudent: true,
+      languages: ['English', 'Mandarin Chinese'],
+      referralSource: 'school',
+      interests: ['growth', 'small-groups'],
+    },
+    {
+      id: `${MOCK_PREFIX}3`,
+      submittedAt: hoursAgo(72),
+      submittedBy: null,
+      source: 'qr',
+      status: 'pending',
+      personId: null,
+      preferredName: 'Lily',
+      isStudent: false,
+      languages: ['English'],
+      referralSource: 'online',
+      interests: [],
+    },
+    {
+      id: `${MOCK_PREFIX}4`,
+      submittedAt: hoursAgo(96),
+      submittedBy: null,
+      source: 'qr',
+      status: 'pending',
+      personId: null,
+      preferredName: 'Emmanuel',
+      lastName: 'Adeyemi',
+      alternativeName: 'Manny',
+      phone: '+1-555-0234',
+      email: 'emmanuel.a@example.com',
+      isStudent: false,
+      languages: ['English', 'French', 'Yoruba'],
+      referralSource: 'other',
+      referralDetail: 'Moved to the area last month',
+      interests: ['serving', 'growth'],
+      prayerRequest: 'Praying for a new job and for my family back home.',
+    },
+    {
+      id: `${MOCK_PREFIX}5`,
+      submittedAt: hoursAgo(144),
+      submittedBy: null,
+      source: 'qr',
+      status: 'pending',
+      personId: null,
+      preferredName: 'Sarah',
+      lastName: 'Williams',
+      phone: '+1-555-0387',
+      isStudent: false,
+      languages: ['English'],
+      referralSource: 'drive-by',
+      interests: [],
+    },
+    {
+      id: `${MOCK_PREFIX}6`,
+      submittedAt: hoursAgo(192),
+      submittedBy: null,
+      source: 'qr',
+      status: 'pending',
+      personId: null,
+      preferredName: 'David',
+      lastName: 'Park',
+      email: 'dpark@example.com',
+      isStudent: true,
+      languages: ['English', 'Korean'],
+      referralSource: 'flyer',
+      interests: ['salvation'],
+      prayerRequest: 'I have been searching for truth for a long time and would love to learn more.',
+    },
+  ];
+}
+
 export default function PendingVisitorsPage() {
   const { currentPersona, promoteVisitorSubmission, discardVisitorSubmission } = useApp();
   const { showToast } = useToast();
@@ -45,6 +153,8 @@ export default function PendingVisitorsPage() {
 
   const [submissions, setSubmissions] = React.useState<VisitorSubmission[] | null>(null);
   const [busyId, setBusyId] = React.useState<string | null>(null);
+  const [confirmDiscard, setConfirmDiscard] = React.useState<VisitorSubmission | null>(null);
+  const inFlightRef = React.useRef<Set<string>>(new Set());
 
   const canAccess =
     currentPersona.role === 'admin' ||
@@ -58,7 +168,14 @@ export default function PendingVisitorsPage() {
       .select('*')
       .eq('status', 'pending')
       .order('submitted_at', { ascending: false });
-    setSubmissions((data ?? []).map((row) => mapVisitorSubmission(row as Record<string, unknown>)));
+    const rows = (data ?? []).map((row) =>
+      mapVisitorSubmission(row as Record<string, unknown>)
+    );
+    if (process.env.NODE_ENV !== 'production' && rows.length === 0) {
+      setSubmissions(buildMockSubmissions());
+    } else {
+      setSubmissions(rows);
+    }
   }, []);
 
   React.useEffect(() => {
@@ -67,26 +184,44 @@ export default function PendingVisitorsPage() {
 
   if (!canAccess) {
     return (
-      <div style={{ paddingTop: 64, textAlign: 'center', color: 'var(--text-muted)' }}>
-        You don't have access to this page.
-      </div>
+      <PageContainer width="2xl">
+        <div style={{ paddingTop: 64, textAlign: 'center', color: 'var(--text-muted)' }}>
+          You don't have access to this page.
+        </div>
+      </PageContainer>
     );
   }
 
   const handlePromote = async (sub: VisitorSubmission) => {
+    if (inFlightRef.current.has(sub.id)) return;
+    inFlightRef.current.add(sub.id);
+    if (isMockId(sub.id)) {
+      setSubmissions((prev) => (prev ?? []).filter((s) => s.id !== sub.id));
+      showToast('Mock submission — not saved to DB');
+      inFlightRef.current.delete(sub.id);
+      return;
+    }
     setBusyId(sub.id);
     try {
       const personId = await promoteVisitorSubmission(sub.id);
       showToast('Visitor added to directory');
-      router.push(`/person/${personId}`);
+      router.push(`/person/${personId}?tab=todos`);
     } catch {
       showToast('Could not promote submission', 'error');
       setBusyId(null);
+      inFlightRef.current.delete(sub.id);
     }
   };
 
   const handleDiscard = async (sub: VisitorSubmission) => {
-    if (!confirm(`Discard the card from ${sub.preferredName}? This cannot be undone.`)) return;
+    if (inFlightRef.current.has(sub.id)) return;
+    inFlightRef.current.add(sub.id);
+    if (isMockId(sub.id)) {
+      setSubmissions((prev) => (prev ?? []).filter((s) => s.id !== sub.id));
+      showToast('Mock submission discarded');
+      inFlightRef.current.delete(sub.id);
+      return;
+    }
     setBusyId(sub.id);
     try {
       await discardVisitorSubmission(sub.id);
@@ -96,60 +231,105 @@ export default function PendingVisitorsPage() {
       showToast('Could not discard submission', 'error');
     } finally {
       setBusyId(null);
+      inFlightRef.current.delete(sub.id);
     }
   };
 
   return (
-    <div style={{ paddingTop: 16, paddingBottom: 48 }}>
-      <header style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
-        <Link
-          href="/"
-          style={{ color: 'var(--text-muted)', display: 'flex', alignItems: 'center' }}
-        >
-          <CaretLeft size={20} />
-        </Link>
-        <h1
-          className="font-display"
-          style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)' }}
-        >
-          Pending visitors
-        </h1>
-      </header>
+    <PageContainer width="3xl">
+      <div style={{ paddingTop: 20, paddingBottom: 48 }}>
+        <header style={{ marginBottom: 20 }}>
+          <h1
+            style={{
+              fontSize: 32,
+              fontWeight: 800,
+              color: 'var(--text-primary)',
+              letterSpacing: '-0.03em',
+              lineHeight: 1,
+            }}
+          >
+            Pending visitors
+          </h1>
+          {submissions && submissions.length > 0 && (
+            <p style={{ marginTop: 8, fontSize: 13, color: 'var(--text-muted)' }}>
+              {submissions.length} card{submissions.length === 1 ? '' : 's'} awaiting review
+            </p>
+          )}
+        </header>
 
-      {submissions === null ? (
-        <p style={{ color: 'var(--text-muted)', fontSize: 14 }}>Loading…</p>
-      ) : submissions.length === 0 ? (
-        <div
-          style={{
-            background: 'var(--surface)',
-            borderRadius: 'var(--radius)',
-            border: '1px solid var(--border-light)',
-            padding: '2rem 1.25rem',
-            textAlign: 'center',
-            color: 'var(--text-muted)',
-            fontSize: 14,
+        {submissions === null ? (
+          <p style={{ color: 'var(--text-muted)', fontSize: 14 }}>Loading…</p>
+        ) : submissions.length === 0 ? (
+          <div
+            style={{
+              background: 'var(--surface)',
+              borderRadius: 'var(--radius)',
+              border: '1px solid var(--border-light)',
+              padding: '2.5rem 1.25rem',
+              textAlign: 'center',
+              color: 'var(--text-muted)',
+              fontSize: 14,
+            }}
+          >
+            <HandWaving size={32} color="var(--text-muted)" style={{ marginBottom: 12 }} />
+            <p style={{ marginBottom: 4 }}>No pending visitor cards.</p>
+            <p style={{ fontSize: 12 }}>
+              New self-submissions from <code>/welcome</code> will appear here for review.
+            </p>
+            <a
+              href="/welcome"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                marginTop: 24,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+                padding: '0.75rem 1.5rem',
+                borderRadius: 'var(--radius-md)',
+                background: 'var(--sage)',
+                color: 'var(--on-sage)',
+                fontSize: 15,
+                fontWeight: 600,
+                textDecoration: 'none',
+              }}
+            >
+              Open welcome form
+              <ArrowSquareOut size={16} weight="bold" />
+            </a>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+            {submissions.map((sub) => (
+              <SubmissionCard
+                key={sub.id}
+                submission={sub}
+                busy={busyId === sub.id}
+                onPromote={() => handlePromote(sub)}
+                onDiscard={() => setConfirmDiscard(sub)}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+      {confirmDiscard && (
+        <ConfirmActionSheet
+          title="Discard visitor card?"
+          description={`The card from ${confirmDiscard.preferredName}${
+            confirmDiscard.lastName ? ` ${confirmDiscard.lastName}` : ''
+          } will be permanently removed. This cannot be undone.`}
+          confirmLabel="Discard"
+          tone="danger"
+          onConfirm={() => {
+            const sub = confirmDiscard;
+            setConfirmDiscard(null);
+            void handleDiscard(sub);
           }}
-        >
-          <HandWaving size={32} color="var(--text-muted)" style={{ marginBottom: 12 }} />
-          <p style={{ marginBottom: 4 }}>No pending visitor cards.</p>
-          <p style={{ fontSize: 12 }}>
-            New self-submissions from <code>/welcome</code> will appear here for review.
-          </p>
-        </div>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {submissions.map((sub) => (
-            <SubmissionCard
-              key={sub.id}
-              submission={sub}
-              busy={busyId === sub.id}
-              onPromote={() => handlePromote(sub)}
-              onDiscard={() => handleDiscard(sub)}
-            />
-          ))}
-        </div>
+          onCancel={() => setConfirmDiscard(null)}
+        />
       )}
-    </div>
+    </PageContainer>
   );
 }
 

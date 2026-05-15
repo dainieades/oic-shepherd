@@ -4,21 +4,22 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useApp } from '@/lib/context';
-import { NAV_ITEMS, isSideNavHidden } from '@/lib/navItems';
+import { NAV_ITEMS, isSideNavHidden, isNavItemVisible } from '@/lib/navItems';
 import { Logo } from '@/components/Logo';
 import { AvatarBadge } from '@/components/AvatarBadge';
+import { usePendingVisitorCount } from '@/lib/usePendingVisitorCount';
 
 export default function SideNav() {
   const pathname = usePathname();
   const { data, currentPersona } = useApp();
-  const isWelcome = currentPersona.role === 'welcome-team';
+  const pendingVisitorCount = usePendingVisitorCount();
   const personaPerson = currentPersona.personId
     ? data.people.find((p) => p.id === currentPersona.personId)
     : null;
 
   if (isSideNavHidden(pathname)) return null;
 
-  const items = NAV_ITEMS.filter((item) => !(isWelcome && item.shepherdOnly));
+  const items = NAV_ITEMS.filter((item) => isNavItemVisible(item, currentPersona.role));
 
   return (
     <aside
@@ -78,6 +79,22 @@ export default function SideNav() {
               )}
               <Icon size={20} weight={active ? 'fill' : 'regular'} />
               <span>{item.label}</span>
+              {item.href === '/visitors/pending' && pendingVisitorCount > 0 && (
+                <span
+                  style={{
+                    marginLeft: 'auto',
+                    fontSize: '0.6875rem',
+                    fontWeight: 700,
+                    padding: '0.0625rem 0.4375rem',
+                    borderRadius: 'var(--radius-pill)',
+                    background: 'var(--sage)',
+                    color: 'var(--on-sage)',
+                    lineHeight: 1.4,
+                  }}
+                >
+                  {pendingVisitorCount}
+                </span>
+              )}
             </Link>
           );
         })}

@@ -1,5 +1,13 @@
 import type { Icon } from '@phosphor-icons/react';
-import { UserList, Notepad, CheckCircle, UsersFour, Gear } from '@phosphor-icons/react';
+import {
+  UserList,
+  Notepad,
+  CheckCircle,
+  UsersFour,
+  Gear,
+  HandWaving,
+} from '@phosphor-icons/react';
+import type { Role } from './types';
 
 export interface NavItem {
   href: string;
@@ -9,6 +17,8 @@ export interface NavItem {
   matches: (pathname: string) => boolean;
   /** When true, the item is hidden for welcome-team personas. */
   shepherdOnly?: boolean;
+  /** When set, only personas with one of these roles see the item. */
+  roles?: readonly Role[];
 }
 
 export const NAV_ITEMS: readonly NavItem[] = [
@@ -17,6 +27,13 @@ export const NAV_ITEMS: readonly NavItem[] = [
     label: 'People',
     icon: UserList,
     matches: (p) => p === '/' || p === '/people',
+  },
+  {
+    href: '/visitors/pending',
+    label: 'Visitors',
+    icon: HandWaving,
+    matches: (p) => p.startsWith('/visitors'),
+    roles: ['admin', 'welcome-team'],
   },
   {
     href: '/logs',
@@ -45,6 +62,12 @@ export const NAV_ITEMS: readonly NavItem[] = [
     matches: (p) => p === '/settings' || p.startsWith('/settings/'),
   },
 ];
+
+export function isNavItemVisible(item: NavItem, role: Role): boolean {
+  if (item.roles && !item.roles.includes(role)) return false;
+  if (item.shepherdOnly && role === 'welcome-team') return false;
+  return true;
+}
 
 export function isHiddenRoute(pathname: string): boolean {
   return (
