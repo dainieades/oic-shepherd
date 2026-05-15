@@ -121,7 +121,7 @@ export function mapPersona(row: Record<string, unknown>, assignedPeopleIds: stri
       personAdded: r.notify_person_added ?? true,
       noticeAdded: r.notify_notice_added ?? true,
       shepherdAssigned: r.notify_shepherd_assigned ?? true,
-      personUpdated: r.notify_person_updated ?? true,
+      personUpdated: r.notify_person_updated ?? false,
       todoCreated: r.notify_todo_created ?? true,
     },
     calendarSyncEnabled: r.calendar_sync_enabled ?? false,

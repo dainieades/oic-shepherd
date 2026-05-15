@@ -287,7 +287,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     personAdded: true,
     noticeAdded: true,
     shepherdAssigned: true,
-    personUpdated: true,
+    personUpdated: false,
     todoCreated: true,
   });
   const [calendarSyncEnabled, setCalendarSyncEnabledState] = useState<boolean>(false);
@@ -1425,10 +1425,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
     async (personId: string, shepherdIds: string[]): Promise<void> => {
       let snapshot: AppData | undefined;
       let personName = '';
+      let unchanged = false;
       setData((prev) => {
         snapshot = prev;
         const p = prev.people.find((p) => p.id === personId);
         personName = p ? fullName(p) : '';
+        if (p) {
+          const current = p.assignedShepherdIds;
+          if (
+            current.length === shepherdIds.length &&
+            current.every((id) => shepherdIds.includes(id))
+          ) {
+            unchanged = true;
+            return prev;
+          }
+        }
         return {
           ...prev,
           people: prev.people.map((p) =>
@@ -1436,6 +1447,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           ),
         };
       });
+      if (unchanged) return;
       // Keep currentPersona.assignedPeopleIds in sync so the "My Sheep" filter
       // reflects new assignments without requiring a page reload.
       setCurrentPersona((prev) => {
