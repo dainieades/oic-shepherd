@@ -58,12 +58,12 @@ export function VisitorCardPanel({ person }: { person: Person }) {
     const summaryParts: string[] = [];
     if (submission.referralSource)
       summaryParts.push(`Visited via ${REFERRAL_LABELS[submission.referralSource]}`);
-    else summaryParts.push('Visitor card');
+    else summaryParts.push('Newcomer card');
     summaryParts.push(submittedDate);
 
     return (
       <div>
-        <p style={sectionLabelStyle}>Visitor card</p>
+        <p style={sectionLabelStyle}>Newcomer card</p>
         <button
           type="button"
           onClick={() => setExpanded(true)}
@@ -101,7 +101,7 @@ export function VisitorCardPanel({ person }: { person: Person }) {
           marginBottom: 8,
         }}
       >
-        <p style={{ ...sectionLabelStyle, marginBottom: 0 }}>Visitor card</p>
+        <p style={{ ...sectionLabelStyle, marginBottom: 0 }}>Newcomer card</p>
         {!isActiveVisitor && (
           <button
             type="button"

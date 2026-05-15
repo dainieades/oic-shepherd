@@ -1,15 +1,6 @@
 'use client';
 
-import {
-  differenceInCalendarDays,
-  differenceInHours,
-  subDays,
-  parseISO,
-  isBefore,
-  compareDesc,
-} from 'date-fns';
 import React from 'react';
-import Link from 'next/link';
 import { useApp } from '@/lib/context';
 import { getMembershipLabel, fullName } from '@/lib/utils';
 import { type Person, type AppRole } from '@/lib/types';
@@ -22,7 +13,6 @@ import {
   X,
 } from '@phosphor-icons/react';
 import { Button } from '@/components/Button';
-import { AvatarBadge } from '@/components/AvatarBadge';
 import FamilyRow from '@/components/people/FamilyRow';
 import IndividualRow from '@/components/people/IndividualRow';
 import PeopleTable from '@/components/people/PeopleTable';
@@ -120,22 +110,6 @@ export default function PeoplePage() {
   }, [showAddChoice]);
 
   const entries = usePeopleRows(deferredSearch);
-
-  // New people: created in the last 60 days, no notes yet, not archived
-  const newPeople = React.useMemo(() => {
-    const cutoff = subDays(new Date(), 60);
-    const notedPersonIds = new Set(data.notes.map((n) => n.personId).filter(Boolean) as string[]);
-    return data.people
-      .filter((p) => {
-        if (p.churchAttendance === 'archived') return false;
-        if (notedPersonIds.has(p.id)) return false;
-        if (isBefore(parseISO(p.createdAt), cutoff)) return false;
-        if (currentPersona.role === 'shepherd')
-          return currentPersona.assignedPeopleIds.includes(p.id);
-        return true;
-      })
-      .sort((a, b) => compareDesc(parseISO(a.createdAt), parseISO(b.createdAt)));
-  }, [data.people, data.notes, currentPersona]);
 
   const activeFilterCount =
     filters.shepherds.length +
@@ -530,107 +504,6 @@ export default function PeoplePage() {
                   <X size={16} aria-hidden="true" />
                 </button>
               ))}
-            </div>
-          )}
-
-          {/* ── New people alert ──────────────── */}
-          {newPeople.length > 0 && (
-            <div style={{ marginBottom: 14 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-                <span
-                  style={{
-                    fontSize: 10,
-                    fontWeight: 700,
-                    color: 'var(--amber)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.06em',
-                  }}
-                >
-                  New · needs first contact
-                </span>
-                <span
-                  style={{
-                    minWidth: 16,
-                    height: 16,
-                    borderRadius: 'var(--radius-pill)',
-                    background: 'var(--amber-light)',
-                    border: '1px solid var(--amber-border)',
-                    color: 'var(--amber)',
-                    fontSize: 10,
-                    fontWeight: 700,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    padding: '0 0.25rem',
-                  }}
-                >
-                  {newPeople.length}
-                </span>
-              </div>
-              <div
-                style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4 }}
-                className="no-scrollbar"
-              >
-                {newPeople.map((p) => {
-                  const createdAt = parseISO(p.createdAt);
-                  const hoursAgo = differenceInHours(new Date(), createdAt);
-                  const daysAgo = differenceInCalendarDays(new Date(), createdAt);
-                  const timeLabel =
-                    hoursAgo < 24
-                      ? `${hoursAgo}h`
-                      : daysAgo < 14
-                        ? `${daysAgo}d`
-                        : `${Math.floor(daysAgo / 7)}w`;
-                  return (
-                    <Link
-                      key={p.id}
-                      href={`/person/${p.id}`}
-                      style={{
-                        flexShrink: 0,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: 4,
-                        textDecoration: 'none',
-                        width: 64,
-                      }}
-                    >
-                      <AvatarBadge
-                        name={fullName(p)}
-                        photo={p.photo}
-                        size={44}
-                        bg="var(--amber-light)"
-                        color="var(--amber)"
-                        border="0.125rem solid var(--amber-border)"
-                      />
-                      <span
-                        style={{
-                          fontSize: 10,
-                          fontWeight: 600,
-                          color: 'var(--text-primary)',
-                          textAlign: 'center',
-                          width: '100%',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
-                        {p.preferredName}
-                      </span>
-                      <span
-                        style={{
-                          fontSize: 9,
-                          color: 'var(--amber)',
-                          fontWeight: 500,
-                          marginTop: -2,
-                        }}
-                      >
-                        {timeLabel} ago
-                      </span>
-                    </Link>
-                  );
-                })}
-              </div>
             </div>
           )}
 

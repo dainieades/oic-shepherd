@@ -88,6 +88,16 @@ except: print('')")
   echo "✓ $EMAIL → persona '$PNAME' (auth user_id $USER_ID)"
 done
 
+EXTRAS=supabase/local-extras.sql
+if [ -f "$EXTRAS" ]; then
+  if docker exec -i "$DB_CONTAINER" psql -U postgres -d postgres -v ON_ERROR_STOP=1 < "$EXTRAS" >/dev/null; then
+    echo "✓ applied $EXTRAS"
+  else
+    echo "ERROR: failed to apply $EXTRAS" >&2
+    exit 1
+  fi
+fi
+
 echo ""
 echo "Bootstrap complete. Sign in with any of:"
 for i in "${!EMAILS[@]}"; do

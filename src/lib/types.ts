@@ -28,7 +28,7 @@ export interface Persona {
   calendarFeedToken?: string | null;
   /** @deprecated No longer used by UI — see CalendarConnectedApp. */
   calendarConnectedApp?: CalendarConnectedApp | null;
-  /** Derived from the linked person's flag at load time. Lets a shepherd triage pending visitor submissions. */
+  /** Derived from the linked person's flag at load time. Lets a shepherd review pending newcomer submissions. */
   canTriageVisitors?: boolean;
   isTest?: boolean;
 }
@@ -81,7 +81,7 @@ export interface Person {
   isShepherd?: boolean;
   isBeingDiscipled?: boolean;
   appRole?: AppRole;
-  /** Shepherd-only flag — grants access to the pending visitor submissions queue. */
+  /** Shepherd-only flag — grants access to the pending newcomer submissions queue. */
   canTriageVisitors?: boolean;
   churchPositions?: string[];
   isStudent?: boolean;

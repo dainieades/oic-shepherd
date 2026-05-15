@@ -52,9 +52,14 @@ export default function AppRolePickerSheet({
   const [emailDraft, setEmailDraft] = React.useState(currentEmail ?? '');
   const [emailError, setEmailError] = React.useState('');
   const [saving, setSaving] = React.useState(false);
+  const [selectedRole, setSelectedRole] = React.useState<AppRole | undefined>(currentRole);
   const [triageOn, setTriageOn] = React.useState(canTriageVisitors);
   const [triageSaving, setTriageSaving] = React.useState(false);
   const emailInputRef = React.useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    setSelectedRole(currentRole);
+  }, [currentRole]);
 
   React.useEffect(() => {
     setTriageOn(canTriageVisitors);
@@ -389,11 +394,12 @@ export default function AppRolePickerSheet({
         /* ── Role options ── */
         <>
           {ROLE_OPTIONS.map((opt) => {
-            const isSelected = opt.value === currentRole;
+            const isSelected = opt.value === selectedRole;
             return (
               <button
                 key={opt.value}
                 onClick={() => {
+                  setSelectedRole(opt.value);
                   onSelect(opt.value);
                   if (opt.value !== 'shepherd') onClose();
                 }}
@@ -438,7 +444,7 @@ export default function AppRolePickerSheet({
             );
           })}
 
-          {isAdmin && currentRole === 'shepherd' && onToggleTriage && (
+          {isAdmin && selectedRole === 'shepherd' && onToggleTriage && (
             <button
               onClick={async () => {
                 if (triageSaving) return;
@@ -476,10 +482,10 @@ export default function AppRolePickerSheet({
                     marginBottom: 2,
                   }}
                 >
-                  Can triage visitor submissions
+                  Review newcomers
                 </p>
                 <p style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.4 }}>
-                  Lets this shepherd review and promote new visitor sign-ups.
+                  Lets this shepherd review and welcome new sign-ups.
                 </p>
               </div>
               <span

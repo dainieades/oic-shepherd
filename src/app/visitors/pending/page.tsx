@@ -202,7 +202,7 @@ export default function PendingVisitorsPage() {
     setBusyId(sub.id);
     try {
       const personId = await promoteVisitorSubmission(sub.id);
-      showToast('Visitor added to directory');
+      showToast('Newcomer added to directory');
       router.push(`/person/${personId}?tab=todos`);
     } catch {
       showToast('Could not promote submission', 'error');
@@ -246,7 +246,7 @@ export default function PendingVisitorsPage() {
               lineHeight: 1,
             }}
           >
-            Pending visitors
+            Newcomers
           </h1>
           {submissions && submissions.length > 0 && (
             <p style={{ marginTop: 8, fontSize: 13, color: 'var(--text-muted)' }}>
@@ -270,7 +270,7 @@ export default function PendingVisitorsPage() {
             }}
           >
             <HandWaving size={32} color="var(--text-muted)" style={{ marginBottom: 12 }} />
-            <p style={{ marginBottom: 4 }}>No pending visitor cards.</p>
+            <p style={{ marginBottom: 4 }}>No newcomer cards pending.</p>
             <p style={{ fontSize: 12 }}>
               New self-submissions from <code>/welcome</code> will appear here for review.
             </p>
@@ -313,7 +313,7 @@ export default function PendingVisitorsPage() {
       </div>
       {confirmDiscard && (
         <ConfirmActionSheet
-          title="Discard visitor card?"
+          title="Discard newcomer card?"
           description={`The card from ${confirmDiscard.preferredName}${
             confirmDiscard.lastName ? ` ${confirmDiscard.lastName}` : ''
           } will be permanently removed. This cannot be undone.`}

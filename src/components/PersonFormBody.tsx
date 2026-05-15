@@ -145,6 +145,9 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
   const [isBeingDiscipled, setIsBeingDiscipled] = React.useState(person?.isBeingDiscipled ?? false);
   const [isStudent, setIsStudent] = React.useState(person?.isStudent ?? false);
   const [appRole, setAppRole] = React.useState<AppRole>(person?.appRole ?? 'no-access');
+  const [canTriageVisitors, setCanTriageVisitors] = React.useState<boolean>(
+    person?.canTriageVisitors ?? false
+  );
   const [churchPositions, setChurchPositions] = React.useState<string[]>(
     person?.churchPositions ?? []
   );
@@ -282,6 +285,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
           isBeingDiscipled: isBeingDiscipled || undefined,
           isStudent: isStudent || undefined,
           appRole,
+          canTriageVisitors: appRole === 'shepherd' && canTriageVisitors ? true : undefined,
           churchPositions: churchPositions.length > 0 ? churchPositions : undefined,
           phone: phone.trim() || undefined,
           homePhone: homePhone.trim() || undefined,
@@ -388,6 +392,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
           isBeingDiscipled: isBeingDiscipled || undefined,
           isStudent,
           appRole,
+          canTriageVisitors: appRole === 'shepherd' ? canTriageVisitors : false,
           churchPositions: churchPositions.length > 0 ? churchPositions : undefined,
           phone: phone.trim() || undefined,
           homePhone: homePhone.trim() || undefined,
@@ -470,13 +475,13 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
                       textAlign: 'right',
                     }}
                   >
-                    {
-                      {
-                        admin: 'Admin',
-                        shepherd: 'Shepherd',
-                        'no-access': 'No Access',
-                      }[appRole]
-                    }
+                    {appRole === 'shepherd' && canTriageVisitors
+                      ? 'Shepherd · Reviews newcomers'
+                      : {
+                          admin: 'Admin',
+                          shepherd: 'Shepherd',
+                          'no-access': 'No Access',
+                        }[appRole]}
                   </span>
                   {currentPersona.role === 'admin' && (
                     <CaretRight size={14} color="var(--text-muted)" />
@@ -763,7 +768,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
         </FormSection>
 
         {canEditVisitorCard && visitorSubmission && (
-          <FormSection label="Visitor card">
+          <FormSection label="Newcomer card">
             <PickerRow
               ref={referralBtnRef}
               icon={<Megaphone size={16} color="var(--text-muted)" />}
@@ -929,12 +934,18 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
       {openPicker === 'appRole' && (
         <AppRolePickerSheet
           currentRole={appRole}
+          canTriageVisitors={canTriageVisitors}
           onSelect={(role) => {
             setAppRole(role);
-            setOpenPicker(null);
+            if (role !== 'shepherd') setCanTriageVisitors(false);
+            if (role !== 'shepherd') setOpenPicker(null);
+          }}
+          onToggleTriage={(next) => {
+            setCanTriageVisitors(next);
           }}
           onRemove={() => {
             setAppRole('no-access');
+            setCanTriageVisitors(false);
             setOpenPicker(null);
           }}
           onClose={() => setOpenPicker(null)}

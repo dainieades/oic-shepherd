@@ -114,7 +114,7 @@ export default function WelcomePage() {
             cursor: 'pointer',
           }}
         >
-          Welcome another visitor
+          Welcome another newcomer
         </button>
       </div>
     );

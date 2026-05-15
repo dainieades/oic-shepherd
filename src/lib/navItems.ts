@@ -28,7 +28,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
   },
   {
     href: '/visitors/pending',
-    label: 'Visitors',
+    label: 'Newcomers',
     icon: HandWaving,
     matches: (p) => p.startsWith('/visitors'),
     visibleTo: (persona) => persona.role === 'admin' || persona.canTriageVisitors === true,

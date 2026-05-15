@@ -57,6 +57,12 @@ To switch back to local: `cp .env.local.local .env.local`.
 - **`.env.local` switches your entire environment.** There's no per-request override. Make sure you know which one is active before running migrations from the CLI.
 - **`.env.local.cloud` is your safety net** — restoring it points everything back at prod. Keep it.
 
+## Local-only extras (`supabase/local-extras.sql`)
+
+`supabase/local-extras.sql` is applied by `scripts/local-bootstrap.sh` after the seed loads. Use it for fixtures you want in every fresh local DB but not in cloud — currently a spread of mixed-urgency notices across ~8 people from different shepherds, useful for exercising notice rendering, filters, and dashboards.
+
+Inserts must be idempotent (`ON CONFLICT (id) DO NOTHING`) so re-running the bootstrap is safe. The file is unaffected by `supabase db dump --data-only`, which only rewrites `seed.sql`.
+
 ## First-time setup (already done, recorded here for the next dev)
 
 1. `brew install --cask docker-desktop` — launch and accept the "Continue without Rosetta" dialog (we don't need it on Apple Silicon for Supabase images)

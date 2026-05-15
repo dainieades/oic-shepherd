@@ -270,7 +270,7 @@ export default function AccessManagementPage() {
                 >
                   {linkedPerson
                     ? role === 'shepherd' && linkedPerson.canTriageVisitors
-                      ? 'Shepherd · Triage'
+                      ? 'Shepherd · Reviews newcomers'
                       : ROLE_LABEL[role]
                     : 'Not linked'}
                 </span>
