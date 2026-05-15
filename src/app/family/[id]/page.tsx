@@ -73,9 +73,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
   const { id } = React.use(params);
   const { data, toggleTodo, canViewNote, updateFamily, currentPersona } = useApp();
   const canSeeNotices =
-    currentPersona.role === 'admin' ||
-    currentPersona.role === 'shepherd' ||
-    currentPersona.role === 'welcome-team';
+    currentPersona.role === 'admin' || currentPersona.role === 'shepherd';
   const [tab, setTab] = React.useState<Tab>('logs');
   const [showAddLog, setShowAddLog] = React.useState(false);
   const [showAddTodo, setShowAddTodo] = React.useState(false);

@@ -17,18 +17,15 @@ const ROLE_OPTIONS: { value: AppRole; label: string; description: string }[] = [
     label: 'Shepherd',
     description: 'Can view and log for their assigned people.',
   },
-  {
-    value: 'welcome-team',
-    label: 'Welcome Team',
-    description: 'Can view the directory and check in visitors.',
-  },
 ];
 
 interface Props {
   currentRole: AppRole | undefined;
+  canTriageVisitors?: boolean;
   noPersonLinked?: boolean;
   currentEmail?: string;
   onSelect: (role: AppRole) => void;
+  onToggleTriage?: (next: boolean) => Promise<void> | void;
   onRemove: () => Promise<void> | void;
   onUpdateEmail?: (newEmail: string) => Promise<{ error?: string } | void>;
   onClose: () => void;
@@ -38,9 +35,11 @@ interface Props {
 
 export default function AppRolePickerSheet({
   currentRole,
+  canTriageVisitors = false,
   noPersonLinked,
   currentEmail,
   onSelect,
+  onToggleTriage,
   onRemove,
   onUpdateEmail,
   onClose,
@@ -53,7 +52,13 @@ export default function AppRolePickerSheet({
   const [emailDraft, setEmailDraft] = React.useState(currentEmail ?? '');
   const [emailError, setEmailError] = React.useState('');
   const [saving, setSaving] = React.useState(false);
+  const [triageOn, setTriageOn] = React.useState(canTriageVisitors);
+  const [triageSaving, setTriageSaving] = React.useState(false);
   const emailInputRef = React.useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    setTriageOn(canTriageVisitors);
+  }, [canTriageVisitors]);
 
   React.useEffect(() => {
     if (editingEmail) {
@@ -390,7 +395,7 @@ export default function AppRolePickerSheet({
                 key={opt.value}
                 onClick={() => {
                   onSelect(opt.value);
-                  onClose();
+                  if (opt.value !== 'shepherd') onClose();
                 }}
                 style={{
                   width: '100%',
@@ -432,6 +437,80 @@ export default function AppRolePickerSheet({
               </button>
             );
           })}
+
+          {isAdmin && currentRole === 'shepherd' && onToggleTriage && (
+            <button
+              onClick={async () => {
+                if (triageSaving) return;
+                const next = !triageOn;
+                setTriageOn(next);
+                setTriageSaving(true);
+                try {
+                  await onToggleTriage(next);
+                } catch {
+                  setTriageOn(!next);
+                } finally {
+                  setTriageSaving(false);
+                }
+              }}
+              disabled={triageSaving}
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                padding: '0.875rem 1.25rem',
+                background: 'none',
+                border: 'none',
+                borderBottom: '1px solid var(--border-light)',
+                cursor: triageSaving ? 'not-allowed' : 'pointer',
+                textAlign: 'left',
+              }}
+            >
+              <div style={{ flex: 1 }}>
+                <p
+                  style={{
+                    fontSize: 15,
+                    fontWeight: 500,
+                    color: 'var(--text-primary)',
+                    marginBottom: 2,
+                  }}
+                >
+                  Can triage visitor submissions
+                </p>
+                <p style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.4 }}>
+                  Lets this shepherd review and promote new visitor sign-ups.
+                </p>
+              </div>
+              <span
+                aria-hidden
+                style={{
+                  flexShrink: 0,
+                  width: 36,
+                  height: 22,
+                  borderRadius: 'var(--radius-pill)',
+                  background: triageOn ? 'var(--sage)' : 'var(--border)',
+                  position: 'relative',
+                  transition: 'background 0.15s',
+                  opacity: triageSaving ? 0.6 : 1,
+                }}
+              >
+                <span
+                  style={{
+                    position: 'absolute',
+                    top: 2,
+                    left: triageOn ? 16 : 2,
+                    width: 18,
+                    height: 18,
+                    borderRadius: '50%',
+                    background: 'var(--surface)',
+                    transition: 'left 0.15s',
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.15)',
+                  }}
+                />
+              </span>
+            </button>
+          )}
 
           {isAdmin && (
             <>

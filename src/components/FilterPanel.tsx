@@ -598,11 +598,10 @@ export default function FilterPanel({
               >
                 App Role
               </p>
-              {(['admin', 'shepherd', 'welcome-team', 'no-access'] as AppRole[]).map((role) => {
+              {(['admin', 'shepherd', 'no-access'] as AppRole[]).map((role) => {
                 const labels: Record<AppRole, string> = {
                   admin: 'Admin',
                   shepherd: 'Shepherd',
-                  'welcome-team': 'Welcome Team',
                   'no-access': 'No Access',
                 };
                 return (

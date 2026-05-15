@@ -6,14 +6,13 @@ import {
   CheckCircle,
   HandHeart,
   ShieldStar,
-  Users,
   Check,
 } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { X } from '@phosphor-icons/react';
 import { BACKDROP_COLOR, SHEET_MAX_WIDTH, Z_SHEET } from '@/lib/constants';
 
-type InviteRole = 'shepherd' | 'welcome-team' | 'admin';
+type InviteRole = 'shepherd' | 'admin';
 
 interface Props {
   onClose: () => void;
@@ -33,12 +32,6 @@ const ROLES: { value: InviteRole; label: string; description: string; icon: Reac
     label: 'Shepherd',
     description: 'View and log care for assigned people',
     icon: <HandHeart size={18} color="var(--sage)" />,
-  },
-  {
-    value: 'welcome-team',
-    label: 'Welcome Team',
-    description: 'View directory and check in visitors',
-    icon: <Users size={18} color="var(--sage)" />,
   },
   {
     value: 'admin',
@@ -65,10 +58,8 @@ export default function InviteSheet({
 
   const isAdmin = currentPersona.role === 'admin';
 
-  // Non-admins can invite shepherds or welcome team; only admins can invite admins
-  const availableRoles = isAdmin
-    ? ROLES
-    : ROLES.filter((r) => r.value === 'shepherd' || r.value === 'welcome-team');
+  // Non-admins can invite shepherds; only admins can invite admins.
+  const availableRoles = isAdmin ? ROLES : ROLES.filter((r) => r.value === 'shepherd');
 
   async function handleInvite() {
     const trimmed = email.trim().toLowerCase();

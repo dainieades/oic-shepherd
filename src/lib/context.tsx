@@ -157,6 +157,7 @@ interface AppContextType {
         | 'isBeingDiscipled'
         | 'churchPositions'
         | 'appRole'
+        | 'canTriageVisitors'
         | 'isStudent'
       >
     >
@@ -252,6 +253,7 @@ const AUDIT_FIELD_KEYS = [
   'isBeingDiscipled',
   'churchPositions',
   'appRole',
+  'canTriageVisitors',
   'isStudent',
 ] as const;
 
@@ -526,9 +528,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
         isTest: (r.is_test as boolean | undefined) ?? false,
       }));
 
-      const personas = (personaRows as Record<string, unknown>[]).map((r) =>
-        mapPersona(r, assignedByPersona[r.id as string] ?? [])
-      );
+      const triageByPersonId = new Map<string, boolean>();
+      for (const p of people) {
+        if (p.canTriageVisitors) triageByPersonId.set(p.id, true);
+      }
+      const personas = (personaRows as Record<string, unknown>[]).map((r) => {
+        const persona = mapPersona(r, assignedByPersona[r.id as string] ?? []);
+        if (persona.personId) {
+          persona.canTriageVisitors = triageByPersonId.get(persona.personId) ?? false;
+        }
+        return persona;
+      });
 
       const notes = (noteRows as Record<string, unknown>[]).map(mapNote);
       const todos = (todoRows as Record<string, unknown>[]).map(mapTodo);
@@ -597,11 +607,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // Reset all page filters when the active persona changes
   useEffect(() => {
-    const resetHome =
-      currentPersona.role === 'welcome-team'
-        ? { ...HOME_DEFAULT_FILTERS, shepherds: [] }
-        : HOME_DEFAULT_FILTERS;
-    setHomeFilters(resetHome);
+    setHomeFilters(HOME_DEFAULT_FILTERS);
     setHomeSortKey('last-contacted');
     setTodosShepherdFilter(['mine']);
     setLogsShepherdFilter(['mine']);
@@ -1231,6 +1237,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           | 'isBeingDiscipled'
           | 'churchPositions'
           | 'appRole'
+          | 'canTriageVisitors'
           | 'isStudent'
         >
       >
@@ -1245,8 +1252,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
         return {
           ...prev,
           people: prev.people.map((p) => (p.id === personId ? { ...p, ...updates } : p)),
+          personas:
+            updates.canTriageVisitors !== undefined
+              ? prev.personas.map((pa) =>
+                  pa.personId === personId
+                    ? { ...pa, canTriageVisitors: updates.canTriageVisitors }
+                    : pa
+                )
+              : prev.personas,
         };
       });
+      if (updates.canTriageVisitors !== undefined) {
+        setCurrentPersona((prev) =>
+          prev.personId === personId
+            ? { ...prev, canTriageVisitors: updates.canTriageVisitors }
+            : prev
+        );
+      }
       const supabase = createClient();
       const dbUpdates: Partial<PersonRow> = {};
       if (updates.preferredName !== undefined) dbUpdates.preferred_name = updates.preferredName;
@@ -1276,6 +1298,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (updates.churchPositions !== undefined)
         dbUpdates.church_positions = updates.churchPositions;
       if (updates.appRole !== undefined) dbUpdates.app_role = updates.appRole;
+      if (updates.canTriageVisitors !== undefined)
+        dbUpdates.can_triage_visitors = updates.canTriageVisitors;
       if (updates.isStudent !== undefined) dbUpdates.is_student = updates.isStudent;
       const now = new Date().toISOString();
       dbUpdates.last_edited_at = now;

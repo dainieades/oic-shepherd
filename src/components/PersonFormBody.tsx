@@ -474,7 +474,6 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
                       {
                         admin: 'Admin',
                         shepherd: 'Shepherd',
-                        'welcome-team': 'Welcome Team',
                         'no-access': 'No Access',
                       }[appRole]
                     }

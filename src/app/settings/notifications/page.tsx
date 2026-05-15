@@ -27,7 +27,7 @@ const NOTIFICATION_OPTIONS: NotifOption[] = [
     key: 'noticeAdded',
     label: 'New notice posted',
     description: 'When a care notice is shared with you',
-    roles: ['admin', 'shepherd', 'welcome-team'],
+    roles: ['admin', 'shepherd'],
   },
   {
     key: 'shepherdAssigned',

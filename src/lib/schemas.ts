@@ -24,7 +24,8 @@ export const PersonRowSchema = z.object({
   home_address: nullStr,
   is_shepherd: nullBool,
   is_being_discipled: nullBool,
-  app_role: z.enum(['admin', 'shepherd', 'welcome-team', 'no-access']).nullish(),
+  app_role: z.enum(['admin', 'shepherd', 'no-access']).nullish().catch(null),
+  can_triage_visitors: nullBool,
   church_positions: nullStrArr,
   is_student: nullBool,
   membership_status: z.enum(['member', 'non-member', 'membership-track']),
@@ -61,7 +62,7 @@ export type FamilyRow = z.infer<typeof FamilyRowSchema>;
 export const PersonaRowSchema = z.object({
   id: z.string(),
   name: z.string(),
-  role: z.enum(['admin', 'shepherd', 'welcome-team']),
+  role: z.enum(['admin', 'shepherd']).catch('shepherd'),
   person_id: nullStr,
   user_id: nullStr,
   theme_preference: z.enum(['light', 'dark', 'system']).nullable().optional(),

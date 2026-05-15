@@ -56,6 +56,7 @@ export function mapPerson(
     isShepherd: r.is_shepherd ?? undefined,
     isBeingDiscipled: r.is_being_discipled ?? undefined,
     appRole: r.app_role ?? 'no-access',
+    canTriageVisitors: r.can_triage_visitors ?? false,
     churchPositions: r.church_positions ?? undefined,
     isStudent: r.is_student ?? undefined,
     membershipStatus: r.membership_status,

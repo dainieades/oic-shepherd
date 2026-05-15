@@ -7,7 +7,7 @@ import {
   Gear,
   HandWaving,
 } from '@phosphor-icons/react';
-import type { Role } from './types';
+import type { Persona, Role } from './types';
 
 export interface NavItem {
   href: string;
@@ -15,10 +15,8 @@ export interface NavItem {
   icon: Icon;
   /** Returns true when the given pathname matches this nav item. */
   matches: (pathname: string) => boolean;
-  /** When true, the item is hidden for welcome-team personas. */
-  shepherdOnly?: boolean;
-  /** When set, only personas with one of these roles see the item. */
-  roles?: readonly Role[];
+  /** When set, the item is only visible to personas matching the predicate. */
+  visibleTo?: (persona: Persona) => boolean;
 }
 
 export const NAV_ITEMS: readonly NavItem[] = [
@@ -33,21 +31,19 @@ export const NAV_ITEMS: readonly NavItem[] = [
     label: 'Visitors',
     icon: HandWaving,
     matches: (p) => p.startsWith('/visitors'),
-    roles: ['admin', 'welcome-team'],
+    visibleTo: (persona) => persona.role === 'admin' || persona.canTriageVisitors === true,
   },
   {
     href: '/logs',
     label: 'Logs',
     icon: Notepad,
     matches: (p) => p === '/logs',
-    shepherdOnly: true,
   },
   {
     href: '/todos',
     label: 'To-dos',
     icon: CheckCircle,
     matches: (p) => p === '/todos',
-    shepherdOnly: true,
   },
   {
     href: '/groups',
@@ -63,11 +59,11 @@ export const NAV_ITEMS: readonly NavItem[] = [
   },
 ];
 
-export function isNavItemVisible(item: NavItem, role: Role): boolean {
-  if (item.roles && !item.roles.includes(role)) return false;
-  if (item.shepherdOnly && role === 'welcome-team') return false;
-  return true;
+export function isNavItemVisible(item: NavItem, persona: Persona): boolean {
+  return item.visibleTo ? item.visibleTo(persona) : true;
 }
+
+export type { Role };
 
 export function isHiddenRoute(pathname: string): boolean {
   return (

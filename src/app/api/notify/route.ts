@@ -134,7 +134,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       let roles: string[];
       if (body.privacy === 'pastor-only') roles = ['admin'];
       else if (body.privacy === 'pastor-and-shepherds') roles = ['admin', 'shepherd'];
-      else roles = ['admin', 'shepherd', 'welcome-team'];
+      else roles = ['admin', 'shepherd'];
 
       const emails = await getEmailsByRole(supabase, roles, body.actorEmail, 'notify_notice_added');
       const { subject, html } = noticeAddedEmail(

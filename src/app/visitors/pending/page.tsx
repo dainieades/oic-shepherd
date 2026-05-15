@@ -157,9 +157,7 @@ export default function PendingVisitorsPage() {
   const inFlightRef = React.useRef<Set<string>>(new Set());
 
   const canAccess =
-    currentPersona.role === 'admin' ||
-    currentPersona.role === 'welcome-team' ||
-    currentPersona.role === 'shepherd';
+    currentPersona.role === 'admin' || currentPersona.canTriageVisitors === true;
 
   const load = React.useCallback(async () => {
     const supabase = createClient();

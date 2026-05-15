@@ -95,9 +95,10 @@ export const initialData: AppData = {
     {
       id: 'welcome-team',
       name: 'Welcome Team',
-      role: 'welcome-team',
+      role: 'shepherd',
       personId: 'miranda-sparklin',
       assignedPeopleIds: [],
+      canTriageVisitors: true,
     },
   ],
 
@@ -738,7 +739,8 @@ export const initialData: AppData = {
       id: 'miranda-sparklin',
       preferredName: 'Miranda',
       lastName: 'Sparklin',
-      appRole: 'welcome-team' as const,
+      appRole: 'shepherd' as const,
+      canTriageVisitors: true,
       membershipStatus: 'member',
       churchAttendance: 'regular',
       language: ['English'],

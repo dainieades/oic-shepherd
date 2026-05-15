@@ -13,7 +13,7 @@ export default function BottomNav() {
 
   if (isHiddenRoute(pathname) || fullPageModalOpen) return null;
 
-  const items = NAV_ITEMS.filter((item) => isNavItemVisible(item, currentPersona.role));
+  const items = NAV_ITEMS.filter((item) => isNavItemVisible(item, currentPersona));
 
   return (
     <nav

@@ -9,7 +9,7 @@ export function usePendingVisitorCount(): number {
   const { currentPersona } = useApp();
   const pathname = usePathname();
   const canSee =
-    currentPersona.role === 'admin' || currentPersona.role === 'welcome-team';
+    currentPersona.role === 'admin' || currentPersona.canTriageVisitors === true;
   const [count, setCount] = React.useState(0);
 
   React.useEffect(() => {

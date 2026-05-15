@@ -123,7 +123,6 @@ export default function PeoplePage() {
 
   // New people: created in the last 60 days, no notes yet, not archived
   const newPeople = React.useMemo(() => {
-    if (currentPersona.role === 'welcome-team') return [];
     const cutoff = subDays(new Date(), 60);
     const notedPersonIds = new Set(data.notes.map((n) => n.personId).filter(Boolean) as string[]);
     return data.people
@@ -210,7 +209,6 @@ export default function PeoplePage() {
   const APP_ROLE_LABELS: Record<AppRole, string> = {
     admin: 'Admin',
     shepherd: 'Shepherd',
-    'welcome-team': 'Welcome Team',
     'no-access': 'No Access',
   };
   filters.appRoles.forEach((r) => {

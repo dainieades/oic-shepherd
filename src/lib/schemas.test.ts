@@ -79,8 +79,9 @@ describe('PersonRowSchema', () => {
     expect(() => PersonRowSchema.parse({ ...minimalPerson, gender: 'other' })).toThrow();
   });
 
-  it('rejects an invalid app_role value', () => {
-    expect(() => PersonRowSchema.parse({ ...minimalPerson, app_role: 'superadmin' })).toThrow();
+  it('coerces an unknown app_role to null', () => {
+    const parsed = PersonRowSchema.parse({ ...minimalPerson, app_role: 'welcome-team' });
+    expect(parsed.app_role).toBeNull();
   });
 
   it('rejects an invalid church_attendance value', () => {
@@ -147,13 +148,14 @@ describe('PersonaRowSchema', () => {
   });
 
   it('accepts all valid role values', () => {
-    for (const role of ['admin', 'shepherd', 'welcome-team'] as const) {
+    for (const role of ['admin', 'shepherd'] as const) {
       expect(() => PersonaRowSchema.parse({ ...minimalPersona, role })).not.toThrow();
     }
   });
 
-  it('rejects an invalid role value', () => {
-    expect(() => PersonaRowSchema.parse({ ...minimalPersona, role: 'viewer' })).toThrow();
+  it('coerces an unknown role to shepherd', () => {
+    const parsed = PersonaRowSchema.parse({ ...minimalPersona, role: 'viewer' });
+    expect(parsed.role).toBe('shepherd');
   });
 
   it('rejects a row missing name', () => {

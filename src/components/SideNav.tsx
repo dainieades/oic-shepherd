@@ -19,7 +19,7 @@ export default function SideNav() {
 
   if (isSideNavHidden(pathname)) return null;
 
-  const items = NAV_ITEMS.filter((item) => isNavItemVisible(item, currentPersona.role));
+  const items = NAV_ITEMS.filter((item) => isNavItemVisible(item, currentPersona));
 
   return (
     <aside
