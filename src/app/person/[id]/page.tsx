@@ -768,6 +768,16 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
       {/* Todos tab */}
       {activeTab === 'todos' && (
         <div className="tab-fade">
+          {categorized.overdue.length > 0 && (
+            <TodoSection
+              label="Overdue"
+              todos={categorized.overdue}
+              onToggle={handleTodoToggle}
+              onEdit={setEditingTodo}
+              data={data}
+              labelColor="var(--red, #c0392b)"
+            />
+          )}
           {categorized.today.length > 0 && (
             <TodoSection
               label="Today"
@@ -1403,6 +1413,7 @@ function TodoSection({
   onEdit,
   data,
   defaultOpen = true,
+  labelColor,
 }: {
   label: string;
   todos: Todo[];
@@ -1410,6 +1421,7 @@ function TodoSection({
   onEdit: (todo: Todo) => void;
   data: AppData;
   defaultOpen?: boolean;
+  labelColor?: string;
 }) {
   const [open, setOpen] = React.useState(defaultOpen);
   return (
@@ -1427,7 +1439,7 @@ function TodoSection({
           cursor: 'pointer',
           fontSize: 10,
           fontWeight: 600,
-          color: 'var(--text-muted)',
+          color: labelColor ?? 'var(--text-muted)',
           textTransform: 'uppercase',
           letterSpacing: '0.06em',
         }}
