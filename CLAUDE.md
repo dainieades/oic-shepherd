@@ -41,7 +41,7 @@ Breaking changes from prior versions. Read the relevant guide in `node_modules/n
 
 Large modals/drawers: `EditPersonDrawer`, `AddPersonModal`, `EditFamilyDrawer`, `AddFamilyModal`, `AddTodoModal`, `AddLogModal`, `AddNoticeModal`, `DatePickerSheet`, `GroupPreviewModal`.
 
-Utility components: `AccessGate`, `AuthSync`, `BottomNav`, `Toast`, `PersonFamilyPicker`, `PickerMenu`, `PersonaSwitcherBar`.
+Utility components: `AccessGate`, `AuthSync`, `BottomNav`, `Toast`, `PersonFamilyPicker`, `PickerMenu`.
 
 ---
 

@@ -63,7 +63,6 @@ fields, bad enum values, wrong types).
 | `AddPersonModal`     | Required fields block submission; calls `addPerson` on submit |
 | `AddTodoModal`       | Date picker integration; repeat setting persists              |
 | `Toast`              | Appears on trigger; dismisses after timeout                   |
-| `PersonaSwitcherBar` | Switching calls `setCurrentPersona`                           |
 
 Mock `AppContext` — no real Supabase.
 
@@ -77,7 +76,6 @@ Mock `AppContext` — no real Supabase.
 | Unapproved email → blocked          | Core access control               |
 | Add person → appears in list        | Primary shepherd workflow         |
 | Mark todo complete → removed        | Core daily usage                  |
-| Persona switch → data scope changes | Multi-shepherd correctness        |
 
 ---
 

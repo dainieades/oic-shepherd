@@ -14,12 +14,26 @@ type Step =
 
 type Status = { type: 'idle' } | { type: 'loading' } | { type: 'error'; message: string };
 
+type ResendStatus =
+  | { type: 'idle' }
+  | { type: 'sending' }
+  | { type: 'sent' }
+  | { type: 'error'; message: string };
+
+function isEmailNotConfirmedError(error: { message?: string; code?: string }): boolean {
+  return (
+    error.code === 'email_not_confirmed' ||
+    (error.message ?? '').toLowerCase().includes('email not confirmed')
+  );
+}
+
 export default function SignInPage() {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [confirmPassword, setConfirmPassword] = React.useState('');
   const [step, setStep] = React.useState<Step>({ type: 'email' });
   const [status, setStatus] = React.useState<Status>({ type: 'idle' });
+  const [resendStatus, setResendStatus] = React.useState<ResendStatus>({ type: 'idle' });
   const router = useRouter();
   const supabase = createClient();
 
@@ -109,6 +123,7 @@ export default function SignInPage() {
       setStatus({ type: 'error', message: error.message });
     } else {
       setStatus({ type: 'idle' });
+      setResendStatus({ type: 'idle' });
       setStep({ type: 'signup-confirm', email: step.email });
     }
   }
@@ -125,9 +140,30 @@ export default function SignInPage() {
       password,
     });
     if (error) {
+      if (isEmailNotConfirmedError(error)) {
+        setStatus({ type: 'idle' });
+        setResendStatus({ type: 'idle' });
+        setStep({ type: 'signup-confirm', email: step.email });
+        return;
+      }
       setStatus({ type: 'error', message: error.message });
     } else {
       router.push('/');
+    }
+  }
+
+  async function handleResendConfirmation() {
+    if (step.type !== 'signup-confirm') return;
+    setResendStatus({ type: 'sending' });
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email: step.email,
+      options: { emailRedirectTo: redirectTo },
+    });
+    if (error) {
+      setResendStatus({ type: 'error', message: error.message });
+    } else {
+      setResendStatus({ type: 'sent' });
     }
   }
 
@@ -150,10 +186,13 @@ export default function SignInPage() {
     setPassword('');
     setConfirmPassword('');
     setStatus({ type: 'idle' });
+    setResendStatus({ type: 'idle' });
   }
 
   // ── Email confirmation screen ───────────────────────────────────────────
   if (step.type === 'signup-confirm') {
+    const isResending = resendStatus.type === 'sending';
+    const wasResent = resendStatus.type === 'sent';
     return (
       <div style={outerStyle}>
         <div style={cardStyle}>
@@ -169,13 +208,44 @@ export default function SignInPage() {
                 fontSize: 15,
                 color: 'var(--text-secondary)',
                 lineHeight: 1.6,
-                marginBottom: 24,
+                marginBottom: 20,
               }}
             >
               We sent a confirmation link to <strong>{step.email}</strong>.
               <br />
               Click the link to finish creating your account.
             </p>
+
+            {resendStatus.type === 'error' && <ErrorBanner message={resendStatus.message} />}
+            {wasResent && (
+              <p
+                style={{
+                  fontSize: 13,
+                  color: 'var(--sage)',
+                  marginBottom: 16,
+                  fontWeight: 500,
+                }}
+              >
+                Confirmation email resent. Check your inbox.
+              </p>
+            )}
+
+            <button
+              onClick={handleResendConfirmation}
+              disabled={isResending || wasResent}
+              style={{
+                ...ghostButtonStyle,
+                marginBottom: 4,
+                opacity: isResending || wasResent ? 0.5 : 1,
+                cursor: isResending || wasResent ? 'not-allowed' : 'pointer',
+              }}
+            >
+              {isResending
+                ? 'Sending…'
+                : wasResent
+                  ? 'Sent'
+                  : "Didn't get it? Resend email"}
+            </button>
             <button onClick={resetToEmail} style={ghostButtonStyle}>
               Use a different email
             </button>

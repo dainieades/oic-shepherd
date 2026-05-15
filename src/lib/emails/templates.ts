@@ -279,10 +279,10 @@ export function signupConfirmationEmail(confirmationUrl: string): EmailTemplate 
         Click the button below to confirm your email address and finish setting up your account.
       </p>
       <p style="margin:0;font-size:13px;color:#5c6470">
-        If you didn't sign up for OIC Shepherd, you can safely ignore this email.
+        If you weren't expecting this email, you can safely ignore it.
       </p>
       `,
-      'You received this because someone signed up for OIC Shepherd using this email address.',
+      'You received this because you were invited to OIC Shepherd and are setting up your account.',
       { label: 'Confirm your email', href: confirmationUrl }
     ),
   };

@@ -22,7 +22,6 @@ The `@oicshepherd.test` TLD is non-routable (reserved by RFC 2606) so these addr
 - Filtering happens once, in [src/lib/context.tsx](../../src/lib/context.tsx) — the exposed `data` is `visibleData`, computed from raw `data` + `currentPersona.isTest`. Notes/todos/notices referencing a hidden person or family are also stripped.
 - Auto-link path in `loginWithSupabaseUser` reads `people.is_test` for the resolved person and mirrors it onto the persona it auto-creates, so first-time test sign-in immediately has the flag set.
 - `addPerson`, `addFamily`, `addGroup` all stamp `is_test` onto new rows from `currentPersona.isTest` — anything a test user creates stays hidden.
-- [PersonaSwitcherBar](../../src/components/PersonaSwitcherBar.tsx) renders in production **only** when the current persona is `is_test = true`, and lists only other test personas — so test users can flip roles without signing out, but real users never see the bar.
 
 ## One-time setup (after the migrations run)
 
@@ -40,7 +39,7 @@ update personas set role = 'shepherd',     is_test = true where person_id = 'tes
 update personas set role = 'welcome-team', is_test = true where person_id = 'test-person-welcome';
 ```
 
-After that, signing in as any of the three test emails will pull up the persona switcher and let you flip between roles for the rest of the session.
+After that, signing in as any of the three test emails will land on the matching test persona. To switch roles, sign out and sign in as a different test email.
 
 ## Recovery / re-flag SQL
 

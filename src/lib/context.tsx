@@ -107,7 +107,6 @@ interface AppContextType {
   personaByPersonId: ReadonlyMap<string, Persona>;
   currentPersona: Persona;
   accessDenied: boolean;
-  switchPersona: (id: string) => void;
   loginWithSupabaseUser: (userId: string, name: string, email?: string, avatarUrl?: string) => void;
   addNote: (note: Omit<Note, 'id' | 'createdBy'> & { createdAt?: string }) => void;
   updateNote: (
@@ -426,7 +425,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [data.personas]
   );
 
-  const personaById = useMemo(() => new Map(data.personas.map((p) => [p.id, p])), [data.personas]);
 
   // ── Persistent page filter state ─────────────────────────────────────
   const [homeFilters, setHomeFilters] = useState<HomeFilters>(HOME_DEFAULT_FILTERS);
@@ -602,18 +600,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
     load();
   }, []);
-
-  // ── Persona switching ─────────────────────────────────────────────────
-  const switchPersona = useCallback(
-    (id: string) => {
-      const persona = personaById.get(id);
-      if (persona) {
-        setCurrentPersona(persona);
-        localStorage.setItem('shepherd-app-persona', id);
-      }
-    },
-    [personaById]
-  );
 
   // Reset all page filters when the active persona changes
   useEffect(() => {
@@ -1990,7 +1976,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         personaByPersonId,
         currentPersona,
         accessDenied,
-        switchPersona,
         loginWithSupabaseUser,
         addNote,
         updateNote,

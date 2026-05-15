@@ -10,8 +10,11 @@ import { AvatarBadge } from '@/components/AvatarBadge';
 
 export default function SideNav() {
   const pathname = usePathname();
-  const { currentPersona } = useApp();
+  const { data, currentPersona } = useApp();
   const isWelcome = currentPersona.role === 'welcome-team';
+  const personaPerson = currentPersona.personId
+    ? data.people.find((p) => p.id === currentPersona.personId)
+    : null;
 
   if (isSideNavHidden(pathname)) return null;
 
@@ -89,7 +92,7 @@ export default function SideNav() {
           color: 'var(--text-primary)',
         }}
       >
-        <AvatarBadge size={32} name={currentPersona.name} />
+        <AvatarBadge size={32} name={currentPersona.name} photo={personaPerson?.photo} />
         <div className="flex min-w-0 flex-col">
           <span style={{ fontSize: '0.8125rem', fontWeight: 600, lineHeight: 1.25 }}>
             {currentPersona.name}
