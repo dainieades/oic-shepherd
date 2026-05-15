@@ -12,6 +12,12 @@ After completing any item, update `.claude/docs/tech-debt.md`: mark done with âœ
 
 ---
 
+## Local Dev
+
+Self-contained local Supabase stack via Docker; `.env.local` points at `http://127.0.0.1:54321`. Cloud creds backed up in `.env.local.cloud`. Full reference: `.claude/docs/local-dev.md`. After every `supabase db reset` run `./scripts/local-bootstrap.sh` to restore the three hidden test auth users + persona links.
+
+---
+
 ## Email
 
 App emails (invites, notifications, todo reminders) send via Gmail SMTP through `src/lib/emails/mailer.ts`. Sender account is env-driven (`GMAIL_USER`, `GMAIL_APP_PASSWORD`) â€” to swap accounts (e.g. to `oicinfoteam@gmail.com`), see `.claude/docs/email-setup.md`. No code changes required.
