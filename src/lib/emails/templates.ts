@@ -288,6 +288,28 @@ export function signupConfirmationEmail(confirmationUrl: string): EmailTemplate 
   };
 }
 
+export function resetPasswordEmail(resetUrl: string): EmailTemplate {
+  return {
+    subject: 'Reset your OIC Shepherd password',
+    html: wrap(
+      'Reset your password',
+      `
+      <p style="margin:0 0 20px;font-size:15px;color:#1f2533">
+        We received a request to reset the password for your OIC Shepherd account.
+      </p>
+      <p style="margin:0 0 20px;font-size:14px;color:#4c5567">
+        Click the button below to choose a new password. The link will expire shortly for your security.
+      </p>
+      <p style="margin:0;font-size:13px;color:#5c6470">
+        If you didn't request a password reset, you can safely ignore this email — your password won't change.
+      </p>
+      `,
+      'You received this because a password reset was requested for this email address on OIC Shepherd.',
+      { label: 'Reset your password', href: resetUrl }
+    ),
+  };
+}
+
 export function ownProfileUpdatedEmail(
   updatedByName: string,
   changes: ProfileChange[] = []
@@ -333,6 +355,10 @@ export const EMAIL_PREVIEW_REGISTRY: { label: string; subject: string; html: str
   {
     label: 'Signup confirmation (Supabase auth)',
     ...signupConfirmationEmail('{{ .ConfirmationURL }}'),
+  },
+  {
+    label: 'Password reset (Supabase auth)',
+    ...resetPasswordEmail('{{ .ConfirmationURL }}'),
   },
   {
     label: 'To-do reminder set',

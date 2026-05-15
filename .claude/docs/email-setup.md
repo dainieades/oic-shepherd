@@ -90,16 +90,18 @@ Password reset and signup confirmation go through Supabase, **not** our mailer. 
 
 When you change the Gmail account, update this too — otherwise reset/confirmation emails still go from the old address.
 
-### Styling the signup confirmation template
+### Styling the Supabase auth templates
 
-The default Supabase signup confirmation email is plain and unbranded. To use the OIC Shepherd-styled version (logo + branded button):
+The default Supabase auth emails are plain and unbranded. To use the OIC Shepherd-styled versions (logo + branded button):
 
 1. Run the app locally (`npm run dev`) and visit [/email-preview](http://localhost:3000/email-preview).
-2. Find **Signup confirmation (Supabase auth)** and click **Copy HTML**. The HTML already contains the `{{ .ConfirmationURL }}` placeholder Supabase expects.
-3. In Supabase Dashboard → **Authentication → Email Templates → Confirm signup**, paste the HTML into the message body and save.
-4. Optionally update the subject to: `Confirm your email for OIC Shepherd`.
+2. Find the relevant entry (e.g. **Signup confirmation (Supabase auth)** or **Password reset (Supabase auth)**) and click **Copy HTML**. The HTML already contains the `{{ .ConfirmationURL }}` placeholder Supabase expects.
+3. In Supabase Dashboard → **Authentication → Email Templates**, open the matching slot and paste the HTML into the message body, then save:
+   - **Confirm signup** ← _Signup confirmation_ → subject: `Confirm your email for OIC Shepherd`
+   - **Reset password** ← _Password reset_ → subject: `Reset your OIC Shepherd password`
+4. The reset link target is controlled by the `redirectTo` value in [`src/app/signin/page.tsx`](../../src/app/signin/page.tsx) (`/auth/callback?next=/reset-password`). Supabase's `{{ .ConfirmationURL }}` resolves to its verify endpoint, which then redirects to that URL — handled by [`src/app/auth/callback/route.ts`](../../src/app/auth/callback/route.ts).
 
-To edit the design, change [`signupConfirmationEmail`](../../src/lib/emails/templates.ts) and repeat steps 1–3. Other auth templates (password reset, magic link, etc.) can follow the same pattern — add a new function in `templates.ts`, register it in `EMAIL_PREVIEW_REGISTRY` with the matching Supabase variable, and paste the output into the corresponding template slot.
+To edit a design, change the relevant function in [`src/lib/emails/templates.ts`](../../src/lib/emails/templates.ts) and repeat steps 1–3. Other auth templates (magic link, change email, etc.) can follow the same pattern — add a new function in `templates.ts`, register it in `EMAIL_PREVIEW_REGISTRY` with the matching Supabase variable, and paste the output into the corresponding template slot.
 
 ---
 

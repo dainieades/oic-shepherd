@@ -50,6 +50,7 @@ export const CHURCH_POSITIONS = [
   'Safety Team',
   'IT Team',
   'Welcome Team',
+  'Worship Team',
   'Operation',
   'Finance',
   'PEP',

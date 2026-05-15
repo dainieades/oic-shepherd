@@ -44,6 +44,7 @@ import {
   mapTodo,
   mapAuditLog,
 } from './mappers';
+import { isStaleAuthUser } from '@/app/auth/actions';
 
 // ── Shared filter types (exported so pages can import them) ──────────────────
 
@@ -706,14 +707,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
         // If the resolved person is a hidden test record, mirror the flag onto the
         // auto-created persona so test users see the in-prod persona switcher.
-        const resolvedIsTest: boolean = resolvedPersonId
+        // Pull preferred/last name in the same round-trip so the persona can be
+        // labelled from the shepherd DB rather than the Google account.
+        const { data: resolvedPersonRow } = resolvedPersonId
           ? await supabase
               .from('people')
-              .select('is_test')
+              .select('is_test, preferred_name, last_name')
               .eq('id', resolvedPersonId)
               .maybeSingle()
-              .then(({ data }) => Boolean(data?.is_test))
-          : false;
+          : { data: null };
+        const resolvedIsTest: boolean = Boolean(
+          (resolvedPersonRow as { is_test?: boolean } | null)?.is_test
+        );
+        const resolvedPersonName: string = (() => {
+          const r = resolvedPersonRow as
+            | { preferred_name?: string; last_name?: string | null }
+            | null;
+          if (!r?.preferred_name) return name;
+          return r.last_name ? `${r.preferred_name} ${r.last_name}` : r.preferred_name;
+        })();
 
         if (resolvedPersonId) {
           const { data: personaRow } = await supabase
@@ -722,9 +734,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
             .eq('person_id', resolvedPersonId)
             .maybeSingle();
 
+          // If the persona is stamped with an auth user_id that no longer
+          // exists in auth.users (e.g. the old test account was deleted, or
+          // the admin re-pointed this person's email to a different account),
+          // the stored link is stale and we should reclaim the persona for
+          // the new auth user rather than orphaning them in step 3.
+          const existingUserId = personaRow?.user_id as string | null | undefined;
+          const staleExistingLink =
+            existingUserId && existingUserId !== userId
+              ? await isStaleAuthUser(existingUserId)
+              : false;
+
           if (personaRow) {
-            // Guard: never hijack a persona that already belongs to a different auth user.
-            if (personaRow.user_id && personaRow.user_id !== userId) {
+            // Guard: never hijack a persona that already belongs to a *live*
+            // different auth user. Stale links are reclaimed.
+            if (existingUserId && existingUserId !== userId && !staleExistingLink) {
               // Fall through to step 3 — create a fresh persona for this auth user.
             } else {
               // Persona found — stamp it with the auth user_id so future logins are instant
@@ -757,12 +781,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
           } else {
             // Person record exists but no persona yet — first-time sign-in for an invited user.
             // Create a persona linked to their person record so their profile is immediately visible.
+            // Prefer the shepherd-DB name over the Google display name to keep
+            // identity consistent with the church directory.
             const { data: inserted } = await supabase
               .from('personas')
               .insert({
                 id: userId,
                 user_id: userId,
-                name,
+                name: resolvedPersonName,
                 role: 'shepherd',
                 email,
                 person_id: resolvedPersonId,
