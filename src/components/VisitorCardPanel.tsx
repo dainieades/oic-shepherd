@@ -41,6 +41,12 @@ export function VisitorCardPanel({ person }: { person: Person }) {
 
   if (!submission) return null;
 
+  const hasCardContent =
+    !!submission.referralSource ||
+    submission.interests.length > 0 ||
+    !!submission.prayerRequest;
+  if (!hasCardContent) return null;
+
   const referralLabel = submission.referralSource
     ? REFERRAL_LABELS[submission.referralSource] +
       (submission.referralDetail ? ` — ${submission.referralDetail}` : '')

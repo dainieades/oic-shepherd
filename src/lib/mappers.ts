@@ -242,6 +242,7 @@ export function mapVisitorSubmission(row: Record<string, unknown>): VisitorSubmi
     personId: r.person_id ?? null,
     preferredName: r.preferred_name,
     lastName: r.last_name ?? undefined,
+    alternativeName: r.alternative_name ?? undefined,
     phone: r.phone ?? undefined,
     email: r.email ?? undefined,
     isStudent: r.is_student ?? false,

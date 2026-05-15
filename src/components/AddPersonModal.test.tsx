@@ -3,6 +3,7 @@ import { render, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 
 vi.mock('@/lib/context', () => ({ useApp: vi.fn() }));
+vi.mock('next/navigation', () => ({ useRouter: () => ({ push: vi.fn() }) }));
 
 import AddPersonModal from './AddPersonModal';
 import { useApp } from '@/lib/context';

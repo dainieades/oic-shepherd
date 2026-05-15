@@ -231,6 +231,7 @@ export interface VisitorSubmission {
   personId?: string | null;
   preferredName: string;
   lastName?: string;
+  alternativeName?: string;
   phone?: string;
   email?: string;
   isStudent: boolean;

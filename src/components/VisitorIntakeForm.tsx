@@ -13,7 +13,6 @@ import {
   Heart,
   CaretRight,
 } from '@phosphor-icons/react';
-import { useApp } from '@/lib/context';
 import { REFERRAL_SOURCES, INTERESTS, type ReferralSource, type Interest } from '@/lib/types';
 import { TextInputRow, TextareaRow, PickerRow } from '@/components/form';
 import { rowBtnStyle, spacerStyle, labelStyle } from '@/components/form/formStyles';
@@ -25,8 +24,22 @@ export interface VisitorIntakeFormHandle {
   save: () => Promise<void>;
 }
 
+export interface VisitorIntakeValues {
+  preferredName: string;
+  lastName?: string;
+  alternativeName?: string;
+  phone?: string;
+  email?: string;
+  isStudent: boolean;
+  languages: string[];
+  referralSource?: ReferralSource;
+  referralDetail?: string;
+  interests: Interest[];
+  prayerRequest?: string;
+}
+
 interface Props {
-  onSaved: (personId: string) => void;
+  onSubmit: (values: VisitorIntakeValues) => Promise<void>;
   onValidityChange?: (valid: boolean) => void;
 }
 
@@ -47,11 +60,10 @@ const INTEREST_LABELS: Record<Interest, string> = {
 };
 
 const VisitorIntakeForm = React.forwardRef<VisitorIntakeFormHandle, Props>(
-  function VisitorIntakeForm({ onSaved, onValidityChange }, ref) {
-    const { submitVisitorIntake } = useApp();
-
+  function VisitorIntakeForm({ onSubmit, onValidityChange }, ref) {
     const [preferredName, setPreferredName] = React.useState('');
     const [lastName, setLastName] = React.useState('');
+    const [alternativeName, setAlternativeName] = React.useState('');
     const [phone, setPhone] = React.useState('');
     const [email, setEmail] = React.useState('');
     const [isStudent, setIsStudent] = React.useState(false);
@@ -67,6 +79,7 @@ const VisitorIntakeForm = React.forwardRef<VisitorIntakeFormHandle, Props>(
 
     const firstNameRef = React.useRef<HTMLInputElement>(null);
     const lastNameRef = React.useRef<HTMLInputElement>(null);
+    const altNameRef = React.useRef<HTMLInputElement>(null);
     const phoneRef = React.useRef<HTMLInputElement>(null);
     const emailRef = React.useRef<HTMLInputElement>(null);
     const referralDetailRef = React.useRef<HTMLInputElement>(null);
@@ -85,9 +98,10 @@ const VisitorIntakeForm = React.forwardRef<VisitorIntakeFormHandle, Props>(
     const save = React.useCallback(async () => {
       const trimmedName = preferredName.trim();
       if (!trimmedName) return;
-      const { personId } = await submitVisitorIntake({
+      await onSubmit({
         preferredName: trimmedName,
         lastName: lastName.trim() || undefined,
+        alternativeName: alternativeName.trim() || undefined,
         phone: phone.trim() || undefined,
         email: email.trim() || undefined,
         isStudent,
@@ -97,10 +111,10 @@ const VisitorIntakeForm = React.forwardRef<VisitorIntakeFormHandle, Props>(
         interests,
         prayerRequest: prayerRequest.trim() || undefined,
       });
-      onSaved(personId);
     }, [
       preferredName,
       lastName,
+      alternativeName,
       phone,
       email,
       isStudent,
@@ -109,8 +123,7 @@ const VisitorIntakeForm = React.forwardRef<VisitorIntakeFormHandle, Props>(
       referralDetail,
       interests,
       prayerRequest,
-      submitVisitorIntake,
-      onSaved,
+      onSubmit,
     ]);
 
     React.useImperativeHandle(ref, () => ({ save }), [save]);
@@ -136,6 +149,14 @@ const VisitorIntakeForm = React.forwardRef<VisitorIntakeFormHandle, Props>(
             value={lastName}
             onChange={setLastName}
             autoComplete="family-name"
+          />
+          <TextInputRow
+            icon={<TextT size={16} color="var(--text-muted)" />}
+            label="Alt. name"
+            inputRef={altNameRef}
+            value={alternativeName}
+            onChange={setAlternativeName}
+            placeholder="Legal name, 中文名…"
           />
         </Section>
 

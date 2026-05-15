@@ -5,14 +5,17 @@ import { useRouter } from 'next/navigation';
 import { useApp } from '@/lib/context';
 import { useToast } from './Toast';
 import { BottomSheet, ModalHeader } from './BottomSheet';
-import VisitorIntakeForm, { type VisitorIntakeFormHandle } from './VisitorIntakeForm';
+import VisitorIntakeForm, {
+  type VisitorIntakeFormHandle,
+  type VisitorIntakeValues,
+} from './VisitorIntakeForm';
 
 interface AddVisitorModalProps {
   onClose: () => void;
 }
 
 export default function AddVisitorModal({ onClose }: AddVisitorModalProps) {
-  const { setFullPageModalOpen } = useApp();
+  const { setFullPageModalOpen, submitVisitorIntake } = useApp();
   React.useEffect(() => {
     setFullPageModalOpen(true);
     return () => setFullPageModalOpen(false);
@@ -23,7 +26,8 @@ export default function AddVisitorModal({ onClose }: AddVisitorModalProps) {
   const formRef = React.useRef<VisitorIntakeFormHandle>(null);
   const [canSave, setCanSave] = React.useState(false);
 
-  const handleSaved = (personId: string) => {
+  const handleSubmit = async (values: VisitorIntakeValues) => {
+    const { personId } = await submitVisitorIntake(values);
     showToast('Visitor added');
     onClose();
     router.push(`/person/${personId}`);
@@ -47,7 +51,7 @@ export default function AddVisitorModal({ onClose }: AddVisitorModalProps) {
           background: 'var(--bg)',
         }}
       >
-        <VisitorIntakeForm ref={formRef} onSaved={handleSaved} onValidityChange={setCanSave} />
+        <VisitorIntakeForm ref={formRef} onSubmit={handleSubmit} onValidityChange={setCanSave} />
       </div>
     </BottomSheet>
   );

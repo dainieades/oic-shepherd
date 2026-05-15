@@ -1078,35 +1078,35 @@ export function AppProvider({ children }: { children: ReactNode }) {
         return { ...prev, people: [...prev.people, person] };
       });
       const supabase = createClient();
-      try {
-        await supabase.from('people').insert({
-          id: person.id,
-          preferred_name: person.preferredName,
-          last_name: person.lastName ?? null,
-          alternative_name: person.alternativeName ?? null,
-          photo: person.photo ?? null,
-          gender: person.gender ?? null,
-          marital_status: person.maritalStatus ?? null,
-          birthday: person.birthday ?? null,
-          baptism_date: person.baptismDate ?? null,
-          membership_date: person.membershipDate ?? null,
-          anniversary: person.anniversary ?? null,
-          phone: person.phone ?? null,
-          home_phone: person.homePhone ?? null,
-          email: person.email ?? null,
-          home_address: person.homeAddress ?? null,
-          is_shepherd: person.isShepherd ?? false,
-          is_student: person.isStudent ?? false,
-          church_positions: person.churchPositions ?? [],
-          membership_status: person.membershipStatus,
-          church_attendance: person.churchAttendance,
-          language: person.language,
-          family_id: person.familyId ?? null,
-          created_at: person.createdAt,
-          created_by: person.createdBy ?? null,
-          is_test: person.isTest ?? false,
-        });
-      } catch {
+      const { error } = await supabase.from('people').insert({
+        id: person.id,
+        preferred_name: person.preferredName,
+        last_name: person.lastName ?? null,
+        alternative_name: person.alternativeName ?? null,
+        photo: person.photo ?? null,
+        gender: person.gender ?? null,
+        marital_status: person.maritalStatus ?? null,
+        birthday: person.birthday ?? null,
+        baptism_date: person.baptismDate ?? null,
+        membership_date: person.membershipDate ?? null,
+        anniversary: person.anniversary ?? null,
+        phone: person.phone ?? null,
+        home_phone: person.homePhone ?? null,
+        email: person.email ?? null,
+        home_address: person.homeAddress ?? null,
+        is_shepherd: person.isShepherd ?? false,
+        is_student: person.isStudent ?? false,
+        church_positions: person.churchPositions ?? [],
+        membership_status: person.membershipStatus,
+        church_attendance: person.churchAttendance,
+        language: person.language,
+        family_id: person.familyId ?? null,
+        created_at: person.createdAt,
+        created_by: person.createdBy ?? null,
+        is_test: person.isTest ?? false,
+      });
+      if (error) {
+        console.error('people insert failed:', JSON.stringify(error, null, 2));
         if (snapshot) setData(snapshot);
         showToast(SAVE_ERROR_MSG, 'error');
         throw new Error('Failed to add person');
@@ -1142,6 +1142,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const personId = await addPerson({
         preferredName: input.preferredName,
         lastName: input.lastName,
+        alternativeName: input.alternativeName,
         phone: input.phone,
         email: input.email,
         isStudent: input.isStudent,
@@ -1162,6 +1163,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         person_id: personId,
         preferred_name: input.preferredName,
         last_name: input.lastName ?? null,
+        alternative_name: input.alternativeName ?? null,
         phone: input.phone ?? null,
         email: input.email ?? null,
         is_student: input.isStudent,
@@ -1198,6 +1200,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const personId = await addPerson({
         preferredName: r.preferred_name as string,
         lastName: (r.last_name as string | null) ?? undefined,
+        alternativeName: (r.alternative_name as string | null) ?? undefined,
         phone: (r.phone as string | null) ?? undefined,
         email: (r.email as string | null) ?? undefined,
         isStudent: (r.is_student as boolean | null) ?? false,

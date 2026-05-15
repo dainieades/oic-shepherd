@@ -95,7 +95,7 @@ export interface PersonFormBodyHandle {
 
 interface Props {
   person?: Person;
-  onSaved: () => void;
+  onSaved: (newPersonId?: string) => void;
   showPhotoUpload?: boolean;
   showInviteRow?: boolean;
   onValidityChange?: (valid: boolean) => void;
@@ -300,7 +300,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
             if (sheep) await assignShepherds(sheepId, [...sheep.assignedShepherdIds, newId]);
           }
         }
-        onSaved();
+        onSaved(newId);
         return;
       }
 

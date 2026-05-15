@@ -180,6 +180,7 @@ export const VisitorSubmissionRowSchema = z.object({
   person_id: nullStr,
   preferred_name: z.string(),
   last_name: nullStr,
+  alternative_name: nullStr,
   phone: nullStr,
   email: nullStr,
   is_student: nullBool,

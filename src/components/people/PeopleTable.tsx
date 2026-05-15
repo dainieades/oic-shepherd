@@ -432,8 +432,6 @@ function IndividualTableRow({
                 style={{
                   fontSize: 11,
                   color: 'var(--text-muted)',
-                  textDecoration: family ? 'underline' : undefined,
-                  textDecorationStyle: family ? 'dotted' : undefined,
                 }}
               >
                 {subtitle}

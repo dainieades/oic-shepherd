@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { useApp } from '@/lib/context';
 import { useToast } from './Toast';
 import { BottomSheet, ModalHeader } from './BottomSheet';
-import { Check } from '@phosphor-icons/react';
 import PersonFormBody, { type PersonFormBodyHandle } from './PersonFormBody';
 
 interface AddPersonModalProps {
@@ -19,14 +19,14 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
   }, [setFullPageModalOpen]);
 
   const { showToast } = useToast();
+  const router = useRouter();
   const formRef = React.useRef<PersonFormBodyHandle>(null);
   const [canSave, setCanSave] = React.useState(false);
-  const [submitted, setSubmitted] = React.useState(false);
 
-  const handleSaved = () => {
+  const handleSaved = (newPersonId?: string) => {
     showToast('Person added');
-    setSubmitted(true);
-    setTimeout(() => onClose(), 1600);
+    onClose();
+    if (newPersonId) router.push(`/person/${newPersonId}`);
   };
 
   return (
@@ -47,39 +47,7 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
           background: 'var(--bg)',
         }}
       >
-        {submitted ? (
-          <div
-            style={{
-              flex: 1,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 12,
-              paddingTop: 60,
-            }}
-          >
-            <div
-              style={{
-                width: 56,
-                height: 56,
-                borderRadius: '50%',
-                background: 'var(--sage-light)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <Check size={24} color="var(--sage)" weight="bold" />
-            </div>
-            <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)' }}>
-              Person added
-            </p>
-            <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>Added to the directory.</p>
-          </div>
-        ) : (
-          <PersonFormBody ref={formRef} onSaved={handleSaved} onValidityChange={setCanSave} />
-        )}
+        <PersonFormBody ref={formRef} onSaved={handleSaved} onValidityChange={setCanSave} />
       </div>
     </BottomSheet>
   );
