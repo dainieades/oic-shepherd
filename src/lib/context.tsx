@@ -431,6 +431,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // ── Load all data from Supabase on mount ─────────────────────────────
   useEffect(() => {
     async function load() {
+      console.log('[AppContext.load] start');
       const supabase = createClient();
 
       const [
@@ -589,6 +590,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       if (session?.user) {
         const sessionPersona = personas.find((p) => p.userId === session.user.id);
+        console.log('[AppContext.load] session present, sessionPersonaFound:', !!sessionPersona, 'personasCount:', personas.length);
         if (sessionPersona) {
           setCurrentPersona(sessionPersona);
           applyPersonaSettings(sessionPersona);
@@ -598,6 +600,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         // No matching persona yet — loginWithSupabaseUser (via AuthSync) will
         // verify approval, set the correct persona, and call setLoaded(true).
       } else {
+        console.log('[AppContext.load] no session → setLoaded(true)');
         setLoaded(true);
       }
     }
@@ -616,6 +619,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // ── Supabase auth → persona sync ─────────────────────────────────────
   const loginWithSupabaseUser = useCallback(
     async (userId: string, name: string, email?: string, avatarUrl?: string) => {
+      console.log('[loginWithSupabaseUser] start', { userId, email });
       const supabase = createClient();
 
       // Wrap the whole body so the UI always unsticks from the "Loading…" state
@@ -816,7 +820,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
           localStorage.setItem('shepherd-app-persona', persona.id);
           setData((prev) => ({ ...prev, personas: [...prev.personas, persona] }));
         }
+      } catch (err) {
+        console.error('[loginWithSupabaseUser] threw:', err);
       } finally {
+        console.log('[loginWithSupabaseUser] finally → setLoaded(true)');
         setLoaded(true);
       }
     },
@@ -1136,11 +1143,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
           personName: fullName(person),
           addedByName: currentPersona.name,
           actorEmail: currentUserEmail,
+          actorUserId: currentPersona.userId,
         }),
       });
       return person.id;
     },
-    [currentPersona.id, currentPersona.name, currentUserEmail, addTodo]
+    [currentPersona.id, currentPersona.name, currentPersona.userId, currentUserEmail, addTodo]
   );
 
   const promoteVisitorSubmission = useCallback(
@@ -1368,6 +1376,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
             personUserId: linkedUserId,
             updatedByName: currentPersona.name,
             actorEmail: currentUserEmail,
+            actorUserId: currentPersona.userId,
             changes: auditRows.map((r) => ({
               field: r.field_name,
               oldValue: r.old_value,
@@ -1377,7 +1386,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         });
       }
     },
-    [currentPersona.id, currentPersona.name, currentUserEmail]
+    [currentPersona.id, currentPersona.name, currentPersona.userId, currentUserEmail]
   );
 
   const fetchAuditLogs = useCallback(
@@ -1468,6 +1477,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
         showToast(SAVE_ERROR_MSG, 'error');
         return;
       }
+      const { error: ppDeleteError } = await supabase
+        .from('persona_people')
+        .delete()
+        .eq('person_id', personId);
+      if (ppDeleteError) {
+        console.error('persona_people delete failed:', JSON.stringify(ppDeleteError, null, 2));
+        if (snapshot) setData(snapshot);
+        showToast(SAVE_ERROR_MSG, 'error');
+        return;
+      }
       if (shepherdIds.length > 0) {
         const { error: insertError } = await supabase
           .from('person_shepherds')
@@ -1477,6 +1496,31 @@ export function AppProvider({ children }: { children: ReactNode }) {
           if (snapshot) setData(snapshot);
           showToast(SAVE_ERROR_MSG, 'error');
           return;
+        }
+        // Mirror into persona_people for shepherd_ids that correspond to a persona.
+        // (person_shepherds.shepherd_id can also be a person_id for shepherds without
+        // a persona; those have no persona_people row.)
+        const { data: personaMatches, error: personaLookupError } = await supabase
+          .from('personas')
+          .select('id')
+          .in('id', shepherdIds);
+        if (personaLookupError) {
+          console.error('personas lookup failed:', JSON.stringify(personaLookupError, null, 2));
+          if (snapshot) setData(snapshot);
+          showToast(SAVE_ERROR_MSG, 'error');
+          return;
+        }
+        const personaShepherdIds = (personaMatches ?? []).map((r: { id: string }) => r.id);
+        if (personaShepherdIds.length > 0) {
+          const { error: ppInsertError } = await supabase
+            .from('persona_people')
+            .insert(personaShepherdIds.map((pid) => ({ persona_id: pid, person_id: personId })));
+          if (ppInsertError) {
+            console.error('persona_people insert failed:', JSON.stringify(ppInsertError, null, 2));
+            if (snapshot) setData(snapshot);
+            showToast(SAVE_ERROR_MSG, 'error');
+            return;
+          }
         }
       }
       if (shepherdIds.length > 0 && personName) {
@@ -1489,11 +1533,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
             shepherdPersonaIds: shepherdIds,
             assignedByName: currentPersona.name,
             actorEmail: currentUserEmail,
+            actorUserId: currentPersona.userId,
           }),
         });
       }
     },
-    [currentPersona.name, currentUserEmail]
+    [currentPersona.name, currentPersona.userId, currentUserEmail]
   );
 
   // ── Families ──────────────────────────────────────────────────────────
@@ -1869,6 +1914,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
         return;
       }
       const memberIds = (fmRows ?? []).map((r: { person_id: string }) => r.person_id);
+      // Look up which of these shepherdIds correspond to a persona, once for the whole family.
+      let personaShepherdIds: string[] = [];
+      if (shepherdIds.length > 0) {
+        const { data: personaMatches, error: personaLookupError } = await supabase
+          .from('personas')
+          .select('id')
+          .in('id', shepherdIds);
+        if (personaLookupError) {
+          console.error('personas lookup failed:', JSON.stringify(personaLookupError, null, 2));
+          if (snapshot) setData(snapshot);
+          showToast(SAVE_ERROR_MSG, 'error');
+          return;
+        }
+        personaShepherdIds = (personaMatches ?? []).map((r: { id: string }) => r.id);
+      }
       for (const pid of memberIds) {
         const { error: deleteError } = await supabase
           .from('person_shepherds')
@@ -1876,6 +1936,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
           .eq('person_id', pid);
         if (deleteError) {
           console.error('person_shepherds delete failed:', JSON.stringify(deleteError, null, 2));
+          if (snapshot) setData(snapshot);
+          showToast(SAVE_ERROR_MSG, 'error');
+          return;
+        }
+        const { error: ppDeleteError } = await supabase
+          .from('persona_people')
+          .delete()
+          .eq('person_id', pid);
+        if (ppDeleteError) {
+          console.error('persona_people delete failed:', JSON.stringify(ppDeleteError, null, 2));
           if (snapshot) setData(snapshot);
           showToast(SAVE_ERROR_MSG, 'error');
           return;
@@ -1889,6 +1959,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
             if (snapshot) setData(snapshot);
             showToast(SAVE_ERROR_MSG, 'error');
             return;
+          }
+          if (personaShepherdIds.length > 0) {
+            const { error: ppInsertError } = await supabase
+              .from('persona_people')
+              .insert(
+                personaShepherdIds.map((sid) => ({ persona_id: sid, person_id: pid }))
+              );
+            if (ppInsertError) {
+              console.error('persona_people insert failed:', JSON.stringify(ppInsertError, null, 2));
+              if (snapshot) setData(snapshot);
+              showToast(SAVE_ERROR_MSG, 'error');
+              return;
+            }
           }
         }
       }
@@ -1946,10 +2029,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
           privacy: notice.privacy,
           addedByName: currentPersona.name,
           actorEmail: currentUserEmail,
+          actorUserId: currentPersona.userId,
         }),
       });
     },
-    [currentPersona.id, currentPersona.name, currentUserEmail]
+    [currentPersona.id, currentPersona.name, currentPersona.userId, currentUserEmail]
   );
 
   const updateNotice = useCallback(

@@ -24,6 +24,7 @@ import {
 import { useApp } from '@/lib/context';
 import { useToast } from './Toast';
 import { BottomSheet, ModalHeader } from './BottomSheet';
+import { Button } from './Button';
 import {
   type Notice,
   type NoticeCategory,
@@ -327,13 +328,17 @@ export default function AddNoticeModal({
 
         {!showWhoPicker && (
           <>
-            <ModalHeader
-              title={readOnly ? 'Notice' : isEditing ? 'Edit notice' : 'Add notice'}
-              onCancel={onClose}
-              onAction={readOnly ? onClose : handleSave}
-              actionLabel={readOnly ? 'Done' : 'Save'}
-              actionDisabled={!readOnly && !canSave}
-            />
+            {readOnly ? (
+              <ReadOnlyNoticeHeader onClose={onClose} />
+            ) : (
+              <ModalHeader
+                title={isEditing ? 'Edit notice' : 'Add notice'}
+                onCancel={onClose}
+                onAction={handleSave}
+                actionLabel="Save"
+                actionDisabled={!canSave}
+              />
+            )}
 
             {/* Scrollable body */}
             <div
@@ -374,6 +379,7 @@ export default function AddNoticeModal({
                         <PlusCircle size={22} color="var(--sage)" weight="fill" />
                       )
                     }
+                    readOnly={readOnly}
                   />
 
                   {/* Category */}
@@ -396,6 +402,7 @@ export default function AddNoticeModal({
                     }
                     valueColor={categories.length === 0 ? 'var(--text-muted)' : undefined}
                     onClick={readOnly ? undefined : () => setShowCategoryPicker(true)}
+                    readOnly={readOnly}
                   />
 
                   {/* Urgency */}
@@ -413,7 +420,7 @@ export default function AddNoticeModal({
                       background: 'none',
                       border: 'none',
                       borderBottom: '1px solid var(--border-light)',
-                      cursor: readOnly ? 'default' : 'pointer',
+                      cursor: readOnly ? 'not-allowed' : 'pointer',
                       textAlign: 'left' as const,
                     }}
                   >
@@ -448,6 +455,8 @@ export default function AddNoticeModal({
                           background: urgencyStyle.bg,
                           color: urgencyStyle.color,
                           border: `1px solid ${urgencyStyle.border}`,
+                          userSelect: readOnly ? 'text' : undefined,
+                          cursor: readOnly ? 'text' : undefined,
                         }}
                       >
                         {urgencyItem.label}
@@ -463,6 +472,7 @@ export default function AddNoticeModal({
                     label="Visible to"
                     value={privacyItem.label}
                     onClick={readOnly ? undefined : () => setShowPrivacyPicker(true)}
+                    readOnly={readOnly}
                   />
 
                   {/* Created by — edit mode */}
@@ -604,6 +614,56 @@ export default function AddNoticeModal({
   );
 }
 
+function ReadOnlyNoticeHeader({ onClose }: { onClose: () => void }) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0.875rem 1.25rem 0.75rem',
+        flexShrink: 0,
+        borderBottom: '1px solid var(--border-light)',
+        gap: 12,
+      }}
+    >
+      <span style={{ width: 60, flexShrink: 0 }} />
+      <span
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          minWidth: 0,
+        }}
+      >
+        <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
+          Notice
+        </span>
+        <span
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 4,
+            fontSize: 11,
+            fontWeight: 600,
+            padding: '0.125rem 0.5rem',
+            borderRadius: 'var(--radius-pill)',
+            background: 'var(--border-light)',
+            color: 'var(--text-muted)',
+            letterSpacing: '0.02em',
+          }}
+        >
+          <Lock size={11} weight="bold" />
+          View only
+        </span>
+      </span>
+      <Button variant="primary" size="sm" onClick={onClose}>
+        Close
+      </Button>
+    </div>
+  );
+}
+
 function FieldRow({
   btnRef,
   icon,
@@ -612,6 +672,7 @@ function FieldRow({
   valueColor,
   onClick,
   trailingIcon,
+  readOnly = false,
 }: {
   btnRef?: React.RefObject<HTMLButtonElement | null>;
   icon: React.ReactNode;
@@ -620,6 +681,7 @@ function FieldRow({
   valueColor?: string;
   onClick?: () => void;
   trailingIcon?: React.ReactNode | null;
+  readOnly?: boolean;
 }) {
   const interactive = !!onClick;
   return (
@@ -637,7 +699,7 @@ function FieldRow({
         background: 'none',
         border: 'none',
         borderBottom: '1px solid var(--border-light)',
-        cursor: interactive ? 'pointer' : 'default',
+        cursor: interactive ? 'pointer' : readOnly ? 'not-allowed' : 'default',
         textAlign: 'left' as const,
       }}
     >
@@ -661,6 +723,8 @@ function FieldRow({
           color: valueColor ?? 'var(--text-primary)',
           flex: 1,
           wordBreak: 'break-word',
+          userSelect: readOnly ? 'text' : undefined,
+          cursor: readOnly ? 'text' : undefined,
         }}
       >
         {value}

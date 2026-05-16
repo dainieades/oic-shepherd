@@ -22,7 +22,13 @@ function getAdminClient() {
 }
 
 type NotifyPayload =
-  | { type: 'person.added'; personName: string; addedByName: string; actorEmail: string }
+  | {
+      type: 'person.added';
+      personName: string;
+      addedByName: string;
+      actorEmail: string;
+      actorUserId?: string;
+    }
   | {
       type: 'notice.added';
       aboutName: string;
@@ -31,6 +37,7 @@ type NotifyPayload =
       privacy: NoticePrivacy;
       addedByName: string;
       actorEmail: string;
+      actorUserId?: string;
     }
   | {
       type: 'shepherd.assigned';
@@ -38,6 +45,7 @@ type NotifyPayload =
       shepherdPersonaIds: string[];
       assignedByName: string;
       actorEmail: string;
+      actorUserId?: string;
     }
   | {
       type: 'person.updated';
@@ -46,6 +54,7 @@ type NotifyPayload =
       personUserId?: string;
       updatedByName: string;
       actorEmail: string;
+      actorUserId?: string;
       changes?: ProfileChange[];
     }
   | { type: 'invite.sent'; invitedEmail: string; invitedByName: string }
@@ -57,21 +66,32 @@ type NotifyPayload =
       reminder: TodoReminder;
     };
 
-async function resolveEmailsForUserIds(userIds: string[], exclude: string): Promise<string[]> {
+async function resolveEmailsForUserIds(
+  userIds: string[],
+  excludeUserId: string | undefined,
+  excludeEmail: string
+): Promise<string[]> {
   const admin = getAdminClient();
   const {
     data: { users },
   } = await admin.auth.admin.listUsers({ perPage: 1000 });
   const userIdSet = new Set(userIds);
   return users
-    .filter((u) => userIdSet.has(u.id) && u.email && u.email !== exclude)
+    .filter(
+      (u) =>
+        userIdSet.has(u.id) &&
+        u.email &&
+        u.id !== excludeUserId &&
+        u.email !== excludeEmail
+    )
     .map((u) => u.email as string);
 }
 
 async function getEmailsByRole(
   supabase: Awaited<ReturnType<typeof createClient>>,
   roles: string[],
-  exclude: string,
+  excludeUserId: string | undefined,
+  excludeEmail: string,
   notifyColumn: string
 ): Promise<string[]> {
   const { data } = await supabase
@@ -82,13 +102,14 @@ async function getEmailsByRole(
     .neq('is_test', true)
     .neq(notifyColumn, false);
   const userIds = (data ?? []).map((r: { user_id: string }) => r.user_id).filter(Boolean);
-  return resolveEmailsForUserIds(userIds, exclude);
+  return resolveEmailsForUserIds(userIds, excludeUserId, excludeEmail);
 }
 
 async function getEmailsByPersonaIds(
   supabase: Awaited<ReturnType<typeof createClient>>,
   ids: string[],
-  exclude: string,
+  excludeUserId: string | undefined,
+  excludeEmail: string,
   notifyColumn: string
 ): Promise<string[]> {
   if (ids.length === 0) return [];
@@ -100,7 +121,7 @@ async function getEmailsByPersonaIds(
     .neq('is_test', true)
     .neq(notifyColumn, false);
   const userIds = (data ?? []).map((r: { user_id: string }) => r.user_id).filter(Boolean);
-  return resolveEmailsForUserIds(userIds, exclude);
+  return resolveEmailsForUserIds(userIds, excludeUserId, excludeEmail);
 }
 
 async function send(emails: string[], subject: string, html: string): Promise<void> {
@@ -123,6 +144,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       const emails = await getEmailsByRole(
         supabase,
         ['admin'],
+        body.actorUserId,
         body.actorEmail,
         'notify_person_added'
       );
@@ -136,7 +158,13 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       else if (body.privacy === 'pastor-and-shepherds') roles = ['admin', 'shepherd'];
       else roles = ['admin', 'shepherd'];
 
-      const emails = await getEmailsByRole(supabase, roles, body.actorEmail, 'notify_notice_added');
+      const emails = await getEmailsByRole(
+        supabase,
+        roles,
+        body.actorUserId,
+        body.actorEmail,
+        'notify_notice_added'
+      );
       const { subject, html } = noticeAddedEmail(
         body.aboutName,
         body.content,
@@ -151,6 +179,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       const emails = await getEmailsByPersonaIds(
         supabase,
         body.shepherdPersonaIds,
+        body.actorUserId,
         body.actorEmail,
         'notify_shepherd_assigned'
       );
@@ -163,11 +192,12 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         getEmailsByPersonaIds(
           supabase,
           body.shepherdPersonaIds,
+          body.actorUserId,
           body.actorEmail,
           'notify_person_updated'
         ),
         body.personUserId
-          ? resolveEmailsForUserIds([body.personUserId], body.actorEmail)
+          ? resolveEmailsForUserIds([body.personUserId], body.actorUserId, body.actorEmail)
           : Promise.resolve([] as string[]),
       ]);
       const { subject, html } = personUpdatedEmail(

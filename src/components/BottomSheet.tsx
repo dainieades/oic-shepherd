@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { BACKDROP_COLOR } from '@/lib/constants';
 import { Button } from './Button';
 
@@ -58,7 +59,12 @@ export function BottomSheet({
     return () => document.removeEventListener('keydown', onKey);
   }, [onClose]);
 
-  return (
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const overlay = (
     <div
       className={`sheet-outer ${OUTER_VARIANT_CLASS[variant]}`}
       style={{
@@ -95,6 +101,9 @@ export function BottomSheet({
       </div>
     </div>
   );
+
+  if (!mounted) return null;
+  return createPortal(overlay, document.body);
 }
 
 interface ModalHeaderProps {

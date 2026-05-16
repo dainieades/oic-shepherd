@@ -436,9 +436,10 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
       )}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-        {(currentPersona.role === 'admin' ||
-          (currentPersona.role === 'shepherd' &&
-            (appRole === 'shepherd' || appRole === 'no-access'))) && (
+        {!!person &&
+          (currentPersona.role === 'admin' ||
+            (currentPersona.role === 'shepherd' &&
+              (appRole === 'shepherd' || appRole === 'no-access'))) && (
           <FormSection label="Access">
             {showInviteRow && appRole === 'no-access' ? (
               <button
