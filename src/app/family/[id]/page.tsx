@@ -605,9 +605,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                   <NoticeCard
                     key={notice.id}
                     notice={notice}
-                    onClick={() => {
-                      if (canManageFamily) setEditingNotice(notice);
-                    }}
+                    onClick={() => setEditingNotice(notice)}
                   />
                 ));
               })}
@@ -957,7 +955,11 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
       )}
       {editingTodo && <AddTodoModal onClose={() => setEditingTodo(null)} todo={editingTodo} />}
       {editingNotice && (
-        <AddNoticeModal onClose={() => setEditingNotice(null)} notice={editingNotice} />
+        <AddNoticeModal
+          onClose={() => setEditingNotice(null)}
+          notice={editingNotice}
+          readOnly={!canManageFamily}
+        />
       )}
       {showEditFamily && (
         <EditFamilyDrawer family={family} onClose={() => setShowEditFamily(false)} />

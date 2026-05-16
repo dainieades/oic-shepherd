@@ -843,9 +843,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                   <NoticeCard
                     key={notice.id}
                     notice={notice}
-                    onClick={() => {
-                      if (canManage) setEditingNotice(notice);
-                    }}
+                    onClick={() => setEditingNotice(notice)}
                   />
                 ));
               })}
@@ -1364,7 +1362,11 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
         <AddNoticeModal onClose={() => setShowAddNotice(false)} prefillPersonId={person.id} />
       )}
       {editingNotice && (
-        <AddNoticeModal onClose={() => setEditingNotice(null)} notice={editingNotice} />
+        <AddNoticeModal
+          onClose={() => setEditingNotice(null)}
+          notice={editingNotice}
+          readOnly={!canManage}
+        />
       )}
       {showEditPerson && (
         <EditPersonDrawer person={person} onClose={() => setShowEditPerson(false)} />

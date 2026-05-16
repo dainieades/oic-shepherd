@@ -618,198 +618,205 @@ export function AppProvider({ children }: { children: ReactNode }) {
     async (userId: string, name: string, email?: string, avatarUrl?: string) => {
       const supabase = createClient();
 
-      // 0. Access gate — email must be on the approved list
-      if (!email) {
-        await supabase.auth.signOut();
-        localStorage.removeItem('shepherd-app-persona');
-        setAccessDenied(true);
-        setLoaded(true);
-        return;
-      }
-      const { data: approved } = await supabase
-        .from('approved_emails')
-        .select('email')
-        .eq('email', email.toLowerCase())
-        .maybeSingle();
-      if (!approved) {
-        await supabase.auth.signOut();
-        localStorage.removeItem('shepherd-app-persona');
-        setAccessDenied(true);
-        setLoaded(true);
-        return;
-      }
-
-      // 1. Look up existing persona by user_id (fastest path, already linked)
-      const { data: existing } = await supabase
-        .from('personas')
-        .select('*')
-        .eq('user_id', userId)
-        .maybeSingle();
-
-      if (existing) {
-        const { data: ppRows } = await supabase
-          .from('persona_people')
-          .select('person_id')
-          .eq('persona_id', existing.id);
-        const assignedPeopleIds = (ppRows ?? []).map((r: { person_id: string }) => r.person_id);
-        const persona = mapPersona(existing as Record<string, unknown>, assignedPeopleIds);
-        setCurrentPersona(persona);
-        setCurrentUserEmail(email);
-        localStorage.setItem('shepherd-app-persona', persona.id);
-        setData((prev) => {
-          if (prev.personas.find((p) => p.id === persona.id)) return prev;
-          return { ...prev, personas: [...prev.personas, persona] };
-        });
-        if (existing.email !== email) {
-          void supabase.from('personas').update({ email }).eq('id', persona.id);
+      // Wrap the whole body so the UI always unsticks from the "Loading…" state
+      // (via the finally), even if any persona insert silently returns null —
+      // e.g. RLS rejection or a concurrent duplicate insert losing the PK race.
+      try {
+        // 0. Access gate — email must be on the approved list
+        if (!email) {
+          await supabase.auth.signOut();
+          localStorage.removeItem('shepherd-app-persona');
+          setAccessDenied(true);
+          return;
         }
-        if (avatarUrl && persona.personId) {
-          syncGoogleAvatar(supabase, persona.personId, avatarUrl, setData);
-        }
-        setLoaded(true);
-        return;
-      }
-
-      // 2. No user_id match — try to auto-link via approved_emails.person_id first,
-      //    then fall back to email matching in people. The explicit person_id stored
-      //    at invite time is authoritative and avoids false matches when two people
-      //    share the same email address (e.g. a joint family inbox).
-      if (email) {
-        // Prefer the person_id recorded when the invite was sent.
-        const { data: approvedRow } = await supabase
+        const { data: approved } = await supabase
           .from('approved_emails')
-          .select('person_id')
+          .select('email')
           .eq('email', email.toLowerCase())
           .maybeSingle();
+        if (!approved) {
+          await supabase.auth.signOut();
+          localStorage.removeItem('shepherd-app-persona');
+          setAccessDenied(true);
+          return;
+        }
 
-        const resolvedPersonId: string | null =
-          approvedRow?.person_id ??
-          (await supabase
-            .from('people')
-            .select('id')
+        // 1. Look up existing persona by user_id (fastest path, already linked)
+        const { data: existing } = await supabase
+          .from('personas')
+          .select('*')
+          .eq('user_id', userId)
+          .maybeSingle();
+
+        if (existing) {
+          const { data: ppRows } = await supabase
+            .from('persona_people')
+            .select('person_id')
+            .eq('persona_id', existing.id);
+          const assignedPeopleIds = (ppRows ?? []).map((r: { person_id: string }) => r.person_id);
+          const persona = mapPersona(existing as Record<string, unknown>, assignedPeopleIds);
+          setCurrentPersona(persona);
+          setCurrentUserEmail(email);
+          localStorage.setItem('shepherd-app-persona', persona.id);
+          setData((prev) => {
+            if (prev.personas.find((p) => p.id === persona.id)) return prev;
+            return { ...prev, personas: [...prev.personas, persona] };
+          });
+          if (existing.email !== email) {
+            void supabase.from('personas').update({ email }).eq('id', persona.id);
+          }
+          if (avatarUrl && persona.personId) {
+            syncGoogleAvatar(supabase, persona.personId, avatarUrl, setData);
+          }
+          return;
+        }
+
+        // 2. No user_id match — try to auto-link via approved_emails.person_id first,
+        //    then fall back to email matching in people. The explicit person_id stored
+        //    at invite time is authoritative and avoids false matches when two people
+        //    share the same email address (e.g. a joint family inbox).
+        if (email) {
+          // Prefer the person_id recorded when the invite was sent.
+          const { data: approvedRow } = await supabase
+            .from('approved_emails')
+            .select('person_id')
             .eq('email', email.toLowerCase())
-            .maybeSingle()
-            .then(({ data }) => data?.id ?? null));
-
-        // If the resolved person is a hidden test record, mirror the flag onto the
-        // auto-created persona so test users see the in-prod persona switcher.
-        // Pull preferred/last name in the same round-trip so the persona can be
-        // labelled from the shepherd DB rather than the Google account.
-        const { data: resolvedPersonRow } = resolvedPersonId
-          ? await supabase
-              .from('people')
-              .select('is_test, preferred_name, last_name')
-              .eq('id', resolvedPersonId)
-              .maybeSingle()
-          : { data: null };
-        const resolvedIsTest: boolean = Boolean(
-          (resolvedPersonRow as { is_test?: boolean } | null)?.is_test
-        );
-        const resolvedPersonName: string = (() => {
-          const r = resolvedPersonRow as
-            | { preferred_name?: string; last_name?: string | null }
-            | null;
-          if (!r?.preferred_name) return name;
-          return r.last_name ? `${r.preferred_name} ${r.last_name}` : r.preferred_name;
-        })();
-
-        if (resolvedPersonId) {
-          const { data: personaRow } = await supabase
-            .from('personas')
-            .select('*')
-            .eq('person_id', resolvedPersonId)
             .maybeSingle();
 
-          // If the persona is stamped with an auth user_id that no longer
-          // exists in auth.users (e.g. the old test account was deleted, or
-          // the admin re-pointed this person's email to a different account),
-          // the stored link is stale and we should reclaim the persona for
-          // the new auth user rather than orphaning them in step 3.
-          const existingUserId = personaRow?.user_id as string | null | undefined;
-          const staleExistingLink =
-            existingUserId && existingUserId !== userId
-              ? await isStaleAuthUser(existingUserId)
-              : false;
+          const resolvedPersonId: string | null =
+            approvedRow?.person_id ??
+            (await supabase
+              .from('people')
+              .select('id')
+              .eq('email', email.toLowerCase())
+              .maybeSingle()
+              .then(({ data }) => data?.id ?? null));
 
-          if (personaRow) {
-            // Guard: never hijack a persona that already belongs to a *live*
-            // different auth user. Stale links are reclaimed.
-            if (existingUserId && existingUserId !== userId && !staleExistingLink) {
-              // Fall through to step 3 — create a fresh persona for this auth user.
-            } else {
-              // Persona found — stamp it with the auth user_id so future logins are instant
-              await supabase
-                .from('personas')
-                .update({ user_id: userId, email })
-                .eq('id', personaRow.id);
-              const linked = { ...personaRow, user_id: userId };
-              const { data: ppRows } = await supabase
-                .from('persona_people')
-                .select('person_id')
-                .eq('persona_id', personaRow.id);
-              const assignedPeopleIds = (ppRows ?? []).map(
-                (r: { person_id: string }) => r.person_id
-              );
-              const persona = mapPersona(linked as Record<string, unknown>, assignedPeopleIds);
-              setCurrentPersona(persona);
-              setCurrentUserEmail(email);
-              localStorage.setItem('shepherd-app-persona', persona.id);
-              setData((prev) => ({
-                ...prev,
-                personas: prev.personas.map((p) => (p.id === persona.id ? persona : p)),
-              }));
-              if (avatarUrl && persona.personId) {
-                syncGoogleAvatar(supabase, persona.personId, avatarUrl, setData);
-              }
-              setLoaded(true);
-              return;
-            }
-          } else {
-            // Person record exists but no persona yet — first-time sign-in for an invited user.
-            // Create a persona linked to their person record so their profile is immediately visible.
-            // Prefer the shepherd-DB name over the Google display name to keep
-            // identity consistent with the church directory.
-            const { data: inserted } = await supabase
+          // If the resolved person is a hidden test record, mirror the flag onto the
+          // auto-created persona so test users see the in-prod persona switcher.
+          // Pull preferred/last name in the same round-trip so the persona can be
+          // labelled from the shepherd DB rather than the Google account.
+          const { data: resolvedPersonRow } = resolvedPersonId
+            ? await supabase
+                .from('people')
+                .select('is_test, preferred_name, last_name')
+                .eq('id', resolvedPersonId)
+                .maybeSingle()
+            : { data: null };
+          const resolvedIsTest: boolean = Boolean(
+            (resolvedPersonRow as { is_test?: boolean } | null)?.is_test
+          );
+          const resolvedPersonName: string = (() => {
+            const r = resolvedPersonRow as
+              | { preferred_name?: string; last_name?: string | null }
+              | null;
+            if (!r?.preferred_name) return name;
+            return r.last_name ? `${r.preferred_name} ${r.last_name}` : r.preferred_name;
+          })();
+
+          if (resolvedPersonId) {
+            const { data: personaRow } = await supabase
               .from('personas')
-              .insert({
-                id: userId,
-                user_id: userId,
-                name: resolvedPersonName,
-                role: 'shepherd',
-                email,
-                person_id: resolvedPersonId,
-                is_test: resolvedIsTest,
-              })
-              .select()
-              .single();
-            if (inserted) {
-              const persona = mapPersona(inserted as Record<string, unknown>, []);
-              setCurrentPersona(persona);
-              setCurrentUserEmail(email);
-              localStorage.setItem('shepherd-app-persona', persona.id);
-              setData((prev) => ({ ...prev, personas: [...prev.personas, persona] }));
-              if (avatarUrl) {
-                syncGoogleAvatar(supabase, resolvedPersonId, avatarUrl, setData);
+              .select('*')
+              .eq('person_id', resolvedPersonId)
+              .maybeSingle();
+
+            // If the persona is stamped with an auth user_id that no longer
+            // exists in auth.users (e.g. the old test account was deleted, or
+            // the admin re-pointed this person's email to a different account),
+            // the stored link is stale and we should reclaim the persona for
+            // the new auth user rather than orphaning them in step 3.
+            const existingUserId = personaRow?.user_id as string | null | undefined;
+            const staleExistingLink =
+              existingUserId && existingUserId !== userId
+                ? await isStaleAuthUser(existingUserId)
+                : false;
+
+            if (personaRow) {
+              // Guard: never hijack a persona that already belongs to a *live*
+              // different auth user. Stale links are reclaimed.
+              if (existingUserId && existingUserId !== userId && !staleExistingLink) {
+                // Fall through to step 3 — create a fresh persona for this auth user.
+              } else {
+                // Persona found — stamp it with the auth user_id so future logins are instant
+                await supabase
+                  .from('personas')
+                  .update({ user_id: userId, email })
+                  .eq('id', personaRow.id);
+                const linked = { ...personaRow, user_id: userId };
+                const { data: ppRows } = await supabase
+                  .from('persona_people')
+                  .select('person_id')
+                  .eq('persona_id', personaRow.id);
+                const assignedPeopleIds = (ppRows ?? []).map(
+                  (r: { person_id: string }) => r.person_id
+                );
+                const persona = mapPersona(linked as Record<string, unknown>, assignedPeopleIds);
+                setCurrentPersona(persona);
+                setCurrentUserEmail(email);
+                localStorage.setItem('shepherd-app-persona', persona.id);
+                setData((prev) => ({
+                  ...prev,
+                  personas: prev.personas.map((p) => (p.id === persona.id ? persona : p)),
+                }));
+                if (avatarUrl && persona.personId) {
+                  syncGoogleAvatar(supabase, persona.personId, avatarUrl, setData);
+                }
+                return;
               }
-              setLoaded(true);
-              return;
+            } else {
+              // Person record exists but no persona yet — first-time sign-in for an invited user.
+              // Create a persona linked to their person record so their profile is immediately visible.
+              // Prefer the shepherd-DB name over the Google display name to keep
+              // identity consistent with the church directory.
+              const { data: inserted, error: insertError } = await supabase
+                .from('personas')
+                .insert({
+                  id: userId,
+                  user_id: userId,
+                  name: resolvedPersonName,
+                  role: 'shepherd',
+                  email,
+                  person_id: resolvedPersonId,
+                  is_test: resolvedIsTest,
+                })
+                .select()
+                .single();
+              if (insertError) {
+                console.error('personas insert (link path) failed:', JSON.stringify(insertError, null, 2));
+              }
+              if (inserted) {
+                const persona = mapPersona(inserted as Record<string, unknown>, []);
+                setCurrentPersona(persona);
+                setCurrentUserEmail(email);
+                localStorage.setItem('shepherd-app-persona', persona.id);
+                setData((prev) => ({ ...prev, personas: [...prev.personas, persona] }));
+                if (avatarUrl) {
+                  syncGoogleAvatar(supabase, resolvedPersonId, avatarUrl, setData);
+                }
+                return;
+              }
             }
           }
         }
-      }
 
-      // 3. Truly new user — create a fresh shepherd persona
-      const { data: inserted } = await supabase
-        .from('personas')
-        .insert({ id: userId, user_id: userId, name, role: 'shepherd', email })
-        .select()
-        .single();
-      if (inserted) {
-        const persona = mapPersona(inserted as Record<string, unknown>, []);
-        setCurrentPersona(persona);
-        setCurrentUserEmail(email);
-        localStorage.setItem('shepherd-app-persona', persona.id);
-        setData((prev) => ({ ...prev, personas: [...prev.personas, persona] }));
+        // 3. Truly new user — create a fresh shepherd persona
+        const { data: inserted, error: insertError } = await supabase
+          .from('personas')
+          .insert({ id: userId, user_id: userId, name, role: 'shepherd', email })
+          .select()
+          .single();
+        if (insertError) {
+          console.error('personas insert (fresh path) failed:', JSON.stringify(insertError, null, 2));
+        }
+        if (inserted) {
+          const persona = mapPersona(inserted as Record<string, unknown>, []);
+          setCurrentPersona(persona);
+          setCurrentUserEmail(email);
+          localStorage.setItem('shepherd-app-persona', persona.id);
+          setData((prev) => ({ ...prev, personas: [...prev.personas, persona] }));
+        }
+      } finally {
         setLoaded(true);
       }
     },

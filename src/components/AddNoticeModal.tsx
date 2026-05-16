@@ -69,6 +69,7 @@ interface AddNoticeModalProps {
   prefillPersonId?: string;
   prefillFamilyId?: string;
   notice?: Notice;
+  readOnly?: boolean;
 }
 
 const CATEGORIES: {
@@ -176,6 +177,7 @@ export default function AddNoticeModal({
   prefillPersonId,
   prefillFamilyId,
   notice,
+  readOnly = false,
 }: AddNoticeModalProps) {
   const { data, addNotice, updateNotice, deleteNotice } = useApp();
   const { showToast } = useToast();
@@ -298,7 +300,7 @@ export default function AddNoticeModal({
         )}
 
         {/* Floating delete button */}
-        {isEditing && notice && !showWhoPicker && (
+        {isEditing && notice && !showWhoPicker && !readOnly && (
           <button
             onClick={() => setShowDeleteConfirm(true)}
             style={{
@@ -326,11 +328,11 @@ export default function AddNoticeModal({
         {!showWhoPicker && (
           <>
             <ModalHeader
-              title={isEditing ? 'Edit notice' : 'Add notice'}
+              title={readOnly ? 'Notice' : isEditing ? 'Edit notice' : 'Add notice'}
               onCancel={onClose}
-              onAction={handleSave}
-              actionLabel="Save"
-              actionDisabled={!canSave}
+              onAction={readOnly ? onClose : handleSave}
+              actionLabel={readOnly ? 'Done' : 'Save'}
+              actionDisabled={!readOnly && !canSave}
             />
 
             {/* Scrollable body */}
@@ -338,7 +340,7 @@ export default function AddNoticeModal({
               style={{
                 flex: 1,
                 overflowY: 'auto',
-                padding: `1rem 1.25rem ${isEditing ? 80 : 16}px`,
+                padding: `1rem 1.25rem ${isEditing && !readOnly ? 80 : 16}px`,
                 background: 'var(--bg)',
                 display: 'flex',
                 flexDirection: 'column',
@@ -366,8 +368,12 @@ export default function AddNoticeModal({
                     label="For"
                     value={whoLabel ?? 'Select…'}
                     valueColor={!whoLabel ? 'var(--text-muted)' : undefined}
-                    onClick={() => setShowWhoPicker(true)}
-                    trailingIcon={<PlusCircle size={22} color="var(--sage)" weight="fill" />}
+                    onClick={readOnly ? undefined : () => setShowWhoPicker(true)}
+                    trailingIcon={
+                      readOnly ? null : (
+                        <PlusCircle size={22} color="var(--sage)" weight="fill" />
+                      )
+                    }
                   />
 
                   {/* Category */}
@@ -389,14 +395,15 @@ export default function AddNoticeModal({
                           : `${categories.length} selected`
                     }
                     valueColor={categories.length === 0 ? 'var(--text-muted)' : undefined}
-                    onClick={() => setShowCategoryPicker(true)}
+                    onClick={readOnly ? undefined : () => setShowCategoryPicker(true)}
                   />
 
                   {/* Urgency */}
                   <button
                     ref={urgencyBtnRef}
-                    className="field-row-hover"
-                    onClick={() => setShowUrgencyPicker(true)}
+                    className={readOnly ? undefined : 'field-row-hover'}
+                    onClick={readOnly ? undefined : () => setShowUrgencyPicker(true)}
+                    disabled={readOnly}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -406,7 +413,7 @@ export default function AddNoticeModal({
                       background: 'none',
                       border: 'none',
                       borderBottom: '1px solid var(--border-light)',
-                      cursor: 'pointer',
+                      cursor: readOnly ? 'default' : 'pointer',
                       textAlign: 'left' as const,
                     }}
                   >
@@ -446,7 +453,7 @@ export default function AddNoticeModal({
                         {urgencyItem.label}
                       </span>
                     </span>
-                    <CaretRight size={14} color="var(--text-muted)" />
+                    {!readOnly && <CaretRight size={14} color="var(--text-muted)" />}
                   </button>
 
                   {/* Privacy */}
@@ -455,7 +462,7 @@ export default function AddNoticeModal({
                     icon={<Eye size={16} />}
                     label="Visible to"
                     value={privacyItem.label}
-                    onClick={() => setShowPrivacyPicker(true)}
+                    onClick={readOnly ? undefined : () => setShowPrivacyPicker(true)}
                   />
 
                   {/* Created by — edit mode */}
@@ -509,7 +516,8 @@ export default function AddNoticeModal({
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="Notices are things worth flagging for your shepherds or pastor — a health condition, a difficult season, or anything that calls for collective awareness."
-                autoFocus={!isEditing}
+                autoFocus={!isEditing && !readOnly}
+                readOnly={readOnly}
                 style={{
                   flex: 1,
                   width: '100%',
@@ -610,14 +618,16 @@ function FieldRow({
   label: string;
   value: string;
   valueColor?: string;
-  onClick: () => void;
-  trailingIcon?: React.ReactNode;
+  onClick?: () => void;
+  trailingIcon?: React.ReactNode | null;
 }) {
+  const interactive = !!onClick;
   return (
     <button
       ref={btnRef}
-      className="field-row-hover"
+      className={interactive ? 'field-row-hover' : undefined}
       onClick={onClick}
+      disabled={!interactive}
       style={{
         display: 'flex',
         alignItems: 'center',
@@ -627,7 +637,7 @@ function FieldRow({
         background: 'none',
         border: 'none',
         borderBottom: '1px solid var(--border-light)',
-        cursor: 'pointer',
+        cursor: interactive ? 'pointer' : 'default',
         textAlign: 'left' as const,
       }}
     >
@@ -655,7 +665,9 @@ function FieldRow({
       >
         {value}
       </span>
-      {trailingIcon ?? <CaretRight size={14} color="var(--text-muted)" />}
+      {trailingIcon === null
+        ? null
+        : (trailingIcon ?? (interactive ? <CaretRight size={14} color="var(--text-muted)" /> : null))}
     </button>
   );
 }
