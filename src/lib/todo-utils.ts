@@ -67,17 +67,14 @@ export function filterTodos(
       return todoMatchesShepherdFilter(t, shepherdFilter, currentPersona, data) && matchesSearch;
     }
     const inScope = (() => {
-      if (t.createdBy === currentPersona.id) return true;
-      if (t.personId && currentPersona.assignedPeopleIds.includes(t.personId)) return true;
+      if (t.personId) return currentPersona.assignedPeopleIds.includes(t.personId);
       if (t.familyId) {
         const family = data.families.find((f) => f.id === t.familyId);
-        if (
-          family &&
-          family.memberIds.some((mid) => currentPersona.assignedPeopleIds.includes(mid))
-        )
-          return true;
+        return family
+          ? family.memberIds.some((mid) => currentPersona.assignedPeopleIds.includes(mid))
+          : false;
       }
-      return false;
+      return t.createdBy === currentPersona.id;
     })();
     return inScope && matchesSearch;
   });

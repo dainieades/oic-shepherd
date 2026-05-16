@@ -226,8 +226,14 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
 
   const fullDisplayName = [firstName.trim(), lastName.trim()].filter(Boolean).join(' ');
   const selectedGroups = data.groups.filter((g) => groupIds.includes(g.id));
-  const isPendingInvite =
-    !!person && appRole !== 'no-access' && !!email && !personaByPersonId.has(person.id);
+  const personaSignedIn =
+    !!person &&
+    (personaByPersonId.has(person.id) ||
+      (!!email &&
+        data.personas.some(
+          (p) => !!p.userId && p.email?.toLowerCase() === email.trim().toLowerCase()
+        )));
+  const isPendingInvite = !!person && appRole !== 'no-access' && !!email && !personaSignedIn;
 
   const personaPersonIds = new Set(data.personas.map((p) => p.personId).filter(Boolean));
   type ShepherdEntry = { id: string; name: string; subtitle: string; photo?: string };
@@ -499,7 +505,14 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
                   >
                     <span style={spacerStyle} />
                     <PaperPlaneTilt size={16} color="var(--amber, #d97706)" />
-                    <span style={{ ...labelStyle, color: 'var(--amber, #d97706)' }}>
+                    <span
+                      style={{
+                        fontSize: 12,
+                        color: 'var(--amber, #d97706)',
+                        whiteSpace: 'nowrap',
+                        flexShrink: 0,
+                      }}
+                    >
                       Invite pending
                     </span>
                     <span
@@ -508,6 +521,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
                         fontSize: 13,
                         color: 'var(--text-muted)',
                         textAlign: 'right',
+                        whiteSpace: 'nowrap',
                       }}
                     >
                       Hasn't signed in yet

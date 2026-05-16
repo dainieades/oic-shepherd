@@ -519,6 +519,22 @@ body {
   }
 }
 
+/* Desktop-only title + action row inside settings-content-desktop */
+.settings-subpage-desktop-header {
+  display: none;
+}
+
+@media (min-width: 64rem) {
+  .settings-subpage-desktop-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border-light);
+  }
+}
+
 /* ── Person / Family detail pages: two-column on desktop ──── */
 .person-page-shell,
 .family-page-shell {

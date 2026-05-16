@@ -21,6 +21,7 @@ export interface Persona {
   assignedPeopleIds: string[];
   personId?: string; // links to a Person in data
   userId?: string; // Supabase auth user ID
+  email?: string;
   themePreference?: ThemePreference;
   mapProvider?: 'apple' | 'google' | 'waze';
   notificationPrefs?: NotificationPreferences;

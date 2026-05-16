@@ -2,6 +2,7 @@
 
 import { format } from 'date-fns';
 import React from 'react';
+import { createPortal } from 'react-dom';
 import {
   CheckCircle,
   HandsPraying,
@@ -481,7 +482,12 @@ export function DeleteConfirmDialog({
   onCancel: () => void;
   onConfirm: () => void;
 }) {
-  return (
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const overlay = (
     <div
       style={{
         position: 'fixed',
@@ -557,4 +563,7 @@ export function DeleteConfirmDialog({
       </div>
     </div>
   );
+
+  if (!mounted) return null;
+  return createPortal(overlay, document.body);
 }

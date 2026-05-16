@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { CaretLeft } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import PersonFormBody, { type PersonFormBodyHandle } from '@/components/PersonFormBody';
-import { SHEET_MAX_WIDTH } from '@/lib/constants';
 
 export default function SettingsProfilePage() {
   const router = useRouter();
@@ -61,33 +60,69 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
           background: 'var(--bg)',
           borderBottom: '1px solid var(--border-light)',
           height: 54,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '0 1rem',
         }}
       >
-        <div
+        <button
+          onClick={onBack}
           style={{
-            maxWidth: SHEET_MAX_WIDTH,
-            margin: '0 auto',
-            height: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '0 1rem',
+            fontSize: 14,
+            color: 'var(--text-secondary)',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: 0,
           }}
         >
+          Cancel
+        </button>
+        <span style={navTitleStyle}>My Profile</span>
+        <button
+          onClick={() => formRef.current?.save()}
+          disabled={!canSave}
+          style={{
+            height: 32,
+            padding: '0 0.875rem',
+            borderRadius: 'var(--radius-xs)',
+            background: canSave ? 'var(--sage)' : 'var(--border)',
+            color: canSave ? 'var(--on-sage)' : 'var(--text-muted)',
+            fontSize: 14,
+            fontWeight: 600,
+            border: 'none',
+            cursor: canSave ? 'pointer' : 'default',
+            transition: 'background 0.15s',
+          }}
+        >
+          Save
+        </button>
+      </div>
+
+      <div className="settings-subpage-spacer" style={{ height: 54 }} />
+
+      <div className="settings-subpage-desktop-header">
+        <span style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
+          My Profile
+        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <button
             onClick={onBack}
             style={{
-              fontSize: 14,
-              color: 'var(--text-secondary)',
+              height: 32,
+              padding: '0 0.875rem',
+              borderRadius: 'var(--radius-xs)',
               background: 'none',
-              border: 'none',
+              border: '1px solid var(--border)',
+              color: 'var(--text-secondary)',
+              fontSize: 14,
+              fontWeight: 500,
               cursor: 'pointer',
-              padding: 0,
             }}
           >
             Cancel
           </button>
-          <span style={navTitleStyle}>My Profile</span>
           <button
             onClick={() => formRef.current?.save()}
             disabled={!canSave}
@@ -108,8 +143,6 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
           </button>
         </div>
       </div>
-
-      <div className="settings-subpage-spacer" style={{ height: 54 }} />
 
       <PersonFormBody
         ref={formRef}

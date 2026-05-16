@@ -115,6 +115,7 @@ export function mapPersona(row: Record<string, unknown>, assignedPeopleIds: stri
     role: r.role,
     personId: r.person_id ?? undefined,
     userId: r.user_id ?? undefined,
+    email: r.email ?? undefined,
     assignedPeopleIds,
     themePreference: r.theme_preference ?? undefined,
     mapProvider: r.map_provider ?? undefined,

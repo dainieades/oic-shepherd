@@ -1164,12 +1164,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         showToast(SAVE_ERROR_MSG, 'error');
         throw new Error('Failed to add person');
       }
-      const oneWeekFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
-      await addTodo({
-        title: `Contact ${fullName(person)}`,
-        personId: person.id,
-        dueDate: oneWeekFromNow,
-      });
       void fetch('/api/notify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1183,7 +1177,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       });
       return person.id;
     },
-    [currentPersona.id, currentPersona.name, currentPersona.userId, currentUserEmail, addTodo]
+    [currentPersona.id, currentPersona.name, currentPersona.userId, currentUserEmail]
   );
 
   const promoteVisitorSubmission = useCallback(
@@ -1197,9 +1191,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (!row) throw new Error('Submission not found');
       const r = row as Record<string, unknown>;
 
+      const preferredName = r.preferred_name as string;
+      const lastName = (r.last_name as string | null) ?? undefined;
       const personId = await addPerson({
-        preferredName: r.preferred_name as string,
-        lastName: (r.last_name as string | null) ?? undefined,
+        preferredName,
+        lastName,
         alternativeName: (r.alternative_name as string | null) ?? undefined,
         phone: (r.phone as string | null) ?? undefined,
         email: (r.email as string | null) ?? undefined,
@@ -1212,6 +1208,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
         churchAttendance: 'visitor',
       });
 
+      const oneWeekFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+      await addTodo({
+        title: `Contact ${fullName({ preferredName, lastName })}`,
+        personId,
+        dueDate: oneWeekFromNow,
+      });
+
       await supabase
         .from('visitor_submissions')
         .update({ status: 'promoted', person_id: personId })
@@ -1219,7 +1222,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       return personId;
     },
-    [addPerson]
+    [addPerson, addTodo]
   );
 
   const discardVisitorSubmission = useCallback(async (submissionId: string): Promise<void> => {

@@ -73,6 +73,7 @@ export const PersonaRowSchema = z.object({
   notify_person_updated: z.boolean().nullable().optional(),
   notify_todo_created: z.boolean().nullable().optional(),
   calendar_sync_enabled: z.boolean().nullable().optional(),
+  email: nullStr,
   calendar_feed_token: nullStr,
   calendar_connected_app: z.enum(['apple', 'google', 'other']).nullable().optional(),
   is_test: nullBool,
