@@ -597,8 +597,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
           localStorage.setItem('shepherd-app-persona', sessionPersona.id);
           setLoaded(true);
         }
-        // No matching persona yet — loginWithSupabaseUser (via AuthSync) will
-        // verify approval, set the correct persona, and call setLoaded(true).
+        // No matching persona yet — the auth-state subscription below will
+        // call loginWithSupabaseUser, which verifies approval, sets the
+        // correct persona, and calls setLoaded(true) in its finally block.
       } else {
         console.log('[AppContext.load] no session → setLoaded(true)');
         setLoaded(true);
@@ -829,6 +830,40 @@ export function AppProvider({ children }: { children: ReactNode }) {
     },
     []
   );
+
+  // ── Supabase auth state subscription ─────────────────────────────────
+  // Must live here (not in a child component) so it mounts even while
+  // `loaded` is false. The previous external <AuthSync /> child never
+  // mounted on first sign-in because the Provider's `!loaded` early-return
+  // suppressed its children — and `loaded` only flips true when the auth
+  // subscription itself calls loginWithSupabaseUser. Chicken-and-egg.
+  useEffect(() => {
+    const supabase = createClient();
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('[AuthSync] event:', event, 'hasUser:', !!session?.user, 'email:', session?.user?.email);
+      if (!session?.user) return;
+      const user = session.user;
+      const name = user.user_metadata?.full_name || user.email?.split('@')[0] || 'User';
+      const email = user.email;
+      const avatarUrl = user.user_metadata?.avatar_url as string | undefined;
+
+      if (event === 'SIGNED_IN') {
+        console.log('[AuthSync] → loginWithSupabaseUser (SIGNED_IN)');
+        loginWithSupabaseUser(user.id, name, email, avatarUrl);
+      } else if (event === 'INITIAL_SESSION') {
+        const stored = localStorage.getItem('shepherd-app-persona');
+        console.log('[AuthSync] INITIAL_SESSION, storedPersona:', stored);
+        if (!stored) {
+          console.log('[AuthSync] → loginWithSupabaseUser (INITIAL_SESSION)');
+          loginWithSupabaseUser(user.id, name, email, avatarUrl);
+        }
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [loginWithSupabaseUser]);
 
   // ── Notes ─────────────────────────────────────────────────────────────
   const addNote = useCallback(
@@ -1445,16 +1480,30 @@ export function AppProvider({ children }: { children: ReactNode }) {
             return prev;
           }
         }
+        const personaIdSet = new Set(prev.personas.map((pp) => pp.id));
+        const shepherdPersonaIdSet = new Set(shepherdIds.filter((sid) => personaIdSet.has(sid)));
         return {
           ...prev,
           people: prev.people.map((p) =>
             p.id === personId ? { ...p, assignedShepherdIds: shepherdIds } : p
           ),
+          personas: prev.personas.map((persona) => {
+            const shouldHave = shepherdPersonaIdSet.has(persona.id);
+            const has = persona.assignedPeopleIds.includes(personId);
+            if (shouldHave === has) return persona;
+            return {
+              ...persona,
+              assignedPeopleIds: shouldHave
+                ? [...persona.assignedPeopleIds, personId]
+                : persona.assignedPeopleIds.filter((id) => id !== personId),
+            };
+          }),
         };
       });
       if (unchanged) return;
       // Keep currentPersona.assignedPeopleIds in sync so the "My Sheep" filter
-      // reflects new assignments without requiring a page reload.
+      // reflects new assignments without requiring a page reload. (currentPersona
+      // is a separate state slice from data.personas — both need patching.)
       setCurrentPersona((prev) => {
         const isNowMine = shepherdIds.includes(prev.id);
         const wasMine = prev.assignedPeopleIds.includes(personId);
@@ -1896,10 +1945,39 @@ export function AppProvider({ children }: { children: ReactNode }) {
         const family = prev.families.find((f) => f.id === familyId);
         if (!family) return prev;
         const memberIds = family.memberIds;
+        const memberIdSet = new Set(memberIds);
+        const personaIdSet = new Set(prev.personas.map((pp) => pp.id));
+        const shepherdPersonaIdSet = new Set(shepherdIds.filter((sid) => personaIdSet.has(sid)));
         const newPeople = prev.people.map((p) =>
-          memberIds.includes(p.id) ? { ...p, assignedShepherdIds: shepherdIds } : p
+          memberIdSet.has(p.id) ? { ...p, assignedShepherdIds: shepherdIds } : p
         );
-        return { ...prev, people: newPeople };
+        const newPersonas = prev.personas.map((persona) => {
+          const shouldHave = shepherdPersonaIdSet.has(persona.id);
+          const withoutMembers = persona.assignedPeopleIds.filter((id) => !memberIdSet.has(id));
+          const next = shouldHave ? [...withoutMembers, ...memberIds] : withoutMembers;
+          if (
+            next.length === persona.assignedPeopleIds.length &&
+            next.every((id) => persona.assignedPeopleIds.includes(id))
+          ) {
+            return persona;
+          }
+          return { ...persona, assignedPeopleIds: next };
+        });
+        return { ...prev, people: newPeople, personas: newPersonas };
+      });
+      setCurrentPersona((prev) => {
+        const isNowMine = shepherdIds.includes(prev.id);
+        const family = snapshot?.families.find((f) => f.id === familyId);
+        const memberIds = family?.memberIds ?? [];
+        const withoutMembers = prev.assignedPeopleIds.filter((id) => !memberIds.includes(id));
+        const next = isNowMine ? [...withoutMembers, ...memberIds] : withoutMembers;
+        if (
+          next.length === prev.assignedPeopleIds.length &&
+          next.every((id) => prev.assignedPeopleIds.includes(id))
+        ) {
+          return prev;
+        }
+        return { ...prev, assignedPeopleIds: next };
       });
 
       const supabase = createClient();

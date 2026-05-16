@@ -4,7 +4,6 @@ import './globals.css';
 import { AppProvider } from '@/lib/context';
 import BottomNav from '@/components/BottomNav';
 
-import AuthSync from '@/components/AuthSync';
 import AccessGate from '@/components/AccessGate';
 import { ToastProvider } from '@/components/Toast';
 import AppShell from '@/components/AppShell';
@@ -39,7 +38,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body style={{ background: 'var(--bg)', color: 'var(--text-primary)' }}>
         <ToastProvider>
           <AppProvider>
-            <AuthSync />
             <AccessGate />
             <AppShell>{children}</AppShell>
             <BottomNav />

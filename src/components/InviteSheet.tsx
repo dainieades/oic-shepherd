@@ -53,10 +53,14 @@ export default function InviteSheet({
   const { data: appData, currentPersona, updatePerson } = useApp();
   const [email, setEmail] = React.useState(initialEmail);
   const [role, setRole] = React.useState<InviteRole>(initialRole);
+  const initialTriage =
+    personId ? (appData.people.find((p) => p.id === personId)?.canTriageVisitors ?? false) : false;
+  const [canTriageVisitors, setCanTriageVisitors] = React.useState(initialTriage);
   const [status, setStatus] = React.useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = React.useState('');
 
   const isAdmin = currentPersona.role === 'admin';
+  const showTriageToggle = isAdmin && role === 'shepherd';
 
   // Non-admins can invite shepherds; only admins can invite admins.
   const availableRoles = isAdmin ? ROLES : ROLES.filter((r) => r.value === 'shepherd');
@@ -100,12 +104,17 @@ export default function InviteSheet({
       return;
     }
 
+    const triagePatch = role === 'shepherd' ? canTriageVisitors : false;
     if (personId) {
-      await updatePerson(personId, { appRole: role, email: trimmed });
+      await updatePerson(personId, {
+        appRole: role,
+        email: trimmed,
+        canTriageVisitors: triagePatch,
+      });
     } else {
       const matched = appData.people.find((p) => p.email?.toLowerCase() === trimmed);
       if (matched) {
-        await updatePerson(matched.id, { appRole: role });
+        await updatePerson(matched.id, { appRole: role, canTriageVisitors: triagePatch });
       }
     }
 
@@ -382,6 +391,74 @@ export default function InviteSheet({
                 ))}
               </div>
             </div>
+
+            {/* Newcomer review toggle — admin only, shepherds only */}
+            {showTriageToggle && (
+              <button
+                onClick={() => setCanTriageVisitors((v) => !v)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
+                  padding: '0.75rem 0.875rem',
+                  borderRadius: 'var(--radius-sm)',
+                  textAlign: 'left',
+                  border: '0.09375rem solid var(--border-light)',
+                  background: 'var(--bg)',
+                  cursor: 'pointer',
+                  width: '100%',
+                }}
+              >
+                <div style={{ flex: 1 }}>
+                  <p
+                    style={{
+                      fontSize: 14,
+                      fontWeight: 600,
+                      color: 'var(--text-primary)',
+                      margin: 0,
+                    }}
+                  >
+                    Review newcomers
+                  </p>
+                  <p
+                    style={{
+                      fontSize: 12,
+                      color: 'var(--text-muted)',
+                      margin: '0.0625rem 0 0',
+                      lineHeight: 1.4,
+                    }}
+                  >
+                    Lets this shepherd review and welcome new sign-ups.
+                  </p>
+                </div>
+                <span
+                  aria-hidden
+                  style={{
+                    flexShrink: 0,
+                    width: 36,
+                    height: 22,
+                    borderRadius: 'var(--radius-pill)',
+                    background: canTriageVisitors ? 'var(--sage)' : 'var(--border)',
+                    position: 'relative',
+                    transition: 'background 0.15s',
+                  }}
+                >
+                  <span
+                    style={{
+                      position: 'absolute',
+                      top: 2,
+                      left: canTriageVisitors ? 16 : 2,
+                      width: 18,
+                      height: 18,
+                      borderRadius: '50%',
+                      background: 'var(--surface)',
+                      transition: 'left 0.15s',
+                      boxShadow: '0 1px 2px rgba(0,0,0,0.15)',
+                    }}
+                  />
+                </span>
+              </button>
+            )}
 
             {/* Submit */}
             <button
