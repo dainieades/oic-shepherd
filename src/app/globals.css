@@ -638,6 +638,23 @@ select {
 .family-page-shell {
   width: 100%;
 }
+.person-header-block {
+  align-items: center;
+}
+.person-name-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4375rem;
+  overflow: hidden;
+}
+.person-name-h1 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.person-alt-name {
+  flex-shrink: 0;
+}
 .person-body,
 .family-body {
   display: block;
@@ -677,6 +694,19 @@ select {
   .person-sidebar-col > div:first-child,
   .family-sidebar-col > div:first-child {
     padding: 0 !important;
+  }
+  .person-header-block {
+    align-items: flex-start;
+  }
+  .person-name-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.125rem;
+  }
+  .person-name-h1 {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
   }
   .person-main-col,
   .family-main-col {

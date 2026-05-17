@@ -498,7 +498,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
       <div className="person-body">
       <div className="person-sidebar-col">
       {/* ── Large title — scrolls away ── */}
-      <div style={{ padding: '1.75rem 0 1.25rem', display: 'flex', alignItems: 'center', gap: 16 }}>
+      <div className="person-header-block" style={{ padding: '1.75rem 0 1.25rem', display: 'flex', gap: 16 }}>
         {/* Avatar */}
         <PhotoAvatar
           photo={person.photo}
@@ -524,36 +524,26 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
               marginBottom: 5,
             }}
           >
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'baseline',
-                gap: 7,
-                minWidth: 0,
-                overflow: 'hidden',
-              }}
-            >
+            <div className="person-name-row" style={{ minWidth: 0 }}>
               <h1
+                className="person-name-h1"
                 style={{
                   fontSize: 'var(--text-26)',
                   fontWeight: 'var(--font-extrabold)',
                   color: 'var(--text-primary)',
                   lineHeight: 'var(--leading-tight)',
                   letterSpacing: 'var(--tracking-tight-2)',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
                 }}
               >
                 {fullName(person)}
               </h1>
               {person.alternativeName && (
                 <span
+                  className="person-alt-name"
                   style={{
                     fontSize: 'var(--text-14)',
                     fontWeight: 'var(--font-normal)',
                     color: 'var(--text-muted)',
-                    flexShrink: 0,
                   }}
                 >
                   {person.alternativeName}
