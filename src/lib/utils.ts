@@ -155,7 +155,7 @@ export function searchPeople(query: string, people: Person[]): Person[] {
   return people.filter(
     (p) =>
       fullName(p).toLowerCase().includes(q) ||
-      (p.alternativeName && p.alternativeName.includes(query.trim()))
+      (p.alternativeName && p.alternativeName.toLowerCase().includes(q))
   );
 }
 

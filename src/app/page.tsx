@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useApp } from '@/lib/context';
+import { useApp, type HomeFilters } from '@/lib/context';
 import { getMembershipLabel, fullName } from '@/lib/utils';
 import { type Person, type AppRole } from '@/lib/types';
 import {
@@ -16,6 +16,7 @@ import { Button } from '@/components/Button';
 import FamilyRow from '@/components/people/FamilyRow';
 import IndividualRow from '@/components/people/IndividualRow';
 import PeopleTable from '@/components/people/PeopleTable';
+import { EmptyState } from '@/components/EmptyState';
 import PageContainer from '@/components/PageContainer';
 import { usePeopleRows } from '@/lib/usePeopleRows';
 const AddPersonModal = React.lazy(() => import('@/components/AddPersonModal'));
@@ -535,20 +536,12 @@ export default function PeoplePage() {
               )
             )}
             {entries.length === 0 && (
-              <div
-                style={{
-                  textAlign: 'center',
-                  paddingTop: 48,
-                  color: 'var(--text-muted)',
-                  fontSize: 'var(--text-14)',
-                }}
-              >
-                {filters.shepherds.length > 0 &&
-                !isAdmin &&
-                filters.shepherds.every((s) => s === 'mine')
-                  ? 'No one assigned to you yet.'
-                  : 'No people found.'}
-              </div>
+              <MobileEmptyState
+                search={deferredSearch}
+                isAdmin={isAdmin}
+                filters={filters}
+                activeFilterCount={activeFilterCount}
+              />
             )}
           </div>
 
@@ -609,4 +602,54 @@ export default function PeoplePage() {
       </div>
     </PageContainer>
   );
+}
+
+function MobileEmptyState({
+  search,
+  isAdmin,
+  filters,
+  activeFilterCount,
+}: {
+  search: string;
+  isAdmin: boolean;
+  filters: HomeFilters;
+  activeFilterCount: number;
+}) {
+  const isMyShepherdOnly =
+    !isAdmin &&
+    filters.shepherds.length > 0 &&
+    filters.shepherds.every((s) => s === 'mine') &&
+    filters.memberships.length === 0 &&
+    filters.attendances.length === 0 &&
+    filters.groups.length === 0 &&
+    filters.archiveFilter === 'include' &&
+    filters.discipleship.length === 0 &&
+    filters.appRoles.length === 0 &&
+    filters.positions.length === 0 &&
+    filters.languages.length === 0;
+
+  const hasSearch = !!search;
+  const hasExtraFilters = activeFilterCount > 0 && !isMyShepherdOnly;
+
+  let title: string;
+  let description: string;
+
+  if (hasSearch && hasExtraFilters) {
+    title = 'No one matches your search and filters.';
+    description = 'Try a different name or adjust your filters.';
+  } else if (hasSearch) {
+    title = `No results for "${search}"`;
+    description = 'Try a different name, or clear your search.';
+  } else if (isMyShepherdOnly) {
+    title = "No one's been assigned to you yet.";
+    description = 'Once sheep are assigned to you, they\'ll appear here.';
+  } else if (hasExtraFilters) {
+    title = 'No one matches these filters.';
+    description = 'Try adjusting or clearing your filters.';
+  } else {
+    title = 'No people found.';
+    description = 'Try clearing filters or adjusting your search.';
+  }
+
+  return <EmptyState title={title} description={description} />;
 }
