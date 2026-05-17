@@ -118,8 +118,7 @@ const CATEGORIES: {
 ];
 
 const PRIVACIES: { value: NoticePrivacy; label: string; icon: React.ReactNode }[] = [
-  { value: 'pastor-only', label: 'Pastor only', icon: <Lock size={16} /> },
-  { value: 'pastor-and-shepherds', label: 'Pastors and all shepherds', icon: <Users size={16} /> },
+  { value: 'pastor-only', label: 'Pastor and You', icon: <Lock size={16} /> },
   { value: 'everyone', label: 'Everyone with app access', icon: <Globe size={16} /> },
 ];
 
@@ -749,7 +748,7 @@ function NoticeVisibilityWarningDialog({
 }) {
   const [dontShowAgain, setDontShowAgain] = React.useState(false);
   const audienceLabel =
-    privacy === 'everyone' ? 'everyone with app access' : 'all pastors and shepherds';
+    privacy === 'everyone' ? 'everyone with access' : 'the pastor and you';
   const peopleLabel = audienceCount === 1 ? '1 person' : `${audienceCount} people`;
   const Icon = privacy === 'everyone' ? Globe : Users;
 

@@ -1,11 +1,10 @@
 'use client';
 
 import React from 'react';
-import { createPortal } from 'react-dom';
 import { DrawerSection } from '@/components/form/DrawerSection';
 import { useApp } from '@/lib/context';
 import { useToast } from './Toast';
-import { BottomSheet, ModalHeader } from './BottomSheet';
+import { BottomSheet, ModalHeader, SubPanel } from './BottomSheet';
 import { type Family, type Person, type Group } from '@/lib/types';
 import {
   CaretRight,
@@ -19,13 +18,7 @@ import {
 } from '@phosphor-icons/react';
 import { fullName } from '@/lib/utils';
 import { ShepherdPickerSheet } from './PersonPickerSheets';
-import {
-  BACKDROP_COLOR,
-  SHEET_MAX_WIDTH,
-  SHEET_BORDER_RADIUS,
-  SHEPHERD_AVATAR_PALETTE,
-  Z_SHEET,
-} from '@/lib/constants';
+import { SHEPHERD_AVATAR_PALETTE } from '@/lib/constants';
 
 interface Props {
   family: Family;
@@ -436,73 +429,16 @@ function MemberPickerSheet({
   const toggle = (id: string) =>
     setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
 
-  return createPortal(
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: Z_SHEET,
-        background: BACKDROP_COLOR,
-        display: 'flex',
-        alignItems: 'flex-end',
-        justifyContent: 'center',
-      }}
-    >
-      <div
-        className="animate-slide-up"
-        style={{
-          background: 'var(--surface)',
-          borderRadius: SHEET_BORDER_RADIUS,
-          width: '100%',
-          maxWidth: SHEET_MAX_WIDTH,
-          height: 'calc(100dvh - 3rem)',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-        }}
-      >
-        {/* Header */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '0.875rem 1.25rem 0.75rem',
-            flexShrink: 0,
-            borderBottom: '1px solid var(--border-light)',
-          }}
-        >
-          <button
-            onClick={onBack}
-            style={{
-              fontSize: 14,
-              color: 'var(--text-secondary)',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-            }}
-          >
-            Back
-          </button>
-          <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
-            Members
-          </span>
-          <button
-            onClick={() => onConfirm(selectedIds)}
-            style={{
-              fontSize: 14,
-              fontWeight: 600,
-              color: 'var(--sage)',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-            }}
-          >
-            {selectedIds.length > 0 ? `Done (${selectedIds.length})` : 'Done'}
-          </button>
-        </div>
+  return (
+    <SubPanel onBack={onBack}>
+      <ModalHeader
+        title="Members"
+        onCancel={onBack}
+        cancelLabel="Back"
+        onAction={() => onConfirm(selectedIds)}
+        actionLabel={selectedIds.length > 0 ? `Done (${selectedIds.length})` : 'Done'}
+        actionVariant="pill"
+      />
 
         {/* Search */}
         <div
@@ -637,9 +573,7 @@ function MemberPickerSheet({
             </p>
           )}
         </div>
-      </div>
-    </div>,
-    document.body
+    </SubPanel>
   );
 }
 
@@ -688,82 +622,16 @@ function GroupPickerSheet({
   const toggle = (id: string) =>
     setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
 
-  return createPortal(
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: Z_SHEET,
-        background: BACKDROP_COLOR,
-        display: 'flex',
-        alignItems: 'flex-end',
-        justifyContent: 'center',
-      }}
-    >
-      <div
-        className="animate-slide-up"
-        style={{
-          background: 'var(--surface)',
-          borderRadius: SHEET_BORDER_RADIUS,
-          width: '100%',
-          maxWidth: SHEET_MAX_WIDTH,
-          height: 'calc(100dvh - 3rem)',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-        }}
-      >
-        <div
-          style={{
-            width: 36,
-            height: 4,
-            background: 'var(--border)',
-            borderRadius: 2,
-            margin: '0.875rem auto 0',
-            flexShrink: 0,
-          }}
-        />
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '0.875rem 1.25rem 0.75rem',
-            flexShrink: 0,
-            borderBottom: '1px solid var(--border-light)',
-          }}
-        >
-          <button
-            onClick={onBack}
-            style={{
-              fontSize: 14,
-              color: 'var(--text-secondary)',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-            }}
-          >
-            Back
-          </button>
-          <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
-            Fellowship Groups
-          </span>
-          <button
-            onClick={() => onConfirm(selectedIds)}
-            style={{
-              fontSize: 14,
-              fontWeight: 600,
-              color: 'var(--sage)',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-            }}
-          >
-            {selectedIds.length > 0 ? `Done (${selectedIds.length})` : 'Done'}
-          </button>
-        </div>
+  return (
+    <SubPanel onBack={onBack}>
+      <ModalHeader
+        title="Fellowship Groups"
+        onCancel={onBack}
+        cancelLabel="Back"
+        onAction={() => onConfirm(selectedIds)}
+        actionLabel={selectedIds.length > 0 ? `Done (${selectedIds.length})` : 'Done'}
+        actionVariant="pill"
+      />
         <div
           style={{
             padding: '0.75rem 1.25rem',
@@ -880,8 +748,6 @@ function GroupPickerSheet({
             </p>
           )}
         </div>
-      </div>
-    </div>,
-    document.body
+    </SubPanel>
   );
 }

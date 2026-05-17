@@ -3,8 +3,7 @@
 import React from 'react';
 import { type AppRole } from '@/lib/types';
 import { Warning, Check, PencilSimple } from '@phosphor-icons/react';
-import { Z_SHEET } from '@/lib/constants';
-import { BottomSheet } from '@/components/BottomSheet';
+import { SubPanel } from '@/components/BottomSheet';
 
 const ROLE_OPTIONS: { value: AppRole; label: string; description: string }[] = [
   {
@@ -97,7 +96,7 @@ export default function AppRolePickerSheet({
   }
 
   return (
-    <BottomSheet onClose={onClose} compact zIndex={Z_SHEET} variant="dialog">
+    <SubPanel onBack={onClose}>
       {/* Title */}
       <p
         style={{
@@ -564,6 +563,6 @@ export default function AppRolePickerSheet({
           )}
         </>
       )}
-    </BottomSheet>
+    </SubPanel>
   );
 }

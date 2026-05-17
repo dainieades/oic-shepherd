@@ -53,6 +53,7 @@ const cellStyle: React.CSSProperties = {
 
 interface Counts {
   todos: number;
+  logs: number;
   notices: number;
 }
 
@@ -104,6 +105,24 @@ export default function PeopleTable({ entries }: PeopleTableProps) {
     }
     return map;
   }, [data.todos]);
+
+  const logsByPerson = React.useMemo(() => {
+    const map = new Map<string, number>();
+    for (const n of data.notes) {
+      if (!n.personId) continue;
+      map.set(n.personId, (map.get(n.personId) ?? 0) + 1);
+    }
+    return map;
+  }, [data.notes]);
+
+  const logsByFamily = React.useMemo(() => {
+    const map = new Map<string, number>();
+    for (const n of data.notes) {
+      if (!n.familyId) continue;
+      map.set(n.familyId, (map.get(n.familyId) ?? 0) + 1);
+    }
+    return map;
+  }, [data.notes]);
 
   const noticesByPerson = React.useMemo(() => {
     const map = new Map<string, number>();
@@ -171,6 +190,11 @@ export default function PeopleTable({ entries }: PeopleTableProps) {
               onSort={() => setHomeSortKey((k) => toggleSort(k, 'groups', 'groups-desc'))}
             />
             <SortableHeader
+              label="Logs"
+              direction={getSortDirection(homeSortKey, 'logs-desc', 'logs')}
+              onSort={() => setHomeSortKey((k) => toggleSort(k, 'logs-desc', 'logs'))}
+            />
+            <SortableHeader
               label="Todos"
               direction={getSortDirection(homeSortKey, 'todos-desc', 'todos')}
               onSort={() => setHomeSortKey((k) => toggleSort(k, 'todos-desc', 'todos'))}
@@ -197,12 +221,17 @@ export default function PeopleTable({ entries }: PeopleTableProps) {
                 (sum, m) => sum + (openTodosByPerson.get(m.id) ?? 0),
                 0
               );
+              const memberLogs = entry.members.reduce(
+                (sum, m) => sum + (logsByPerson.get(m.id) ?? 0),
+                0
+              );
               const memberNotices = entry.members.reduce(
                 (sum, m) => sum + (noticesByPerson.get(m.id) ?? 0),
                 0
               );
               const counts: Counts = {
                 todos: memberTodos + (openTodosByFamily.get(entry.family.id) ?? 0),
+                logs: memberLogs + (logsByFamily.get(entry.family.id) ?? 0),
                 notices: memberNotices + (noticesByFamily.get(entry.family.id) ?? 0),
               };
               return (
@@ -217,6 +246,7 @@ export default function PeopleTable({ entries }: PeopleTableProps) {
             }
             const counts: Counts = {
               todos: openTodosByPerson.get(entry.person.id) ?? 0,
+              logs: logsByPerson.get(entry.person.id) ?? 0,
               notices: noticesByPerson.get(entry.person.id) ?? 0,
             };
             return (
@@ -355,6 +385,9 @@ function FamilyTableRow({
         <GroupCells groups={allGroups} />
       </td>
       <td style={cellStyle}>
+        <CountCell value={counts.logs} />
+      </td>
+      <td style={cellStyle}>
         <CountCell value={counts.todos} />
       </td>
       <td style={cellStyle}>
@@ -468,6 +501,9 @@ function IndividualTableRow({
       </td>
       <td style={cellStyle}>
         <GroupCells groups={personGroups} />
+      </td>
+      <td style={cellStyle}>
+        <CountCell value={counts.logs} />
       </td>
       <td style={cellStyle}>
         <CountCell value={counts.todos} />

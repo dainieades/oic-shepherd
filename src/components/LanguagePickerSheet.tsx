@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { MagnifyingGlass, Check } from '@phosphor-icons/react';
-import { Z_SHEET } from '@/lib/constants';
-import { BottomSheet, ModalHeader } from '@/components/BottomSheet';
+import { SubPanel, ModalHeader } from '@/components/BottomSheet';
 
 const PRIORITY_LANGUAGES = ['English', 'Mandarin Chinese', 'Cantonese', 'Spanish'];
 
@@ -87,7 +86,7 @@ export default function LanguagePickerSheet({ currentLanguages, onConfirm, onBac
   const doneLabel = selected.length > 0 ? `Done (${selected.length})` : 'Done';
 
   return (
-    <BottomSheet onClose={onBack} zIndex={Z_SHEET}>
+    <SubPanel onBack={onBack}>
       <ModalHeader
         title="Languages"
         onCancel={onBack}
@@ -213,7 +212,7 @@ export default function LanguagePickerSheet({ currentLanguages, onConfirm, onBac
           </p>
         )}
       </div>
-    </BottomSheet>
+    </SubPanel>
   );
 }
 

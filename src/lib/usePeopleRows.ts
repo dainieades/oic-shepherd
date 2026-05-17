@@ -266,6 +266,14 @@ export function usePeopleRows(deferredSearch: string): PeopleEntry[] {
       if (n.familyId)
         noticeCountByFamily.set(n.familyId, (noticeCountByFamily.get(n.familyId) ?? 0) + 1);
     }
+    const logCountByPerson = new Map<string, number>();
+    const logCountByFamily = new Map<string, number>();
+    for (const n of data.notes) {
+      if (n.personId)
+        logCountByPerson.set(n.personId, (logCountByPerson.get(n.personId) ?? 0) + 1);
+      if (n.familyId)
+        logCountByFamily.set(n.familyId, (logCountByFamily.get(n.familyId) ?? 0) + 1);
+    }
 
     const todoCount = (e: PeopleEntry): number => {
       if (e.type === 'family') {
@@ -280,6 +288,13 @@ export function usePeopleRows(deferredSearch: string): PeopleEntry[] {
         return m + (noticeCountByFamily.get(e.family.id) ?? 0);
       }
       return noticeCountByPerson.get(e.person.id) ?? 0;
+    };
+    const logCount = (e: PeopleEntry): number => {
+      if (e.type === 'family') {
+        const m = e.members.reduce((s, p) => s + (logCountByPerson.get(p.id) ?? 0), 0);
+        return m + (logCountByFamily.get(e.family.id) ?? 0);
+      }
+      return logCountByPerson.get(e.person.id) ?? 0;
     };
     const attendanceRank: Record<string, number> = {
       regular: 0,
@@ -376,6 +391,14 @@ export function usePeopleRows(deferredSearch: string): PeopleEntry[] {
         }
         case 'todos-desc': {
           const cmp = todoCount(b) - todoCount(a);
+          return cmp !== 0 ? cmp : aName.localeCompare(bName);
+        }
+        case 'logs': {
+          const cmp = logCount(a) - logCount(b);
+          return cmp !== 0 ? cmp : aName.localeCompare(bName);
+        }
+        case 'logs-desc': {
+          const cmp = logCount(b) - logCount(a);
           return cmp !== 0 ? cmp : aName.localeCompare(bName);
         }
         case 'notices': {

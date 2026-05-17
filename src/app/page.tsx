@@ -421,7 +421,6 @@ export default function PeoplePage() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              overflow: 'hidden',
               transition: 'height 0.25s ease',
             }}
           >

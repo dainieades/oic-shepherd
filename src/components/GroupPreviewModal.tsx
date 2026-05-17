@@ -25,6 +25,7 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
     <BottomSheet
       onClose={onClose}
       variant="dialog"
+      allowBackdropClose
       contentStyle={{
         height: 'auto',
         maxHeight: 'calc(100dvh - 5rem)',

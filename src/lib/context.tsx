@@ -63,6 +63,8 @@ export type HomeSortKey =
   | 'groups-desc'
   | 'todos'
   | 'todos-desc'
+  | 'logs'
+  | 'logs-desc'
   | 'notices'
   | 'notices-desc';
 

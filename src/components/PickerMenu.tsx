@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useFloating, autoUpdate, offset, flip, size } from '@floating-ui/react';
 import { Check } from '@phosphor-icons/react';
 import { Z_NESTED } from '@/lib/constants';
@@ -31,6 +32,8 @@ export default function PickerMenu({
   onClose,
 }: PickerMenuProps) {
   const [search, setSearch] = useState('');
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
 
   const { refs, floatingStyles } = useFloating({
     placement: 'bottom-start',
@@ -84,7 +87,8 @@ export default function PickerMenu({
         width: Math.min(430, window.innerWidth - 32),
       };
 
-  return (
+  if (!mounted) return null;
+  return createPortal(
     <div
       ref={refs.setFloating}
       style={{
@@ -206,6 +210,7 @@ export default function PickerMenu({
           </button>
         );
       })}
-    </div>
+    </div>,
+    document.body,
   );
 }

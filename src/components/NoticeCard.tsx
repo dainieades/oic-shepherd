@@ -36,8 +36,8 @@ export const CATEGORY_ICON: Record<string, React.ReactNode> = {
 };
 
 export const PRIVACY_LABEL: Record<string, string> = {
-  'pastor-only': 'Pastor only',
-  'pastor-and-shepherds': 'Shepherds & pastors',
+  'pastor-only': 'Pastor and You',
+  'pastor-and-shepherds': 'Pastor and You',
   everyone: 'Everyone',
 };
 

@@ -153,6 +153,7 @@ export default function PendingVisitorsPage() {
 
   const [submissions, setSubmissions] = React.useState<VisitorSubmission[] | null>(null);
   const [busyId, setBusyId] = React.useState<string | null>(null);
+  const [confirmPromote, setConfirmPromote] = React.useState<VisitorSubmission | null>(null);
   const [confirmDiscard, setConfirmDiscard] = React.useState<VisitorSubmission | null>(null);
   const inFlightRef = React.useRef<Set<string>>(new Set());
 
@@ -304,13 +305,29 @@ export default function PendingVisitorsPage() {
                 key={sub.id}
                 submission={sub}
                 busy={busyId === sub.id}
-                onPromote={() => handlePromote(sub)}
+                onPromote={() => setConfirmPromote(sub)}
                 onDiscard={() => setConfirmDiscard(sub)}
               />
             ))}
           </div>
         )}
       </div>
+      {confirmPromote && (
+        <ConfirmActionSheet
+          title="Add to directory?"
+          description={`${confirmPromote.preferredName}${
+            confirmPromote.lastName ? ` ${confirmPromote.lastName}` : ''
+          } will be added as a person in the directory and you'll be taken to their profile.`}
+          confirmLabel="Add to directory"
+          tone="neutral"
+          onConfirm={() => {
+            const sub = confirmPromote;
+            setConfirmPromote(null);
+            void handlePromote(sub);
+          }}
+          onCancel={() => setConfirmPromote(null)}
+        />
+      )}
       {confirmDiscard && (
         <ConfirmActionSheet
           title="Discard newcomer card?"

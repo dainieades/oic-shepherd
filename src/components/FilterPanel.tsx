@@ -101,7 +101,7 @@ export default function FilterPanel({
   if (!show) return null;
 
   return (
-    <BottomSheet onClose={onClose} zIndex={50}>
+    <BottomSheet onClose={onClose} zIndex={50} allowBackdropClose>
       {/* Header */}
       <div
         style={{

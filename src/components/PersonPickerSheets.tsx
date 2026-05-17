@@ -6,7 +6,7 @@ import { CheckboxMark } from './CheckRow';
 import { SHEPHERD_AVATAR_PALETTE, Z_SHEET } from '@/lib/constants';
 import { CHURCH_POSITIONS } from '@/lib/types';
 import { AvatarBadge } from './AvatarBadge';
-import { BottomSheet, ModalHeader } from './BottomSheet';
+import { BottomSheet, ModalHeader, SubPanel } from './BottomSheet';
 import { fullName } from '@/lib/utils';
 
 export function GroupPickerSheet({
@@ -34,7 +34,7 @@ export function GroupPickerSheet({
     setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
 
   return (
-    <BottomSheet onClose={onBack} zIndex={Z_SHEET}>
+    <SubPanel onBack={onBack}>
       <ModalHeader
         title="Fellowship Groups"
         onCancel={onBack}
@@ -144,7 +144,7 @@ export function GroupPickerSheet({
           </p>
         )}
       </div>
-    </BottomSheet>
+    </SubPanel>
   );
 }
 
@@ -187,7 +187,7 @@ export function SheepPickerSheet({
     setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
 
   return (
-    <BottomSheet onClose={onBack} zIndex={Z_SHEET}>
+    <SubPanel onBack={onBack}>
       <ModalHeader
         title="Sheep"
         onCancel={onBack}
@@ -310,7 +310,7 @@ export function SheepPickerSheet({
           );
         })}
       </div>
-    </BottomSheet>
+    </SubPanel>
   );
 }
 
@@ -339,7 +339,7 @@ export function ShepherdPickerSheet({
     setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
 
   return (
-    <BottomSheet onClose={onBack} zIndex={Z_SHEET}>
+    <SubPanel onBack={onBack}>
       <ModalHeader
         title="Shepherd"
         onCancel={onBack}
@@ -460,7 +460,7 @@ export function ShepherdPickerSheet({
           </p>
         )}
       </div>
-    </BottomSheet>
+    </SubPanel>
   );
 }
 
@@ -489,7 +489,7 @@ export function PositionPickerSheet({
     );
 
   return (
-    <BottomSheet onClose={onBack} zIndex={Z_SHEET}>
+    <SubPanel onBack={onBack}>
       <ModalHeader
         title="Church Position"
         onCancel={onBack}
@@ -599,7 +599,7 @@ export function PositionPickerSheet({
           </p>
         )}
       </div>
-    </BottomSheet>
+    </SubPanel>
   );
 }
 
@@ -634,7 +634,7 @@ export function FamilyPickerSheet({
   });
 
   return (
-    <BottomSheet onClose={onBack} zIndex={Z_SHEET}>
+    <SubPanel onBack={onBack}>
       <ModalHeader
         title="Family"
         onCancel={onBack}
@@ -815,7 +815,7 @@ export function FamilyPickerSheet({
           </p>
         )}
       </div>
-    </BottomSheet>
+    </SubPanel>
   );
 }
 

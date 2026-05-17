@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom';
 import { BACKDROP_COLOR } from '@/lib/constants';
 import { Button } from './Button';
 
-export type SheetVariant = 'sheet' | 'dialog' | 'side-panel';
+export type SheetVariant = 'sheet' | 'dialog' | 'side-panel' | 'confirm';
 
 interface BottomSheetProps {
   onClose: () => void;
@@ -20,18 +20,22 @@ interface BottomSheetProps {
    */
   variant?: SheetVariant;
   'aria-labelledby'?: string;
+  /** Allow tapping the backdrop to dismiss. Defaults to false. */
+  allowBackdropClose?: boolean;
 }
 
 const OUTER_VARIANT_CLASS: Record<SheetVariant, string> = {
   sheet: '',
   dialog: 'sheet-outer-dialog',
   'side-panel': 'sheet-outer-side-panel',
+  confirm: 'sheet-outer-confirm',
 };
 
 const PANEL_VARIANT_CLASS: Record<SheetVariant, string> = {
   sheet: '',
   dialog: 'sheet-panel-dialog',
   'side-panel': 'sheet-panel-side-panel',
+  confirm: 'sheet-panel-confirm',
 };
 
 export function BottomSheet({
@@ -42,6 +46,7 @@ export function BottomSheet({
   children,
   variant = 'sheet',
   'aria-labelledby': ariaLabelledby,
+  allowBackdropClose = false,
 }: BottomSheetProps) {
   React.useEffect(() => {
     const prev = document.body.style.overflow;
@@ -75,7 +80,7 @@ export function BottomSheet({
         display: 'flex',
       }}
       onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
+        if (allowBackdropClose && e.target === e.currentTarget) onClose();
       }}
     >
       <div
@@ -104,6 +109,71 @@ export function BottomSheet({
 
   if (!mounted) return null;
   return createPortal(overlay, document.body);
+}
+
+export function SubPanel({
+  children,
+  onBack,
+}: {
+  children: React.ReactNode;
+  onBack?: () => void;
+}) {
+  const [closing, setClosing] = React.useState(false);
+
+  const handleBack = React.useCallback(() => {
+    if (!onBack || closing) return;
+    setClosing(true);
+  }, [onBack, closing]);
+
+  React.useEffect(() => {
+    if (!closing || !onBack) return;
+    const t = setTimeout(onBack, 240);
+    return () => clearTimeout(t);
+  }, [closing, onBack]);
+
+  React.useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') handleBack();
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [handleBack]);
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        inset: 0,
+        zIndex: 10,
+        overflow: 'hidden',
+        borderRadius: 'inherit',
+        pointerEvents: 'none',
+      }}
+    >
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'var(--surface)',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+          borderRadius: 'inherit',
+          pointerEvents: 'auto',
+          animation: closing
+            ? 'slide-out-right 0.24s cubic-bezier(0.4, 0, 0.6, 1) both'
+            : 'slide-in-right 0.28s cubic-bezier(0.34, 1.2, 0.64, 1) both',
+        }}
+      >
+        {React.Children.map(children, (child) => {
+          if (React.isValidElement(child) && child.type === ModalHeader) {
+            return React.cloneElement(child as React.ReactElement<ModalHeaderProps>, { onCancel: handleBack });
+          }
+          return child;
+        })}
+      </div>
+    </div>
+  );
 }
 
 interface ModalHeaderProps {
