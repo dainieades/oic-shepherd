@@ -100,12 +100,12 @@ export default function AppRolePickerSheet({
       {/* Title */}
       <p
         style={{
-          fontSize: 12,
-          fontWeight: 600,
+          fontSize: 'var(--text-12)',
+          fontWeight: 'var(--font-semibold)',
           color: 'var(--text-muted)',
           textAlign: 'center',
           textTransform: 'uppercase',
-          letterSpacing: '0.06em',
+          letterSpacing: 'var(--tracking-wide-6)',
           padding: '0.75rem 1.25rem 0.625rem',
           borderBottom: '1px solid var(--border-light)',
         }}
@@ -118,10 +118,10 @@ export default function AppRolePickerSheet({
         <div style={{ padding: '1.25rem 1.25rem 0.5rem' }}>
           <p
             style={{
-              fontSize: 13,
+              fontSize: 'var(--text-13)',
               color: 'var(--text-secondary)',
               textAlign: 'center',
-              lineHeight: 1.5,
+              lineHeight: 'var(--leading-normal)',
               marginTop: 0,
               marginBottom: 16,
             }}
@@ -131,11 +131,11 @@ export default function AppRolePickerSheet({
           <label
             style={{
               display: 'block',
-              fontSize: 12,
-              fontWeight: 600,
+              fontSize: 'var(--text-12)',
+              fontWeight: 'var(--font-semibold)',
               color: 'var(--text-muted)',
               textTransform: 'uppercase',
-              letterSpacing: '0.06em',
+              letterSpacing: 'var(--tracking-wide-6)',
               marginBottom: 6,
             }}
           >
@@ -159,7 +159,7 @@ export default function AppRolePickerSheet({
               padding: '0.6875rem 0.875rem',
               borderRadius: 'var(--radius-sm)',
               border: `0.09375rem solid ${emailError ? 'var(--red)' : 'var(--border)'}`,
-              fontSize: 15,
+              fontSize: 'var(--text-15)',
               color: 'var(--text-primary)',
               background: 'var(--bg)',
               outline: 'none',
@@ -168,7 +168,7 @@ export default function AppRolePickerSheet({
             }}
           />
           {emailError && (
-            <p role="alert" style={{ fontSize: 12, color: 'var(--red)', margin: '0 0 12px' }}>
+            <p role="alert" style={{ fontSize: 'var(--text-12)', color: 'var(--red)', margin: '0 0 12px' }}>
               {emailError}
             </p>
           )}
@@ -182,8 +182,8 @@ export default function AppRolePickerSheet({
               color: 'var(--on-sage)',
               border: 'none',
               borderRadius: 'var(--radius-md)',
-              fontSize: 15,
-              fontWeight: 600,
+              fontSize: 'var(--text-15)',
+              fontWeight: 'var(--font-semibold)',
               cursor: saving ? 'not-allowed' : 'pointer',
               opacity: saving ? 0.6 : 1,
               marginBottom: 10,
@@ -203,8 +203,8 @@ export default function AppRolePickerSheet({
               background: 'none',
               color: 'var(--text-secondary)',
               border: 'none',
-              fontSize: 15,
-              fontWeight: 500,
+              fontSize: 'var(--text-15)',
+              fontWeight: 'var(--font-medium)',
               cursor: saving ? 'not-allowed' : 'pointer',
               marginBottom: 4,
             }}
@@ -231,8 +231,8 @@ export default function AppRolePickerSheet({
           </div>
           <p
             style={{
-              fontSize: 16,
-              fontWeight: 700,
+              fontSize: 'var(--text-16)',
+              fontWeight: 'var(--font-bold)',
               color: 'var(--text-primary)',
               textAlign: 'center',
               marginBottom: 8,
@@ -242,10 +242,10 @@ export default function AppRolePickerSheet({
           </p>
           <p
             style={{
-              fontSize: 14,
+              fontSize: 'var(--text-14)',
               color: 'var(--text-secondary)',
               textAlign: 'center',
-              lineHeight: 1.5,
+              lineHeight: 'var(--leading-normal)',
               marginBottom: 24,
             }}
           >
@@ -267,8 +267,8 @@ export default function AppRolePickerSheet({
               color: 'var(--on-red)',
               border: 'none',
               borderRadius: 'var(--radius-md)',
-              fontSize: 15,
-              fontWeight: 600,
+              fontSize: 'var(--text-15)',
+              fontWeight: 'var(--font-semibold)',
               cursor: saving ? 'not-allowed' : 'pointer',
               opacity: saving ? 0.6 : 1,
               marginBottom: 10,
@@ -285,8 +285,8 @@ export default function AppRolePickerSheet({
               background: 'none',
               color: 'var(--text-secondary)',
               border: 'none',
-              fontSize: 15,
-              fontWeight: 500,
+              fontSize: 'var(--text-15)',
+              fontWeight: 'var(--font-medium)',
               cursor: saving ? 'not-allowed' : 'pointer',
               marginBottom: 4,
             }}
@@ -312,15 +312,15 @@ export default function AppRolePickerSheet({
             <Warning size={20} color="var(--text-muted)" />
           </div>
           <p
-            style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 8 }}
+            style={{ fontSize: 'var(--text-15)', fontWeight: 'var(--font-semibold)', color: 'var(--text-primary)', marginBottom: 8 }}
           >
             No person record linked
           </p>
           <p
             style={{
-              fontSize: 13,
+              fontSize: 'var(--text-13)',
               color: 'var(--text-secondary)',
-              lineHeight: 1.5,
+              lineHeight: 'var(--leading-normal)',
               marginBottom: 24,
             }}
           >
@@ -339,8 +339,8 @@ export default function AppRolePickerSheet({
                     border: '1px solid var(--border-light)',
                     color: 'var(--text-primary)',
                     borderRadius: 'var(--radius-md)',
-                    fontSize: 15,
-                    fontWeight: 500,
+                    fontSize: 'var(--text-15)',
+                    fontWeight: 'var(--font-medium)',
                     cursor: 'pointer',
                     marginBottom: 10,
                     display: 'inline-flex',
@@ -362,8 +362,8 @@ export default function AppRolePickerSheet({
                   border: '1px solid var(--border-light)',
                   color: 'var(--red)',
                   borderRadius: 'var(--radius-md)',
-                  fontSize: 15,
-                  fontWeight: 600,
+                  fontSize: 'var(--text-15)',
+                  fontWeight: 'var(--font-semibold)',
                   cursor: 'pointer',
                   marginBottom: 10,
                 }}
@@ -381,8 +381,8 @@ export default function AppRolePickerSheet({
               border: '1px solid var(--border-light)',
               color: 'var(--text-primary)',
               borderRadius: 'var(--radius-md)',
-              fontSize: 15,
-              fontWeight: 500,
+              fontSize: 'var(--text-15)',
+              fontWeight: 'var(--font-medium)',
               cursor: 'pointer',
             }}
           >
@@ -418,8 +418,8 @@ export default function AppRolePickerSheet({
                 <div style={{ flex: 1 }}>
                   <p
                     style={{
-                      fontSize: 15,
-                      fontWeight: isSelected ? 600 : 400,
+                      fontSize: 'var(--text-15)',
+                      fontWeight: isSelected ? 'var(--font-semibold)' : 'var(--font-normal)',
                       color: isSelected ? 'var(--sage)' : 'var(--text-primary)',
                       marginBottom: 2,
                     }}
@@ -428,9 +428,9 @@ export default function AppRolePickerSheet({
                   </p>
                   <p
                     style={{
-                      fontSize: 12,
+                      fontSize: 'var(--text-12)',
                       color: isSelected ? 'var(--sage)' : 'var(--text-muted)',
-                      lineHeight: 1.4,
+                      lineHeight: 'var(--leading-comfortable)',
                     }}
                   >
                     {opt.description}
@@ -475,15 +475,15 @@ export default function AppRolePickerSheet({
               <div style={{ flex: 1 }}>
                 <p
                   style={{
-                    fontSize: 15,
-                    fontWeight: 500,
+                    fontSize: 'var(--text-15)',
+                    fontWeight: 'var(--font-medium)',
                     color: 'var(--text-primary)',
                     marginBottom: 2,
                   }}
                 >
                   Review newcomers
                 </p>
-                <p style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.4 }}>
+                <p style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)', lineHeight: 'var(--leading-comfortable)' }}>
                   Lets this user review and welcome new sign-ups.
                 </p>
               </div>
@@ -528,8 +528,8 @@ export default function AppRolePickerSheet({
                     background: 'none',
                     border: 'none',
                     borderBottom: '1px solid var(--border-light)',
-                    fontSize: 15,
-                    fontWeight: 500,
+                    fontSize: 'var(--text-15)',
+                    fontWeight: 'var(--font-medium)',
                     color: 'var(--text-primary)',
                     cursor: 'pointer',
                     textAlign: 'left',
@@ -550,8 +550,8 @@ export default function AppRolePickerSheet({
                   background: 'none',
                   border: 'none',
                   borderBottom: '1px solid var(--border-light)',
-                  fontSize: 15,
-                  fontWeight: 500,
+                  fontSize: 'var(--text-15)',
+                  fontWeight: 'var(--font-medium)',
                   color: 'var(--red)',
                   cursor: 'pointer',
                   textAlign: 'left',

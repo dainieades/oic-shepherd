@@ -82,10 +82,10 @@ export default function CalendarSyncPage() {
 
       <p
         style={{
-          fontSize: 13,
+          fontSize: 'var(--text-13)',
           color: 'var(--text-muted)',
           margin: '1rem 0 0.75rem',
-          lineHeight: 1.5,
+          lineHeight: 'var(--leading-normal)',
         }}
       >
         Add OIC to-dos to your calendar app. New items appear automatically; how often updates show
@@ -174,8 +174,8 @@ export default function CalendarSyncPage() {
           >
             <p
               style={{
-                fontSize: '0.9375rem',
-                fontWeight: 600,
+                fontSize: 'var(--text-15)',
+                fontWeight: 'var(--font-semibold)',
                 margin: '0 0 0.5rem',
                 color: 'var(--text-primary)',
               }}
@@ -221,7 +221,7 @@ const backBtnStyle: React.CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
   gap: 4,
-  fontSize: '0.8125rem',
+  fontSize: 'var(--text-13)',
   color: 'var(--sage)',
   background: 'none',
   border: 'none',
@@ -230,33 +230,33 @@ const backBtnStyle: React.CSSProperties = {
 };
 
 const navTitleStyle: React.CSSProperties = {
-  fontSize: '0.9375rem',
-  fontWeight: 600,
+  fontSize: 'var(--text-15)',
+  fontWeight: 'var(--font-semibold)',
   color: 'var(--text-primary)',
 };
 
 const labelStyle: React.CSSProperties = {
   display: 'block',
-  fontSize: '0.9375rem',
-  fontWeight: 500,
+  fontSize: 'var(--text-15)',
+  fontWeight: 'var(--font-medium)',
   color: 'var(--text-primary)',
-  letterSpacing: '-0.01em',
+  letterSpacing: 'var(--tracking-tight-1)',
 };
 
 const descStyle: React.CSSProperties = {
   display: 'block',
-  fontSize: '0.8125rem',
+  fontSize: 'var(--text-13)',
   color: 'var(--text-muted)',
   marginTop: '0.125rem',
-  lineHeight: 1.5,
+  lineHeight: 'var(--leading-normal)',
 };
 
 const sectionHeaderStyle: React.CSSProperties = {
-  fontSize: '0.75rem',
-  fontWeight: 600,
+  fontSize: 'var(--text-12)',
+  fontWeight: 'var(--font-semibold)',
   color: 'var(--text-muted)',
   textTransform: 'uppercase',
-  letterSpacing: '0.04em',
+  letterSpacing: 'var(--tracking-wide-4)',
   margin: '1.5rem 0 0.5rem',
 };
 
@@ -270,7 +270,7 @@ const resetBtnStyle: React.CSSProperties = {
   borderRadius: 'var(--radius-sm)',
   cursor: 'pointer',
   width: '100%',
-  fontSize: '0.875rem',
+  fontSize: 'var(--text-14)',
   color: 'var(--red)',
 };
 
@@ -280,7 +280,7 @@ const ghostBtnStyle: React.CSSProperties = {
   border: '1px solid var(--border-light)',
   borderRadius: 'var(--radius-sm)',
   cursor: 'pointer',
-  fontSize: '0.8125rem',
+  fontSize: 'var(--text-13)',
   color: 'var(--text-primary)',
 };
 
@@ -290,7 +290,7 @@ const dangerBtnStyle: React.CSSProperties = {
   border: 'none',
   borderRadius: 'var(--radius-sm)',
   cursor: 'pointer',
-  fontSize: '0.8125rem',
+  fontSize: 'var(--text-13)',
   color: 'white',
-  fontWeight: 500,
+  fontWeight: 'var(--font-medium)',
 };

@@ -60,8 +60,8 @@ export function LogItem({
         >
           <span
             style={{
-              fontSize: 10,
-              fontWeight: 600,
+              fontSize: 'var(--text-10)',
+              fontWeight: 'var(--font-semibold)',
               padding: '0.125rem 0.4375rem',
               borderRadius: 'var(--radius-pill)',
               background: 'var(--sage-light)',
@@ -81,9 +81,9 @@ export function LogItem({
           {targetChips && targetChips.length > 0 && (
             <span
               style={{
-                fontSize: 10,
+                fontSize: 'var(--text-10)',
                 color: 'var(--blue)',
-                fontWeight: 500,
+                fontWeight: 'var(--font-medium)',
                 padding: '0.0625rem 0.375rem',
                 borderRadius: 'var(--radius-pill)',
                 background: 'var(--blue-light)',
@@ -104,9 +104,9 @@ export function LogItem({
           {targetChips && targetChips.length > 1 && (
             <span
               style={{
-                fontSize: 10,
+                fontSize: 'var(--text-10)',
                 color: 'var(--blue)',
-                fontWeight: 500,
+                fontWeight: 'var(--font-medium)',
                 padding: '0.0625rem 0.375rem',
                 borderRadius: 'var(--radius-pill)',
                 background: 'var(--blue-light)',
@@ -117,16 +117,16 @@ export function LogItem({
             </span>
           )}
         </div>
-        <span style={{ fontSize: 11, color: 'var(--text-muted)', flexShrink: 0, marginLeft: 8 }}>
+        <span style={{ fontSize: 'var(--text-11)', color: 'var(--text-muted)', flexShrink: 0, marginLeft: 8 }}>
           {getTimeAgo(note.createdAt)}
         </span>
       </div>
       {note.content && (
         <p
           style={{
-            fontSize: 13,
+            fontSize: 'var(--text-13)',
             color: 'var(--text-primary)',
-            lineHeight: 1.5,
+            lineHeight: 'var(--leading-normal)',
             marginBottom: 4,
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -141,7 +141,7 @@ export function LogItem({
       {linkedTodoTitle && (
         <p
           style={{
-            fontSize: 11,
+            fontSize: 'var(--text-11)',
             color: 'var(--text-muted)',
             display: 'inline-flex',
             alignItems: 'center',
@@ -157,7 +157,7 @@ export function LogItem({
           </span>
         </p>
       )}
-      <p style={{ fontSize: 11, color: 'var(--text-muted)' }}>by {creatorName ?? 'Unknown'}</p>
+      <p style={{ fontSize: 'var(--text-11)', color: 'var(--text-muted)' }}>by {creatorName ?? 'Unknown'}</p>
     </button>
   );
 }

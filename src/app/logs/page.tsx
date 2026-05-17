@@ -209,7 +209,7 @@ export default function LogsPage() {
   })();
 
   const btnSize = scrolled ? 30 : 36;
-  const btnFont = scrolled ? 13 : 14;
+  const btnFont = scrolled ? 'var(--text-13)' : 'var(--text-14)';
   const btnPad = scrolled ? '0 0.75rem' : '0 0.875rem';
 
   const actionButtons = (
@@ -290,8 +290,8 @@ export default function LogsPage() {
               borderRadius: '50%',
               background: 'var(--sage)',
               color: 'var(--on-sage)',
-              fontSize: 9,
-              fontWeight: 700,
+              fontSize: 'var(--text-9)',
+              fontWeight: 'var(--font-bold)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -313,7 +313,7 @@ export default function LogsPage() {
           background: 'var(--sage)',
           color: 'var(--on-sage)',
           fontSize: btnFont,
-          fontWeight: 600,
+          fontWeight: 'var(--font-semibold)',
           border: 'none',
           cursor: 'pointer',
           display: 'flex',
@@ -352,10 +352,10 @@ export default function LogsPage() {
           >
             <span
               style={{
-                fontSize: 17,
-                fontWeight: 600,
+                fontSize: 'var(--text-17)',
+                fontWeight: 'var(--font-semibold)',
                 color: 'var(--text-primary)',
-                letterSpacing: '-0.01em',
+                letterSpacing: 'var(--tracking-tight-1)',
               }}
             >
               Logs
@@ -374,11 +374,11 @@ export default function LogsPage() {
           >
             <h1
               style={{
-                fontSize: 32,
-                fontWeight: 800,
+                fontSize: 'var(--text-32)',
+                fontWeight: 'var(--font-extrabold)',
                 color: 'var(--text-primary)',
-                letterSpacing: '-0.03em',
-                lineHeight: 1,
+                letterSpacing: 'var(--tracking-tight-3)',
+                lineHeight: 'var(--leading-none)',
               }}
             >
               Logs
@@ -420,7 +420,7 @@ export default function LogsPage() {
               background: 'var(--surface)',
               border: '1px solid var(--border)',
               borderRadius: 'var(--radius-sm)',
-              fontSize: 14,
+              fontSize: 'var(--text-14)',
               color: 'var(--text-primary)',
               outline: 'none',
             }}
@@ -582,8 +582,8 @@ function FilterChip({ children, onRemove }: { children: React.ReactNode; onRemov
         background: 'var(--sage-light)',
         border: '1px solid var(--sage-mid)',
         color: 'var(--sage-dark)',
-        fontSize: 11,
-        fontWeight: 500,
+        fontSize: 'var(--text-11)',
+        fontWeight: 'var(--font-medium)',
         cursor: 'pointer',
       }}
     >
@@ -616,11 +616,11 @@ function LogSection({
           background: 'none',
           border: 'none',
           cursor: 'pointer',
-          fontSize: 10,
-          fontWeight: 600,
+          fontSize: 'var(--text-10)',
+          fontWeight: 'var(--font-semibold)',
           color: 'var(--text-muted)',
           textTransform: 'uppercase',
-          letterSpacing: '0.06em',
+          letterSpacing: 'var(--tracking-wide-6)',
         }}
       >
         {label} · {count}

@@ -37,7 +37,7 @@ export default function SideNav() {
         <Logo height={32} />
         <span
           className="font-display"
-          style={{ fontSize: '1.0625rem', fontWeight: 600, letterSpacing: '-0.01em' }}
+          style={{ fontSize: 'var(--text-17)', fontWeight: 'var(--font-semibold)', letterSpacing: 'var(--tracking-tight-1)' }}
         >
           Shepherd
         </span>
@@ -58,8 +58,8 @@ export default function SideNav() {
                 borderRadius: 'var(--radius-md)',
                 background: active ? 'var(--sage-light)' : 'transparent',
                 color: active ? 'var(--sage-dark)' : 'var(--text-secondary)',
-                fontSize: '0.9375rem',
-                fontWeight: active ? 600 : 500,
+                fontSize: 'var(--text-15)',
+                fontWeight: active ? 'var(--font-semibold)' : 'var(--font-medium)',
                 textDecoration: 'none',
               }}
             >
@@ -83,13 +83,13 @@ export default function SideNav() {
                 <span
                   style={{
                     marginLeft: 'auto',
-                    fontSize: '0.6875rem',
-                    fontWeight: 700,
+                    fontSize: 'var(--text-11)',
+                    fontWeight: 'var(--font-bold)',
                     padding: '0.0625rem 0.4375rem',
                     borderRadius: 'var(--radius-pill)',
                     background: 'var(--sage)',
                     color: 'var(--on-sage)',
-                    lineHeight: 1.4,
+                    lineHeight: 'var(--leading-comfortable)',
                   }}
                 >
                   {pendingVisitorCount}
@@ -111,14 +111,14 @@ export default function SideNav() {
       >
         <AvatarBadge size={32} name={currentPersona.name} photo={personaPerson?.photo} />
         <div className="flex min-w-0 flex-col">
-          <span style={{ fontSize: '0.8125rem', fontWeight: 600, lineHeight: 1.25 }}>
+          <span style={{ fontSize: 'var(--text-13)', fontWeight: 'var(--font-semibold)', lineHeight: 'var(--leading-snug)' }}>
             {currentPersona.name}
           </span>
           <span
             style={{
-              fontSize: '0.6875rem',
+              fontSize: 'var(--text-11)',
               color: 'var(--text-muted)',
-              lineHeight: 1.25,
+              lineHeight: 'var(--leading-snug)',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',

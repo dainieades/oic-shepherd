@@ -85,10 +85,29 @@ Key mutations: `addPerson` · `updatePerson` · `deletePerson` · `addFamily` ·
 
 ## Design Tokens
 
-- **No hardcoded values** — use CSS custom properties from `globals.css` for all colors, border radii, spacing, shadows, and z-index.
-- Available tokens: `--radius-sm/--radius/--radius-lg/--radius-pill`, `--shadow-card/--shadow-elevated`, `--backdrop`, avatar palettes, semantic colors.
+- **No hardcoded values** — use CSS custom properties from `globals.css` for all colors, border radii, spacing, shadows, z-index, **and typography**.
 - Light mode only. Tailwind utilities OK; prefer tokens for brand values.
 - **Full reference:** `.claude/docs/tokens.md`
+
+### Typography tokens (all in `globals.css` `:root`)
+
+**Font families** — `--font-sans` · `--font-serif` · `--font-mono`
+
+**Font sizes** — `--text-9` through `--text-32` (rem values for 9 px – 32 px). Common: `--text-10` (uppercase labels) · `--text-11` · `--text-12` · `--text-13` · `--text-14` (body) · `--text-15` (base) · `--text-17` (section headings) · `--text-32` (page titles).
+
+**Font weights** — `--font-normal` (400) · `--font-medium` (500) · `--font-semibold` (600) · `--font-bold` (700) · `--font-extrabold` (800)
+
+**Line heights** — `--leading-none` (1) · `--leading-tight` (1.15) · `--leading-snug` (1.25) · `--leading-comfortable` (1.4) · `--leading-semi` (1.45) · `--leading-normal` (1.5) · `--leading-open` (1.55) · `--leading-loose` (1.6)
+
+**Letter spacing** — `--tracking-tight-3` (-0.03em) · `--tracking-tight-2` · `--tracking-tight-1` (-0.01em) · `--tracking-normal` (0) · `--tracking-wide-2` through `--tracking-wide-6` (0.06em — uppercase labels)
+
+**Usage in inline styles:**
+```tsx
+// ✅ correct
+style={{ fontSize: 'var(--text-14)', fontWeight: 'var(--font-semibold)', letterSpacing: 'var(--tracking-wide-6)' }}
+// ❌ wrong
+style={{ fontSize: 14, fontWeight: 600, letterSpacing: '0.06em' }}
+```
 
 ---
 
@@ -126,4 +145,4 @@ Key mutations: `addPerson` · `updatePerson` · `deletePerson` · `addFamily` ·
 
 ---
 
-_Last updated: 2026-04-22._
+_Last updated: 2026-05-17._

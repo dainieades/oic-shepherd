@@ -69,7 +69,7 @@ export function GroupPickerSheet({
             placeholder="Search groups…"
             style={{
               flex: 1,
-              fontSize: 14,
+              fontSize: 'var(--text-14)',
               color: 'var(--text-primary)',
               background: 'none',
               border: 'none',
@@ -84,8 +84,8 @@ export function GroupPickerSheet({
                 border: 'none',
                 cursor: 'pointer',
                 color: 'var(--text-muted)',
-                fontSize: 18,
-                lineHeight: 1,
+                fontSize: 'var(--text-18)',
+                lineHeight: 'var(--leading-none)',
                 padding: 0,
               }}
             >
@@ -117,8 +117,8 @@ export function GroupPickerSheet({
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p
                   style={{
-                    fontSize: 14,
-                    fontWeight: isSel ? 600 : 400,
+                    fontSize: 'var(--text-14)',
+                    fontWeight: isSel ? 'var(--font-semibold)' : 'var(--font-normal)',
                     color: isSel ? 'var(--blue)' : 'var(--text-primary)',
                     margin: 0,
                   }}
@@ -134,7 +134,7 @@ export function GroupPickerSheet({
           <p
             style={{
               padding: '1.5rem 1.25rem',
-              fontSize: 13,
+              fontSize: 'var(--text-13)',
               color: 'var(--text-muted)',
               textAlign: 'center',
               fontStyle: 'italic',
@@ -222,7 +222,7 @@ export function SheepPickerSheet({
             placeholder="Search people…"
             style={{
               flex: 1,
-              fontSize: 14,
+              fontSize: 'var(--text-14)',
               color: 'var(--text-primary)',
               background: 'none',
               border: 'none',
@@ -237,8 +237,8 @@ export function SheepPickerSheet({
                 border: 'none',
                 cursor: 'pointer',
                 color: 'var(--text-muted)',
-                fontSize: 18,
-                lineHeight: 1,
+                fontSize: 'var(--text-18)',
+                lineHeight: 'var(--leading-none)',
                 padding: 0,
               }}
             >
@@ -251,7 +251,7 @@ export function SheepPickerSheet({
         {sorted.length === 0 && (
           <p
             style={{
-              fontSize: 13,
+              fontSize: 'var(--text-13)',
               color: 'var(--text-muted)',
               fontStyle: 'italic',
               paddingTop: 24,
@@ -291,8 +291,8 @@ export function SheepPickerSheet({
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p
                   style={{
-                    fontSize: 14,
-                    fontWeight: isSel ? 600 : 400,
+                    fontSize: 'var(--text-14)',
+                    fontWeight: isSel ? 'var(--font-semibold)' : 'var(--font-normal)',
                     color: isSel ? 'var(--sage)' : 'var(--text-primary)',
                     margin: 0,
                   }}
@@ -374,7 +374,7 @@ export function ShepherdPickerSheet({
             placeholder="Search shepherds…"
             style={{
               flex: 1,
-              fontSize: 14,
+              fontSize: 'var(--text-14)',
               color: 'var(--text-primary)',
               background: 'none',
               border: 'none',
@@ -389,8 +389,8 @@ export function ShepherdPickerSheet({
                 border: 'none',
                 cursor: 'pointer',
                 color: 'var(--text-muted)',
-                fontSize: 18,
-                lineHeight: 1,
+                fontSize: 'var(--text-18)',
+                lineHeight: 'var(--leading-none)',
                 padding: 0,
               }}
             >
@@ -430,8 +430,8 @@ export function ShepherdPickerSheet({
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p
                   style={{
-                    fontSize: 14,
-                    fontWeight: isSel ? 600 : 400,
+                    fontSize: 'var(--text-14)',
+                    fontWeight: isSel ? 'var(--font-semibold)' : 'var(--font-normal)',
                     color: isSel ? 'var(--sage)' : 'var(--text-primary)',
                     margin: 0,
                   }}
@@ -450,7 +450,7 @@ export function ShepherdPickerSheet({
           <p
             style={{
               padding: '1.5rem 1.25rem',
-              fontSize: 13,
+              fontSize: 'var(--text-13)',
               color: 'var(--text-muted)',
               textAlign: 'center',
               fontStyle: 'italic',
@@ -524,7 +524,7 @@ export function PositionPickerSheet({
             placeholder="Search positions…"
             style={{
               flex: 1,
-              fontSize: 14,
+              fontSize: 'var(--text-14)',
               color: 'var(--text-primary)',
               background: 'none',
               border: 'none',
@@ -539,8 +539,8 @@ export function PositionPickerSheet({
                 border: 'none',
                 cursor: 'pointer',
                 color: 'var(--text-muted)',
-                fontSize: 18,
-                lineHeight: 1,
+                fontSize: 'var(--text-18)',
+                lineHeight: 'var(--leading-none)',
                 padding: 0,
               }}
             >
@@ -572,8 +572,8 @@ export function PositionPickerSheet({
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p
                   style={{
-                    fontSize: 14,
-                    fontWeight: isSel ? 600 : 400,
+                    fontSize: 'var(--text-14)',
+                    fontWeight: isSel ? 'var(--font-semibold)' : 'var(--font-normal)',
                     color: isSel ? 'var(--sage)' : 'var(--text-primary)',
                     margin: 0,
                   }}
@@ -589,7 +589,7 @@ export function PositionPickerSheet({
           <p
             style={{
               padding: '1.5rem 1.25rem',
-              fontSize: 13,
+              fontSize: 'var(--text-13)',
               color: 'var(--text-muted)',
               textAlign: 'center',
               fontStyle: 'italic',
@@ -669,7 +669,7 @@ export function FamilyPickerSheet({
             placeholder="Search families…"
             style={{
               flex: 1,
-              fontSize: 14,
+              fontSize: 'var(--text-14)',
               color: 'var(--text-primary)',
               background: 'none',
               border: 'none',
@@ -684,8 +684,8 @@ export function FamilyPickerSheet({
                 border: 'none',
                 cursor: 'pointer',
                 color: 'var(--text-muted)',
-                fontSize: 18,
-                lineHeight: 1,
+                fontSize: 'var(--text-18)',
+                lineHeight: 'var(--leading-none)',
                 padding: 0,
               }}
             >
@@ -714,8 +714,8 @@ export function FamilyPickerSheet({
             <div style={{ flex: 1, minWidth: 0 }}>
               <p
                 style={{
-                  fontSize: 14,
-                  fontWeight: !selectedId ? 600 : 400,
+                  fontSize: 'var(--text-14)',
+                  fontWeight: !selectedId ? 'var(--font-semibold)' : 'var(--font-normal)',
                   color: !selectedId ? 'var(--sage)' : 'var(--text-muted)',
                   margin: 0,
                   fontStyle: 'italic',
@@ -765,8 +765,8 @@ export function FamilyPickerSheet({
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: 12,
-                  fontWeight: 700,
+                  fontSize: 'var(--text-12)',
+                  fontWeight: 'var(--font-bold)',
                 }}
               >
                 {initials}
@@ -774,8 +774,8 @@ export function FamilyPickerSheet({
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p
                   style={{
-                    fontSize: 14,
-                    fontWeight: isSel ? 600 : 400,
+                    fontSize: 'var(--text-14)',
+                    fontWeight: isSel ? 'var(--font-semibold)' : 'var(--font-normal)',
                     color: isSel ? 'var(--sage)' : 'var(--text-primary)',
                     margin: 0,
                   }}
@@ -785,7 +785,7 @@ export function FamilyPickerSheet({
                 {members.length > 0 && (
                   <p
                     style={{
-                      fontSize: 11,
+                      fontSize: 'var(--text-11)',
                       color: 'var(--text-muted)',
                       margin: 0,
                       overflow: 'hidden',
@@ -805,7 +805,7 @@ export function FamilyPickerSheet({
           <p
             style={{
               padding: '1.5rem 1.25rem',
-              fontSize: 13,
+              fontSize: 'var(--text-13)',
               color: 'var(--text-muted)',
               textAlign: 'center',
               fontStyle: 'italic',
@@ -888,7 +888,7 @@ export function InvitePersonPickerSheet({
             background: 'none',
             border: 'none',
             cursor: 'pointer',
-            fontSize: 14,
+            fontSize: 'var(--text-14)',
             color: 'var(--text-secondary)',
             padding: 0,
             marginRight: 'auto',
@@ -901,8 +901,8 @@ export function InvitePersonPickerSheet({
             position: 'absolute',
             left: '50%',
             transform: 'translateX(-50%)',
-            fontSize: 15,
-            fontWeight: 600,
+            fontSize: 'var(--text-15)',
+            fontWeight: 'var(--font-semibold)',
             color: 'var(--text-primary)',
           }}
         >
@@ -935,7 +935,7 @@ export function InvitePersonPickerSheet({
             placeholder="Search people…"
             style={{
               flex: 1,
-              fontSize: 14,
+              fontSize: 'var(--text-14)',
               color: 'var(--text-primary)',
               background: 'none',
               border: 'none',
@@ -950,8 +950,8 @@ export function InvitePersonPickerSheet({
                 border: 'none',
                 cursor: 'pointer',
                 color: 'var(--text-muted)',
-                fontSize: 18,
-                lineHeight: 1,
+                fontSize: 'var(--text-18)',
+                lineHeight: 'var(--leading-none)',
                 padding: 0,
               }}
             >
@@ -991,8 +991,8 @@ export function InvitePersonPickerSheet({
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p
                   style={{
-                    fontSize: 14,
-                    fontWeight: 500,
+                    fontSize: 'var(--text-14)',
+                    fontWeight: 'var(--font-medium)',
                     color: 'var(--text-primary)',
                     margin: 0,
                     overflow: 'hidden',
@@ -1002,7 +1002,7 @@ export function InvitePersonPickerSheet({
                 >
                   {fullName(p)}
                   {p.alternativeName && (
-                    <span style={{ color: 'var(--text-muted)', fontWeight: 400, marginLeft: 6 }}>
+                    <span style={{ color: 'var(--text-muted)', fontWeight: 'var(--font-normal)', marginLeft: 6 }}>
                       {p.alternativeName}
                     </span>
                   )}
@@ -1010,7 +1010,7 @@ export function InvitePersonPickerSheet({
                 {hasAccess && (
                   <p
                     style={{
-                      fontSize: 12,
+                      fontSize: 'var(--text-12)',
                       color: 'var(--text-muted)',
                       margin: '0.125rem 0 0',
                       display: 'flex',
@@ -1029,7 +1029,7 @@ export function InvitePersonPickerSheet({
         {filtered.length === 0 && (
           <p
             style={{
-              fontSize: 14,
+              fontSize: 'var(--text-14)',
               color: 'var(--text-muted)',
               textAlign: 'center',
               padding: '2rem 1.25rem',

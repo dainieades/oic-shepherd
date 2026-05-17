@@ -62,8 +62,8 @@ const FamilyRow = React.memo(function FamilyRow({
             >
               <span
                 style={{
-                  fontSize: 15,
-                  fontWeight: 600,
+                  fontSize: 'var(--text-15)',
+                  fontWeight: 'var(--font-semibold)',
                   color: 'var(--text-primary)',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
@@ -87,7 +87,7 @@ const FamilyRow = React.memo(function FamilyRow({
                     color="var(--amber)"
                     border="1px solid var(--amber-border)"
                   />
-                  <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>·</span>
+                  <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>·</span>
                 </>
               )}
             </span>
@@ -98,7 +98,7 @@ const FamilyRow = React.memo(function FamilyRow({
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: 3,
-                  fontSize: 12,
+                  fontSize: 'var(--text-12)',
                   color: 'var(--text-muted)',
                 }}
               >
@@ -110,7 +110,7 @@ const FamilyRow = React.memo(function FamilyRow({
               </span>
             ))}
             {family.childCount && family.childCount > 0 ? (
-              <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+              <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>
                 , +{family.childCount} kid{family.childCount !== 1 ? 's' : ''}
               </span>
             ) : null}
@@ -120,15 +120,15 @@ const FamilyRow = React.memo(function FamilyRow({
                 const extra = allGroupIds.length - 1;
                 return (
                   <>
-                    <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>·</span>
+                    <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>·</span>
                     <span
                       style={{
-                        fontSize: 10,
+                        fontSize: 'var(--text-10)',
                         padding: '0.125rem 0.4375rem',
                         borderRadius: 'var(--radius-pill)',
                         background: 'var(--blue-light)',
                         color: 'var(--blue)',
-                        fontWeight: 600,
+                        fontWeight: 'var(--font-semibold)',
                         flexShrink: 0,
                       }}
                     >
@@ -137,12 +137,12 @@ const FamilyRow = React.memo(function FamilyRow({
                     {extra > 0 && (
                       <span
                         style={{
-                          fontSize: 10,
+                          fontSize: 'var(--text-10)',
                           padding: '0.125rem 0.375rem',
                           borderRadius: 'var(--radius-pill)',
                           background: 'var(--blue-light)',
                           color: 'var(--blue)',
-                          fontWeight: 600,
+                          fontWeight: 'var(--font-semibold)',
                           flexShrink: 0,
                         }}
                       >

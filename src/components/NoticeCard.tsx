@@ -63,13 +63,13 @@ export function NoticeCard({ notice, onClick }: { notice: Notice; onClick: () =>
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
         <span
           style={{
-            fontSize: 11,
-            fontWeight: 700,
+            fontSize: 'var(--text-11)',
+            fontWeight: 'var(--font-bold)',
             padding: '0.125rem 0.5rem',
             borderRadius: 'var(--radius-pill)',
             background: style.pillBg,
             color: style.color,
-            letterSpacing: '0.03em',
+            letterSpacing: 'var(--tracking-wide-3)',
           }}
         >
           {URGENCY_LABEL[notice.urgency]}
@@ -81,8 +81,8 @@ export function NoticeCard({ notice, onClick }: { notice: Notice; onClick: () =>
               display: 'flex',
               alignItems: 'center',
               gap: 3,
-              fontSize: 11,
-              fontWeight: 500,
+              fontSize: 'var(--text-11)',
+              fontWeight: 'var(--font-medium)',
               padding: '0.125rem 0.5rem',
               borderRadius: 'var(--radius-pill)',
               background: CATEGORY_STYLE[cat]?.bg,
@@ -96,9 +96,9 @@ export function NoticeCard({ notice, onClick }: { notice: Notice; onClick: () =>
       </div>
       <p
         style={{
-          fontSize: 14,
+          fontSize: 'var(--text-14)',
           color: 'var(--text-primary)',
-          lineHeight: 1.5,
+          lineHeight: 'var(--leading-normal)',
           margin: 0,
           overflow: 'hidden',
           display: '-webkit-box',
@@ -110,7 +110,7 @@ export function NoticeCard({ notice, onClick }: { notice: Notice; onClick: () =>
       </p>
       <p
         style={{
-          fontSize: 11,
+          fontSize: 'var(--text-11)',
           color: 'var(--text-muted)',
           margin: 0,
           display: 'flex',

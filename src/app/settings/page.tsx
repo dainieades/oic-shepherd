@@ -137,11 +137,11 @@ export default function SettingsPage() {
         >
           <span
             style={{
-              fontSize: scrolled ? '1.0625rem' : '2rem',
-              fontWeight: scrolled ? 600 : 800,
+              fontSize: scrolled ? 'var(--text-17)' : 'var(--text-32)',
+              fontWeight: scrolled ? 'var(--font-semibold)' : 'var(--font-extrabold)',
               color: 'var(--text-primary)',
-              letterSpacing: scrolled ? '-0.01em' : '-0.03em',
-              lineHeight: 1,
+              letterSpacing: scrolled ? 'var(--tracking-tight-1)' : 'var(--tracking-tight-3)',
+              lineHeight: 'var(--leading-none)',
               transition: 'font-size 0.25s ease, letter-spacing 0.25s ease',
             }}
           >
@@ -203,8 +203,8 @@ export default function SettingsPage() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: 17,
-                fontWeight: 700,
+                fontSize: 'var(--text-17)',
+                fontWeight: 'var(--font-bold)',
                 flexShrink: 0,
               }}
             >
@@ -215,17 +215,17 @@ export default function SettingsPage() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
               <p
                 style={{
-                  fontSize: 16,
-                  fontWeight: 700,
+                  fontSize: 'var(--text-16)',
+                  fontWeight: 'var(--font-bold)',
                   color: 'var(--text-primary)',
                   margin: 0,
-                  letterSpacing: '-0.01em',
+                  letterSpacing: 'var(--tracking-tight-1)',
                 }}
               >
                 {displayName}
               </p>
               {person?.alternativeName && (
-                <span style={{ fontSize: 13, color: 'var(--text-muted)', fontWeight: 400 }}>
+                <span style={{ fontSize: 'var(--text-13)', color: 'var(--text-muted)', fontWeight: 'var(--font-normal)' }}>
                   {person.alternativeName}
                 </span>
               )}
@@ -236,7 +236,7 @@ export default function SettingsPage() {
               ) : currentPersona.role === 'shepherd' ? (
                 <HandHeart size={13} color="var(--sage)" weight="fill" />
               ) : null}
-              <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>{roleLabel}</span>
+              <span style={{ fontSize: 'var(--text-13)', color: 'var(--text-muted)' }}>{roleLabel}</span>
             </div>
           </div>
           <CaretRight size={16} color="var(--text-muted)" />
@@ -353,7 +353,7 @@ export default function SettingsPage() {
         }}
       >
         <SignOut size={18} color="var(--red)" />
-        <span style={{ fontSize: 15, fontWeight: 500, color: 'var(--red)' }}>Sign Out</span>
+        <span style={{ fontSize: 'var(--text-15)', fontWeight: 'var(--font-medium)', color: 'var(--red)' }}>Sign Out</span>
       </button>
 
       {showSignOutConfirm && (
@@ -384,15 +384,15 @@ export default function SettingsPage() {
             <div style={{ padding: '1.5rem 1.25rem 1rem', textAlign: 'center' }}>
               <p
                 style={{
-                  fontSize: 16,
-                  fontWeight: 600,
+                  fontSize: 'var(--text-16)',
+                  fontWeight: 'var(--font-semibold)',
                   color: 'var(--text-primary)',
                   margin: '0 0 0.375rem',
                 }}
               >
                 Sign out?
               </p>
-              <p style={{ fontSize: 14, color: 'var(--text-muted)', margin: 0 }}>
+              <p style={{ fontSize: 'var(--text-14)', color: 'var(--text-muted)', margin: 0 }}>
                 You can always sign back in.
               </p>
             </div>
@@ -405,10 +405,10 @@ export default function SettingsPage() {
                   background: 'none',
                   border: 'none',
                   borderRight: '1px solid var(--border-light)',
-                  fontSize: 15,
+                  fontSize: 'var(--text-15)',
                   color: 'var(--text-secondary)',
                   cursor: 'pointer',
-                  fontWeight: 500,
+                  fontWeight: 'var(--font-medium)',
                 }}
               >
                 Cancel
@@ -420,10 +420,10 @@ export default function SettingsPage() {
                   height: 50,
                   background: 'none',
                   border: 'none',
-                  fontSize: 15,
+                  fontSize: 'var(--text-15)',
                   color: 'var(--sage)',
                   cursor: 'pointer',
-                  fontWeight: 600,
+                  fontWeight: 'var(--font-semibold)',
                 }}
               >
                 Sign Out
@@ -459,10 +459,10 @@ function SettingsRow({
       className="no-last-border"
     >
       <span style={{ flexShrink: 0 }}>{icon}</span>
-      <span style={{ flex: 1, fontSize: 15, fontWeight: 500, color: 'var(--text-primary)' }}>
+      <span style={{ flex: 1, fontSize: 'var(--text-15)', fontWeight: 'var(--font-medium)', color: 'var(--text-primary)' }}>
         {label}
       </span>
-      {value && <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>{value}</span>}
+      {value && <span style={{ fontSize: 'var(--text-14)', color: 'var(--text-muted)' }}>{value}</span>}
       {chevron && <CaretRight size={15} color="var(--text-muted)" />}
     </div>
   );

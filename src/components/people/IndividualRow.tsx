@@ -57,8 +57,8 @@ const IndividualRow = React.memo(function IndividualRow({
               )}
               <span
                 style={{
-                  fontSize: 15,
-                  fontWeight: 600,
+                  fontSize: 'var(--text-15)',
+                  fontWeight: 'var(--font-semibold)',
                   color: 'var(--text-primary)',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
@@ -71,7 +71,7 @@ const IndividualRow = React.memo(function IndividualRow({
               {person.alternativeName && (
                 <span
                   style={{
-                    fontSize: 12,
+                    fontSize: 'var(--text-12)',
                     color: 'var(--text-muted)',
                     flexShrink: 0,
                     whiteSpace: 'nowrap',
@@ -84,7 +84,7 @@ const IndividualRow = React.memo(function IndividualRow({
             <LogStatusTag daysSince={daysSinceNote} lastNoteTs={lastNoteTs} />
           </div>
 
-          <div style={{ lineHeight: 1.5 }}>
+          <div style={{ lineHeight: 'var(--leading-normal)' }}>
             {person.assignedShepherdIds.length === 0 && (
               <>
                 <StatusBadge
@@ -95,7 +95,7 @@ const IndividualRow = React.memo(function IndividualRow({
                 />{' '}
               </>
             )}
-            <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+            <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>
               {person.assignedShepherdIds.length === 0 && '· '}
               {getMembershipLabel(person.membershipStatus)} ·{' '}
               {getChurchAttendanceLabel(person.churchAttendance)}
@@ -106,15 +106,15 @@ const IndividualRow = React.memo(function IndividualRow({
                 return (
                   <>
                     {' '}
-                    <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>·</span>{' '}
+                    <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>·</span>{' '}
                     <span
                       style={{
-                        fontSize: 10,
+                        fontSize: 'var(--text-10)',
                         padding: '0.125rem 0.4375rem',
                         borderRadius: 'var(--radius-pill)',
                         background: 'var(--blue-light)',
                         color: 'var(--blue)',
-                        fontWeight: 600,
+                        fontWeight: 'var(--font-semibold)',
                         display: 'inline-block',
                         verticalAlign: 'middle',
                       }}
@@ -126,12 +126,12 @@ const IndividualRow = React.memo(function IndividualRow({
                         {' '}
                         <span
                           style={{
-                            fontSize: 10,
+                            fontSize: 'var(--text-10)',
                             padding: '0.125rem 0.375rem',
                             borderRadius: 'var(--radius-pill)',
                             background: 'var(--blue-light)',
                             color: 'var(--blue)',
-                            fontWeight: 600,
+                            fontWeight: 'var(--font-semibold)',
                             display: 'inline-block',
                             verticalAlign: 'middle',
                           }}

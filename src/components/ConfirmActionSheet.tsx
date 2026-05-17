@@ -31,8 +31,8 @@ export default function ConfirmActionSheet({
       <div style={{ padding: '2rem 1.75rem 1.75rem' }}>
         <p
           style={{
-            fontSize: '1.25rem',
-            fontWeight: 700,
+            fontSize: 'var(--text-20)',
+            fontWeight: 'var(--font-bold)',
             color: isDanger ? 'var(--red)' : 'var(--text-primary)',
             textAlign: 'center',
             marginTop: 0,
@@ -43,10 +43,10 @@ export default function ConfirmActionSheet({
         </p>
         <p
           style={{
-            fontSize: '0.875rem',
+            fontSize: 'var(--text-14)',
             color: 'var(--text-muted)',
             textAlign: 'center',
-            lineHeight: 1.55,
+            lineHeight: 'var(--leading-open)',
             marginTop: 0,
             marginBottom: '1.75rem',
           }}
@@ -61,8 +61,8 @@ export default function ConfirmActionSheet({
             borderRadius: 'var(--radius)',
             background: isDanger ? 'var(--red)' : 'var(--sage)',
             color: isDanger ? 'var(--on-red)' : 'var(--on-sage)',
-            fontSize: '0.9375rem',
-            fontWeight: 600,
+            fontSize: 'var(--text-15)',
+            fontWeight: 'var(--font-semibold)',
             border: 'none',
             cursor: 'pointer',
             marginBottom: '0.5rem',
@@ -78,8 +78,8 @@ export default function ConfirmActionSheet({
             borderRadius: 'var(--radius)',
             background: 'transparent',
             color: 'var(--text-secondary)',
-            fontSize: '0.9375rem',
-            fontWeight: 500,
+            fontSize: 'var(--text-15)',
+            fontWeight: 'var(--font-medium)',
             border: 'none',
             cursor: 'pointer',
           }}

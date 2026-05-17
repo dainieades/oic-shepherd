@@ -27,13 +27,13 @@ export function Button({
 }: ButtonProps) {
   const height = size === 'sm' ? 32 : 40;
   const padding = size === 'sm' ? '0 0.875rem' : '0 1.25rem';
-  const fontSize = size === 'sm' ? 14 : 15;
+  const fontSize = size === 'sm' ? 'var(--text-14)' : 'var(--text-15)';
 
   const base: React.CSSProperties = {
     height,
     padding,
     fontSize,
-    fontWeight: 600,
+    fontWeight: 'var(--font-semibold)',
     border: 'none',
     cursor: disabled ? 'default' : 'pointer',
     transition: 'background 0.15s',

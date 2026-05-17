@@ -65,7 +65,7 @@ export default function NotificationsPage() {
         <span style={{ width: 72 }} />
       </div>
 
-      <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: '1rem 0 0.75rem' }}>
+      <p style={{ fontSize: 'var(--text-13)', color: 'var(--text-muted)', margin: '1rem 0 0.75rem' }}>
         Choose which email notifications you receive.
       </p>
 
@@ -93,10 +93,10 @@ export default function NotificationsPage() {
               <span
                 style={{
                   display: 'block',
-                  fontSize: '0.9375rem',
-                  fontWeight: 500,
+                  fontSize: 'var(--text-15)',
+                  fontWeight: 'var(--font-medium)',
                   color: 'var(--text-primary)',
-                  letterSpacing: '-0.01em',
+                  letterSpacing: 'var(--tracking-tight-1)',
                 }}
               >
                 {label}
@@ -104,7 +104,7 @@ export default function NotificationsPage() {
               <span
                 style={{
                   display: 'block',
-                  fontSize: '0.8125rem',
+                  fontSize: 'var(--text-13)',
                   color: 'var(--text-muted)',
                   marginTop: '0.125rem',
                 }}
@@ -123,10 +123,10 @@ export default function NotificationsPage() {
 
       <p
         style={{
-          fontSize: '0.75rem',
+          fontSize: 'var(--text-12)',
           color: 'var(--text-muted)',
           marginTop: '0.75rem',
-          lineHeight: 1.5,
+          lineHeight: 'var(--leading-normal)',
         }}
       >
         Invitation emails are always sent and cannot be turned off.
@@ -155,7 +155,7 @@ const backBtnStyle: React.CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
   gap: 4,
-  fontSize: '0.8125rem',
+  fontSize: 'var(--text-13)',
   color: 'var(--sage)',
   background: 'none',
   border: 'none',
@@ -164,7 +164,7 @@ const backBtnStyle: React.CSSProperties = {
 };
 
 const navTitleStyle: React.CSSProperties = {
-  fontSize: '0.9375rem',
-  fontWeight: 600,
+  fontSize: 'var(--text-15)',
+  fontWeight: 'var(--font-semibold)',
   color: 'var(--text-primary)',
 };

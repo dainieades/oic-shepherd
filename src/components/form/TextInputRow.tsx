@@ -40,7 +40,7 @@ export function TextInputRow({
       tabIndex={-1}
       onClick={() => inputRef.current?.focus()}
     >
-      <span style={{ width: 8, fontSize: 14, color: 'var(--red)', flexShrink: 0, lineHeight: 1 }}>
+      <span style={{ width: 8, fontSize: 'var(--text-14)', color: 'var(--red)', flexShrink: 0, lineHeight: 'var(--leading-none)' }}>
         {required ? '*' : ''}
       </span>
       {icon}

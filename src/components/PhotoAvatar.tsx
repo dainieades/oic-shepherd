@@ -143,8 +143,8 @@ export default function PhotoAvatar({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: 22,
-              fontWeight: 700,
+              fontSize: 'var(--text-22)',
+              fontWeight: 'var(--font-bold)',
               color: 'var(--sage)',
             }}
           >
@@ -259,8 +259,8 @@ export default function PhotoAvatar({
                       padding: '0.625rem 1.25rem',
                       cursor: 'pointer',
                       color: '#fff',
-                      fontSize: '0.9375rem',
-                      fontWeight: 500,
+                      fontSize: 'var(--text-15)',
+                      fontWeight: 'var(--font-medium)',
                     }}
                   >
                     <PencilSimple size={16} color="#fff" weight="bold" />
@@ -278,8 +278,8 @@ export default function PhotoAvatar({
                       padding: '0.625rem 1.25rem',
                       cursor: 'pointer',
                       color: '#ff6b6b',
-                      fontSize: '0.9375rem',
-                      fontWeight: 500,
+                      fontSize: 'var(--text-15)',
+                      fontWeight: 'var(--font-medium)',
                     }}
                   >
                     <Trash size={16} color="#ff6b6b" weight="bold" />

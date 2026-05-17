@@ -91,11 +91,11 @@ export default function WelcomePage() {
         </div>
         <h1
           className="font-display"
-          style={{ fontSize: 24, fontWeight: 700, color: 'var(--text-primary)' }}
+          style={{ fontSize: 'var(--text-24)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)' }}
         >
           Thank you for visiting!
         </h1>
-        <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.5, maxWidth: 320 }}>
+        <p style={{ fontSize: 'var(--text-15)', color: 'var(--text-secondary)', lineHeight: 'var(--leading-normal)', maxWidth: 320 }}>
           We've received your info. Someone from our Welcome Team will reach out to you soon. We're
           so glad you're here.
         </p>
@@ -109,8 +109,8 @@ export default function WelcomePage() {
             border: '1px solid var(--border)',
             background: 'transparent',
             color: 'var(--text-secondary)',
-            fontSize: 15,
-            fontWeight: 600,
+            fontSize: 'var(--text-15)',
+            fontWeight: 'var(--font-semibold)',
             cursor: 'pointer',
           }}
         >
@@ -126,11 +126,11 @@ export default function WelcomePage() {
         <Logo height={96} style={{ margin: '0 auto 16px' }} />
         <h1
           className="font-display"
-          style={{ fontSize: 24, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}
+          style={{ fontSize: 'var(--text-24)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)', marginBottom: 6 }}
         >
           Welcome!
         </h1>
-        <p style={{ fontSize: 14, color: 'var(--text-muted)', lineHeight: 1.4 }}>
+        <p style={{ fontSize: 'var(--text-14)', color: 'var(--text-muted)', lineHeight: 'var(--leading-comfortable)' }}>
           We'd love to get to know you. Fill out this card so we can stay in touch.
         </p>
       </header>
@@ -160,7 +160,7 @@ export default function WelcomePage() {
             color: 'var(--red, #b91c1c)',
             padding: '0.75rem 1rem',
             borderRadius: 'var(--radius)',
-            fontSize: 13,
+            fontSize: 'var(--text-13)',
             marginBottom: 16,
           }}
         >
@@ -178,8 +178,8 @@ export default function WelcomePage() {
           border: 'none',
           background: canSubmit && !submitting ? 'var(--sage)' : 'var(--border)',
           color: canSubmit && !submitting ? 'var(--on-sage)' : 'var(--text-muted)',
-          fontSize: 16,
-          fontWeight: 600,
+          fontSize: 'var(--text-16)',
+          fontWeight: 'var(--font-semibold)',
           cursor: canSubmit && !submitting ? 'pointer' : 'not-allowed',
         }}
       >

@@ -22,7 +22,7 @@ export default function LogStatusTag({ daysSince, lastNoteTs }: LogStatusTagProp
     );
   }
   return (
-    <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+    <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>
       Logged {format(new Date(lastNoteTs), 'MMM d')}
     </span>
   );

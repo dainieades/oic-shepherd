@@ -207,19 +207,19 @@ function AuditEntry({ log, isLast }: { log: AuditLog; isLast: boolean }) {
           marginBottom: 6,
         }}
       >
-        <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+        <span style={{ fontSize: 'var(--text-13)', fontWeight: 'var(--font-semibold)', color: 'var(--text-primary)' }}>
           {fieldLabel(log.fieldName)}
         </span>
-        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+        <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
           {fmtTimestamp(log.createdAt)}
         </span>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
         <ValueChip value={log.oldValue} empty={isEmpty(log.oldValue)} />
-        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>→</span>
+        <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>→</span>
         <ValueChip value={log.newValue} empty={isEmpty(log.newValue)} />
       </div>
-      <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 6 }}>
+      <p style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)', marginTop: 6 }}>
         by {log.changedByName}
       </p>
     </div>
@@ -230,7 +230,7 @@ function ValueChip({ value, empty }: { value: string | null; empty: boolean }) {
   return (
     <span
       style={{
-        fontSize: '0.8125rem',
+        fontSize: 'var(--text-13)',
         color: empty ? 'var(--text-muted)' : 'var(--text-primary)',
         background: empty ? 'transparent' : 'var(--sage-light)',
         borderRadius: 'var(--radius-sm)',
@@ -262,7 +262,7 @@ const backBtnStyle: React.CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
   gap: 4,
-  fontSize: 13,
+  fontSize: 'var(--text-13)',
   color: 'var(--sage)',
   background: 'none',
   border: 'none',
@@ -270,15 +270,15 @@ const backBtnStyle: React.CSSProperties = {
   padding: 0,
 };
 const navTitleStyle: React.CSSProperties = {
-  fontSize: 15,
-  fontWeight: 600,
+  fontSize: 'var(--text-15)',
+  fontWeight: 'var(--font-semibold)',
   color: 'var(--text-primary)',
 };
 const dateLabelStyle: React.CSSProperties = {
-  fontSize: 11,
-  fontWeight: 600,
+  fontSize: 'var(--text-11)',
+  fontWeight: 'var(--font-semibold)',
   color: 'var(--text-muted)',
   textTransform: 'uppercase',
-  letterSpacing: '0.06em',
+  letterSpacing: 'var(--tracking-wide-6)',
   marginBottom: 8,
 };

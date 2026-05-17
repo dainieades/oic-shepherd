@@ -28,7 +28,7 @@ export default function MapsAppPage() {
         <span style={{ width: 72 }} />
       </div>
 
-      <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: '1rem 0 0.75rem' }}>
+      <p style={{ fontSize: 'var(--text-13)', color: 'var(--text-muted)', margin: '1rem 0 0.75rem' }}>
         Choose which app opens when you tap an address.
       </p>
 
@@ -62,10 +62,10 @@ export default function MapsAppPage() {
               <span
                 style={{
                   flex: 1,
-                  fontSize: 15,
-                  fontWeight: 500,
+                  fontSize: 'var(--text-15)',
+                  fontWeight: 'var(--font-medium)',
                   color: 'var(--text-primary)',
-                  letterSpacing: '-0.01em',
+                  letterSpacing: 'var(--tracking-tight-1)',
                 }}
               >
                 {MAP_PROVIDER_LABELS[value]}
@@ -99,7 +99,7 @@ const backBtnStyle: React.CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
   gap: 4,
-  fontSize: 13,
+  fontSize: 'var(--text-13)',
   color: 'var(--sage)',
   background: 'none',
   border: 'none',
@@ -108,7 +108,7 @@ const backBtnStyle: React.CSSProperties = {
 };
 
 const navTitleStyle: React.CSSProperties = {
-  fontSize: 15,
-  fontWeight: 600,
+  fontSize: 'var(--text-15)',
+  fontWeight: 'var(--font-semibold)',
   color: 'var(--text-primary)',
 };

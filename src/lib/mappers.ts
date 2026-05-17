@@ -104,6 +104,7 @@ export function mapFamily(row: Record<string, unknown>, memberIds: string[]): Fa
     memberIds,
     createdAt: r.created_at ?? undefined,
     createdBy: r.created_by ?? undefined,
+    lastEditedAt: r.last_edited_at ?? undefined,
     isTest: r.is_test ?? false,
   };
 }

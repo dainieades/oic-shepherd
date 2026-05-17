@@ -126,16 +126,16 @@ export default function ChangePasswordPage() {
         <div style={{ marginTop: 40, textAlign: 'center' }}>
           <p
             style={{
-              fontSize: 17,
-              fontWeight: 600,
+              fontSize: 'var(--text-17)',
+              fontWeight: 'var(--font-semibold)',
               color: 'var(--text-primary)',
               margin: '0 0 0.5rem',
-              letterSpacing: '-0.01em',
+              letterSpacing: 'var(--tracking-tight-1)',
             }}
           >
             Password updated
           </p>
-          <p style={{ fontSize: 14, color: 'var(--text-muted)', margin: '0 0 1.5rem' }}>
+          <p style={{ fontSize: 'var(--text-14)', color: 'var(--text-muted)', margin: '0 0 1.5rem' }}>
             Your new password is active.
           </p>
           <button onClick={() => router.push('/settings')} style={primaryButtonStyle}>
@@ -148,21 +148,21 @@ export default function ChangePasswordPage() {
         <div style={{ marginTop: 40, textAlign: 'center', padding: '0 0.5rem' }}>
           <p
             style={{
-              fontSize: 17,
-              fontWeight: 600,
+              fontSize: 'var(--text-17)',
+              fontWeight: 'var(--font-semibold)',
               color: 'var(--text-primary)',
               margin: '0 0 0.5rem',
-              letterSpacing: '-0.01em',
+              letterSpacing: 'var(--tracking-tight-1)',
             }}
           >
             Check your inbox
           </p>
           <p
             style={{
-              fontSize: 14,
+              fontSize: 'var(--text-14)',
               color: 'var(--text-muted)',
               margin: '0 0 1.5rem',
-              lineHeight: 1.5,
+              lineHeight: 'var(--leading-normal)',
             }}
           >
             We sent a password reset link to <strong>{step.email}</strong>.
@@ -201,7 +201,7 @@ export default function ChangePasswordPage() {
                 borderRadius: 'var(--radius-sm)',
                 padding: '0.5625rem 0.8125rem',
                 marginBottom: 16,
-                fontSize: 13,
+                fontSize: 'var(--text-13)',
                 color: 'var(--red)',
               }}
             >
@@ -273,9 +273,9 @@ export default function ChangePasswordPage() {
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: 4,
-                      fontSize: 12,
+                      fontSize: 'var(--text-12)',
                       color: rule.met ? 'var(--sage)' : 'var(--text-muted)',
-                      fontWeight: rule.met ? 600 : 400,
+                      fontWeight: rule.met ? 'var(--font-semibold)' : 'var(--font-normal)',
                       transition: 'color 0.15s',
                     }}
                   >
@@ -330,8 +330,8 @@ export default function ChangePasswordPage() {
               background: 'none',
               border: 'none',
               color: 'var(--sage)',
-              fontSize: 14,
-              fontWeight: 500,
+              fontSize: 'var(--text-14)',
+              fontWeight: 'var(--font-medium)',
               textAlign: 'center',
               cursor: isLoading || !user?.email ? 'not-allowed' : 'pointer',
               opacity: isLoading || !user?.email ? 0.5 : 1,
@@ -365,7 +365,7 @@ const backBtnStyle: React.CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
   gap: 4,
-  fontSize: 13,
+  fontSize: 'var(--text-13)',
   color: 'var(--sage)',
   background: 'none',
   border: 'none',
@@ -374,18 +374,18 @@ const backBtnStyle: React.CSSProperties = {
 };
 
 const navTitleStyle: React.CSSProperties = {
-  fontSize: 15,
-  fontWeight: 600,
+  fontSize: 'var(--text-15)',
+  fontWeight: 'var(--font-semibold)',
   color: 'var(--text-primary)',
 };
 
 const labelStyle: React.CSSProperties = {
   display: 'block',
-  fontSize: 12,
-  fontWeight: 600,
+  fontSize: 'var(--text-12)',
+  fontWeight: 'var(--font-semibold)',
   color: 'var(--text-muted)',
   textTransform: 'uppercase',
-  letterSpacing: '0.05em',
+  letterSpacing: 'var(--tracking-wide-5)',
   marginBottom: 6,
 };
 
@@ -394,7 +394,7 @@ const inputStyle: React.CSSProperties = {
   padding: '0.6875rem 0.8125rem',
   borderRadius: 'var(--radius-sm)',
   border: '0.09375rem solid var(--border)',
-  fontSize: 15,
+  fontSize: 'var(--text-15)',
   color: 'var(--text-primary)',
   background: 'var(--bg)',
   outline: 'none',
@@ -403,9 +403,9 @@ const inputStyle: React.CSSProperties = {
 
 const helperErrorStyle: React.CSSProperties = {
   margin: '6px 0 0',
-  fontSize: 12,
+  fontSize: 'var(--text-12)',
   color: 'var(--red)',
-  lineHeight: 1.4,
+  lineHeight: 'var(--leading-comfortable)',
 };
 
 const primaryButtonStyle: React.CSSProperties = {
@@ -415,7 +415,7 @@ const primaryButtonStyle: React.CSSProperties = {
   background: 'var(--sage)',
   color: 'var(--on-sage)',
   border: 'none',
-  fontSize: 15,
-  fontWeight: 600,
+  fontSize: 'var(--text-15)',
+  fontWeight: 'var(--font-semibold)',
   cursor: 'pointer',
 };

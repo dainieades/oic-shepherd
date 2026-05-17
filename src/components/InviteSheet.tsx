@@ -11,6 +11,7 @@ import {
 import { useApp } from '@/lib/context';
 import { X } from '@phosphor-icons/react';
 import { BACKDROP_COLOR, SHEET_MAX_WIDTH, Z_SHEET } from '@/lib/constants';
+import { ToggleSwitch } from './ToggleSwitch';
 
 type InviteRole = 'shepherd' | 'admin';
 
@@ -159,11 +160,11 @@ export default function InviteSheet({
           <div style={{ flex: 1, minWidth: 0 }}>
             <p
               style={{
-                fontSize: 12,
-                fontWeight: 600,
+                fontSize: 'var(--text-12)',
+                fontWeight: 'var(--font-semibold)',
                 color: 'var(--text-muted)',
                 textTransform: 'uppercase',
-                letterSpacing: '0.06em',
+                letterSpacing: 'var(--tracking-wide-6)',
                 margin: 0,
                 textAlign: personName ? 'left' : 'center',
               }}
@@ -173,7 +174,7 @@ export default function InviteSheet({
             {personName && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
                 <p
-                  style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}
+                  style={{ fontSize: 'var(--text-15)', fontWeight: 'var(--font-semibold)', color: 'var(--text-primary)', margin: 0 }}
                 >
                   {personName}
                 </p>
@@ -185,9 +186,9 @@ export default function InviteSheet({
                       border: 'none',
                       cursor: 'pointer',
                       padding: 0,
-                      fontSize: 13,
+                      fontSize: 'var(--text-13)',
                       color: 'var(--sage)',
-                      fontWeight: 500,
+                      fontWeight: 'var(--font-medium)',
                     }}
                   >
                     Change
@@ -226,8 +227,8 @@ export default function InviteSheet({
             />
             <p
               style={{
-                fontSize: 17,
-                fontWeight: 700,
+                fontSize: 'var(--text-17)',
+                fontWeight: 'var(--font-bold)',
                 color: 'var(--text-primary)',
                 marginBottom: 6,
               }}
@@ -236,9 +237,9 @@ export default function InviteSheet({
             </p>
             <p
               style={{
-                fontSize: 14,
+                fontSize: 'var(--text-14)',
                 color: 'var(--text-secondary)',
-                lineHeight: 1.55,
+                lineHeight: 'var(--leading-open)',
                 marginBottom: 24,
               }}
             >
@@ -254,8 +255,8 @@ export default function InviteSheet({
                 border: 'none',
                 background: 'var(--sage)',
                 color: 'var(--on-sage)',
-                fontSize: 15,
-                fontWeight: 600,
+                fontSize: 'var(--text-15)',
+                fontWeight: 'var(--font-semibold)',
                 cursor: 'pointer',
               }}
             >
@@ -277,11 +278,11 @@ export default function InviteSheet({
               <label
                 style={{
                   display: 'block',
-                  fontSize: 12,
-                  fontWeight: 600,
+                  fontSize: 'var(--text-12)',
+                  fontWeight: 'var(--font-semibold)',
                   color: 'var(--text-muted)',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
+                  letterSpacing: 'var(--tracking-wide-6)',
                   marginBottom: 6,
                 }}
               >
@@ -302,7 +303,7 @@ export default function InviteSheet({
                   padding: '0.6875rem 0.875rem',
                   borderRadius: 'var(--radius-sm)',
                   border: `0.09375rem solid ${errorMsg ? 'var(--red)' : 'var(--border)'}`,
-                  fontSize: 15,
+                  fontSize: 'var(--text-15)',
                   color: 'var(--text-primary)',
                   background: 'var(--bg)',
                   outline: 'none',
@@ -310,7 +311,7 @@ export default function InviteSheet({
                 }}
               />
               {errorMsg && (
-                <p role="alert" style={{ fontSize: 12, color: 'var(--red)', marginTop: 4 }}>
+                <p role="alert" style={{ fontSize: 'var(--text-12)', color: 'var(--red)', marginTop: 4 }}>
                   {errorMsg}
                 </p>
               )}
@@ -321,11 +322,11 @@ export default function InviteSheet({
               <label
                 style={{
                   display: 'block',
-                  fontSize: 12,
-                  fontWeight: 600,
+                  fontSize: 'var(--text-12)',
+                  fontWeight: 'var(--font-semibold)',
                   color: 'var(--text-muted)',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
+                  letterSpacing: 'var(--tracking-wide-6)',
                   marginBottom: 6,
                 }}
               >
@@ -352,8 +353,8 @@ export default function InviteSheet({
                     <div>
                       <p
                         style={{
-                          fontSize: 14,
-                          fontWeight: 600,
+                          fontSize: 'var(--text-14)',
+                          fontWeight: 'var(--font-semibold)',
                           color: 'var(--text-primary)',
                           margin: 0,
                         }}
@@ -362,7 +363,7 @@ export default function InviteSheet({
                       </p>
                       <p
                         style={{
-                          fontSize: 12,
+                          fontSize: 'var(--text-12)',
                           color: 'var(--text-muted)',
                           margin: '0.0625rem 0 0',
                         }}
@@ -394,26 +395,22 @@ export default function InviteSheet({
 
             {/* Newcomer review toggle — admin only, shepherds only */}
             {showTriageToggle && (
-              <button
-                onClick={() => setCanTriageVisitors((v) => !v)}
+              <div
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: 12,
                   padding: '0.75rem 0.875rem',
                   borderRadius: 'var(--radius-sm)',
-                  textAlign: 'left',
                   border: '0.09375rem solid var(--border-light)',
                   background: 'var(--bg)',
-                  cursor: 'pointer',
-                  width: '100%',
                 }}
               >
                 <div style={{ flex: 1 }}>
                   <p
                     style={{
-                      fontSize: 14,
-                      fontWeight: 600,
+                      fontSize: 'var(--text-14)',
+                      fontWeight: 'var(--font-semibold)',
                       color: 'var(--text-primary)',
                       margin: 0,
                     }}
@@ -422,42 +419,21 @@ export default function InviteSheet({
                   </p>
                   <p
                     style={{
-                      fontSize: 12,
+                      fontSize: 'var(--text-12)',
                       color: 'var(--text-muted)',
                       margin: '0.0625rem 0 0',
-                      lineHeight: 1.4,
+                      lineHeight: 'var(--leading-comfortable)',
                     }}
                   >
                     Lets this user review and welcome new sign-ups.
                   </p>
                 </div>
-                <span
-                  aria-hidden
-                  style={{
-                    flexShrink: 0,
-                    width: 36,
-                    height: 22,
-                    borderRadius: 'var(--radius-pill)',
-                    background: canTriageVisitors ? 'var(--sage)' : 'var(--border)',
-                    position: 'relative',
-                    transition: 'background 0.15s',
-                  }}
-                >
-                  <span
-                    style={{
-                      position: 'absolute',
-                      top: 2,
-                      left: canTriageVisitors ? 16 : 2,
-                      width: 18,
-                      height: 18,
-                      borderRadius: '50%',
-                      background: 'var(--surface)',
-                      transition: 'left 0.15s',
-                      boxShadow: '0 1px 2px rgba(0,0,0,0.15)',
-                    }}
-                  />
-                </span>
-              </button>
+                <ToggleSwitch
+                  checked={canTriageVisitors}
+                  onChange={setCanTriageVisitors}
+                  label="Review newcomers"
+                />
+              </div>
             )}
 
             {/* Submit */}
@@ -471,8 +447,8 @@ export default function InviteSheet({
                 border: 'none',
                 background: 'var(--sage)',
                 color: 'var(--on-sage)',
-                fontSize: 15,
-                fontWeight: 600,
+                fontSize: 'var(--text-15)',
+                fontWeight: 'var(--font-semibold)',
                 cursor: status === 'loading' ? 'not-allowed' : 'pointer',
                 opacity: status === 'loading' ? 0.6 : 1,
                 display: 'flex',

@@ -122,7 +122,7 @@ export default function LanguagePickerSheet({ currentLanguages, onConfirm, onBac
             placeholder="Search languages…"
             style={{
               flex: 1,
-              fontSize: 14,
+              fontSize: 'var(--text-14)',
               color: 'var(--text-primary)',
               background: 'none',
               border: 'none',
@@ -137,8 +137,8 @@ export default function LanguagePickerSheet({ currentLanguages, onConfirm, onBac
                 border: 'none',
                 cursor: 'pointer',
                 color: 'var(--text-muted)',
-                fontSize: 18,
-                lineHeight: 1,
+                fontSize: 'var(--text-18)',
+                lineHeight: 'var(--leading-none)',
                 padding: 0,
               }}
             >
@@ -155,11 +155,11 @@ export default function LanguagePickerSheet({ currentLanguages, onConfirm, onBac
             {!q && (
               <p
                 style={{
-                  fontSize: 10,
-                  fontWeight: 600,
+                  fontSize: 'var(--text-10)',
+                  fontWeight: 'var(--font-semibold)',
                   color: 'var(--text-muted)',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
+                  letterSpacing: 'var(--tracking-wide-6)',
                   padding: '0.75rem 1.25rem 0.375rem',
                   margin: 0,
                 }}
@@ -179,11 +179,11 @@ export default function LanguagePickerSheet({ currentLanguages, onConfirm, onBac
             {!q && filteredPriority.length > 0 && (
               <p
                 style={{
-                  fontSize: 10,
-                  fontWeight: 600,
+                  fontSize: 'var(--text-10)',
+                  fontWeight: 'var(--font-semibold)',
                   color: 'var(--text-muted)',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
+                  letterSpacing: 'var(--tracking-wide-6)',
                   padding: '0.75rem 1.25rem 0.375rem',
                   margin: 0,
                   borderTop: '1px solid var(--border-light)',
@@ -202,7 +202,7 @@ export default function LanguagePickerSheet({ currentLanguages, onConfirm, onBac
           <p
             style={{
               padding: '1.5rem 1.25rem',
-              fontSize: 13,
+              fontSize: 'var(--text-13)',
               color: 'var(--text-muted)',
               textAlign: 'center',
               fontStyle: 'italic',
@@ -245,8 +245,8 @@ function LanguageRow({
       <span
         style={{
           flex: 1,
-          fontSize: 14,
-          fontWeight: isSel ? 600 : 400,
+          fontSize: 'var(--text-14)',
+          fontWeight: isSel ? 'var(--font-semibold)' : 'var(--font-normal)',
           color: isSel ? 'var(--sage)' : 'var(--text-primary)',
         }}
       >

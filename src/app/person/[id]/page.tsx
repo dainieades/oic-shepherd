@@ -275,7 +275,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
             display: 'inline-flex',
             alignItems: 'center',
             gap: 4,
-            fontSize: 13,
+            fontSize: 'var(--text-13)',
             color: 'var(--sage)',
             background: 'none',
             border: 'none',
@@ -290,8 +290,8 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
         <span
           className="person-nav-title"
           style={{
-            fontSize: 14,
-            fontWeight: 500,
+            fontSize: 'var(--text-14)',
+            fontWeight: 'var(--font-medium)',
             color: 'var(--text-secondary)',
             flex: 1,
             textAlign: 'center',
@@ -320,8 +320,8 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                   display: 'flex',
                   alignItems: 'center',
                   gap: 5,
-                  fontSize: scrolled ? 13 : 14,
-                  fontWeight: 600,
+                  fontSize: scrolled ? 'var(--text-13)' : 'var(--text-14)',
+                  fontWeight: 'var(--font-semibold)',
                   whiteSpace: 'nowrap',
                   transition: 'height 0.25s ease, padding 0.25s ease, font-size 0.25s ease',
                 }}
@@ -340,8 +340,8 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                   borderRadius: 'var(--radius-xs)',
                   background: 'var(--sage)',
                   color: 'var(--on-sage)',
-                  fontSize: scrolled ? 13 : 14,
-                  fontWeight: 600,
+                  fontSize: scrolled ? 'var(--text-13)' : 'var(--text-14)',
+                  fontWeight: 'var(--font-semibold)',
                   border: 'none',
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
@@ -366,8 +366,8 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                 borderRadius: 'var(--radius-xs)',
                 background: 'var(--sage)',
                 color: 'var(--on-sage)',
-                fontSize: scrolled ? 13 : 14,
-                fontWeight: 600,
+                fontSize: scrolled ? 'var(--text-13)' : 'var(--text-14)',
+                fontWeight: 'var(--font-semibold)',
                 border: 'none',
                 cursor: 'pointer',
                 whiteSpace: 'nowrap',
@@ -434,7 +434,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                         border: 'none',
                         borderBottom: '1px solid var(--border-light)',
                         cursor: 'pointer',
-                        fontSize: 14,
+                        fontSize: 'var(--text-14)',
                         color: 'var(--text-primary)',
                         textAlign: 'left',
                       }}
@@ -458,7 +458,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                       border: 'none',
                       borderBottom: '1px solid var(--border-light)',
                       cursor: 'pointer',
-                      fontSize: 14,
+                      fontSize: 'var(--text-14)',
                       color: 'var(--text-primary)',
                       textAlign: 'left',
                     }}
@@ -480,7 +480,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                       background: 'none',
                       border: 'none',
                       cursor: 'pointer',
-                      fontSize: 14,
+                      fontSize: 'var(--text-14)',
                       color: 'var(--red)',
                       textAlign: 'left',
                     }}
@@ -535,11 +535,11 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
             >
               <h1
                 style={{
-                  fontSize: 26,
-                  fontWeight: 800,
+                  fontSize: 'var(--text-26)',
+                  fontWeight: 'var(--font-extrabold)',
                   color: 'var(--text-primary)',
-                  lineHeight: 1.15,
-                  letterSpacing: '-0.02em',
+                  lineHeight: 'var(--leading-tight)',
+                  letterSpacing: 'var(--tracking-tight-2)',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
@@ -550,8 +550,8 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
               {person.alternativeName && (
                 <span
                   style={{
-                    fontSize: 14,
-                    fontWeight: 400,
+                    fontSize: 'var(--text-14)',
+                    fontWeight: 'var(--font-normal)',
                     color: 'var(--text-muted)',
                     flexShrink: 0,
                   }}
@@ -562,24 +562,24 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
+            <span style={{ fontSize: 'var(--text-13)', color: 'var(--text-secondary)' }}>
               {getMembershipLabel(person.membershipStatus)}
             </span>
             {groups.map((g) => (
               <>
-                <span key={`dot-${g.id}`} style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+                <span key={`dot-${g.id}`} style={{ fontSize: 'var(--text-13)', color: 'var(--text-muted)' }}>
                   ·
                 </span>
                 <button
                   key={g.id}
                   onClick={() => setPreviewGroupId(g.id)}
                   style={{
-                    fontSize: 11,
+                    fontSize: 'var(--text-11)',
                     padding: '0.125rem 0.4375rem',
                     borderRadius: 'var(--radius-pill)',
                     background: 'var(--blue-light)',
                     color: 'var(--blue)',
-                    fontWeight: 600,
+                    fontWeight: 'var(--font-semibold)',
                     border: 'none',
                     cursor: 'pointer',
                   }}
@@ -672,8 +672,8 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
               style={{
                 flex: 1,
                 padding: '0.625rem 0',
-                fontSize: 13,
-                fontWeight: activeTab === t ? 700 : 400,
+                fontSize: 'var(--text-13)',
+                fontWeight: activeTab === t ? 'var(--font-bold)' : 'var(--font-normal)',
                 color: activeTab === t ? 'var(--sage)' : 'var(--text-muted)',
                 background: 'none',
                 border: 'none',
@@ -693,13 +693,13 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
               {t === 'todos' && incompleteTodosCount > 0 && (
                 <span
                   style={{
-                    fontSize: 11,
-                    fontWeight: 600,
+                    fontSize: 'var(--text-11)',
+                    fontWeight: 'var(--font-semibold)',
                     background: 'var(--sage)',
                     color: 'var(--on-sage)',
                     borderRadius: 'var(--radius-sm)',
                     padding: '0.0625rem 0.375rem',
-                    lineHeight: 1.5,
+                    lineHeight: 'var(--leading-normal)',
                   }}
                 >
                   {incompleteTodosCount}
@@ -708,13 +708,13 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
               {t === 'notices' && notices.length > 0 && (
                 <span
                   style={{
-                    fontSize: 11,
-                    fontWeight: 600,
+                    fontSize: 'var(--text-11)',
+                    fontWeight: 'var(--font-semibold)',
                     background: 'var(--sage)',
                     color: 'var(--on-sage)',
                     borderRadius: 'var(--radius-sm)',
                     padding: '0.0625rem 0.375rem',
-                    lineHeight: 1.5,
+                    lineHeight: 'var(--leading-normal)',
                   }}
                 >
                   {notices.length}
@@ -998,8 +998,8 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                           <AvatarBadge name={s.name} photo={sp?.photo} size={24} />
                           <span
                             style={{
-                              fontSize: 13,
-                              fontWeight: 500,
+                              fontSize: 'var(--text-13)',
+                              fontWeight: 'var(--font-medium)',
                               color: sp ? 'var(--blue)' : 'var(--text-primary)',
                             }}
                           >
@@ -1041,7 +1041,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                     <span style={{ color: 'var(--text-muted)', display: 'flex' }}>
                       <HandHeart size={15} />
                     </span>
-                    <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>Sheep</span>
+                    <span style={{ fontSize: 'var(--text-13)', color: 'var(--text-muted)' }}>Sheep</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     {sheep.length > 2 && (
@@ -1051,8 +1051,8 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                           display: 'flex',
                           alignItems: 'center',
                           gap: 4,
-                          fontSize: 12,
-                          fontWeight: 500,
+                          fontSize: 'var(--text-12)',
+                          fontWeight: 'var(--font-medium)',
                           color: 'var(--text-secondary)',
                           background: 'none',
                           border: 'none',
@@ -1064,8 +1064,8 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                         {!sheepExpanded && (
                           <span
                             style={{
-                              fontSize: 11,
-                              fontWeight: 600,
+                              fontSize: 'var(--text-11)',
+                              fontWeight: 'var(--font-semibold)',
                               padding: '0.0625rem 0.4375rem',
                               borderRadius: 'var(--radius-pill)',
                               background: 'var(--sage-light)',
@@ -1087,8 +1087,8 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                     {sheep.length <= 2 && sheep.length > 0 && (
                       <span
                         style={{
-                          fontSize: 11,
-                          fontWeight: 600,
+                          fontSize: 'var(--text-11)',
+                          fontWeight: 'var(--font-semibold)',
                           padding: '0.0625rem 0.4375rem',
                           borderRadius: 'var(--radius-pill)',
                           background: 'var(--sage-light)',
@@ -1124,11 +1124,11 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                           }}
                         >
                           <AvatarBadge name={fullName(s)} photo={s.photo} size={24} />
-                          <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--blue)' }}>
+                          <span style={{ fontSize: 'var(--text-13)', fontWeight: 'var(--font-medium)', color: 'var(--blue)' }}>
                             {fullName(s)}
                           </span>
                           {s.alternativeName && (
-                            <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+                            <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>
                               {s.alternativeName}
                             </span>
                           )}
@@ -1172,12 +1172,12 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                         key={g.id}
                         onClick={() => setPreviewGroupId(g.id)}
                         style={{
-                          fontSize: 11,
+                          fontSize: 'var(--text-11)',
                           padding: '0.1875rem 0.5625rem',
                           borderRadius: 'var(--radius-pill)',
                           background: 'var(--blue-light)',
                           color: 'var(--blue)',
-                          fontWeight: 500,
+                          fontWeight: 'var(--font-medium)',
                           border: 'none',
                           cursor: 'pointer',
                         }}
@@ -1249,7 +1249,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                         color: 'var(--blue)',
                         textDecoration: 'none',
                         textAlign: 'right',
-                        lineHeight: 1.5,
+                        lineHeight: 'var(--leading-normal)',
                         display: 'block',
                         whiteSpace: 'pre-wrap',
                       }}
@@ -1443,11 +1443,11 @@ function TodoSection({
           background: 'none',
           border: 'none',
           cursor: 'pointer',
-          fontSize: 10,
-          fontWeight: 600,
+          fontSize: 'var(--text-10)',
+          fontWeight: 'var(--font-semibold)',
           color: labelColor ?? 'var(--text-muted)',
           textTransform: 'uppercase',
-          letterSpacing: '0.06em',
+          letterSpacing: 'var(--tracking-wide-6)',
         }}
       >
         {label} · {todos.length}
@@ -1520,9 +1520,9 @@ function TodoSection({
                 >
                   <p
                     style={{
-                      fontSize: 14,
+                      fontSize: 'var(--text-14)',
                       color: t.completed ? 'var(--text-muted)' : 'var(--text-primary)',
-                      lineHeight: 1.4,
+                      lineHeight: 'var(--leading-comfortable)',
                       marginBottom: 4,
                       textDecoration: t.completed ? 'line-through' : 'none',
                     }}
@@ -1540,7 +1540,7 @@ function TodoSection({
                         }}
                       >
                         <Clock size={12} />
-                        <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+                        <span style={{ fontSize: 'var(--text-11)', color: 'var(--text-muted)' }}>
                           {fmtDue(t.dueDate)}
                         </span>
                       </div>
@@ -1549,12 +1549,12 @@ function TodoSection({
                     {tag && (
                       <span
                         style={{
-                          fontSize: 10,
+                          fontSize: 'var(--text-10)',
                           color: 'var(--blue)',
                           padding: '0.0625rem 0.375rem',
                           borderRadius: 'var(--radius-pill)',
                           background: 'var(--blue-light)',
-                          fontWeight: 500,
+                          fontWeight: 'var(--font-medium)',
                         }}
                       >
                         {tag}
@@ -1594,11 +1594,11 @@ function LogSection({
           background: 'none',
           border: 'none',
           cursor: 'pointer',
-          fontSize: 10,
-          fontWeight: 600,
+          fontSize: 'var(--text-10)',
+          fontWeight: 'var(--font-semibold)',
           color: 'var(--text-muted)',
           textTransform: 'uppercase',
-          letterSpacing: '0.06em',
+          letterSpacing: 'var(--tracking-wide-6)',
         }}
       >
         {label} · {count}
@@ -1628,11 +1628,11 @@ function InfoSection({
     <div>
       <p
         style={{
-          fontSize: 10,
-          fontWeight: 600,
+          fontSize: 'var(--text-10)',
+          fontWeight: 'var(--font-semibold)',
           color: 'var(--text-muted)',
           textTransform: 'uppercase',
-          letterSpacing: '0.06em',
+          letterSpacing: 'var(--tracking-wide-6)',
           marginBottom: 8,
         }}
       >

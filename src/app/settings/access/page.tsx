@@ -40,7 +40,7 @@ const backBtnStyle: React.CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
   gap: 4,
-  fontSize: 13,
+  fontSize: 'var(--text-13)',
   color: 'var(--sage)',
   background: 'none',
   border: 'none',
@@ -49,8 +49,8 @@ const backBtnStyle: React.CSSProperties = {
 };
 
 const navTitleStyle: React.CSSProperties = {
-  fontSize: 15,
-  fontWeight: 600,
+  fontSize: 'var(--text-15)',
+  fontWeight: 'var(--font-semibold)',
   color: 'var(--text-primary)',
 };
 
@@ -111,7 +111,7 @@ export default function AccessManagementPage() {
   if (!isAdmin) {
     return (
       <div style={{ padding: '2.5rem 0', textAlign: 'center' }}>
-        <p style={{ color: 'var(--text-muted)', fontSize: 15 }}>Admin access required.</p>
+        <p style={{ color: 'var(--text-muted)', fontSize: 'var(--text-15)' }}>Admin access required.</p>
       </div>
     );
   }
@@ -138,10 +138,10 @@ export default function AccessManagementPage() {
       <h1
         ref={titleRef}
         style={{
-          fontSize: 28,
-          fontWeight: 700,
+          fontSize: 'var(--text-28)',
+          fontWeight: 'var(--font-bold)',
           color: 'var(--text-primary)',
-          letterSpacing: '-0.02em',
+          letterSpacing: 'var(--tracking-tight-2)',
           margin: '1.5rem 0 0.5rem',
         }}
       >
@@ -150,11 +150,11 @@ export default function AccessManagementPage() {
 
       <p
         style={{
-          fontSize: 13,
+          fontSize: 'var(--text-13)',
           color: 'var(--text-muted)',
           marginTop: 0,
           marginBottom: 20,
-          lineHeight: 1.5,
+          lineHeight: 'var(--leading-normal)',
         }}
       >
         Only people on this list can sign in. Add someone&apos;s email before they try to log in.
@@ -163,11 +163,11 @@ export default function AccessManagementPage() {
       {/* Email list */}
       <p
         style={{
-          fontSize: 12,
-          fontWeight: 600,
+          fontSize: 'var(--text-12)',
+          fontWeight: 'var(--font-semibold)',
           color: 'var(--text-muted)',
           textTransform: 'uppercase',
-          letterSpacing: '0.06em',
+          letterSpacing: 'var(--tracking-wide-6)',
           marginBottom: 8,
         }}
       >
@@ -177,7 +177,7 @@ export default function AccessManagementPage() {
       {loading ? (
         <p
           style={{
-            fontSize: 14,
+            fontSize: 'var(--text-14)',
             color: 'var(--text-muted)',
             textAlign: 'center',
             padding: '1.5rem 0',
@@ -235,8 +235,8 @@ export default function AccessManagementPage() {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p
                     style={{
-                      fontSize: 14,
-                      fontWeight: 500,
+                      fontSize: 'var(--text-14)',
+                      fontWeight: 'var(--font-medium)',
                       color: 'var(--text-primary)',
                       margin: 0,
                       overflow: 'hidden',
@@ -249,7 +249,7 @@ export default function AccessManagementPage() {
                   {e.label && (
                     <p
                       style={{
-                        fontSize: 12,
+                        fontSize: 'var(--text-12)',
                         color: 'var(--text-muted)',
                         margin: 0,
                         overflow: 'hidden',
@@ -263,7 +263,7 @@ export default function AccessManagementPage() {
                 </div>
                 <span
                   style={{
-                    fontSize: 13,
+                    fontSize: 'var(--text-13)',
                     color: linkedPerson ? 'var(--text-secondary)' : 'var(--text-muted)',
                     flexShrink: 0,
                   }}

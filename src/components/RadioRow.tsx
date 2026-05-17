@@ -42,7 +42,7 @@ export function RadioRow({ selected, onSelect, children }: RadioRowProps) {
         )}
       </div>
       <span
-        style={{ fontSize: 14, fontWeight: selected ? 600 : 400, color: 'var(--text-primary)' }}
+        style={{ fontSize: 'var(--text-14)', fontWeight: selected ? 'var(--font-semibold)' : 'var(--font-normal)', color: 'var(--text-primary)' }}
       >
         {children}
       </span>

@@ -14,7 +14,7 @@ interface Props {
 export default function EditPersonDrawer({ person, onClose }: Props) {
   const { showToast } = useToast();
   const formRef = React.useRef<PersonFormBodyHandle>(null);
-  const [canSave, setCanSave] = React.useState(!!person.preferredName.trim());
+  const [canSave, setCanSave] = React.useState(false);
 
   const handleSaved = () => {
     showToast('Changes saved');

@@ -61,15 +61,15 @@ export default function AccessGate() {
         </div>
         <h2
           className="font-display"
-          style={{ fontSize: 22, fontWeight: 700, marginBottom: 10, color: 'var(--text-primary)' }}
+          style={{ fontSize: 'var(--text-22)', fontWeight: 'var(--font-bold)', marginBottom: 10, color: 'var(--text-primary)' }}
         >
           Access Restricted
         </h2>
         <p
           style={{
-            fontSize: 15,
+            fontSize: 'var(--text-15)',
             color: 'var(--text-secondary)',
-            lineHeight: 1.6,
+            lineHeight: 'var(--leading-loose)',
             marginBottom: 28,
           }}
         >
@@ -84,8 +84,8 @@ export default function AccessGate() {
             border: 'none',
             background: 'var(--sage)',
             color: 'var(--on-sage)',
-            fontSize: 15,
-            fontWeight: 600,
+            fontSize: 'var(--text-15)',
+            fontWeight: 'var(--font-semibold)',
             cursor: 'pointer',
           }}
         >

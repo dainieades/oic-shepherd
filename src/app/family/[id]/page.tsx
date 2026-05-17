@@ -74,7 +74,16 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
   const { data, toggleTodo, canViewNote, updateFamily, currentPersona } = useApp();
   const canSeeNotices =
     currentPersona.role === 'admin' || currentPersona.role === 'shepherd';
-  const [tab, setTab] = React.useState<Tab>('logs');
+  const _familyCheck = data.families.find((f) => f.id === id);
+  const _membersCheck = _familyCheck
+    ? data.people.filter((p) => _familyCheck.memberIds.includes(p.id))
+    : [];
+  const _canManageCheck =
+    currentPersona.role === 'admin' ||
+    _membersCheck.some(
+      (m) => currentPersona.personId === m.id || currentPersona.assignedPeopleIds.includes(m.id)
+    );
+  const [tab, setTab] = React.useState<Tab>(_canManageCheck ? 'logs' : 'info');
   const [showAddLog, setShowAddLog] = React.useState(false);
   const [showAddTodo, setShowAddTodo] = React.useState(false);
   const [showAddNotice, setShowAddNotice] = React.useState(false);
@@ -149,8 +158,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
   })();
 
   const visibleTabs: Tab[] = [
-    'logs',
-    'todos',
+    ...(canManageFamily ? (['logs', 'todos'] as Tab[]) : []),
     ...(canSeeNotices ? (['notices'] as Tab[]) : []),
     'info',
   ];
@@ -177,17 +185,17 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
             display: 'inline-flex',
             alignItems: 'center',
             gap: 3,
-            fontSize: 13,
+            fontSize: 'var(--text-13)',
             color: 'var(--sage)',
             textDecoration: 'none',
-            fontWeight: 500,
+            fontWeight: 'var(--font-medium)',
           }}
         >
           <CaretLeft size={16} />
           Back
         </Link>
 
-        <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)' }}>
+        <span style={{ fontSize: 'var(--text-14)', fontWeight: 'var(--font-medium)', color: 'var(--text-secondary)' }}>
           {family.label.split(' ')[0]}
         </span>
 
@@ -206,8 +214,8 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                 display: 'flex',
                 alignItems: 'center',
                 gap: 5,
-                fontSize: scrolled ? 13 : 14,
-                fontWeight: 600,
+                fontSize: scrolled ? 'var(--text-13)' : 'var(--text-14)',
+                fontWeight: 'var(--font-semibold)',
                 whiteSpace: 'nowrap',
                 transition: 'height 0.25s ease, padding 0.25s ease, font-size 0.25s ease',
               }}
@@ -230,8 +238,8 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                 borderRadius: 'var(--radius-xs)',
                 background: 'var(--sage)',
                 color: 'var(--on-sage)',
-                fontSize: scrolled ? 13 : 14,
-                fontWeight: 600,
+                fontSize: scrolled ? 'var(--text-13)' : 'var(--text-14)',
+                fontWeight: 'var(--font-semibold)',
                 border: 'none',
                 cursor: 'pointer',
                 whiteSpace: 'nowrap',
@@ -294,7 +302,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                     background: 'none',
                     border: 'none',
                     cursor: 'pointer',
-                    fontSize: 14,
+                    fontSize: 'var(--text-14)',
                     color: 'var(--text-primary)',
                     textAlign: 'left',
                   }}
@@ -331,30 +339,30 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
         <div style={{ flex: 1, minWidth: 0 }}>
           <h1
             style={{
-              fontSize: 26,
-              fontWeight: 800,
+              fontSize: 'var(--text-26)',
+              fontWeight: 'var(--font-extrabold)',
               color: 'var(--text-primary)',
-              lineHeight: 1.15,
-              letterSpacing: '-0.02em',
+              lineHeight: 'var(--leading-tight)',
+              letterSpacing: 'var(--tracking-tight-2)',
               marginBottom: 5,
             }}
           >
             {family.label}
           </h1>
           <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{memberCountText}</span>
+            <span style={{ fontSize: 'var(--text-13)', color: 'var(--text-secondary)' }}>{memberCountText}</span>
             {familyGroups.map((g) => (
               <React.Fragment key={g.id}>
-                <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>·</span>
+                <span style={{ fontSize: 'var(--text-13)', color: 'var(--text-muted)' }}>·</span>
                 <button
                   onClick={() => setPreviewGroupId(g.id)}
                   style={{
-                    fontSize: 11,
+                    fontSize: 'var(--text-11)',
                     padding: '0.125rem 0.4375rem',
                     borderRadius: 'var(--radius-pill)',
                     background: 'var(--blue-light)',
                     color: 'var(--blue)',
-                    fontWeight: 600,
+                    fontWeight: 'var(--font-semibold)',
                     border: 'none',
                     cursor: 'pointer',
                   }}
@@ -446,8 +454,8 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
             style={{
               flex: 1,
               padding: '0.625rem 0',
-              fontSize: 13,
-              fontWeight: tab === t ? 600 : 400,
+              fontSize: 'var(--text-13)',
+              fontWeight: tab === t ? 'var(--font-semibold)' : 'var(--font-normal)',
               color: tab === t ? 'var(--sage)' : 'var(--text-muted)',
               background: 'none',
               border: 'none',
@@ -465,13 +473,13 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
             {t === 'todos' && incompleteTodosCount > 0 && (
               <span
                 style={{
-                  fontSize: 11,
-                  fontWeight: 600,
+                  fontSize: 'var(--text-11)',
+                  fontWeight: 'var(--font-semibold)',
                   background: 'var(--sage)',
                   color: 'var(--on-sage)',
                   borderRadius: 'var(--radius-sm)',
                   padding: '0.0625rem 0.375rem',
-                  lineHeight: 1.5,
+                  lineHeight: 'var(--leading-normal)',
                 }}
               >
                 {incompleteTodosCount}
@@ -480,13 +488,13 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
             {t === 'notices' && notices.length > 0 && (
               <span
                 style={{
-                  fontSize: 11,
-                  fontWeight: 600,
+                  fontSize: 'var(--text-11)',
+                  fontWeight: 'var(--font-semibold)',
                   background: 'var(--sage)',
                   color: 'var(--on-sage)',
                   borderRadius: 'var(--radius-sm)',
                   padding: '0.0625rem 0.375rem',
-                  lineHeight: 1.5,
+                  lineHeight: 'var(--leading-normal)',
                 }}
               >
                 {notices.length}
@@ -624,11 +632,11 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
           <div>
             <p
               style={{
-                fontSize: 11,
-                fontWeight: 600,
+                fontSize: 'var(--text-11)',
+                fontWeight: 'var(--font-semibold)',
                 color: 'var(--text-muted)',
                 textTransform: 'uppercase',
-                letterSpacing: '0.06em',
+                letterSpacing: 'var(--tracking-wide-6)',
                 marginBottom: 8,
               }}
             >
@@ -669,8 +677,8 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <p
                         style={{
-                          fontSize: 14,
-                          fontWeight: 600,
+                          fontSize: 'var(--text-14)',
+                          fontWeight: 'var(--font-semibold)',
                           color: 'var(--text-primary)',
                           marginBottom: 2,
                         }}
@@ -679,8 +687,8 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                         {m.alternativeName && (
                           <span
                             style={{
-                              fontWeight: 400,
-                              fontSize: 12,
+                              fontWeight: 'var(--font-normal)',
+                              fontSize: 'var(--text-12)',
                               color: 'var(--text-muted)',
                               marginLeft: 6,
                             }}
@@ -689,7 +697,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                           </span>
                         )}
                       </p>
-                      <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+                      <p style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>
                         {getMembershipLabel(m.membershipStatus)}
                         {m.lastContactDate && (
                           <span> · Logged {format(parseISO(m.lastContactDate), 'MMM d')}</span>
@@ -728,15 +736,15 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                   <div>
                     <p
                       style={{
-                        fontSize: 14,
-                        fontWeight: 600,
+                        fontSize: 'var(--text-14)',
+                        fontWeight: 'var(--font-semibold)',
                         color: 'var(--text-primary)',
                         marginBottom: 2,
                       }}
                     >
                       Children
                     </p>
-                    <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+                    <p style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>
                       {family.childCount} {family.childCount === 1 ? 'child' : 'children'}
                     </p>
                   </div>
@@ -749,11 +757,11 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
           <div>
             <p
               style={{
-                fontSize: 11,
-                fontWeight: 600,
+                fontSize: 'var(--text-11)',
+                fontWeight: 'var(--font-semibold)',
                 color: 'var(--text-muted)',
                 textTransform: 'uppercase',
-                letterSpacing: '0.06em',
+                letterSpacing: 'var(--tracking-wide-6)',
                 marginBottom: 8,
               }}
             >
@@ -793,12 +801,12 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                           key={g.id}
                           onClick={() => setPreviewGroupId(g.id)}
                           style={{
-                            fontSize: 11,
+                            fontSize: 'var(--text-11)',
                             padding: '0.125rem 0.5rem',
                             borderRadius: 'var(--radius-pill)',
                             background: 'var(--blue-light)',
                             color: 'var(--blue)',
-                            fontWeight: 500,
+                            fontWeight: 'var(--font-medium)',
                             border: 'none',
                             cursor: 'pointer',
                           }}
@@ -830,8 +838,8 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                             <AvatarBadge name={s.name} photo={sp?.photo} size={24} />
                             <span
                               style={{
-                                fontSize: 13,
-                                fontWeight: 500,
+                                fontSize: 'var(--text-13)',
+                                fontWeight: 'var(--font-medium)',
                                 color: sp ? 'var(--blue)' : 'var(--text-primary)',
                               }}
                             >
@@ -859,44 +867,8 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
             </div>
           </div>
 
-          {/* Meta */}
-          {(family.createdAt || family.createdBy) && (
-            <div>
-              <p
-                style={{
-                  fontSize: 11,
-                  fontWeight: 600,
-                  color: 'var(--text-muted)',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
-                  marginBottom: 8,
-                }}
-              >
-                Meta
-              </p>
-              <div
-                className="no-last-border"
-                style={{
-                  background: 'var(--surface)',
-                  borderRadius: 'var(--radius)',
-                  overflow: 'hidden',
-                  padding: 0,
-                }}
-              >
-                {family.createdAt && (
-                  <InfoRow
-                    label="Added"
-                    value={format(parseISO(family.createdAt), 'MMM d, yyyy')}
-                  />
-                )}
-                {family.createdBy &&
-                  (() => {
-                    const creator = data.personas.find((p) => p.id === family.createdBy);
-                    return creator ? <InfoRow label="Created by" value={creator.name} /> : null;
-                  })()}
-              </div>
-            </div>
-          )}
+          {/* Record info */}
+          <RecordInfoSection family={family} notes={notes} />
         </div>
       )}
       </div>
@@ -1009,11 +981,11 @@ function LogSection({
           background: 'none',
           border: 'none',
           cursor: 'pointer',
-          fontSize: 10,
-          fontWeight: 600,
+          fontSize: 'var(--text-10)',
+          fontWeight: 'var(--font-semibold)',
           color: 'var(--text-muted)',
           textTransform: 'uppercase',
-          letterSpacing: '0.06em',
+          letterSpacing: 'var(--tracking-wide-6)',
         }}
       >
         {label} · {count}
@@ -1059,11 +1031,11 @@ function TodoSection({
           background: 'none',
           border: 'none',
           cursor: 'pointer',
-          fontSize: 10,
-          fontWeight: 600,
+          fontSize: 'var(--text-10)',
+          fontWeight: 'var(--font-semibold)',
           color: 'var(--text-muted)',
           textTransform: 'uppercase',
-          letterSpacing: '0.06em',
+          letterSpacing: 'var(--tracking-wide-6)',
         }}
       >
         {label} · {todos.length}
@@ -1135,9 +1107,9 @@ function TodoSection({
                 >
                   <p
                     style={{
-                      fontSize: 14,
+                      fontSize: 'var(--text-14)',
                       color: t.completed ? 'var(--text-muted)' : 'var(--text-primary)',
-                      lineHeight: 1.4,
+                      lineHeight: 'var(--leading-comfortable)',
                       marginBottom: 4,
                       textDecoration: t.completed ? 'line-through' : 'none',
                     }}
@@ -1155,7 +1127,7 @@ function TodoSection({
                         }}
                       >
                         <Clock size={12} />
-                        <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+                        <span style={{ fontSize: 'var(--text-11)', color: 'var(--text-muted)' }}>
                           {fmtDue(t.dueDate)}
                         </span>
                       </div>
@@ -1164,12 +1136,12 @@ function TodoSection({
                     {tag && (
                       <span
                         style={{
-                          fontSize: 10,
+                          fontSize: 'var(--text-10)',
                           color: 'var(--blue)',
                           padding: '0.0625rem 0.375rem',
                           borderRadius: 'var(--radius-pill)',
                           background: 'var(--blue-light)',
-                          fontWeight: 500,
+                          fontWeight: 'var(--font-medium)',
                         }}
                       >
                         {tag}
@@ -1183,5 +1155,67 @@ function TodoSection({
         </div>
       )}
     </div>
+  );
+}
+
+function InfoSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <p
+        style={{
+          fontSize: 'var(--text-10)',
+          fontWeight: 'var(--font-semibold)',
+          color: 'var(--text-muted)',
+          textTransform: 'uppercase',
+          letterSpacing: 'var(--tracking-wide-6)',
+          marginBottom: 8,
+        }}
+      >
+        {title}
+      </p>
+      <div
+        className="no-last-border"
+        style={{
+          background: 'var(--surface)',
+          borderRadius: 'var(--radius)',
+          overflow: 'hidden',
+          padding: 0,
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function RecordInfoSection({
+  family,
+  notes,
+}: {
+  family: import('@/lib/types').Family;
+  notes: import('@/lib/types').Note[];
+}) {
+  const lastLoggedNote = notes.sort((a, b) => (b.createdAt > a.createdAt ? 1 : -1))[0];
+
+  return (
+    <InfoSection title="Record info">
+      <InfoRow
+        label="Last logged"
+        value={
+          lastLoggedNote ? format(parseISO(lastLoggedNote.createdAt), 'MMM d, yyyy') : 'Never'
+        }
+        muted
+      />
+      <InfoRow
+        label="Added"
+        value={family.createdAt ? format(parseISO(family.createdAt), 'MMM d, yyyy') : '—'}
+        muted
+      />
+      <InfoRow
+        label="Last edited"
+        value={family.lastEditedAt ? format(parseISO(family.lastEditedAt), 'MMM d, yyyy') : '—'}
+        muted
+      />
+    </InfoSection>
   );
 }

@@ -48,7 +48,7 @@ export function TextareaRow({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         rows={rows}
-        style={{ ...inputStyle, resize: resizable ? 'vertical' : 'none', lineHeight: 1.5 }}
+        style={{ ...inputStyle, resize: resizable ? 'vertical' : 'none', lineHeight: 'var(--leading-normal)' }}
       />
     </div>
   );

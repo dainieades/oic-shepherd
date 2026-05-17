@@ -132,7 +132,7 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
                   background: 'none',
                   border: 'none',
                   outline: 'none',
-                  fontSize: 14,
+                  fontSize: 'var(--text-14)',
                   color: 'var(--text-primary)',
                 }}
               />
@@ -144,7 +144,7 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
             {sorted.length === 0 && (
               <p
                 style={{
-                  fontSize: 13,
+                  fontSize: 'var(--text-13)',
                   color: 'var(--text-muted)',
                   textAlign: 'center',
                   paddingTop: 32,
@@ -194,8 +194,8 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: 12,
-                      fontWeight: 700,
+                      fontSize: 'var(--text-12)',
+                      fontWeight: 'var(--font-bold)',
                     }}
                   >
                     {initials}
@@ -203,8 +203,8 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p
                       style={{
-                        fontSize: 14,
-                        fontWeight: isSelected ? 600 : 500,
+                        fontSize: 'var(--text-14)',
+                        fontWeight: isSelected ? 'var(--font-semibold)' : 'var(--font-medium)',
                         color: isSelected ? 'var(--sage)' : 'var(--text-primary)',
                         margin: 0,
                       }}
@@ -212,7 +212,7 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
                       {fullName(p)}
                     </p>
                     {p.alternativeName && (
-                      <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0 }}>
+                      <p style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)', margin: 0 }}>
                         {p.alternativeName}
                       </p>
                     )}
@@ -265,11 +265,11 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
             <div style={{ marginBottom: 24 }}>
               <p
                 style={{
-                  fontSize: 10,
-                  fontWeight: 600,
+                  fontSize: 'var(--text-10)',
+                  fontWeight: 'var(--font-semibold)',
                   color: 'var(--text-muted)',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
+                  letterSpacing: 'var(--tracking-wide-6)',
                   marginBottom: 8,
                 }}
               >
@@ -310,14 +310,14 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          fontSize: 10,
-                          fontWeight: 700,
+                          fontSize: 'var(--text-10)',
+                          fontWeight: 'var(--font-bold)',
                           flexShrink: 0,
                         }}
                       >
                         {initials}
                       </div>
-                      <span style={{ fontSize: 13, color: 'var(--text-primary)', fontWeight: 500 }}>
+                      <span style={{ fontSize: 'var(--text-13)', color: 'var(--text-primary)', fontWeight: 'var(--font-medium)' }}>
                         {p.preferredName}
                       </span>
                     </div>
@@ -330,11 +330,11 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
             <div style={{ marginBottom: 24 }}>
               <p
                 style={{
-                  fontSize: 10,
-                  fontWeight: 600,
+                  fontSize: 'var(--text-10)',
+                  fontWeight: 'var(--font-semibold)',
                   color: 'var(--text-muted)',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
+                  letterSpacing: 'var(--tracking-wide-6)',
                   marginBottom: 4,
                 }}
               >
@@ -363,11 +363,11 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
                     background: 'none',
                     border: 'none',
                     outline: 'none',
-                    fontSize: 16,
+                    fontSize: 'var(--text-16)',
                     color: 'var(--text-primary)',
                   }}
                 />
-                <span style={{ fontSize: 16, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+                <span style={{ fontSize: 'var(--text-16)', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
                   Family
                 </span>
               </div>
@@ -401,10 +401,10 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
           >
             <Check size={24} color="var(--sage)" weight="bold" />
           </div>
-          <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)' }}>
+          <p style={{ fontSize: 'var(--text-16)', fontWeight: 'var(--font-semibold)', color: 'var(--text-primary)' }}>
             Family created
           </p>
-          <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+          <p style={{ fontSize: 'var(--text-13)', color: 'var(--text-muted)' }}>
             {familyName} Family has been added.
           </p>
         </div>

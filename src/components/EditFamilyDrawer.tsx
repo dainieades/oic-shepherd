@@ -30,18 +30,29 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
     useApp();
   const { showToast } = useToast();
 
-  // Compute initial state from members
-  const initialMembers = data.people.filter((p) => family.memberIds.includes(p.id));
-  const initialGroupIds = Array.from(new Set(initialMembers.flatMap((m) => m.groupIds)));
-  const initialShepherdIds = Array.from(
-    new Set(initialMembers.flatMap((m) => m.assignedShepherdIds))
-  );
+  // Capture initial state once for dirty tracking
+  const initialStateRef = React.useRef({
+    label: family.label.replace(/ Family$/i, ''),
+    memberIds: [...family.memberIds],
+    groupIds: Array.from(
+      new Set(
+        data.people.filter((p) => family.memberIds.includes(p.id)).flatMap((m) => m.groupIds)
+      )
+    ),
+    shepherdIds: Array.from(
+      new Set(
+        data.people
+          .filter((p) => family.memberIds.includes(p.id))
+          .flatMap((m) => m.assignedShepherdIds)
+      )
+    ),
+  });
 
   // State
   const [label, setLabel] = React.useState(family.label.replace(/ Family$/i, ''));
   const [memberIds, setMemberIds] = React.useState<string[]>(family.memberIds);
-  const [groupIds, setGroupIds] = React.useState<string[]>(initialGroupIds);
-  const [shepherdIds, setShepherdIds] = React.useState<string[]>(initialShepherdIds);
+  const [groupIds, setGroupIds] = React.useState<string[]>(initialStateRef.current.groupIds);
+  const [shepherdIds, setShepherdIds] = React.useState<string[]>(initialStateRef.current.shepherdIds);
 
   // Picker open state
   const [showMemberPicker, setShowMemberPicker] = React.useState(false);
@@ -52,6 +63,18 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
 
   // Derived
   const currentMembers = data.people.filter((p) => memberIds.includes(p.id));
+
+  const canSave = React.useMemo(() => {
+    if (!label.trim()) return false;
+    const sorted = (arr: string[]) => [...arr].sort().join('\0');
+    const init = initialStateRef.current;
+    return (
+      label.trim() !== init.label ||
+      sorted(memberIds) !== sorted(init.memberIds) ||
+      sorted(groupIds) !== sorted(init.groupIds) ||
+      sorted(shepherdIds) !== sorted(init.shepherdIds)
+    );
+  }, [label, memberIds, groupIds, shepherdIds]);
 
   const handleSave = async () => {
     if (!label.trim()) return;
@@ -90,6 +113,7 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
         onCancel={onClose}
         onAction={handleSave}
         actionLabel="Save"
+        actionDisabled={!canSave}
       />
 
       {/* Scrollable body */}
@@ -118,7 +142,7 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
               placeholder="e.g. Chen"
               style={inputInlineStyle}
             />
-            <span style={{ fontSize: 15, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+            <span style={{ fontSize: 'var(--text-15)', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
               Family
             </span>
           </div>
@@ -157,14 +181,14 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: 11,
-                    fontWeight: 700,
+                    fontSize: 'var(--text-11)',
+                    fontWeight: 'var(--font-bold)',
                     flexShrink: 0,
                   }}
                 >
                   {inits}
                 </div>
-                <span style={{ flex: 1, fontSize: 14, color: 'var(--text-primary)' }}>
+                <span style={{ flex: 1, fontSize: 'var(--text-14)', color: 'var(--text-primary)' }}>
                   {fullName(m)}
                 </span>
                 <button
@@ -210,7 +234,7 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
           >
             <span style={spacerStyle} />
             <Plus size={16} color="var(--sage)" />
-            <span style={{ fontSize: 14, color: 'var(--sage)', fontWeight: 500 }}>
+            <span style={{ fontSize: 'var(--text-14)', color: 'var(--sage)', fontWeight: 'var(--font-medium)' }}>
               Add member
             </span>
           </button>
@@ -245,8 +269,8 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
                   <span
                     key={g.id}
                     style={{
-                      fontSize: 11,
-                      fontWeight: 500,
+                      fontSize: 'var(--text-11)',
+                      fontWeight: 'var(--font-medium)',
                       padding: '0.125rem 0.5rem',
                       borderRadius: 'var(--radius-pill)',
                       background: 'var(--blue-light)',
@@ -258,7 +282,7 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
                   </span>
                 ))
               ) : (
-                <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>None</span>
+                <span style={{ fontSize: 'var(--text-14)', color: 'var(--text-muted)' }}>None</span>
               )}
             </div>
             <CaretRight size={14} color="var(--text-muted)" />
@@ -291,8 +315,8 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
                   <span
                     key={p.id}
                     style={{
-                      fontSize: 11,
-                      fontWeight: 500,
+                      fontSize: 'var(--text-11)',
+                      fontWeight: 'var(--font-medium)',
                       padding: '0.125rem 0.5rem',
                       borderRadius: 'var(--radius-pill)',
                       background: 'var(--sage-light)',
@@ -304,7 +328,7 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
                   </span>
                 ))
               ) : (
-                <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>None</span>
+                <span style={{ fontSize: 'var(--text-14)', color: 'var(--text-muted)' }}>None</span>
               )}
             </div>
             <CaretRight size={14} color="var(--text-muted)" />
@@ -364,10 +388,10 @@ const textRowStyle: React.CSSProperties = {
 
 const asteriskStyle: React.CSSProperties = {
   width: 10,
-  fontSize: 14,
+  fontSize: 'var(--text-14)',
   color: 'var(--red)',
   flexShrink: 0,
-  lineHeight: 1,
+  lineHeight: 'var(--leading-none)',
 };
 
 const spacerStyle: React.CSSProperties = {
@@ -376,7 +400,7 @@ const spacerStyle: React.CSSProperties = {
 };
 
 const labelStyle: React.CSSProperties = {
-  fontSize: 12,
+  fontSize: 'var(--text-12)',
   color: 'var(--text-muted)',
   width: 60,
   flexShrink: 0,
@@ -387,7 +411,7 @@ const inputInlineStyle: React.CSSProperties = {
   background: 'none',
   border: 'none',
   outline: 'none',
-  fontSize: 14,
+  fontSize: 'var(--text-14)',
   color: 'var(--text-primary)',
 };
 
@@ -461,7 +485,7 @@ function MemberPickerSheet({
               placeholder="Search people…"
               style={{
                 flex: 1,
-                fontSize: 14,
+                fontSize: 'var(--text-14)',
                 color: 'var(--text-primary)',
                 background: 'none',
                 border: 'none',
@@ -476,8 +500,8 @@ function MemberPickerSheet({
                   border: 'none',
                   cursor: 'pointer',
                   color: 'var(--text-muted)',
-                  fontSize: 18,
-                  lineHeight: 1,
+                  fontSize: 'var(--text-18)',
+                  lineHeight: 'var(--leading-none)',
                   padding: 0,
                 }}
               >
@@ -526,8 +550,8 @@ function MemberPickerSheet({
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: 12,
-                    fontWeight: 700,
+                    fontSize: 'var(--text-12)',
+                    fontWeight: 'var(--font-bold)',
                   }}
                 >
                   {inits}
@@ -535,8 +559,8 @@ function MemberPickerSheet({
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p
                     style={{
-                      fontSize: 14,
-                      fontWeight: isSel ? 600 : 400,
+                      fontSize: 'var(--text-14)',
+                      fontWeight: isSel ? 'var(--font-semibold)' : 'var(--font-normal)',
                       color: 'var(--text-primary)',
                       margin: 0,
                     }}
@@ -544,7 +568,7 @@ function MemberPickerSheet({
                     {fullName(p)}
                   </p>
                   {p.alternativeName && (
-                    <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0 }}>
+                    <p style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)', margin: 0 }}>
                       {p.alternativeName}
                     </p>
                   )}
@@ -557,7 +581,7 @@ function MemberPickerSheet({
             <p
               style={{
                 padding: '1.5rem 1.25rem',
-                fontSize: 13,
+                fontSize: 'var(--text-13)',
                 color: 'var(--text-muted)',
                 textAlign: 'center',
                 fontStyle: 'italic',
@@ -652,7 +676,7 @@ function GroupPickerSheet({
               placeholder="Search groups…"
               style={{
                 flex: 1,
-                fontSize: 14,
+                fontSize: 'var(--text-14)',
                 color: 'var(--text-primary)',
                 background: 'none',
                 border: 'none',
@@ -667,8 +691,8 @@ function GroupPickerSheet({
                   border: 'none',
                   cursor: 'pointer',
                   color: 'var(--text-muted)',
-                  fontSize: 18,
-                  lineHeight: 1,
+                  fontSize: 'var(--text-18)',
+                  lineHeight: 'var(--leading-none)',
                   padding: 0,
                 }}
               >
@@ -700,8 +724,8 @@ function GroupPickerSheet({
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p
                     style={{
-                      fontSize: 14,
-                      fontWeight: isSel ? 600 : 400,
+                      fontSize: 'var(--text-14)',
+                      fontWeight: isSel ? 'var(--font-semibold)' : 'var(--font-normal)',
                       color: isSel ? 'var(--blue)' : 'var(--text-primary)',
                       margin: 0,
                     }}
@@ -732,7 +756,7 @@ function GroupPickerSheet({
             <p
               style={{
                 padding: '1.5rem 1.25rem',
-                fontSize: 13,
+                fontSize: 'var(--text-13)',
                 color: 'var(--text-muted)',
                 textAlign: 'center',
                 fontStyle: 'italic',

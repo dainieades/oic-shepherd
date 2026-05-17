@@ -110,7 +110,7 @@ export default function AuditLogPage({ params }: { params: Promise<{ id: string 
               paddingTop: '4rem',
               textAlign: 'center',
               color: 'var(--text-muted)',
-              fontSize: '0.875rem',
+              fontSize: 'var(--text-14)',
             }}
           >
             Loading…
@@ -127,8 +127,8 @@ export default function AuditLogPage({ params }: { params: Promise<{ id: string 
             }}
           >
             <ClockCounterClockwise size={40} weight="light" />
-            <p style={{ fontSize: '0.875rem' }}>No edits recorded yet.</p>
-            <p style={{ fontSize: '0.8125rem', textAlign: 'center', maxWidth: '18rem' }}>
+            <p style={{ fontSize: 'var(--text-14)' }}>No edits recorded yet.</p>
+            <p style={{ fontSize: 'var(--text-13)', textAlign: 'center', maxWidth: '18rem' }}>
               Changes made through the app will appear here going forward.
             </p>
           </div>
@@ -173,21 +173,21 @@ function AuditEntry({ log, isLast }: { log: AuditLog; isLast: boolean }) {
           marginBottom: 6,
         }}
       >
-        <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+        <span style={{ fontSize: 'var(--text-13)', fontWeight: 'var(--font-semibold)', color: 'var(--text-primary)' }}>
           {fieldLabel(log.fieldName)}
         </span>
-        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+        <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
           {fmtTimestamp(log.createdAt)}
         </span>
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
         <ValueChip value={log.oldValue} empty={isEmpty(log.oldValue)} label="before" />
-        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>→</span>
+        <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>→</span>
         <ValueChip value={log.newValue} empty={isEmpty(log.newValue)} label="after" />
       </div>
 
-      <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 6 }}>
+      <p style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)', marginTop: 6 }}>
         by {log.changedByName}
       </p>
     </div>
@@ -206,7 +206,7 @@ function ValueChip({
   return (
     <span
       style={{
-        fontSize: '0.8125rem',
+        fontSize: 'var(--text-13)',
         color: empty ? 'var(--text-muted)' : 'var(--text-primary)',
         background: empty ? 'transparent' : 'var(--sage-light)',
         borderRadius: 'var(--radius-sm)',
@@ -239,7 +239,7 @@ const backBtnStyle: React.CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
   gap: 4,
-  fontSize: 13,
+  fontSize: 'var(--text-13)',
   color: 'var(--sage)',
   background: 'none',
   border: 'none',
@@ -248,16 +248,16 @@ const backBtnStyle: React.CSSProperties = {
 };
 
 const navTitleStyle: React.CSSProperties = {
-  fontSize: 15,
-  fontWeight: 600,
+  fontSize: 'var(--text-15)',
+  fontWeight: 'var(--font-semibold)',
   color: 'var(--text-primary)',
 };
 
 const dateLabelStyle: React.CSSProperties = {
-  fontSize: 11,
-  fontWeight: 600,
+  fontSize: 'var(--text-11)',
+  fontWeight: 'var(--font-semibold)',
   color: 'var(--text-muted)',
   textTransform: 'uppercase',
-  letterSpacing: '0.06em',
+  letterSpacing: 'var(--tracking-wide-6)',
   marginBottom: 8,
 };

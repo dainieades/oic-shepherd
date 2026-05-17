@@ -199,15 +199,15 @@ export default function SignInPage() {
           <div style={{ textAlign: 'center' }}>
             <h2
               className="font-display"
-              style={{ fontSize: 22, fontWeight: 700, marginBottom: 10 }}
+              style={{ fontSize: 'var(--text-22)', fontWeight: 'var(--font-bold)', marginBottom: 10 }}
             >
               Check your inbox
             </h2>
             <p
               style={{
-                fontSize: 15,
+                fontSize: 'var(--text-15)',
                 color: 'var(--text-secondary)',
-                lineHeight: 1.6,
+                lineHeight: 'var(--leading-loose)',
                 marginBottom: 20,
               }}
             >
@@ -220,10 +220,10 @@ export default function SignInPage() {
             {wasResent && (
               <p
                 style={{
-                  fontSize: 13,
+                  fontSize: 'var(--text-13)',
                   color: 'var(--sage)',
                   marginBottom: 16,
-                  fontWeight: 500,
+                  fontWeight: 'var(--font-medium)',
                 }}
               >
                 Confirmation email resent. Check your inbox.
@@ -264,7 +264,7 @@ export default function SignInPage() {
             <h1 className="font-display" style={headingStyle}>
               Create your password
             </h1>
-            <p style={{ fontSize: 15, color: 'var(--text-secondary)' }}>{step.email}</p>
+            <p style={{ fontSize: 'var(--text-15)', color: 'var(--text-secondary)' }}>{step.email}</p>
           </div>
 
           {status.type === 'error' && <ErrorBanner message={status.message} />}
@@ -346,7 +346,7 @@ export default function SignInPage() {
             <h1 className="font-display" style={headingStyle}>
               Welcome back
             </h1>
-            <p style={{ fontSize: 15, color: 'var(--text-secondary)' }}>{step.email}</p>
+            <p style={{ fontSize: 'var(--text-15)', color: 'var(--text-secondary)' }}>{step.email}</p>
           </div>
 
           {status.type === 'error' && <ErrorBanner message={status.message} />}
@@ -421,15 +421,15 @@ export default function SignInPage() {
           <div style={{ textAlign: 'center' }}>
             <h2
               className="font-display"
-              style={{ fontSize: 22, fontWeight: 700, marginBottom: 10 }}
+              style={{ fontSize: 'var(--text-22)', fontWeight: 'var(--font-bold)', marginBottom: 10 }}
             >
               Check your inbox
             </h2>
             <p
               style={{
-                fontSize: 15,
+                fontSize: 'var(--text-15)',
                 color: 'var(--text-secondary)',
-                lineHeight: 1.6,
+                lineHeight: 'var(--leading-loose)',
                 marginBottom: 24,
               }}
             >
@@ -453,7 +453,7 @@ export default function SignInPage() {
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
           <Logo height={88} style={{ margin: '0 auto 16px' }} />
-          <h1 className="font-display" style={{ ...headingStyle, fontSize: 24 }}>
+          <h1 className="font-display" style={{ ...headingStyle, fontSize: 'var(--text-24)' }}>
             Welcome to Shepherd App.
           </h1>
         </div>
@@ -471,9 +471,9 @@ export default function SignInPage() {
               transform: 'translateX(-50%)',
               background: 'var(--sage)',
               color: 'var(--on-sage)',
-              fontSize: 11,
-              fontWeight: 700,
-              letterSpacing: '0.03em',
+              fontSize: 'var(--text-11)',
+              fontWeight: 'var(--font-bold)',
+              letterSpacing: 'var(--tracking-wide-3)',
               padding: '0.125rem 0.5rem',
               borderRadius: 'var(--radius-xl)',
               pointerEvents: 'none',
@@ -495,8 +495,8 @@ export default function SignInPage() {
               borderRadius: 'var(--radius-md)',
               border: '0.09375rem solid var(--sage)',
               background: 'var(--surface)',
-              fontSize: 15,
-              fontWeight: 600,
+              fontSize: 'var(--text-15)',
+              fontWeight: 'var(--font-semibold)',
               color: 'var(--text-primary)',
               cursor: isLoading ? 'not-allowed' : 'pointer',
               opacity: isLoading ? 0.6 : 1,
@@ -527,7 +527,7 @@ export default function SignInPage() {
         {/* Divider */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '1.25rem 0' }}>
           <div style={{ flex: 1, height: 1, background: 'var(--border-light)' }} />
-          <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>or</span>
+          <span style={{ fontSize: 'var(--text-13)', color: 'var(--text-muted)' }}>or</span>
           <div style={{ flex: 1, height: 1, background: 'var(--border-light)' }} />
         </div>
 
@@ -576,7 +576,7 @@ export default function SignInPage() {
             textAlign: 'center',
           }}
         >
-          <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.5 }}>
+          <p style={{ fontSize: 'var(--text-13)', color: 'var(--text-muted)', lineHeight: 'var(--leading-normal)' }}>
             Access is by invitation only.
             <br />
             Contact your pastor to request access.
@@ -616,16 +616,16 @@ const cardStyle: React.CSSProperties = {
 };
 
 const headingStyle: React.CSSProperties = {
-  fontSize: 30,
-  fontWeight: 700,
+  fontSize: 'var(--text-30)',
+  fontWeight: 'var(--font-bold)',
   color: 'var(--text-primary)',
   marginBottom: 6,
 };
 
 const labelStyle: React.CSSProperties = {
   display: 'block',
-  fontSize: 13,
-  fontWeight: 600,
+  fontSize: 'var(--text-13)',
+  fontWeight: 'var(--font-semibold)',
   color: 'var(--text-primary)',
   marginBottom: 6,
 };
@@ -635,7 +635,7 @@ const inputStyle: React.CSSProperties = {
   padding: '0.75rem 0.875rem',
   borderRadius: 'var(--radius-md)',
   border: '0.09375rem solid var(--border)',
-  fontSize: 15,
+  fontSize: 'var(--text-15)',
   color: 'var(--text-primary)',
   background: 'var(--surface)',
   outline: 'none',
@@ -647,8 +647,8 @@ const primaryButtonStyle: React.CSSProperties = {
   borderRadius: 'var(--radius-md)',
   border: 'none',
   background: 'var(--sage)',
-  fontSize: 15,
-  fontWeight: 600,
+  fontSize: 'var(--text-15)',
+  fontWeight: 'var(--font-semibold)',
   color: 'var(--on-sage)',
 };
 
@@ -658,7 +658,7 @@ const ghostButtonStyle: React.CSSProperties = {
   background: 'none',
   border: 'none',
   color: 'var(--sage)',
-  fontSize: 14,
+  fontSize: 'var(--text-14)',
   cursor: 'pointer',
   textAlign: 'center',
   padding: '0.25rem 0',
@@ -673,7 +673,7 @@ function ErrorBanner({ message }: { message: string }) {
         borderRadius: 'var(--radius-sm)',
         padding: '0.625rem 0.875rem',
         marginBottom: 16,
-        fontSize: 13,
+        fontSize: 'var(--text-13)',
         color: 'var(--red)',
       }}
     >

@@ -188,7 +188,7 @@ function ConnectedBlock({ onDisable }: { onDisable: () => void }) {
         }}
       >
         <Check size={20} weight="bold" color="var(--sage)" />
-        <span style={{ flex: 1, fontSize: '0.9375rem', color: 'var(--text-primary)' }}>
+        <span style={{ flex: 1, fontSize: 'var(--text-15)', color: 'var(--text-primary)' }}>
           Synced to <strong>your calendar</strong>
         </span>
       </div>
@@ -228,7 +228,7 @@ function SmallActionButton({
         cursor: 'pointer',
         textAlign: 'left',
         width: '100%',
-        fontSize: '0.875rem',
+        fontSize: 'var(--text-14)',
         color: 'var(--text-primary)',
       }}
     >
@@ -251,17 +251,17 @@ function Divider() {
 }
 
 const sectionHeaderStyle: React.CSSProperties = {
-  fontSize: '0.8125rem',
-  fontWeight: 600,
+  fontSize: 'var(--text-13)',
+  fontWeight: 'var(--font-semibold)',
   color: 'var(--text-muted)',
   textTransform: 'uppercase',
-  letterSpacing: '0.04em',
+  letterSpacing: 'var(--tracking-wide-4)',
   margin: '0 0 0.375rem',
 };
 
 const sectionDescStyle: React.CSSProperties = {
-  fontSize: '0.8125rem',
+  fontSize: 'var(--text-13)',
   color: 'var(--text-muted)',
   margin: '0 0 0.875rem',
-  lineHeight: 1.5,
+  lineHeight: 'var(--leading-normal)',
 };

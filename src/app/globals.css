@@ -68,6 +68,58 @@
   --shadow-elevated:
     0 0.25rem 1rem rgba(31, 37, 51, 0.11), 0 0.0625rem 0.25rem rgba(31, 37, 51, 0.06);
 
+  /* ── Typography — font families ── */
+  --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-serif: 'Lora', Georgia, 'Times New Roman', serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* ── Typography — font sizes (rem) ── */
+  --text-9:  0.5625rem;
+  --text-10: 0.625rem;
+  --text-11: 0.6875rem;
+  --text-12: 0.75rem;
+  --text-13: 0.8125rem;
+  --text-14: 0.875rem;
+  --text-15: 0.9375rem;
+  --text-16: 1rem;
+  --text-17: 1.0625rem;
+  --text-18: 1.125rem;
+  --text-20: 1.25rem;
+  --text-22: 1.375rem;
+  --text-24: 1.5rem;
+  --text-26: 1.625rem;
+  --text-28: 1.75rem;
+  --text-30: 1.875rem;
+  --text-32: 2rem;
+
+  /* ── Typography — font weights ── */
+  --font-normal:    400;
+  --font-medium:    500;
+  --font-semibold:  600;
+  --font-bold:      700;
+  --font-extrabold: 800;
+
+  /* ── Typography — line heights ── */
+  --leading-none:        1;
+  --leading-tight:       1.15;
+  --leading-snug:        1.25;
+  --leading-comfortable: 1.4;
+  --leading-semi:        1.45;
+  --leading-normal:      1.5;
+  --leading-open:        1.55;
+  --leading-loose:       1.6;
+
+  /* ── Typography — letter spacing ── */
+  --tracking-tight-3: -0.03em;
+  --tracking-tight-2: -0.02em;
+  --tracking-tight-1: -0.01em;
+  --tracking-normal:   0em;
+  --tracking-wide-2:   0.02em;
+  --tracking-wide-3:   0.03em;
+  --tracking-wide-4:   0.04em;
+  --tracking-wide-5:   0.05em;
+  --tracking-wide-6:   0.06em;
+
   /* ── Spacing scale ── */
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
@@ -267,15 +319,9 @@ body {
 body {
   background: var(--bg);
   color: var(--text-primary);
-  font-family:
-    'Geist',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    system-ui,
-    sans-serif;
-  font-size: 0.9375rem;
-  line-height: 1.5;
+  font-family: var(--font-sans);
+  font-size: var(--text-15);
+  line-height: var(--leading-normal);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -284,12 +330,12 @@ body {
 input,
 textarea,
 select {
-  font-size: 1rem;
+  font-size: var(--text-16);
 }
 
 /* ── Typography helpers ────────────────────────── */
 .font-display {
-  font-family: 'Lora', Georgia, 'Times New Roman', serif;
+  font-family: var(--font-serif);
 }
 
 /* ── Scrollbar hiding ──────────────────────────── */
@@ -502,6 +548,17 @@ select {
     border-radius: 0;
     animation: slide-in-right 0.28s cubic-bezier(0.34, 1.2, 0.64, 1) both;
   }
+  /* picker-dialog: centered island with fixed height so SubPanel children can fill it */
+  .sheet-outer-picker-dialog {
+    align-items: center;
+  }
+  .sheet-panel-picker-dialog {
+    width: calc(100% - 3rem);
+    max-width: 32rem;
+    height: min(85vh, 44rem) !important;
+    border-radius: var(--radius-lg);
+    animation: fade-in 0.22s ease both;
+  }
 }
 
 /* ── Settings: desktop two-pane layout ───────────── */
@@ -650,8 +707,8 @@ select {
     background: transparent;
     border: none;
     color: var(--text-secondary);
-    font-size: 0.875rem;
-    font-weight: 500;
+    font-size: var(--text-14);
+    font-weight: var(--font-medium);
     cursor: pointer;
     text-align: left;
     transition:
@@ -667,7 +724,7 @@ select {
   .family-tab-item[data-active='true'] {
     background: var(--sage-light);
     color: var(--sage-dark);
-    font-weight: 700;
+    font-weight: var(--font-bold);
   }
   .person-tab-row,
   .family-tab-row {
@@ -685,8 +742,8 @@ select {
   }
   .person-tab-badge,
   .family-tab-badge {
-    font-size: 0.6875rem;
-    font-weight: 600;
+    font-size: var(--text-11);
+    font-weight: var(--font-semibold);
     background: var(--sage);
     color: var(--on-sage);
     border-radius: var(--radius-sm);
@@ -949,7 +1006,7 @@ a:focus-visible {
   }
 
   .calendar-todo-item {
-    font-size: 0.625rem;
+    font-size: var(--text-10);
     line-height: 1.3;
     padding: 0.0625rem 0.25rem;
     border-radius: 0.1875rem;
@@ -974,6 +1031,6 @@ a:focus-visible {
   .calendar-todo-item--more {
     background: transparent;
     color: var(--text-muted);
-    font-size: 0.5625rem;
+    font-size: var(--text-9);
   }
 }

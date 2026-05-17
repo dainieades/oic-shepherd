@@ -25,15 +25,15 @@ export function InfoRow({ icon, label, value, muted }: InfoRowProps) {
         {icon && (
           <span style={{ color: 'var(--text-muted)', display: 'flex', flexShrink: 0 }}>{icon}</span>
         )}
-        <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>{label}</span>
+        <span style={{ fontSize: 'var(--text-13)', color: 'var(--text-muted)' }}>{label}</span>
       </div>
       <span
         style={{
-          fontSize: 13,
+          fontSize: 'var(--text-13)',
           color: muted ? 'var(--text-muted)' : 'var(--text-primary)',
-          fontWeight: muted ? 400 : 500,
+          fontWeight: muted ? 'var(--font-normal)' : 'var(--font-medium)',
           textAlign: 'right',
-          lineHeight: 1.5,
+          lineHeight: 'var(--leading-normal)',
         }}
       >
         {value}

@@ -120,6 +120,7 @@ export interface Family {
   primaryContactId?: string;
   createdAt?: string;
   createdBy?: string; // persona ID
+  lastEditedAt?: string;
   isTest?: boolean;
 }
 

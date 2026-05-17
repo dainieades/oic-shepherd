@@ -157,7 +157,7 @@ export default function TodosPage() {
   })();
 
   const btnSize = scrolled ? 30 : 36;
-  const btnFont = scrolled ? 13 : 14;
+  const btnFont = scrolled ? 'var(--text-13)' : 'var(--text-14)';
   const btnPad = scrolled ? '0 0.75rem' : '0 0.875rem';
 
   const actionButtons = (
@@ -238,8 +238,8 @@ export default function TodosPage() {
                 borderRadius: '50%',
                 background: 'var(--sage)',
                 color: 'var(--on-sage)',
-                fontSize: 9,
-                fontWeight: 700,
+                fontSize: 'var(--text-9)',
+                fontWeight: 'var(--font-bold)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -261,7 +261,7 @@ export default function TodosPage() {
           background: 'var(--sage)',
           color: 'var(--on-sage)',
           fontSize: btnFont,
-          fontWeight: 600,
+          fontWeight: 'var(--font-semibold)',
           border: 'none',
           cursor: 'pointer',
           display: 'flex',
@@ -300,10 +300,10 @@ export default function TodosPage() {
           >
             <span
               style={{
-                fontSize: 17,
-                fontWeight: 600,
+                fontSize: 'var(--text-17)',
+                fontWeight: 'var(--font-semibold)',
                 color: 'var(--text-primary)',
-                letterSpacing: '-0.01em',
+                letterSpacing: 'var(--tracking-tight-1)',
               }}
             >
               To-dos
@@ -322,11 +322,11 @@ export default function TodosPage() {
           >
             <h1
               style={{
-                fontSize: 32,
-                fontWeight: 800,
+                fontSize: 'var(--text-32)',
+                fontWeight: 'var(--font-extrabold)',
                 color: 'var(--text-primary)',
-                letterSpacing: '-0.03em',
-                lineHeight: 1,
+                letterSpacing: 'var(--tracking-tight-3)',
+                lineHeight: 'var(--leading-none)',
               }}
             >
               To-dos
@@ -368,7 +368,7 @@ export default function TodosPage() {
               background: 'var(--surface)',
               border: '1px solid var(--border)',
               borderRadius: 'var(--radius-sm)',
-              fontSize: 14,
+              fontSize: 'var(--text-14)',
               color: 'var(--text-primary)',
               outline: 'none',
             }}
@@ -405,8 +405,8 @@ export default function TodosPage() {
                     background: 'var(--sage-light)',
                     border: '1px solid var(--sage-mid)',
                     color: 'var(--sage-dark)',
-                    fontSize: 11,
-                    fontWeight: 500,
+                    fontSize: 'var(--text-11)',
+                    fontWeight: 'var(--font-medium)',
                     cursor: 'pointer',
                   }}
                 >
@@ -522,8 +522,8 @@ export default function TodosPage() {
         <div style={{ textAlign: 'center', padding: '4rem 2rem 2rem' }}>
           <p
             style={{
-              fontSize: 15,
-              fontWeight: 600,
+              fontSize: 'var(--text-15)',
+              fontWeight: 'var(--font-semibold)',
               color: 'var(--text-secondary)',
               marginBottom: 8,
             }}
@@ -532,9 +532,9 @@ export default function TodosPage() {
           </p>
           <p
             style={{
-              fontSize: 13,
+              fontSize: 'var(--text-13)',
               color: 'var(--text-muted)',
-              lineHeight: 1.6,
+              lineHeight: 'var(--leading-loose)',
               maxWidth: 260,
               margin: '0 auto',
             }}
@@ -544,12 +544,12 @@ export default function TodosPage() {
           </p>
           <p
             style={{
-              fontSize: 12,
+              fontSize: 'var(--text-12)',
               color: 'var(--text-muted)',
-              lineHeight: 1.5,
+              lineHeight: 'var(--leading-normal)',
               maxWidth: 260,
               margin: '0.625rem auto 0',
-              fontWeight: 600,
+              fontWeight: 'var(--font-semibold)',
             }}
           >
             Only assigned shepherds and pastors can see these.
@@ -644,7 +644,7 @@ export default function TodosPage() {
                 borderBottom: '1px solid var(--border-light)',
               }}
             >
-              <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>
+              <h2 style={{ fontSize: 'var(--text-16)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)' }}>
                 Filter
               </h2>
               <button
@@ -669,11 +669,11 @@ export default function TodosPage() {
             <div style={{ flex: 1, overflowY: 'auto', padding: '1rem 1.25rem' }}>
               <p
                 style={{
-                  fontSize: 10,
-                  fontWeight: 600,
+                  fontSize: 'var(--text-10)',
+                  fontWeight: 'var(--font-semibold)',
                   color: 'var(--text-muted)',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
+                  letterSpacing: 'var(--tracking-wide-6)',
                   marginBottom: 10,
                 }}
               >
@@ -705,7 +705,7 @@ export default function TodosPage() {
                     background: 'var(--bg)',
                     border: '1px solid var(--border)',
                     borderRadius: 'var(--radius-xs)',
-                    fontSize: 13,
+                    fontSize: 'var(--text-13)',
                     color: 'var(--text-primary)',
                     outline: 'none',
                     boxSizing: 'border-box' as const,
@@ -761,8 +761,8 @@ export default function TodosPage() {
                   flex: 1,
                   background: 'none',
                   border: 'none',
-                  fontSize: 14,
-                  fontWeight: 600,
+                  fontSize: 'var(--text-14)',
+                  fontWeight: 'var(--font-semibold)',
                   color: 'var(--text-secondary)',
                   cursor: 'pointer',
                   padding: '0.75rem 0',
@@ -779,8 +779,8 @@ export default function TodosPage() {
                   border: 'none',
                   borderRadius: 'var(--radius)',
                   padding: '0.75rem 0',
-                  fontSize: 15,
-                  fontWeight: 600,
+                  fontSize: 'var(--text-15)',
+                  fontWeight: 'var(--font-semibold)',
                   cursor: 'pointer',
                 }}
               >
@@ -863,10 +863,10 @@ function CalendarView({
           marginBottom: 12,
         }}
       >
-        <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
+        <span style={{ fontSize: 'var(--text-15)', fontWeight: 'var(--font-semibold)', color: 'var(--text-primary)' }}>
           <span style={{ color: 'var(--text-primary)' }}>{format(new Date(calYear, calMonth, 1), 'MMMM')}</span>
           {' '}
-          <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>{calYear}</span>
+          <span style={{ color: 'var(--text-muted)', fontWeight: 'var(--font-normal)' }}>{calYear}</span>
         </span>
         <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
           <button
@@ -899,8 +899,8 @@ function CalendarView({
               border: '1px solid var(--border)',
               background: 'transparent',
               color: 'var(--text-secondary)',
-              fontSize: 13,
-              fontWeight: 500,
+              fontSize: 'var(--text-13)',
+              fontWeight: 'var(--font-medium)',
               cursor: 'pointer',
             }}
           >
@@ -933,11 +933,11 @@ function CalendarView({
             key={d}
             style={{
               textAlign: 'center',
-              fontSize: 10,
-              fontWeight: 600,
+              fontSize: 'var(--text-10)',
+              fontWeight: 'var(--font-semibold)',
               color: 'var(--text-muted)',
               textTransform: 'uppercase',
-              letterSpacing: '0.04em',
+              letterSpacing: 'var(--tracking-wide-4)',
               paddingBottom: 4,
             }}
           >
@@ -979,14 +979,14 @@ function CalendarView({
             >
               <span
                 style={{
-                  fontSize: '0.625rem',
-                  fontWeight: isToday || isSelected ? 700 : 400,
+                  fontSize: 'var(--text-10)',
+                  fontWeight: isToday || isSelected ? 'var(--font-bold)' : 'var(--font-normal)',
                   color: isSelected
                     ? 'var(--on-sage)'
                     : isToday
                       ? 'var(--sage)'
                       : 'var(--text-secondary, var(--text-muted))',
-                  lineHeight: 1,
+                  lineHeight: 'var(--leading-none)',
                 }}
               >
                 {day}
@@ -1056,18 +1056,18 @@ function CalendarView({
         <div style={{ marginTop: 16 }}>
           <p
             style={{
-              fontSize: 10,
-              fontWeight: 600,
+              fontSize: 'var(--text-10)',
+              fontWeight: 'var(--font-semibold)',
               color: 'var(--text-muted)',
               textTransform: 'uppercase',
-              letterSpacing: '0.06em',
+              letterSpacing: 'var(--tracking-wide-6)',
               marginBottom: 8,
             }}
           >
             {format(parseISO(`${selectedDate}T00:00:00`), 'EEEE, MMMM d')} · {selectedTodos.length}
           </p>
           {selectedTodos.length === 0 ? (
-            <p style={{ fontSize: 13, color: 'var(--text-muted)', padding: '0.75rem 0' }}>
+            <p style={{ fontSize: 'var(--text-13)', color: 'var(--text-muted)', padding: '0.75rem 0' }}>
               No to-dos on this day.
             </p>
           ) : (
@@ -1130,9 +1130,9 @@ function CalendarView({
                     >
                       <p
                         style={{
-                          fontSize: 14,
+                          fontSize: 'var(--text-14)',
                           color: t.completed ? 'var(--text-muted)' : 'var(--text-primary)',
-                          lineHeight: 1.4,
+                          lineHeight: 'var(--leading-comfortable)',
                           marginBottom: 4,
                           textDecoration: t.completed ? 'line-through' : 'none',
                         }}
@@ -1142,12 +1142,12 @@ function CalendarView({
                       {targetChips.length > 0 && (
                         <span
                           style={{
-                            fontSize: 10,
+                            fontSize: 'var(--text-10)',
                             color: 'var(--blue)',
                             padding: '0.0625rem 0.375rem',
                             borderRadius: 'var(--radius-pill)',
                             background: 'var(--blue-light)',
-                            fontWeight: 500,
+                            fontWeight: 'var(--font-medium)',
                           }}
                         >
                           {targetChips[0]}
@@ -1164,7 +1164,7 @@ function CalendarView({
 
       {/* No-date todos note */}
       {todos.filter((t) => !t.dueDate && !t.completed).length > 0 && (
-        <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 16 }}>
+        <p style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)', marginTop: 16 }}>
           {todos.filter((t) => !t.dueDate && !t.completed).length} to-do
           {todos.filter((t) => !t.dueDate && !t.completed).length !== 1 ? 's' : ''} with no due date
           — switch to list view to see them.
@@ -1205,11 +1205,11 @@ function TodoSection({
           background: 'none',
           border: 'none',
           cursor: 'pointer',
-          fontSize: 10,
-          fontWeight: 600,
+          fontSize: 'var(--text-10)',
+          fontWeight: 'var(--font-semibold)',
           color: labelColor ?? 'var(--text-muted)',
           textTransform: 'uppercase',
-          letterSpacing: '0.06em',
+          letterSpacing: 'var(--tracking-wide-6)',
         }}
       >
         {label} · {todos.length}
@@ -1282,9 +1282,9 @@ function TodoSection({
                 >
                   <p
                     style={{
-                      fontSize: 14,
+                      fontSize: 'var(--text-14)',
                       color: t.completed ? 'var(--text-muted)' : 'var(--text-primary)',
-                      lineHeight: 1.4,
+                      lineHeight: 'var(--leading-comfortable)',
                       marginBottom: 4,
                       textDecoration: t.completed ? 'line-through' : 'none',
                     }}
@@ -1310,7 +1310,7 @@ function TodoSection({
                         }}
                       >
                         <Clock size={12} />
-                        <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+                        <span style={{ fontSize: 'var(--text-11)', color: 'var(--text-muted)' }}>
                           {fmtDue(t.dueDate)}
                         </span>
                       </div>
@@ -1319,12 +1319,12 @@ function TodoSection({
                     {targetChips.length > 0 && (
                       <span
                         style={{
-                          fontSize: 10,
+                          fontSize: 'var(--text-10)',
                           color: 'var(--blue)',
                           padding: '0.0625rem 0.375rem',
                           borderRadius: 'var(--radius-pill)',
                           background: 'var(--blue-light)',
-                          fontWeight: 500,
+                          fontWeight: 'var(--font-medium)',
                           flexShrink: 0,
                         }}
                       >
@@ -1334,12 +1334,12 @@ function TodoSection({
                     {targetChips.length > 1 && (
                       <span
                         style={{
-                          fontSize: 10,
+                          fontSize: 'var(--text-10)',
                           color: 'var(--blue)',
                           padding: '0.0625rem 0.375rem',
                           borderRadius: 'var(--radius-pill)',
                           background: 'var(--blue-light)',
-                          fontWeight: 500,
+                          fontWeight: 'var(--font-medium)',
                           flexShrink: 0,
                         }}
                       >

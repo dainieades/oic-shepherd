@@ -97,10 +97,10 @@ export default function AppearancePage() {
                   <span
                     style={{
                       display: 'block',
-                      fontSize: 15,
-                      fontWeight: active ? 600 : 500,
+                      fontSize: 'var(--text-15)',
+                      fontWeight: active ? 'var(--font-semibold)' : 'var(--font-medium)',
                       color: active ? 'var(--sage)' : 'var(--text-primary)',
-                      letterSpacing: '-0.01em',
+                      letterSpacing: 'var(--tracking-tight-1)',
                     }}
                   >
                     {label}
@@ -108,7 +108,7 @@ export default function AppearancePage() {
                   <span
                     style={{
                       display: 'block',
-                      fontSize: 13,
+                      fontSize: 'var(--text-13)',
                       color: 'var(--text-muted)',
                       marginTop: 2,
                     }}
@@ -157,7 +157,7 @@ const backBtnStyle: React.CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
   gap: 4,
-  fontSize: 13,
+  fontSize: 'var(--text-13)',
   color: 'var(--sage)',
   background: 'none',
   border: 'none',
@@ -166,7 +166,7 @@ const backBtnStyle: React.CSSProperties = {
 };
 
 const navTitleStyle: React.CSSProperties = {
-  fontSize: 15,
-  fontWeight: 600,
+  fontSize: 'var(--text-15)',
+  fontWeight: 'var(--font-semibold)',
   color: 'var(--text-primary)',
 };

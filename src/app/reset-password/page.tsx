@@ -54,15 +54,15 @@ export default function ResetPasswordPage() {
           <div style={{ textAlign: 'center' }}>
             <h2
               className="font-display"
-              style={{ fontSize: 22, fontWeight: 700, marginBottom: 10 }}
+              style={{ fontSize: 'var(--text-22)', fontWeight: 'var(--font-bold)', marginBottom: 10 }}
             >
               Password updated
             </h2>
             <p
               style={{
-                fontSize: 15,
+                fontSize: 'var(--text-15)',
                 color: 'var(--text-secondary)',
-                lineHeight: 1.6,
+                lineHeight: 'var(--leading-loose)',
                 marginBottom: 24,
               }}
             >
@@ -81,7 +81,7 @@ export default function ResetPasswordPage() {
             <h1 className="font-display" style={headingStyle}>
               Set new password
             </h1>
-            <p style={{ fontSize: 15, color: 'var(--text-secondary)' }}>
+            <p style={{ fontSize: 'var(--text-15)', color: 'var(--text-secondary)' }}>
               Choose a password for your account.
             </p>
           </div>
@@ -167,16 +167,16 @@ const cardStyle: React.CSSProperties = {
 };
 
 const headingStyle: React.CSSProperties = {
-  fontSize: 30,
-  fontWeight: 700,
+  fontSize: 'var(--text-30)',
+  fontWeight: 'var(--font-bold)',
   color: 'var(--text-primary)',
   marginBottom: 6,
 };
 
 const labelStyle: React.CSSProperties = {
   display: 'block',
-  fontSize: 13,
-  fontWeight: 600,
+  fontSize: 'var(--text-13)',
+  fontWeight: 'var(--font-semibold)',
   color: 'var(--text-primary)',
   marginBottom: 6,
 };
@@ -186,7 +186,7 @@ const inputStyle: React.CSSProperties = {
   padding: '0.75rem 0.875rem',
   borderRadius: 'var(--radius-md)',
   border: '0.09375rem solid var(--border)',
-  fontSize: 15,
+  fontSize: 'var(--text-15)',
   color: 'var(--text-primary)',
   background: 'var(--surface)',
   outline: 'none',
@@ -198,8 +198,8 @@ const primaryButtonStyle: React.CSSProperties = {
   borderRadius: 'var(--radius-md)',
   border: 'none',
   background: 'var(--sage)',
-  fontSize: 15,
-  fontWeight: 600,
+  fontSize: 'var(--text-15)',
+  fontWeight: 'var(--font-semibold)',
   color: 'var(--on-sage)',
   cursor: 'pointer',
 };
@@ -213,7 +213,7 @@ function ErrorBanner({ message }: { message: string }) {
         borderRadius: 'var(--radius-sm)',
         padding: '0.625rem 0.875rem',
         marginBottom: 16,
-        fontSize: 13,
+        fontSize: 'var(--text-13)',
         color: 'var(--red)',
       }}
     >

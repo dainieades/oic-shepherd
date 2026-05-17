@@ -51,8 +51,8 @@ export default function BottomNav() {
                       minWidth: '1.125rem',
                       height: '1.125rem',
                       padding: '0 0.25rem',
-                      fontSize: '0.625rem',
-                      fontWeight: 700,
+                      fontSize: 'var(--text-10)',
+                      fontWeight: 'var(--font-bold)',
                       lineHeight: '1.125rem',
                       textAlign: 'center',
                       borderRadius: 'var(--radius-pill)',
@@ -64,7 +64,7 @@ export default function BottomNav() {
                   </span>
                 )}
               </span>
-              <span style={{ fontSize: 10, fontWeight: active ? 600 : 400 }}>{item.label}</span>
+              <span style={{ fontSize: 'var(--text-10)', fontWeight: active ? 'var(--font-semibold)' : 'var(--font-normal)' }}>{item.label}</span>
             </Link>
           );
         })}

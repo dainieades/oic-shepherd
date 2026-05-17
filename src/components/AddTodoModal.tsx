@@ -314,7 +314,7 @@ export default function AddTodoModal({
                           </span>
                           <span
                             style={{
-                              fontSize: 12,
+                              fontSize: 'var(--text-12)',
                               color: 'var(--text-muted)',
                               width: 60,
                               flexShrink: 0,
@@ -322,7 +322,7 @@ export default function AddTodoModal({
                           >
                             Created by
                           </span>
-                          <span style={{ flex: 1, fontSize: 14, color: 'var(--text-secondary)' }}>
+                          <span style={{ flex: 1, fontSize: 'var(--text-14)', color: 'var(--text-secondary)' }}>
                             {creator?.name ?? 'Unknown'}
                           </span>
                         </div>
@@ -346,11 +346,11 @@ export default function AddTodoModal({
                   background: 'var(--surface)',
                   border: '1px solid var(--border-light)',
                   borderRadius: 'var(--radius-sm)',
-                  fontSize: 15,
+                  fontSize: 'var(--text-15)',
                   color: 'var(--text-primary)',
                   resize: 'vertical',
                   outline: 'none',
-                  lineHeight: 1.5,
+                  lineHeight: 'var(--leading-normal)',
                   boxSizing: 'border-box',
                 }}
               />
@@ -477,12 +477,12 @@ function FieldRow({
       >
         {icon}
       </span>
-      <span style={{ fontSize: 12, color: 'var(--text-muted)', width: 60, flexShrink: 0 }}>
+      <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)', width: 60, flexShrink: 0 }}>
         {label}
       </span>
       <span
         style={{
-          fontSize: 14,
+          fontSize: 'var(--text-14)',
           color: valueColor ?? 'var(--text-primary)',
           flex: 1,
           wordBreak: 'break-word',

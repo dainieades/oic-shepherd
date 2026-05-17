@@ -31,10 +31,10 @@ export default function SortControls(): React.ReactNode {
           padding: '0.25rem 0.5rem',
           background: 'transparent',
           border: 'none',
-          fontSize: 12,
+          fontSize: 'var(--text-12)',
           color: 'var(--text-muted)',
           cursor: 'pointer',
-          fontWeight: 500,
+          fontWeight: 'var(--font-medium)',
         }}
       >
         <ArrowsDownUp size={11} />
@@ -68,8 +68,8 @@ export default function SortControls(): React.ReactNode {
                 width: '100%',
                 padding: '0.5rem 0.875rem',
                 textAlign: 'left',
-                fontSize: 13,
-                fontWeight: sortKey === opt.key ? 600 : 400,
+                fontSize: 'var(--text-13)',
+                fontWeight: sortKey === opt.key ? 'var(--font-semibold)' : 'var(--font-normal)',
                 color: sortKey === opt.key ? 'var(--sage)' : 'var(--text-primary)',
                 background: 'transparent',
                 border: 'none',

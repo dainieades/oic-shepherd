@@ -46,7 +46,7 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
         <button
           onClick={onClose}
           style={{
-            fontSize: 14,
+            fontSize: 'var(--text-14)',
             color: 'var(--text-secondary)',
             background: 'none',
             border: 'none',
@@ -58,8 +58,8 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
         </button>
         <span
           style={{
-            fontSize: 15,
-            fontWeight: 600,
+            fontSize: 'var(--text-15)',
+            fontWeight: 'var(--font-semibold)',
             color: 'var(--text-primary)',
             flex: 1,
             textAlign: 'center',
@@ -75,7 +75,7 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
           href={`/groups/${group.id}`}
           onClick={onClose}
           style={{
-            fontSize: 13,
+            fontSize: 'var(--text-13)',
             color: 'var(--sage)',
             textDecoration: 'none',
             whiteSpace: 'nowrap',
@@ -115,8 +115,8 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
           >
             <span
               style={{
-                fontSize: 11,
-                fontWeight: 500,
+                fontSize: 'var(--text-11)',
+                fontWeight: 'var(--font-medium)',
                 padding: '0.1875rem 0.625rem',
                 borderRadius: 'var(--radius-pill)',
                 background: 'var(--sage-light)',
@@ -127,8 +127,8 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
             </span>
             <span
               style={{
-                fontSize: 11,
-                fontWeight: 500,
+                fontSize: 'var(--text-11)',
+                fontWeight: 'var(--font-medium)',
                 padding: '0.1875rem 0.625rem',
                 borderRadius: 'var(--radius-pill)',
                 background: 'var(--blue-light)',
@@ -141,9 +141,9 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
           {group.description && (
             <p
               style={{
-                fontSize: 13,
+                fontSize: 'var(--text-13)',
                 color: 'var(--text-secondary)',
-                lineHeight: 1.6,
+                lineHeight: 'var(--leading-loose)',
                 paddingLeft: 12,
                 borderLeft: '0.125rem solid var(--sage-mid)',
                 margin: 0,
@@ -159,11 +159,11 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
           <div style={{ marginBottom: 14 }}>
             <p
               style={{
-                fontSize: 10,
-                fontWeight: 600,
+                fontSize: 'var(--text-10)',
+                fontWeight: 'var(--font-semibold)',
                 color: 'var(--text-muted)',
                 textTransform: 'uppercase',
-                letterSpacing: '0.06em',
+                letterSpacing: 'var(--tracking-wide-6)',
                 marginBottom: 8,
               }}
             >
@@ -207,8 +207,8 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: 12,
-                        fontWeight: 600,
+                        fontSize: 'var(--text-12)',
+                        fontWeight: 'var(--font-semibold)',
                         flexShrink: 0,
                       }}
                     >
@@ -225,8 +225,8 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
                       >
                         <p
                           style={{
-                            fontSize: 14,
-                            fontWeight: 600,
+                            fontSize: 'var(--text-14)',
+                            fontWeight: 'var(--font-semibold)',
                             color: 'var(--text-primary)',
                             margin: 0,
                           }}
@@ -234,7 +234,7 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
                           {fullName(leader)}
                         </p>
                       </div>
-                      <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0 }}>
+                      <p style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)', margin: 0 }}>
                         {getMembershipLabel(leader.membershipStatus)}
                       </p>
                     </div>
@@ -250,11 +250,11 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
           <div style={{ marginBottom: 8 }}>
             <p
               style={{
-                fontSize: 10,
-                fontWeight: 600,
+                fontSize: 'var(--text-10)',
+                fontWeight: 'var(--font-semibold)',
                 color: 'var(--text-muted)',
                 textTransform: 'uppercase',
-                letterSpacing: '0.06em',
+                letterSpacing: 'var(--tracking-wide-6)',
                 marginBottom: 8,
               }}
             >
@@ -298,8 +298,8 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: 12,
-                        fontWeight: 600,
+                        fontSize: 'var(--text-12)',
+                        fontWeight: 'var(--font-semibold)',
                         flexShrink: 0,
                       }}
                     >
@@ -308,8 +308,8 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
                     <div>
                       <p
                         style={{
-                          fontSize: 14,
-                          fontWeight: 500,
+                          fontSize: 'var(--text-14)',
+                          fontWeight: 'var(--font-medium)',
                           color: 'var(--text-primary)',
                           margin: 0,
                         }}
@@ -317,7 +317,7 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
                         {fullName(m)}
                       </p>
                       {m.alternativeName && (
-                        <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0 }}>
+                        <p style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)', margin: 0 }}>
                           {m.alternativeName}
                         </p>
                       )}

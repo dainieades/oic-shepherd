@@ -153,14 +153,14 @@ export default function PersonFamilyPicker({
             display: 'flex',
             alignItems: 'center',
             gap: 4,
-            fontSize: 14,
+            fontSize: 'var(--text-14)',
             padding: 0,
           }}
         >
           <CaretLeft size={16} />
           Back
         </button>
-        <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
+        <span style={{ fontSize: 'var(--text-15)', fontWeight: 'var(--font-semibold)', color: 'var(--text-primary)' }}>
           Select who
         </span>
         <button
@@ -169,8 +169,8 @@ export default function PersonFamilyPicker({
             background: 'none',
             border: 'none',
             cursor: 'pointer',
-            fontSize: 14,
-            fontWeight: 600,
+            fontSize: 'var(--text-14)',
+            fontWeight: 'var(--font-semibold)',
             color: totalSelected > 0 ? 'var(--sage)' : 'var(--text-muted)',
             padding: 0,
           }}
@@ -200,7 +200,7 @@ export default function PersonFamilyPicker({
           placeholder="Search families or people..."
           style={{
             flex: 1,
-            fontSize: 14,
+            fontSize: 'var(--text-14)',
             color: 'var(--text-primary)',
             background: 'none',
             border: 'none',
@@ -215,8 +215,8 @@ export default function PersonFamilyPicker({
               border: 'none',
               cursor: 'pointer',
               color: 'var(--text-muted)',
-              fontSize: 18,
-              lineHeight: 1,
+              fontSize: 'var(--text-18)',
+              lineHeight: 'var(--leading-none)',
               padding: 0,
             }}
           >
@@ -240,8 +240,8 @@ export default function PersonFamilyPicker({
               background: 'none',
               border: 'none',
               cursor: 'pointer',
-              fontSize: 12,
-              fontWeight: 600,
+              fontSize: 'var(--text-12)',
+              fontWeight: 'var(--font-semibold)',
               color: 'var(--sage)',
               padding: 0,
             }}
@@ -291,8 +291,8 @@ export default function PersonFamilyPicker({
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p
                   style={{
-                    fontSize: 14,
-                    fontWeight: selected ? 600 : 400,
+                    fontSize: 'var(--text-14)',
+                    fontWeight: selected ? 'var(--font-semibold)' : 'var(--font-normal)',
                     color: selected ? 'var(--sage)' : 'var(--text-primary)',
                     margin: 0,
                   }}
@@ -302,7 +302,7 @@ export default function PersonFamilyPicker({
                 {item.subtitle && (
                   <p
                     style={{
-                      fontSize: 12,
+                      fontSize: 'var(--text-12)',
                       color: 'var(--text-muted)',
                       margin: 0,
                       overflow: 'hidden',
@@ -322,7 +322,7 @@ export default function PersonFamilyPicker({
         {items.length === 0 && (
           <p
             style={{
-              fontSize: 13,
+              fontSize: 'var(--text-13)',
               color: 'var(--text-muted)',
               fontStyle: 'italic',
               paddingTop: 16,

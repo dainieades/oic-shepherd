@@ -127,12 +127,12 @@ function DesktopSidebar() {
       <aside className="settings-sidebar-desktop">
         <h1
           style={{
-            fontSize: 28,
-            fontWeight: 800,
+            fontSize: 'var(--text-28)',
+            fontWeight: 'var(--font-extrabold)',
             color: 'var(--text-primary)',
-            letterSpacing: '-0.03em',
+            letterSpacing: 'var(--tracking-tight-3)',
             margin: 0,
-            lineHeight: 1,
+            lineHeight: 'var(--leading-none)',
           }}
         >
           Settings
@@ -190,8 +190,8 @@ function DesktopSidebar() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: 15,
-                fontWeight: 700,
+                fontSize: 'var(--text-15)',
+                fontWeight: 'var(--font-bold)',
                 flexShrink: 0,
               }}
             >
@@ -201,11 +201,11 @@ function DesktopSidebar() {
           <div style={{ flex: 1, minWidth: 0 }}>
             <p
               style={{
-                fontSize: 14,
-                fontWeight: 700,
+                fontSize: 'var(--text-14)',
+                fontWeight: 'var(--font-bold)',
                 color: 'var(--text-primary)',
                 margin: 0,
-                letterSpacing: '-0.01em',
+                letterSpacing: 'var(--tracking-tight-1)',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
@@ -219,7 +219,7 @@ function DesktopSidebar() {
               ) : currentPersona.role === 'shepherd' ? (
                 <HandHeart size={11} color="var(--sage)" weight="fill" />
               ) : null}
-              <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{roleLabel}</span>
+              <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>{roleLabel}</span>
             </div>
           </div>
         </Link>
@@ -248,7 +248,7 @@ function DesktopSidebar() {
           }}
         >
           <SignOut size={16} color="var(--red)" />
-          <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--red)' }}>Sign Out</span>
+          <span style={{ fontSize: 'var(--text-14)', fontWeight: 'var(--font-medium)', color: 'var(--red)' }}>Sign Out</span>
         </button>
       </aside>
 
@@ -280,15 +280,15 @@ function DesktopSidebar() {
             <div style={{ padding: '1.5rem 1.25rem 1rem', textAlign: 'center' }}>
               <p
                 style={{
-                  fontSize: 16,
-                  fontWeight: 600,
+                  fontSize: 'var(--text-16)',
+                  fontWeight: 'var(--font-semibold)',
                   color: 'var(--text-primary)',
                   margin: '0 0 0.375rem',
                 }}
               >
                 Sign out?
               </p>
-              <p style={{ fontSize: 14, color: 'var(--text-muted)', margin: 0 }}>
+              <p style={{ fontSize: 'var(--text-14)', color: 'var(--text-muted)', margin: 0 }}>
                 You can always sign back in.
               </p>
             </div>
@@ -301,10 +301,10 @@ function DesktopSidebar() {
                   background: 'none',
                   border: 'none',
                   borderRight: '1px solid var(--border-light)',
-                  fontSize: 15,
+                  fontSize: 'var(--text-15)',
                   color: 'var(--text-secondary)',
                   cursor: 'pointer',
-                  fontWeight: 500,
+                  fontWeight: 'var(--font-medium)',
                 }}
               >
                 Cancel
@@ -316,10 +316,10 @@ function DesktopSidebar() {
                   height: 50,
                   background: 'none',
                   border: 'none',
-                  fontSize: 15,
+                  fontSize: 'var(--text-15)',
                   color: 'var(--sage)',
                   cursor: 'pointer',
-                  fontWeight: 600,
+                  fontWeight: 'var(--font-semibold)',
                 }}
               >
                 Sign Out
@@ -352,11 +352,11 @@ function NavGroup({
     >
       <div
         style={{
-          fontSize: 12,
-          fontWeight: 600,
+          fontSize: 'var(--text-12)',
+          fontWeight: 'var(--font-semibold)',
           color: 'var(--text-muted)',
           textTransform: 'uppercase',
-          letterSpacing: '0.04em',
+          letterSpacing: 'var(--tracking-wide-4)',
           padding: '0.75rem 1rem 0.5rem',
         }}
       >
@@ -375,8 +375,8 @@ function NavGroup({
                 alignItems: 'center',
                 gap: 10,
                 padding: '0.625rem 1rem',
-                fontSize: 14,
-                fontWeight: active ? 600 : 500,
+                fontSize: 'var(--text-14)',
+                fontWeight: active ? 'var(--font-semibold)' : 'var(--font-medium)',
                 color: active ? 'var(--sage)' : 'var(--text-primary)',
                 background: active ? 'var(--sage-tint, rgba(0,0,0,0.04))' : 'transparent',
                 borderLeft: active ? '3px solid var(--sage)' : '3px solid transparent',

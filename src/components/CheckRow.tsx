@@ -61,7 +61,7 @@ export function CheckRow({ checked, onToggle, children }: CheckRowProps) {
       >
         {checked && <Check size={10} color="var(--on-sage)" weight="bold" />}
       </div>
-      <span style={{ fontSize: 14, color: 'var(--text-primary)', fontWeight: checked ? 500 : 400 }}>
+      <span style={{ fontSize: 'var(--text-14)', color: 'var(--text-primary)', fontWeight: checked ? 'var(--font-medium)' : 'var(--font-normal)' }}>
         {children}
       </span>
     </button>

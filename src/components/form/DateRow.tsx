@@ -30,7 +30,7 @@ export function DateRow({
       <span
         style={{
           flex: 1,
-          fontSize: 14,
+          fontSize: 'var(--text-14)',
           color: value ? 'var(--text-primary)' : 'var(--text-muted)',
           textAlign: 'left',
         }}

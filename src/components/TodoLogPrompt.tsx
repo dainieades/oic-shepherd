@@ -39,16 +39,16 @@ export default function TodoLogPrompt({ todo, onAddLog, onSkip }: TodoLogPromptP
       >
         <p
           style={{
-            fontSize: 15,
-            fontWeight: 600,
+            fontSize: 'var(--text-15)',
+            fontWeight: 'var(--font-semibold)',
             color: 'var(--text-primary)',
             marginBottom: 6,
-            lineHeight: 1.4,
+            lineHeight: 'var(--leading-comfortable)',
           }}
         >
           Add a log?
         </p>
-        <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 20, lineHeight: 1.5 }}>
+        <p style={{ fontSize: 'var(--text-13)', color: 'var(--text-muted)', marginBottom: 20, lineHeight: 'var(--leading-normal)' }}>
           You completed &ldquo;{todo.title}&rdquo;. Want to log what happened?
         </p>
         <div style={{ display: 'flex', gap: 10 }}>
@@ -61,8 +61,8 @@ export default function TodoLogPrompt({ todo, onAddLog, onSkip }: TodoLogPromptP
               color: 'var(--on-sage)',
               border: 'none',
               borderRadius: 'var(--radius-sm)',
-              fontSize: 14,
-              fontWeight: 600,
+              fontSize: 'var(--text-14)',
+              fontWeight: 'var(--font-semibold)',
               cursor: 'pointer',
             }}
           >
@@ -77,8 +77,8 @@ export default function TodoLogPrompt({ todo, onAddLog, onSkip }: TodoLogPromptP
               border: '1px solid var(--border)',
               color: 'var(--text-secondary)',
               borderRadius: 'var(--radius-sm)',
-              fontSize: 14,
-              fontWeight: 500,
+              fontSize: 'var(--text-14)',
+              fontWeight: 'var(--font-medium)',
               cursor: 'pointer',
             }}
           >

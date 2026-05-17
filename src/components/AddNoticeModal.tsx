@@ -436,7 +436,7 @@ export default function AddNoticeModal({
                     </span>
                     <span
                       style={{
-                        fontSize: 12,
+                        fontSize: 'var(--text-12)',
                         color: 'var(--text-muted)',
                         width: 60,
                         flexShrink: 0,
@@ -447,8 +447,8 @@ export default function AddNoticeModal({
                     <span style={{ flex: 1 }}>
                       <span
                         style={{
-                          fontSize: 12,
-                          fontWeight: 600,
+                          fontSize: 'var(--text-12)',
+                          fontWeight: 'var(--font-semibold)',
                           padding: '0.1875rem 0.5625rem',
                           borderRadius: 'var(--radius-pill)',
                           background: urgencyStyle.bg,
@@ -502,7 +502,7 @@ export default function AddNoticeModal({
                           </span>
                           <span
                             style={{
-                              fontSize: 12,
+                              fontSize: 'var(--text-12)',
                               color: 'var(--text-muted)',
                               width: 60,
                               flexShrink: 0,
@@ -510,7 +510,7 @@ export default function AddNoticeModal({
                           >
                             Added by
                           </span>
-                          <span style={{ flex: 1, fontSize: 14, color: 'var(--text-secondary)' }}>
+                          <span style={{ flex: 1, fontSize: 'var(--text-14)', color: 'var(--text-secondary)' }}>
                             {creator?.name ?? 'Unknown'} ·{' '}
                             {format(parseISO(notice.createdAt), 'MMM d, yyyy')}
                           </span>
@@ -535,11 +535,11 @@ export default function AddNoticeModal({
                   background: 'var(--surface)',
                   border: '1px solid var(--border-light)',
                   borderRadius: 'var(--radius-sm)',
-                  fontSize: 14,
+                  fontSize: 'var(--text-14)',
                   color: 'var(--text-primary)',
                   resize: 'vertical',
                   outline: 'none',
-                  lineHeight: 1.5,
+                  lineHeight: 'var(--leading-normal)',
                   boxSizing: 'border-box',
                 }}
               />
@@ -635,7 +635,7 @@ function ReadOnlyNoticeHeader({ onClose }: { onClose: () => void }) {
           minWidth: 0,
         }}
       >
-        <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
+        <span style={{ fontSize: 'var(--text-15)', fontWeight: 'var(--font-semibold)', color: 'var(--text-primary)' }}>
           Notice
         </span>
         <span
@@ -643,13 +643,13 @@ function ReadOnlyNoticeHeader({ onClose }: { onClose: () => void }) {
             display: 'inline-flex',
             alignItems: 'center',
             gap: 4,
-            fontSize: 11,
-            fontWeight: 600,
+            fontSize: 'var(--text-11)',
+            fontWeight: 'var(--font-semibold)',
             padding: '0.125rem 0.5rem',
             borderRadius: 'var(--radius-pill)',
             background: 'var(--border-light)',
             color: 'var(--text-muted)',
-            letterSpacing: '0.02em',
+            letterSpacing: 'var(--tracking-wide-2)',
           }}
         >
           <Lock size={11} weight="bold" />
@@ -713,12 +713,12 @@ function FieldRow({
       >
         {icon}
       </span>
-      <span style={{ fontSize: 12, color: 'var(--text-muted)', width: 60, flexShrink: 0 }}>
+      <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)', width: 60, flexShrink: 0 }}>
         {label}
       </span>
       <span
         style={{
-          fontSize: 14,
+          fontSize: 'var(--text-14)',
           color: valueColor ?? 'var(--text-primary)',
           flex: 1,
           wordBreak: 'break-word',
@@ -795,8 +795,8 @@ function NoticeVisibilityWarningDialog({
           </div>
           <p
             style={{
-              fontSize: 16,
-              fontWeight: 600,
+              fontSize: 'var(--text-16)',
+              fontWeight: 'var(--font-semibold)',
               color: 'var(--text-primary)',
               margin: '0 0 0.5rem',
             }}
@@ -805,10 +805,10 @@ function NoticeVisibilityWarningDialog({
           </p>
           <p
             style={{
-              fontSize: 14,
+              fontSize: 'var(--text-14)',
               color: 'var(--text-secondary)',
               margin: '0 0 0.5rem',
-              lineHeight: 1.45,
+              lineHeight: 'var(--leading-semi)',
             }}
           >
             It will be visible to{' '}
@@ -819,10 +819,10 @@ function NoticeVisibilityWarningDialog({
           </p>
           <p
             style={{
-              fontSize: 13,
+              fontSize: 'var(--text-13)',
               color: 'var(--text-muted)',
               margin: 0,
-              lineHeight: 1.45,
+              lineHeight: 'var(--leading-semi)',
             }}
           >
             They may receive an email notification when you post it.
@@ -848,10 +848,10 @@ function NoticeVisibilityWarningDialog({
               background: 'none',
               border: 'none',
               borderRight: '1px solid var(--border-light)',
-              fontSize: 15,
+              fontSize: 'var(--text-15)',
               color: 'var(--text-secondary)',
               cursor: 'pointer',
-              fontWeight: 500,
+              fontWeight: 'var(--font-medium)',
             }}
           >
             Cancel
@@ -863,10 +863,10 @@ function NoticeVisibilityWarningDialog({
               height: 50,
               background: 'none',
               border: 'none',
-              fontSize: 15,
+              fontSize: 'var(--text-15)',
               color: 'var(--sage)',
               cursor: 'pointer',
-              fontWeight: 600,
+              fontWeight: 'var(--font-semibold)',
             }}
           >
             Post notice

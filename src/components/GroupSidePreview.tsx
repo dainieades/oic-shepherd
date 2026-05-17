@@ -112,8 +112,8 @@ export default function GroupSidePreview({ groupId, onClose }: Props) {
               display: 'inline-flex',
               alignItems: 'center',
               gap: 5,
-              fontSize: 13,
-              fontWeight: 600,
+              fontSize: 'var(--text-13)',
+              fontWeight: 'var(--font-semibold)',
               whiteSpace: 'nowrap',
             }}
           >
@@ -134,8 +134,8 @@ export default function GroupSidePreview({ groupId, onClose }: Props) {
               display: 'inline-flex',
               alignItems: 'center',
               gap: 5,
-              fontSize: 13,
-              fontWeight: 600,
+              fontSize: 'var(--text-13)',
+              fontWeight: 'var(--font-semibold)',
               whiteSpace: 'nowrap',
             }}
           >
@@ -163,10 +163,10 @@ export default function GroupSidePreview({ groupId, onClose }: Props) {
         >
           <h2
             style={{
-              fontSize: 18,
-              fontWeight: 700,
+              fontSize: 'var(--text-18)',
+              fontWeight: 'var(--font-bold)',
               color: 'var(--text-primary)',
-              letterSpacing: '-0.01em',
+              letterSpacing: 'var(--tracking-tight-1)',
               margin: '0 0 10px',
             }}
           >
@@ -175,8 +175,8 @@ export default function GroupSidePreview({ groupId, onClose }: Props) {
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             <span
               style={{
-                fontSize: 11,
-                fontWeight: 500,
+                fontSize: 'var(--text-11)',
+                fontWeight: 'var(--font-medium)',
                 padding: '0.1875rem 0.625rem',
                 borderRadius: 'var(--radius-pill)',
                 background: 'var(--sage-light)',
@@ -187,8 +187,8 @@ export default function GroupSidePreview({ groupId, onClose }: Props) {
             </span>
             <span
               style={{
-                fontSize: 11,
-                fontWeight: 500,
+                fontSize: 'var(--text-11)',
+                fontWeight: 'var(--font-medium)',
                 padding: '0.1875rem 0.625rem',
                 borderRadius: 'var(--radius-pill)',
                 background: 'var(--blue-light)',
@@ -205,9 +205,9 @@ export default function GroupSidePreview({ groupId, onClose }: Props) {
           {group.description && (
             <p
               style={{
-                fontSize: 13,
+                fontSize: 'var(--text-13)',
                 color: 'var(--text-secondary)',
-                lineHeight: 1.6,
+                lineHeight: 'var(--leading-loose)',
                 paddingLeft: 12,
                 borderLeft: '0.125rem solid var(--sage-mid)',
                 margin: '12px 0 0',
@@ -222,11 +222,11 @@ export default function GroupSidePreview({ groupId, onClose }: Props) {
           <div style={{ marginBottom: 14 }}>
             <p
               style={{
-                fontSize: 10,
-                fontWeight: 600,
+                fontSize: 'var(--text-10)',
+                fontWeight: 'var(--font-semibold)',
                 color: 'var(--text-muted)',
                 textTransform: 'uppercase',
-                letterSpacing: '0.06em',
+                letterSpacing: 'var(--tracking-wide-6)',
                 margin: '0 0 8px',
               }}
             >
@@ -267,15 +267,15 @@ export default function GroupSidePreview({ groupId, onClose }: Props) {
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <p
                         style={{
-                          fontSize: 14,
-                          fontWeight: 600,
+                          fontSize: 'var(--text-14)',
+                          fontWeight: 'var(--font-semibold)',
                           color: 'var(--text-primary)',
                           margin: 0,
                         }}
                       >
                         {fullName(leader)}
                       </p>
-                      <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0 }}>
+                      <p style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)', margin: 0 }}>
                         {getMembershipLabel(leader.membershipStatus)}
                       </p>
                     </div>
@@ -290,11 +290,11 @@ export default function GroupSidePreview({ groupId, onClose }: Props) {
           <div>
             <p
               style={{
-                fontSize: 10,
-                fontWeight: 600,
+                fontSize: 'var(--text-10)',
+                fontWeight: 'var(--font-semibold)',
                 color: 'var(--text-muted)',
                 textTransform: 'uppercase',
-                letterSpacing: '0.06em',
+                letterSpacing: 'var(--tracking-wide-6)',
                 margin: '0 0 8px',
               }}
             >
@@ -335,8 +335,8 @@ export default function GroupSidePreview({ groupId, onClose }: Props) {
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <p
                         style={{
-                          fontSize: 14,
-                          fontWeight: 500,
+                          fontSize: 'var(--text-14)',
+                          fontWeight: 'var(--font-medium)',
                           color: 'var(--text-primary)',
                           margin: 0,
                         }}
@@ -344,7 +344,7 @@ export default function GroupSidePreview({ groupId, onClose }: Props) {
                         {fullName(m)}
                       </p>
                       {m.alternativeName && (
-                        <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0 }}>
+                        <p style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)', margin: 0 }}>
                           {m.alternativeName}
                         </p>
                       )}
@@ -355,7 +355,7 @@ export default function GroupSidePreview({ groupId, onClose }: Props) {
             </div>
           </div>
         ) : (
-          <p style={{ fontSize: 13, color: 'var(--text-muted)', fontStyle: 'italic' }}>
+          <p style={{ fontSize: 'var(--text-13)', color: 'var(--text-muted)', fontStyle: 'italic' }}>
             No members yet.
           </p>
         )}

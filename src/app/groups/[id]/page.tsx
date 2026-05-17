@@ -67,7 +67,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
             display: 'inline-flex',
             alignItems: 'center',
             gap: 4,
-            fontSize: 13,
+            fontSize: 'var(--text-13)',
             color: 'var(--sage)',
             background: 'none',
             border: 'none',
@@ -81,8 +81,8 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
 
         <span
           style={{
-            fontSize: 14,
-            fontWeight: 500,
+            fontSize: 'var(--text-14)',
+            fontWeight: 'var(--font-medium)',
             color: 'var(--text-secondary)',
             flex: 1,
             textAlign: 'center',
@@ -108,8 +108,8 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
             display: 'flex',
             alignItems: 'center',
             gap: 5,
-            fontSize: scrolled ? 13 : 14,
-            fontWeight: 600,
+            fontSize: scrolled ? 'var(--text-13)' : 'var(--text-14)',
+            fontWeight: 'var(--font-semibold)',
             whiteSpace: 'nowrap',
             flexShrink: 0,
             transition: 'height 0.25s ease, padding 0.25s ease, font-size 0.25s ease',
@@ -133,17 +133,17 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
         <div style={{ marginBottom: 10 }}>
           <h1
             style={{
-              fontSize: 22,
-              fontWeight: 700,
+              fontSize: 'var(--text-22)',
+              fontWeight: 'var(--font-bold)',
               color: 'var(--text-primary)',
-              letterSpacing: '-0.02em',
+              letterSpacing: 'var(--tracking-tight-2)',
               marginBottom: iAmLeader ? 4 : 0,
             }}
           >
             {group.name}
           </h1>
           {iAmLeader && (
-            <span style={{ fontSize: 12, color: 'var(--sage)', fontWeight: 500 }}>
+            <span style={{ fontSize: 'var(--text-12)', color: 'var(--sage)', fontWeight: 'var(--font-medium)' }}>
               You&apos;re a leader
             </span>
           )}
@@ -160,8 +160,8 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
         >
           <span
             style={{
-              fontSize: 11,
-              fontWeight: 500,
+              fontSize: 'var(--text-11)',
+              fontWeight: 'var(--font-medium)',
               padding: '0.1875rem 0.625rem',
               borderRadius: 'var(--radius-pill)',
               background: 'var(--sage-light)',
@@ -172,8 +172,8 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
           </span>
           <span
             style={{
-              fontSize: 11,
-              fontWeight: 500,
+              fontSize: 'var(--text-11)',
+              fontWeight: 'var(--font-medium)',
               padding: '0.1875rem 0.625rem',
               borderRadius: 'var(--radius-pill)',
               background: 'var(--blue-light)',
@@ -191,9 +191,9 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
         {group.description && (
           <p
             style={{
-              fontSize: 13,
+              fontSize: 'var(--text-13)',
               color: 'var(--text-secondary)',
-              lineHeight: 1.6,
+              lineHeight: 'var(--leading-loose)',
               paddingLeft: 12,
               borderLeft: '0.125rem solid var(--sage-mid)',
               marginTop: 14,
@@ -245,11 +245,11 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
                     <div
                       style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}
                     >
-                      <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>
+                      <span style={{ fontSize: 'var(--text-14)', fontWeight: 'var(--font-semibold)', color: 'var(--text-primary)' }}>
                         {fullName(leader)}
                       </span>
                       {leader.alternativeName && (
-                        <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+                        <span style={{ fontSize: 'var(--text-11)', color: 'var(--text-muted)' }}>
                           {leader.alternativeName}
                         </span>
                       )}
@@ -267,7 +267,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
       <div>
         <SectionLabel>Group members · {members.length}</SectionLabel>
         {members.length === 0 ? (
-          <p style={{ fontSize: 13, color: 'var(--text-muted)', fontStyle: 'italic' }}>
+          <p style={{ fontSize: 'var(--text-13)', color: 'var(--text-muted)', fontStyle: 'italic' }}>
             No members yet. Tap Edit to add members.
           </p>
         ) : (
@@ -309,18 +309,18 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
                     <div
                       style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}
                     >
-                      <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>
+                      <span style={{ fontSize: 'var(--text-14)', fontWeight: 'var(--font-semibold)', color: 'var(--text-primary)' }}>
                         {fullName(m)}
                       </span>
                       {m.alternativeName && (
-                        <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+                        <span style={{ fontSize: 'var(--text-11)', color: 'var(--text-muted)' }}>
                           {m.alternativeName}
                         </span>
                       )}
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
                       {m.lastContactDate && (
-                        <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+                        <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>
                           &nbsp;· {getTimeAgo(m.lastContactDate)}
                         </span>
                       )}

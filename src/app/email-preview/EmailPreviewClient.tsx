@@ -26,7 +26,7 @@ export default function EmailPreviewClient({ emails }: { emails: EmailEntry[] })
         fontFamily: 'system-ui, sans-serif',
       }}
     >
-      <h1 style={{ margin: '0 0 2rem', fontSize: '1.125rem', fontWeight: 700, color: '#111' }}>
+      <h1 style={{ margin: '0 0 2rem', fontSize: 'var(--text-18)', fontWeight: 'var(--font-bold)', color: '#111' }}>
         Email Previews
       </h1>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
@@ -42,24 +42,24 @@ export default function EmailPreviewClient({ emails }: { emails: EmailEntry[] })
             >
               <span
                 style={{
-                  fontSize: '0.6875rem',
-                  fontWeight: 700,
+                  fontSize: 'var(--text-11)',
+                  fontWeight: 'var(--font-bold)',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
+                  letterSpacing: 'var(--tracking-wide-6)',
                   color: '#888',
                 }}
               >
                 {label}
               </span>
-              <span style={{ fontSize: '0.8125rem', color: '#444', flex: 1 }}>
+              <span style={{ fontSize: 'var(--text-13)', color: '#444', flex: 1 }}>
                 Subject: <strong>{subject}</strong>
               </span>
               <button
                 type="button"
                 onClick={() => handleCopy(label, html)}
                 style={{
-                  fontSize: '0.75rem',
-                  fontWeight: 600,
+                  fontSize: 'var(--text-12)',
+                  fontWeight: 'var(--font-semibold)',
                   padding: '0.375rem 0.75rem',
                   border: '1px solid #ccc',
                   borderRadius: '0.375rem',

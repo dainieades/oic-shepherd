@@ -20,8 +20,8 @@ export function EmptyState({
       {icon && <div style={{ marginBottom: 8 }}>{icon}</div>}
       <p
         style={{
-          fontSize: 14,
-          fontWeight: 600,
+          fontSize: 'var(--text-14)',
+          fontWeight: 'var(--font-semibold)',
           color: 'var(--text-secondary)',
           marginBottom: description ? 6 : 0,
         }}
@@ -31,9 +31,9 @@ export function EmptyState({
       {description && (
         <p
           style={{
-            fontSize: 13,
+            fontSize: 'var(--text-13)',
             color: 'var(--text-muted)',
-            lineHeight: 1.6,
+            lineHeight: 'var(--leading-loose)',
             maxWidth: 260,
             margin: '0 auto',
           }}
@@ -44,12 +44,12 @@ export function EmptyState({
       {subtext && (
         <p
           style={{
-            fontSize: 12,
+            fontSize: 'var(--text-12)',
             color: 'var(--text-muted)',
-            lineHeight: 1.5,
+            lineHeight: 'var(--leading-normal)',
             maxWidth: 260,
             margin: '0.625rem auto 0',
-            fontWeight: 600,
+            fontWeight: 'var(--font-semibold)',
           }}
         >
           {subtext}

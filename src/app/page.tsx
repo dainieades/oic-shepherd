@@ -54,14 +54,14 @@ const addMenuIconStyle: React.CSSProperties = {
 };
 
 const addMenuLabelStyle: React.CSSProperties = {
-  fontSize: 14,
-  fontWeight: 600,
+  fontSize: 'var(--text-14)',
+  fontWeight: 'var(--font-semibold)',
   color: 'var(--text-primary)',
   margin: 0,
 };
 
 const addMenuDescStyle: React.CSSProperties = {
-  fontSize: 11,
+  fontSize: 'var(--text-11)',
   color: 'var(--text-muted)',
   margin: '0.0625rem 0 0',
 };
@@ -212,7 +212,7 @@ export default function PeoplePage() {
     (e) => e.type === 'individual' && !e.fromFamilySearch
   ).length;
   const btnSize = scrolled ? 30 : 36;
-  const btnFont = scrolled ? 13 : 14;
+  const btnFont = scrolled ? 'var(--text-13)' : 'var(--text-14)';
   const btnPad = scrolled ? '0 0.75rem' : '0 0.875rem';
 
   const searchActive = showSearch || !!search;
@@ -294,8 +294,8 @@ export default function PeoplePage() {
               borderRadius: '50%',
               background: 'var(--sage)',
               color: 'var(--on-sage)',
-              fontSize: 9,
-              fontWeight: 700,
+              fontSize: 'var(--text-9)',
+              fontWeight: 'var(--font-bold)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -426,11 +426,11 @@ export default function PeoplePage() {
           >
             <span
               style={{
-                fontSize: scrolled ? '1.0625rem' : '2rem',
-                fontWeight: scrolled ? 600 : 800,
+                fontSize: scrolled ? 'var(--text-17)' : 'var(--text-32)',
+                fontWeight: scrolled ? 'var(--font-semibold)' : 'var(--font-extrabold)',
                 color: 'var(--text-primary)',
-                letterSpacing: scrolled ? '-0.01em' : '-0.03em',
-                lineHeight: 1,
+                letterSpacing: scrolled ? 'var(--tracking-tight-1)' : 'var(--tracking-tight-3)',
+                lineHeight: 'var(--leading-none)',
                 transition: 'font-size 0.25s ease, letter-spacing 0.25s ease',
               }}
             >
@@ -475,8 +475,8 @@ export default function PeoplePage() {
                     background: 'var(--sage-light)',
                     border: '1px solid var(--sage-mid)',
                     color: 'var(--sage-dark)',
-                    fontSize: 11,
-                    fontWeight: 500,
+                    fontSize: 'var(--text-11)',
+                    fontWeight: 'var(--font-medium)',
                     cursor: 'pointer',
                   }}
                 >
@@ -489,7 +489,7 @@ export default function PeoplePage() {
 
           {/* ── Count + Sort ──────────────────── */}
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
-            <span style={{ fontSize: 12, color: 'var(--text-muted)', flex: 1 }}>
+            <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)', flex: 1 }}>
               {familyCount > 0
                 ? `${familyCount} ${familyCount === 1 ? 'family' : 'families'}`
                 : `${individualCount} people`}
@@ -540,7 +540,7 @@ export default function PeoplePage() {
                   textAlign: 'center',
                   paddingTop: 48,
                   color: 'var(--text-muted)',
-                  fontSize: 14,
+                  fontSize: 'var(--text-14)',
                 }}
               >
                 {filters.shepherds.length > 0 &&

@@ -194,7 +194,7 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
         >
           <X size={24} />
         </button>
-        <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.01em' }}>
+        <span style={{ fontSize: 'var(--text-16)', fontWeight: 'var(--font-semibold)', letterSpacing: 'var(--tracking-tight-1)' }}>
           Move and Scale
         </span>
         <button
@@ -313,7 +313,7 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
           style={{ width: '100%', accentColor: '#fff', cursor: 'pointer' }}
           aria-label="Zoom"
         />
-        <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11 }}>
+        <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 'var(--text-11)' }}>
           Drag to reposition · Pinch or scroll to zoom
         </span>
       </div>

@@ -42,7 +42,7 @@ export function AvatarBadge({
         alignItems: 'center',
         justifyContent: 'center',
         fontSize: Math.round(size * 0.3),
-        fontWeight: 700,
+        fontWeight: 'var(--font-bold)',
         flexShrink: 0,
         overflow: 'hidden',
       }}

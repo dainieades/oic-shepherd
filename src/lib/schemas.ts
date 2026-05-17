@@ -55,6 +55,7 @@ export const FamilyRowSchema = z.object({
   primary_contact_id: nullStr,
   created_at: nullStr,
   created_by: nullStr,
+  last_edited_at: nullStr,
   is_test: nullBool,
 });
 

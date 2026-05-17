@@ -75,10 +75,10 @@ export default function GroupsPage() {
           >
             <span
               style={{
-                fontSize: 17,
-                fontWeight: 600,
+                fontSize: 'var(--text-17)',
+                fontWeight: 'var(--font-semibold)',
                 color: 'var(--text-primary)',
-                letterSpacing: '-0.01em',
+                letterSpacing: 'var(--tracking-tight-1)',
               }}
             >
               Fellowship Groups
@@ -93,8 +93,8 @@ export default function GroupsPage() {
                 color: 'var(--on-sage)',
                 border: 'none',
                 cursor: 'pointer',
-                fontSize: 13,
-                fontWeight: 600,
+                fontSize: 'var(--text-13)',
+                fontWeight: 'var(--font-semibold)',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 4,
@@ -116,11 +116,11 @@ export default function GroupsPage() {
           >
             <h1
               style={{
-                fontSize: 32,
-                fontWeight: 800,
+                fontSize: 'var(--text-32)',
+                fontWeight: 'var(--font-extrabold)',
                 color: 'var(--text-primary)',
-                letterSpacing: '-0.03em',
-                lineHeight: 1,
+                letterSpacing: 'var(--tracking-tight-3)',
+                lineHeight: 'var(--leading-none)',
               }}
             >
               Fellowship Groups
@@ -135,8 +135,8 @@ export default function GroupsPage() {
                 color: 'var(--on-sage)',
                 border: 'none',
                 cursor: 'pointer',
-                fontSize: 14,
-                fontWeight: 600,
+                fontSize: 'var(--text-14)',
+                fontWeight: 'var(--font-semibold)',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 4,
@@ -199,12 +199,12 @@ export default function GroupsPage() {
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <h3 style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
+                    <h3 style={{ fontSize: 'var(--text-15)', fontWeight: 'var(--font-semibold)', color: 'var(--text-primary)' }}>
                       {group.name}
                     </h3>
                   </div>
                   {iAmInvolved && (
-                    <span style={{ fontSize: 11, color: 'var(--sage)', fontWeight: 500 }}>
+                    <span style={{ fontSize: 'var(--text-11)', color: 'var(--sage)', fontWeight: 'var(--font-medium)' }}>
                       You&apos;re a leader
                     </span>
                   )}
@@ -214,8 +214,8 @@ export default function GroupsPage() {
                 <div style={{ display: 'flex', gap: 6, marginBottom: group.description ? 8 : 10 }}>
                   <span
                     style={{
-                      fontSize: 11,
-                      fontWeight: 500,
+                      fontSize: 'var(--text-11)',
+                      fontWeight: 'var(--font-medium)',
                       padding: '0.125rem 0.5rem',
                       borderRadius: 'var(--radius-pill)',
                       background: 'var(--sage-light)',
@@ -226,8 +226,8 @@ export default function GroupsPage() {
                   </span>
                   <span
                     style={{
-                      fontSize: 11,
-                      fontWeight: 500,
+                      fontSize: 'var(--text-11)',
+                      fontWeight: 'var(--font-medium)',
                       padding: '0.125rem 0.5rem',
                       borderRadius: 'var(--radius-pill)',
                       background: 'var(--blue-light)',
@@ -245,9 +245,9 @@ export default function GroupsPage() {
                 {group.description && (
                   <p
                     style={{
-                      fontSize: 12,
+                      fontSize: 'var(--text-12)',
                       color: 'var(--text-secondary)',
-                      lineHeight: 1.5,
+                      lineHeight: 'var(--leading-normal)',
                       marginBottom: 10,
                       overflow: 'hidden',
                       display: '-webkit-box',
@@ -299,7 +299,7 @@ export default function GroupsPage() {
                 marginBottom: 20,
               }}
             >
-              <h2 style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)' }}>
+              <h2 style={{ fontSize: 'var(--text-17)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)' }}>
                 New Fellowship Group
               </h2>
               <button
@@ -307,10 +307,10 @@ export default function GroupsPage() {
                 style={{
                   background: 'none',
                   border: 'none',
-                  fontSize: 22,
+                  fontSize: 'var(--text-22)',
                   color: 'var(--text-muted)',
                   cursor: 'pointer',
-                  lineHeight: 1,
+                  lineHeight: 'var(--leading-none)',
                 }}
               >
                 ×
@@ -321,11 +321,11 @@ export default function GroupsPage() {
               <div>
                 <label
                   style={{
-                    fontSize: 12,
-                    fontWeight: 600,
+                    fontSize: 'var(--text-12)',
+                    fontWeight: 'var(--font-semibold)',
                     color: 'var(--text-muted)',
                     textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
+                    letterSpacing: 'var(--tracking-wide-5)',
                     display: 'block',
                     marginBottom: 6,
                   }}
@@ -342,7 +342,7 @@ export default function GroupsPage() {
                     padding: '0.625rem 0.75rem',
                     borderRadius: 'var(--radius-sm)',
                     border: '1px solid var(--border)',
-                    fontSize: 15,
+                    fontSize: 'var(--text-15)',
                     background: 'var(--bg)',
                     color: 'var(--text-primary)',
                     outline: 'none',
@@ -354,11 +354,11 @@ export default function GroupsPage() {
               <div>
                 <label
                   style={{
-                    fontSize: 12,
-                    fontWeight: 600,
+                    fontSize: 'var(--text-12)',
+                    fontWeight: 'var(--font-semibold)',
                     color: 'var(--text-muted)',
                     textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
+                    letterSpacing: 'var(--tracking-wide-5)',
                     display: 'block',
                     marginBottom: 6,
                   }}
@@ -375,7 +375,7 @@ export default function GroupsPage() {
                     padding: '0.625rem 0.75rem',
                     borderRadius: 'var(--radius-sm)',
                     border: '1px solid var(--border)',
-                    fontSize: 14,
+                    fontSize: 'var(--text-14)',
                     background: 'var(--bg)',
                     color: 'var(--text-primary)',
                     outline: 'none',

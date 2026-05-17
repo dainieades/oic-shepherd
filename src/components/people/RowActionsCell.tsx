@@ -56,7 +56,7 @@ const menuItemStyle: React.CSSProperties = {
   padding: '0.5rem 0.75rem',
   background: 'none',
   border: 'none',
-  fontSize: 13,
+  fontSize: 'var(--text-13)',
   color: 'var(--text-primary)',
   cursor: 'pointer',
   textAlign: 'left',

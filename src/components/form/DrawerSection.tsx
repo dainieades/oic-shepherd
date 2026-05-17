@@ -13,11 +13,11 @@ export function DrawerSection({
     <div style={{ marginBottom: 24 }}>
       <p
         style={{
-          fontSize: 10,
-          fontWeight: 600,
+          fontSize: 'var(--text-10)',
+          fontWeight: 'var(--font-semibold)',
           color: 'var(--text-muted)',
           textTransform: 'uppercase',
-          letterSpacing: '0.06em',
+          letterSpacing: 'var(--tracking-wide-6)',
           marginBottom: 10,
         }}
       >

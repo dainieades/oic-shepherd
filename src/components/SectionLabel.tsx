@@ -9,11 +9,11 @@ export function SectionLabel({ children, marginBottom = 10 }: SectionLabelProps)
   return (
     <p
       style={{
-        fontSize: 10,
-        fontWeight: 600,
+        fontSize: 'var(--text-10)',
+        fontWeight: 'var(--font-semibold)',
         color: 'var(--text-muted)',
         textTransform: 'uppercase',
-        letterSpacing: '0.06em',
+        letterSpacing: 'var(--tracking-wide-6)',
         marginBottom,
       }}
     >

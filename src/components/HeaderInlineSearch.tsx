@@ -57,7 +57,7 @@ export default function HeaderInlineSearch({
           background: 'var(--surface)',
           border: '1px solid var(--border)',
           borderRadius: 'var(--radius-sm)',
-          fontSize: 14,
+          fontSize: 'var(--text-14)',
           color: 'var(--text-primary)',
           outline: 'none',
         }}

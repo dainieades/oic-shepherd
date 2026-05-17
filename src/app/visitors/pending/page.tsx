@@ -243,7 +243,7 @@ export default function PendingVisitorsPage() {
   };
 
   const btnSize = scrolled ? 30 : 36;
-  const btnFont = scrolled ? 13 : 14;
+  const btnFont = scrolled ? 'var(--text-13)' : 'var(--text-14)';
   const btnPad = scrolled ? '0 0.75rem' : '0 0.875rem';
 
   const actionButtons = (
@@ -258,7 +258,7 @@ export default function PendingVisitorsPage() {
         background: 'var(--sage)',
         color: 'var(--on-sage)',
         fontSize: btnFont,
-        fontWeight: 600,
+        fontWeight: 'var(--font-semibold)',
         border: 'none',
         cursor: 'pointer',
         display: 'inline-flex',
@@ -299,11 +299,11 @@ export default function PendingVisitorsPage() {
         >
           <span
             style={{
-              fontSize: scrolled ? '1.0625rem' : '2rem',
-              fontWeight: scrolled ? 600 : 800,
+              fontSize: scrolled ? 'var(--text-17)' : 'var(--text-32)',
+              fontWeight: scrolled ? 'var(--font-semibold)' : 'var(--font-extrabold)',
               color: 'var(--text-primary)',
-              letterSpacing: scrolled ? '-0.01em' : '-0.03em',
-              lineHeight: 1,
+              letterSpacing: scrolled ? 'var(--tracking-tight-1)' : 'var(--tracking-tight-3)',
+              lineHeight: 'var(--leading-none)',
               transition: 'font-size 0.25s ease, letter-spacing 0.25s ease',
             }}
           >
@@ -314,13 +314,13 @@ export default function PendingVisitorsPage() {
       </header>
 
       {submissions !== null && submissions.length > 0 && (
-        <p style={{ marginBottom: 12, fontSize: 13, color: 'var(--text-muted)' }}>
+        <p style={{ marginBottom: 12, fontSize: 'var(--text-13)', color: 'var(--text-muted)' }}>
           {submissions.length} card{submissions.length === 1 ? '' : 's'} awaiting review
         </p>
       )}
 
       {submissions === null ? (
-        <p style={{ color: 'var(--text-muted)', fontSize: 14 }}>Loading…</p>
+        <p style={{ color: 'var(--text-muted)', fontSize: 'var(--text-14)' }}>Loading…</p>
       ) : submissions.length === 0 ? (
         <div
           style={{
@@ -330,12 +330,12 @@ export default function PendingVisitorsPage() {
             padding: '2.5rem 1.25rem',
             textAlign: 'center',
             color: 'var(--text-muted)',
-            fontSize: 14,
+            fontSize: 'var(--text-14)',
           }}
         >
           <HandWaving size={32} color="var(--text-muted)" style={{ marginBottom: 12 }} />
           <p style={{ marginBottom: 4 }}>No newcomer cards pending.</p>
-          <p style={{ fontSize: 12 }}>
+          <p style={{ fontSize: 'var(--text-12)' }}>
             New self-submissions from <code>/welcome</code> will appear here for review.
           </p>
           <a
@@ -352,8 +352,8 @@ export default function PendingVisitorsPage() {
               borderRadius: 'var(--radius-md)',
               background: 'var(--sage)',
               color: 'var(--on-sage)',
-              fontSize: 15,
-              fontWeight: 600,
+              fontSize: 'var(--text-15)',
+              fontWeight: 'var(--font-semibold)',
               textDecoration: 'none',
             }}
           >
@@ -439,8 +439,8 @@ function SubmissionCard({
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-        <h2 style={{ fontSize: 17, fontWeight: 600, color: 'var(--text-primary)' }}>{name}</h2>
-        <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+        <h2 style={{ fontSize: 'var(--text-17)', fontWeight: 'var(--font-semibold)', color: 'var(--text-primary)' }}>{name}</h2>
+        <span style={{ fontSize: 'var(--text-11)', color: 'var(--text-muted)' }}>
           {submittedAt.toLocaleDateString()}{' '}
           {submittedAt.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
         </span>
@@ -452,7 +452,7 @@ function SubmissionCard({
           display: 'flex',
           flexDirection: 'column',
           gap: 6,
-          fontSize: 13,
+          fontSize: 'var(--text-13)',
           color: 'var(--text-secondary)',
         }}
       >
@@ -503,8 +503,8 @@ function SubmissionCard({
             border: 'none',
             background: 'var(--sage)',
             color: 'var(--on-sage)',
-            fontSize: 14,
-            fontWeight: 600,
+            fontSize: 'var(--text-14)',
+            fontWeight: 'var(--font-semibold)',
             cursor: busy ? 'wait' : 'pointer',
             opacity: busy ? 0.6 : 1,
           }}
@@ -525,8 +525,8 @@ function SubmissionCard({
             border: '1px solid var(--border)',
             background: 'transparent',
             color: 'var(--text-muted)',
-            fontSize: 14,
-            fontWeight: 500,
+            fontSize: 'var(--text-14)',
+            fontWeight: 'var(--font-medium)',
             cursor: busy ? 'wait' : 'pointer',
           }}
         >

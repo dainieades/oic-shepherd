@@ -121,7 +121,7 @@ export default function PickerMenu({
               width: '100%',
               border: 'none',
               outline: 'none',
-              fontSize: 14,
+              fontSize: 'var(--text-14)',
               background: 'transparent',
               color: 'var(--text-primary)',
             }}
@@ -148,7 +148,7 @@ export default function PickerMenu({
               background: isSelected ? 'var(--sage-light)' : 'none',
               border: 'none',
               borderBottom: '1px solid var(--border-light)',
-              fontSize: 14,
+              fontSize: 'var(--text-14)',
               cursor: 'pointer',
               textAlign: 'left' as const,
             }}
@@ -169,7 +169,7 @@ export default function PickerMenu({
               <span
                 style={{
                   display: 'block',
-                  fontWeight: isSelected ? 600 : 400,
+                  fontWeight: isSelected ? 'var(--font-semibold)' : 'var(--font-normal)',
                   color: isSelected ? 'var(--sage)' : 'var(--text-primary)',
                 }}
               >
@@ -179,7 +179,7 @@ export default function PickerMenu({
                 <span
                   style={{
                     display: 'block',
-                    fontSize: 12,
+                    fontSize: 'var(--text-12)',
                     color: 'var(--text-muted)',
                     marginTop: 1,
                   }}

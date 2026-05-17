@@ -92,7 +92,7 @@ function AppRow({
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.875rem' }}>
         <span style={{ flexShrink: 0 }}>{icon}</span>
-        <span style={{ flex: 1, fontSize: '0.9375rem', color: 'var(--text-primary)' }}>
+        <span style={{ flex: 1, fontSize: 'var(--text-15)', color: 'var(--text-primary)' }}>
           {label}
         </span>
         <CaretRight size={16} weight="bold" color="var(--text-muted)" />
@@ -111,24 +111,24 @@ const disclosureBtnStyle: React.CSSProperties = {
   cursor: 'pointer',
   padding: '0.75rem 0',
   marginTop: '0.5rem',
-  fontSize: '0.8125rem',
+  fontSize: 'var(--text-13)',
   color: 'var(--text-secondary)',
 };
 
 const hintStyle: React.CSSProperties = {
-  fontSize: '0.8125rem',
+  fontSize: 'var(--text-13)',
   color: 'var(--text-muted)',
   margin: '0.375rem 0 0',
   paddingLeft: 'calc(20px + 0.875rem)',
-  lineHeight: 1.5,
+  lineHeight: 'var(--leading-normal)',
 };
 
 const advancedHintStyle: React.CSSProperties = {
-  fontSize: '0.8125rem',
+  fontSize: 'var(--text-13)',
   color: 'var(--text-muted)',
   marginTop: '0.125rem',
   marginBottom: '0.5rem',
-  lineHeight: 1.5,
+  lineHeight: 'var(--leading-normal)',
 };
 
 const feedUrlBoxStyle: React.CSSProperties = {
@@ -136,8 +136,8 @@ const feedUrlBoxStyle: React.CSSProperties = {
   border: '1px solid var(--border-light)',
   borderRadius: 'var(--radius)',
   padding: '0.75rem',
-  fontFamily: 'ui-monospace, SFMono-Regular, monospace',
-  fontSize: '0.75rem',
+  fontFamily: 'var(--font-mono)',
+  fontSize: 'var(--text-12)',
   color: 'var(--text-secondary)',
   wordBreak: 'break-all',
   marginBottom: '0.5rem',
@@ -153,6 +153,6 @@ const copyBtnStyle: React.CSSProperties = {
   borderRadius: 'var(--radius-sm)',
   cursor: 'pointer',
   width: '100%',
-  fontSize: '0.875rem',
+  fontSize: 'var(--text-14)',
   color: 'var(--text-primary)',
 };

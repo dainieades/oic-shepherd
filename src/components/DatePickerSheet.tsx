@@ -99,7 +99,7 @@ function TimeButton({
         background: 'none',
         border: 'none',
         outline: 'none',
-        fontSize: 15,
+        fontSize: 'var(--text-15)',
         color: 'var(--text-secondary)',
         whiteSpace: 'nowrap',
         textAlign: 'right',
@@ -336,8 +336,8 @@ export default function DatePickerSheet({
             background: 'none',
             border: 'none',
             outline: 'none',
-            fontSize: 15,
-            fontWeight: 500,
+            fontSize: 'var(--text-15)',
+            fontWeight: 'var(--font-medium)',
             color: 'var(--text-primary)',
             cursor: 'text',
             minWidth: 0,
@@ -385,7 +385,7 @@ export default function DatePickerSheet({
         <button
           onClick={onClose}
           style={{
-            fontSize: 14,
+            fontSize: 'var(--text-14)',
             color: 'var(--text-secondary)',
             background: 'none',
             border: 'none',
@@ -394,7 +394,7 @@ export default function DatePickerSheet({
         >
           Cancel
         </button>
-        <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
+        <span style={{ fontSize: 'var(--text-15)', fontWeight: 'var(--font-semibold)', color: 'var(--text-primary)' }}>
           {showEndDate ? `${fmtDate(startDate)} → ${fmtDate(endDate)}` : fmtDate(startDate)}
         </span>
         <button
@@ -413,8 +413,8 @@ export default function DatePickerSheet({
             borderRadius: 'var(--radius-xs)',
             background: 'var(--sage)',
             color: 'var(--on-sage)',
-            fontSize: 14,
-            fontWeight: 600,
+            fontSize: 'var(--text-14)',
+            fontWeight: 'var(--font-semibold)',
             border: 'none',
             cursor: 'pointer',
           }}
@@ -447,7 +447,7 @@ export default function DatePickerSheet({
             padding: '0.5rem 1rem 0.25rem',
           }}
         >
-          <span style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)' }}>
+          <span style={{ fontSize: 'var(--text-17)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)' }}>
             {MONTH_NAMES[viewMonth]} {viewYear}
           </span>
           <div style={{ display: 'flex', gap: 6 }}>
@@ -474,8 +474,8 @@ export default function DatePickerSheet({
               key={h}
               style={{
                 textAlign: 'center',
-                fontSize: 11,
-                fontWeight: 600,
+                fontSize: 'var(--text-11)',
+                fontWeight: 'var(--font-semibold)',
                 color: 'var(--text-muted)',
                 padding: '0.125rem 0',
               }}
@@ -537,8 +537,8 @@ export default function DatePickerSheet({
                         : isToday
                           ? 'var(--sage)'
                           : 'var(--text-primary)',
-                  fontSize: 15,
-                  fontWeight: isSelected || isToday ? 600 : 400,
+                  fontSize: 'var(--text-15)',
+                  fontWeight: isSelected || isToday ? 'var(--font-semibold)' : 'var(--font-normal)',
                   cursor: isClickable ? 'pointer' : 'default',
                   opacity: isClickable ? 1 : 0.35,
                 }}
@@ -561,7 +561,7 @@ export default function DatePickerSheet({
             padding: '0.625rem 1rem 0',
           }}
         >
-          <span style={{ fontSize: 15, color: 'var(--text-primary)' }}>End date</span>
+          <span style={{ fontSize: 'var(--text-15)', color: 'var(--text-primary)' }}>End date</span>
           <Toggle
             on={showEndDate}
             onToggle={() => {
@@ -580,7 +580,7 @@ export default function DatePickerSheet({
             padding: '0.625rem 1rem 0',
           }}
         >
-          <span style={{ fontSize: 15, color: 'var(--text-primary)' }}>Include time</span>
+          <span style={{ fontSize: 'var(--text-15)', color: 'var(--text-primary)' }}>Include time</span>
           <Toggle on={showTime} onToggle={() => setShowTime((v) => !v)} />
         </div>
       </div>

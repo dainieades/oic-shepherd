@@ -13,13 +13,13 @@ export function StatusBadge({ label, bg, color, border }: StatusBadgeProps) {
   return (
     <span
       style={{
-        fontSize: 11,
+        fontSize: 'var(--text-11)',
         padding: '0.0625rem 0.4375rem',
         borderRadius: 'var(--radius-pill)',
         background: bg,
         color,
         border,
-        fontWeight: 500,
+        fontWeight: 'var(--font-medium)',
         flexShrink: 0,
       }}
     >

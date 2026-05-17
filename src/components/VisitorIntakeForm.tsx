@@ -203,7 +203,7 @@ const VisitorIntakeForm = React.forwardRef<VisitorIntakeFormHandle, Props>(
             <span
               style={{
                 flex: 1,
-                fontSize: 14,
+                fontSize: 'var(--text-14)',
                 textAlign: 'left',
                 color: languages.length > 0 ? 'var(--text-primary)' : 'var(--text-muted)',
               }}
@@ -276,8 +276,8 @@ const VisitorIntakeForm = React.forwardRef<VisitorIntakeFormHandle, Props>(
                 {selected && (
                   <span
                     style={{
-                      fontSize: 11,
-                      fontWeight: 700,
+                      fontSize: 'var(--text-11)',
+                      fontWeight: 'var(--font-bold)',
                       padding: '0.125rem 0.5rem',
                       borderRadius: 'var(--radius-pill)',
                       background: 'var(--sage)',
@@ -327,11 +327,11 @@ function Section({ label, children }: { label: string; children: React.ReactNode
     <div style={{ marginBottom: 24 }}>
       <p
         style={{
-          fontSize: 10,
-          fontWeight: 600,
+          fontSize: 'var(--text-10)',
+          fontWeight: 'var(--font-semibold)',
           color: 'var(--text-muted)',
           textTransform: 'uppercase',
-          letterSpacing: '0.06em',
+          letterSpacing: 'var(--tracking-wide-6)',
           marginBottom: 6,
         }}
       >
@@ -364,10 +364,10 @@ const toggleRowStyle: React.CSSProperties = {
 };
 
 const consentNoteStyle: React.CSSProperties = {
-  fontSize: 11,
+  fontSize: 'var(--text-11)',
   color: 'var(--text-muted)',
   padding: '0.5rem 0 0.75rem 32px',
   margin: 0,
-  lineHeight: 1.4,
+  lineHeight: 'var(--leading-comfortable)',
   borderBottom: '1px solid var(--border-light)',
 };

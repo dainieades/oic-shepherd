@@ -82,7 +82,7 @@ export function VisitorCardPanel({ person }: { person: Person }) {
           }}
         >
           <Sparkle size={14} color="var(--text-muted)" />
-          <span style={{ flex: 1, fontSize: 13, color: 'var(--text-muted)' }}>
+          <span style={{ flex: 1, fontSize: 'var(--text-13)', color: 'var(--text-muted)' }}>
             {summaryParts.join(' · ')}
           </span>
           <CaretRight size={14} color="var(--text-muted)" />
@@ -113,7 +113,7 @@ export function VisitorCardPanel({ person }: { person: Person }) {
               display: 'flex',
               alignItems: 'center',
               gap: 4,
-              fontSize: 11,
+              fontSize: 'var(--text-11)',
               color: 'var(--text-muted)',
               padding: 0,
             }}
@@ -146,8 +146,8 @@ export function VisitorCardPanel({ person }: { person: Person }) {
                 <span
                   key={i}
                   style={{
-                    fontSize: 12,
-                    fontWeight: 600,
+                    fontSize: 'var(--text-12)',
+                    fontWeight: 'var(--font-semibold)',
                     padding: '0.125rem 0.5rem',
                     borderRadius: 'var(--radius-pill)',
                     background: 'var(--sage-light)',
@@ -169,7 +169,7 @@ export function VisitorCardPanel({ person }: { person: Person }) {
 
         <div
           style={{
-            fontSize: 11,
+            fontSize: 'var(--text-11)',
             color: 'var(--text-muted)',
             display: 'flex',
             alignItems: 'center',
@@ -189,11 +189,11 @@ export function VisitorCardPanel({ person }: { person: Person }) {
 }
 
 const sectionLabelStyle: React.CSSProperties = {
-  fontSize: 10,
-  fontWeight: 600,
+  fontSize: 'var(--text-10)',
+  fontWeight: 'var(--font-semibold)',
   color: 'var(--text-muted)',
   textTransform: 'uppercase',
-  letterSpacing: '0.06em',
+  letterSpacing: 'var(--tracking-wide-6)',
   marginBottom: 8,
 };
 
@@ -210,8 +210,8 @@ function Row({
     <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
       <div style={{ paddingTop: 2 }}>{icon}</div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 2 }}>{label}</p>
-        <div style={{ fontSize: 14, color: 'var(--text-primary)', lineHeight: 1.4 }}>
+        <p style={{ fontSize: 'var(--text-11)', color: 'var(--text-muted)', marginBottom: 2 }}>{label}</p>
+        <div style={{ fontSize: 'var(--text-14)', color: 'var(--text-primary)', lineHeight: 'var(--leading-comfortable)' }}>
           {children}
         </div>
       </div>

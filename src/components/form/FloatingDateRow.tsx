@@ -165,7 +165,7 @@ function FloatingCalendar({
           <button
             onClick={onClose}
             style={{
-              fontSize: 14,
+              fontSize: 'var(--text-14)',
               color: 'var(--text-secondary)',
               background: 'none',
               border: 'none',
@@ -183,8 +183,8 @@ function FloatingCalendar({
               borderRadius: 'var(--radius-xs)',
               background: 'var(--sage)',
               color: 'var(--on-sage)',
-              fontSize: 14,
-              fontWeight: 600,
+              fontSize: 'var(--text-14)',
+              fontWeight: 'var(--font-semibold)',
               border: 'none',
               cursor: 'pointer',
             }}
@@ -208,8 +208,8 @@ function FloatingCalendar({
               border: '0.125rem solid var(--sage)',
               background: 'var(--bg)',
               outline: 'none',
-              fontSize: 15,
-              fontWeight: 500,
+              fontSize: 'var(--text-15)',
+              fontWeight: 'var(--font-medium)',
               color: 'var(--text-primary)',
             }}
           />
@@ -223,7 +223,7 @@ function FloatingCalendar({
             padding: '0.25rem 0.875rem',
           }}
         >
-          <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>
+          <span style={{ fontSize: 'var(--text-15)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)' }}>
             {MONTH_NAMES[viewMonth]} {viewYear}
           </span>
           <div style={{ display: 'flex', gap: 6 }}>
@@ -244,8 +244,8 @@ function FloatingCalendar({
               key={h}
               style={{
                 textAlign: 'center',
-                fontSize: 11,
-                fontWeight: 600,
+                fontSize: 'var(--text-11)',
+                fontWeight: 'var(--font-semibold)',
                 color: 'var(--text-muted)',
                 padding: '0.125rem 0',
               }}
@@ -299,8 +299,8 @@ function FloatingCalendar({
                         : isToday
                           ? 'var(--sage)'
                           : 'var(--text-primary)',
-                  fontSize: 13,
-                  fontWeight: isSelected || isToday ? 600 : 400,
+                  fontSize: 'var(--text-13)',
+                  fontWeight: isSelected || isToday ? 'var(--font-semibold)' : 'var(--font-normal)',
                   cursor: isClickable ? 'pointer' : 'default',
                   opacity: isClickable ? 1 : 0.35,
                   display: 'flex',
@@ -350,7 +350,7 @@ export function FloatingDateRow({
         <span
           style={{
             flex: 1,
-            fontSize: 14,
+            fontSize: 'var(--text-14)',
             color: value ? 'var(--text-primary)' : 'var(--text-muted)',
             textAlign: 'left',
           }}

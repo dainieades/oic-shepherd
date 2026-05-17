@@ -29,7 +29,7 @@ export default function SettingsProfilePage() {
             padding: '2.5rem 0',
             textAlign: 'center',
             color: 'var(--text-muted)',
-            fontSize: 14,
+            fontSize: 'var(--text-14)',
           }}
         >
           No profile linked to this account.
@@ -45,7 +45,7 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
   const { data } = useApp();
   const person = data.people.find((p) => p.id === personId)!;
   const formRef = React.useRef<PersonFormBodyHandle>(null);
-  const [canSave, setCanSave] = React.useState(!!person.preferredName.trim());
+  const [canSave, setCanSave] = React.useState(false);
   const [isSaving, setIsSaving] = React.useState(false);
 
   async function handleSave() {
@@ -80,7 +80,7 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
         <button
           onClick={onBack}
           style={{
-            fontSize: 14,
+            fontSize: 'var(--text-14)',
             color: 'var(--text-secondary)',
             background: 'none',
             border: 'none',
@@ -100,8 +100,8 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
             borderRadius: 'var(--radius-xs)',
             background: canSave && !isSaving ? 'var(--sage)' : 'var(--border)',
             color: canSave && !isSaving ? 'var(--on-sage)' : 'var(--text-muted)',
-            fontSize: 14,
-            fontWeight: 600,
+            fontSize: 'var(--text-14)',
+            fontWeight: 'var(--font-semibold)',
             border: 'none',
             cursor: canSave && !isSaving ? 'pointer' : 'default',
             transition: 'background 0.15s',
@@ -114,7 +114,7 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
       <div className="settings-subpage-spacer" style={{ height: 54 }} />
 
       <div className="settings-subpage-desktop-header">
-        <span style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
+        <span style={{ fontSize: 'var(--text-17)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)', letterSpacing: 'var(--tracking-tight-1)' }}>
           My Profile
         </span>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -127,8 +127,8 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
               background: 'none',
               border: '1px solid var(--border)',
               color: 'var(--text-secondary)',
-              fontSize: 14,
-              fontWeight: 500,
+              fontSize: 'var(--text-14)',
+              fontWeight: 'var(--font-medium)',
               cursor: 'pointer',
             }}
           >
@@ -143,8 +143,8 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
               borderRadius: 'var(--radius-xs)',
               background: canSave && !isSaving ? 'var(--sage)' : 'var(--border)',
               color: canSave && !isSaving ? 'var(--on-sage)' : 'var(--text-muted)',
-              fontSize: 14,
-              fontWeight: 600,
+              fontSize: 'var(--text-14)',
+              fontWeight: 'var(--font-semibold)',
               border: 'none',
               cursor: canSave && !isSaving ? 'pointer' : 'default',
               transition: 'background 0.15s',
@@ -162,6 +162,7 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
         showPhotoUpload
         onValidityChange={setCanSave}
         ownContact
+        sheetVariant="picker-dialog"
       />
     </>
   );
@@ -189,7 +190,7 @@ const backBtnStyle: React.CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
   gap: 4,
-  fontSize: 13,
+  fontSize: 'var(--text-13)',
   color: 'var(--sage)',
   background: 'none',
   border: 'none',
@@ -197,7 +198,7 @@ const backBtnStyle: React.CSSProperties = {
 };
 
 const navTitleStyle: React.CSSProperties = {
-  fontSize: 15,
-  fontWeight: 600,
+  fontSize: 'var(--text-15)',
+  fontWeight: 'var(--font-semibold)',
   color: 'var(--text-primary)',
 };

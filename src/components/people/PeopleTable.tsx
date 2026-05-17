@@ -33,9 +33,9 @@ const headerCellStyle: React.CSSProperties = {
   background: 'var(--surface)',
   borderBottom: '1px solid var(--border)',
   padding: '0.625rem 0.5rem',
-  fontSize: 11,
-  fontWeight: 600,
-  letterSpacing: '0.04em',
+  fontSize: 'var(--text-11)',
+  fontWeight: 'var(--font-semibold)',
+  letterSpacing: 'var(--tracking-wide-4)',
   textTransform: 'uppercase',
   color: 'var(--text-muted)',
   textAlign: 'left',
@@ -46,7 +46,7 @@ const headerCellStyle: React.CSSProperties = {
 const cellStyle: React.CSSProperties = {
   padding: '0.625rem 0.5rem',
   borderBottom: '1px solid var(--border-light)',
-  fontSize: 13,
+  fontSize: 'var(--text-13)',
   color: 'var(--text-primary)',
   verticalAlign: 'middle',
 };
@@ -350,8 +350,8 @@ function FamilyTableRow({
             icon={<House size={16} color="var(--sage-light)" />}
           />
           <div style={{ minWidth: 0 }}>
-            <div style={{ fontWeight: 600, whiteSpace: 'nowrap' }}>{family.label}</div>
-            <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{adultsLabel}</div>
+            <div style={{ fontWeight: 'var(--font-semibold)', whiteSpace: 'nowrap' }}>{family.label}</div>
+            <div style={{ fontSize: 'var(--text-11)', color: 'var(--text-muted)' }}>{adultsLabel}</div>
           </div>
         </Link>
       </td>
@@ -366,12 +366,12 @@ function FamilyTableRow({
               color="var(--amber)"
               border="1px solid var(--amber-border)"
             />
-            <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+            <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>
               {aggregateMembership(members)}
             </span>
           </span>
         ) : (
-          <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+          <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>
             {aggregateMembership(members)}
           </span>
         )}
@@ -442,7 +442,7 @@ function IndividualTableRow({
           <div style={{ minWidth: 0 }}>
             <div
               style={{
-                fontWeight: 600,
+                fontWeight: 'var(--font-semibold)',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 4,
@@ -463,7 +463,7 @@ function IndividualTableRow({
             {subtitle && (
               <div
                 style={{
-                  fontSize: 11,
+                  fontSize: 'var(--text-11)',
                   color: 'var(--text-muted)',
                 }}
               >
@@ -484,12 +484,12 @@ function IndividualTableRow({
               color="var(--amber)"
               border="1px solid var(--amber-border)"
             />
-            <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+            <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>
               {getMembershipLabel(person.membershipStatus)}
             </span>
           </span>
         ) : (
-          <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+          <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>
             {getMembershipLabel(person.membershipStatus)}
           </span>
         )}
@@ -523,7 +523,7 @@ function CountCell({ value }: { value: number }) {
   return (
     <span
       style={{
-        fontSize: 13,
+        fontSize: 'var(--text-13)',
         color: value === 0 ? 'var(--text-muted)' : 'var(--text-primary)',
       }}
     >
@@ -533,12 +533,12 @@ function CountCell({ value }: { value: number }) {
 }
 
 const groupChipStyle: React.CSSProperties = {
-  fontSize: 10,
+  fontSize: 'var(--text-10)',
   padding: '0.125rem 0.4375rem',
   borderRadius: 'var(--radius-pill)',
   background: 'var(--blue-light)',
   color: 'var(--blue)',
-  fontWeight: 600,
+  fontWeight: 'var(--font-semibold)',
   whiteSpace: 'nowrap',
   flexShrink: 0,
 };
@@ -571,7 +571,7 @@ function GroupCells({ groups }: { groups: Group[] }) {
   }, [groups]);
 
   if (groups.length === 0) {
-    return <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>No group</span>;
+    return <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>No group</span>;
   }
 
   const visible = groups.slice(0, visibleCount);

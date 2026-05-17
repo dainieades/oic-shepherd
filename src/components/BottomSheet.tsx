@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom';
 import { BACKDROP_COLOR } from '@/lib/constants';
 import { Button } from './Button';
 
-export type SheetVariant = 'sheet' | 'dialog' | 'side-panel' | 'confirm';
+export type SheetVariant = 'sheet' | 'dialog' | 'side-panel' | 'confirm' | 'picker-dialog';
 
 interface BottomSheetProps {
   onClose: () => void;
@@ -29,6 +29,7 @@ const OUTER_VARIANT_CLASS: Record<SheetVariant, string> = {
   dialog: 'sheet-outer-dialog',
   'side-panel': 'sheet-outer-side-panel',
   confirm: 'sheet-outer-confirm',
+  'picker-dialog': 'sheet-outer-picker-dialog',
 };
 
 const PANEL_VARIANT_CLASS: Record<SheetVariant, string> = {
@@ -36,6 +37,7 @@ const PANEL_VARIANT_CLASS: Record<SheetVariant, string> = {
   dialog: 'sheet-panel-dialog',
   'side-panel': 'sheet-panel-side-panel',
   confirm: 'sheet-panel-confirm',
+  'picker-dialog': 'sheet-panel-picker-dialog',
 };
 
 export function BottomSheet({
@@ -111,6 +113,24 @@ export function BottomSheet({
   return createPortal(overlay, document.body);
 }
 
+/** Wraps children in a BottomSheet only when `sheetVariant` is set; otherwise renders them as-is. */
+export function MaybeSheet({
+  sheetVariant,
+  onClose,
+  children,
+}: {
+  sheetVariant?: SheetVariant;
+  onClose: () => void;
+  children: React.ReactNode;
+}) {
+  if (!sheetVariant) return <>{children}</>;
+  return (
+    <BottomSheet onClose={onClose} variant={sheetVariant}>
+      {children}
+    </BottomSheet>
+  );
+}
+
 export function SubPanel({
   children,
   onBack,
@@ -184,7 +204,7 @@ export function ModalHeader({
       <Button variant="ghost" size="sm" onClick={onCancel}>
         {cancelLabel}
       </Button>
-      <span id={titleId} style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
+      <span id={titleId} style={{ fontSize: 'var(--text-15)', fontWeight: 'var(--font-semibold)', color: 'var(--text-primary)' }}>
         {title}
       </span>
       <Button

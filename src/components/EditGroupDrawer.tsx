@@ -100,7 +100,7 @@ export default function EditGroupDrawer({ group, onClose, onSave }: Props) {
                 onChange={(e) => setDesc(e.target.value)}
                 placeholder="Description…"
                 rows={3}
-                style={{ ...inputStyle, resize: 'none', lineHeight: 1.5 }}
+                style={{ ...inputStyle, resize: 'none', lineHeight: 'var(--leading-normal)' }}
               />
             </div>
           </DrawerSection>
@@ -117,7 +117,7 @@ export default function EditGroupDrawer({ group, onClose, onSave }: Props) {
               <span
                 style={{
                   flex: 1,
-                  fontSize: 14,
+                  fontSize: 'var(--text-14)',
                   color: selectedLeaders.length ? 'var(--text-primary)' : 'var(--text-muted)',
                   textAlign: 'left',
                 }}
@@ -140,7 +140,7 @@ export default function EditGroupDrawer({ group, onClose, onSave }: Props) {
               <UserList size={16} color="var(--text-muted)" />
               <span style={labelStyle}>Members</span>
               <span
-                style={{ flex: 1, fontSize: 14, color: 'var(--text-primary)', textAlign: 'left' }}
+                style={{ flex: 1, fontSize: 'var(--text-14)', color: 'var(--text-primary)', textAlign: 'left' }}
               >
                 {memberIds.length} {memberIds.length === 1 ? 'person' : 'people'}
               </span>
@@ -232,7 +232,7 @@ function PeoplePickerSheet({
             padding: '0.5rem 0.75rem',
             borderRadius: 'var(--radius-xs)',
             border: '1px solid var(--border)',
-            fontSize: 14,
+            fontSize: 'var(--text-14)',
             background: 'var(--bg)',
             color: 'var(--text-primary)',
             outline: 'none',
@@ -277,8 +277,8 @@ function PeoplePickerSheet({
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: 12,
-                  fontWeight: 700,
+                  fontSize: 'var(--text-12)',
+                  fontWeight: 'var(--font-bold)',
                   flexShrink: 0,
                 }}
               >
@@ -287,15 +287,15 @@ function PeoplePickerSheet({
               <div style={{ flex: 1, minWidth: 0 }}>
                 <span
                   style={{
-                    fontSize: 14,
-                    fontWeight: isSel ? 600 : 400,
+                    fontSize: 'var(--text-14)',
+                    fontWeight: isSel ? 'var(--font-semibold)' : 'var(--font-normal)',
                     color: isSel ? 'var(--sage)' : 'var(--text-primary)',
                   }}
                 >
                   {fullName(p)}
                 </span>
                 {p.alternativeName && (
-                  <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 6 }}>
+                  <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)', marginLeft: 6 }}>
                     {p.alternativeName}
                   </span>
                 )}
@@ -350,14 +350,14 @@ const pickerRowStyle: React.CSSProperties = {
 
 const asteriskStyle: React.CSSProperties = {
   width: 10,
-  fontSize: 14,
+  fontSize: 'var(--text-14)',
   color: 'var(--red)',
   flexShrink: 0,
-  lineHeight: 1,
+  lineHeight: 'var(--leading-none)',
 };
 const spacerStyle: React.CSSProperties = { width: 10, flexShrink: 0 };
 const labelStyle: React.CSSProperties = {
-  fontSize: 12,
+  fontSize: 'var(--text-12)',
   color: 'var(--text-muted)',
   width: 60,
   flexShrink: 0,
@@ -367,6 +367,6 @@ const inputStyle: React.CSSProperties = {
   background: 'none',
   border: 'none',
   outline: 'none',
-  fontSize: 14,
+  fontSize: 'var(--text-14)',
   color: 'var(--text-primary)',
 };

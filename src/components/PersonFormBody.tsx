@@ -61,6 +61,7 @@ import {
 import { BACKDROP_COLOR, SHEET_BORDER_RADIUS } from '@/lib/constants';
 import { TextInputRow, TextareaRow, PickerRow, DateRow, FloatingDateRow } from '@/components/form';
 import { rowBtnStyle, spacerStyle, labelStyle } from '@/components/form/formStyles';
+import { MaybeSheet, type SheetVariant } from './BottomSheet';
 
 const MEMBERSHIP_OPTIONS: { value: MembershipStatus; label: string }[] = [
   { value: 'member', label: 'Member' },
@@ -100,10 +101,12 @@ interface Props {
   showInviteRow?: boolean;
   onValidityChange?: (valid: boolean) => void;
   ownContact?: boolean;
+  /** When set, each picker sheet renders as a standalone BottomSheet with this variant */
+  sheetVariant?: SheetVariant;
 }
 
 const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function PersonFormBody(
-  { person, onSaved, showPhotoUpload, showInviteRow, onValidityChange, ownContact },
+  { person, onSaved, showPhotoUpload, showInviteRow, onValidityChange, ownContact, sheetVariant },
   ref
 ) {
   const {
@@ -225,6 +228,11 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
       ? data.people.filter((p) => p.assignedShepherdIds.includes(shepherdId)).map((p) => p.id)
       : []
   );
+  const initialSheepIdsRef = React.useRef<string[]>(
+    shepherdId
+      ? data.people.filter((p) => p.assignedShepherdIds.includes(shepherdId)).map((p) => p.id)
+      : []
+  );
 
   const fullDisplayName = [firstName.trim(), lastName.trim()].filter(Boolean).join(' ');
   const selectedGroups = data.groups.filter((g) => groupIds.includes(g.id));
@@ -267,9 +275,48 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
     .join('')
     .toUpperCase();
 
+  const sorted = (arr: string[]) => [...arr].sort().join('\0');
+  const isDirty = React.useMemo(() => {
+    if (!person) return true;
+    return (
+      firstName !== (person.preferredName ?? '') ||
+      lastName !== (person.lastName ?? '') ||
+      chineseName !== (person.alternativeName ?? '') ||
+      photo !== (person.photo ?? '') ||
+      sorted(language) !== sorted(person.language ?? ['English']) ||
+      gender !== (person.gender ?? 'male') ||
+      birthday !== (person.birthday ?? '') ||
+      maritalStatus !== (person.maritalStatus ?? '') ||
+      anniversary !== (person.anniversary ?? '') ||
+      sorted(groupIds) !== sorted(person.groupIds ?? []) ||
+      sorted(shepherdIds) !== sorted(person.assignedShepherdIds ?? []) ||
+      sorted(sheepIds) !== sorted(initialSheepIdsRef.current) ||
+      status !== (person.membershipStatus ?? 'non-member') ||
+      attendance !== (person.churchAttendance ?? 'visitor') ||
+      membershipDate !== (person.membershipDate ?? '') ||
+      baptized !== (person.membershipStatus === 'member' ? true : (person.baptized ?? false)) ||
+      baptismDate !== (person.baptismDate ?? '') ||
+      isShepherd !== (person.isShepherd ?? false) ||
+      isBeingDiscipled !== (person.isBeingDiscipled ?? false) ||
+      isStudent !== (person.isStudent ?? false) ||
+      appRole !== (person.appRole ?? 'no-access') ||
+      canTriageVisitors !== (person.canTriageVisitors ?? false) ||
+      sorted(churchPositions) !== sorted(person.churchPositions ?? []) ||
+      phone !== (person.phone ? formatPhone(person.phone) : '') ||
+      homePhone !== (person.homePhone ? formatPhone(person.homePhone) : '') ||
+      email !== (person.email ?? '') ||
+      homeAddress !== (person.homeAddress ?? '') ||
+      familyId !== person.familyId
+    );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [person, firstName, lastName, chineseName, photo, language, gender, birthday, maritalStatus,
+      anniversary, groupIds, shepherdIds, sheepIds, status, attendance, membershipDate, baptized,
+      baptismDate, isShepherd, isBeingDiscipled, isStudent, appRole, canTriageVisitors,
+      churchPositions, phone, homePhone, email, homeAddress, familyId]);
+
   React.useEffect(() => {
-    onValidityChange?.(!!firstName.trim());
-  }, [firstName, onValidityChange]);
+    onValidityChange?.(!!firstName.trim() && isDirty);
+  }, [firstName, isDirty, onValidityChange]);
 
   React.useEffect(() => {
     if (status === 'member') setBaptized(true);
@@ -433,11 +480,11 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
           <div style={{ flex: 1, minWidth: 0 }}>
             <p
               style={{
-                fontSize: 20,
-                fontWeight: 700,
+                fontSize: 'var(--text-20)',
+                fontWeight: 'var(--font-bold)',
                 color: 'var(--text-primary)',
                 margin: 0,
-                letterSpacing: '-0.02em',
+                letterSpacing: 'var(--tracking-tight-2)',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
@@ -464,7 +511,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
                 <span style={spacerStyle} />
                 <PaperPlaneTilt size={16} color="var(--text-muted)" />
                 <span style={labelStyle}>Invite</span>
-                <span style={{ flex: 1, fontSize: 14, color: 'var(--sage)', textAlign: 'right' }}>
+                <span style={{ flex: 1, fontSize: 'var(--text-14)', color: 'var(--sage)', textAlign: 'right' }}>
                   Give app access…
                 </span>
                 <CaretRight size={14} color="var(--text-muted)" />
@@ -485,7 +532,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
                   <span
                     style={{
                       flex: 1,
-                      fontSize: 14,
+                      fontSize: 'var(--text-14)',
                       color: 'var(--text-primary)',
                       textAlign: 'right',
                     }}
@@ -515,7 +562,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
                     <PaperPlaneTilt size={16} color="var(--amber, #d97706)" />
                     <span
                       style={{
-                        fontSize: 12,
+                        fontSize: 'var(--text-12)',
                         color: 'var(--amber, #d97706)',
                         whiteSpace: 'nowrap',
                         flexShrink: 0,
@@ -526,7 +573,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
                     <span
                       style={{
                         flex: 1,
-                        fontSize: 13,
+                        fontSize: 'var(--text-13)',
                         color: 'var(--text-muted)',
                         textAlign: 'right',
                         whiteSpace: 'nowrap',
@@ -591,7 +638,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
             <span
               style={{
                 flex: 1,
-                fontSize: 14,
+                fontSize: 'var(--text-14)',
                 color: language.length > 0 ? 'var(--text-primary)' : 'var(--text-muted)',
               }}
             >
@@ -678,7 +725,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
                   </span>
                 ))
               ) : (
-                <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>None</span>
+                <span style={{ fontSize: 'var(--text-14)', color: 'var(--text-muted)' }}>None</span>
               )}
             </div>
             <CaretRight size={14} color="var(--text-muted)" />
@@ -701,7 +748,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
                     </span>
                   ))
               ) : (
-                <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>None</span>
+                <span style={{ fontSize: 'var(--text-14)', color: 'var(--text-muted)' }}>None</span>
               )}
             </div>
             <CaretRight size={14} color="var(--text-muted)" />
@@ -738,14 +785,14 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
                       ))}
                     {sheepIds.length > 5 && (
                       <span
-                        style={{ fontSize: 13, color: 'var(--text-muted)', alignSelf: 'center' }}
+                        style={{ fontSize: 'var(--text-13)', color: 'var(--text-muted)', alignSelf: 'center' }}
                       >
                         +{sheepIds.length - 5} more
                       </span>
                     )}
                   </>
                 ) : (
-                  <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>None</span>
+                  <span style={{ fontSize: 'var(--text-14)', color: 'var(--text-muted)' }}>None</span>
                 )}
               </div>
               <CaretRight size={14} color="var(--text-muted)" />
@@ -772,7 +819,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
             <span
               style={{
                 flex: 1,
-                fontSize: 14,
+                fontSize: 'var(--text-14)',
                 color: churchPositions.length > 0 ? 'var(--text-primary)' : 'var(--text-muted)',
                 textAlign: 'right',
               }}
@@ -839,8 +886,8 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
                         )
                       }
                       style={{
-                        fontSize: 12,
-                        fontWeight: 600,
+                        fontSize: 'var(--text-12)',
+                        fontWeight: 'var(--font-semibold)',
                         padding: '0.25rem 0.625rem',
                         borderRadius: 'var(--radius-pill)',
                         background: on ? 'var(--sage-light)' : 'transparent',
@@ -966,79 +1013,91 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
         />
       )}
       {openPicker === 'appRole' && (
-        <AppRolePickerSheet
-          currentRole={appRole}
-          canTriageVisitors={canTriageVisitors}
-          onSelect={(role) => {
-            setAppRole(role);
-            if (role !== 'shepherd') setCanTriageVisitors(false);
-            if (role !== 'shepherd') setOpenPicker(null);
-          }}
-          onToggleTriage={(next) => {
-            setCanTriageVisitors(next);
-          }}
-          onRemove={() => {
-            setAppRole('no-access');
-            setCanTriageVisitors(false);
-            setOpenPicker(null);
-          }}
-          onClose={() => setOpenPicker(null)}
-          isAdmin={currentPersona.role === 'admin'}
-          personName={person?.preferredName ?? firstName.trim()}
-        />
+        <MaybeSheet sheetVariant={sheetVariant} onClose={() => setOpenPicker(null)}>
+          <AppRolePickerSheet
+            currentRole={appRole}
+            canTriageVisitors={canTriageVisitors}
+            onSelect={(role) => {
+              setAppRole(role);
+              if (role !== 'shepherd') setCanTriageVisitors(false);
+              if (role !== 'shepherd') setOpenPicker(null);
+            }}
+            onToggleTriage={(next) => {
+              setCanTriageVisitors(next);
+            }}
+            onRemove={() => {
+              setAppRole('no-access');
+              setCanTriageVisitors(false);
+              setOpenPicker(null);
+            }}
+            onClose={() => setOpenPicker(null)}
+            isAdmin={currentPersona.role === 'admin'}
+            personName={person?.preferredName ?? firstName.trim()}
+          />
+        </MaybeSheet>
       )}
       {showLanguagePicker && (
-        <LanguagePickerSheet
-          currentLanguages={language}
-          onConfirm={(langs) => {
-            setLanguage(langs);
-            setShowLanguagePicker(false);
-          }}
-          onBack={() => setShowLanguagePicker(false)}
-        />
+        <MaybeSheet sheetVariant={sheetVariant} onClose={() => setShowLanguagePicker(false)}>
+          <LanguagePickerSheet
+            currentLanguages={language}
+            onConfirm={(langs) => {
+              setLanguage(langs);
+              setShowLanguagePicker(false);
+            }}
+            onBack={() => setShowLanguagePicker(false)}
+          />
+        </MaybeSheet>
       )}
       {showPositionPicker && (
-        <PositionPickerSheet
-          currentPositions={churchPositions}
-          onConfirm={(positions) => {
-            setChurchPositions(positions);
-            setShowPositionPicker(false);
-          }}
-          onBack={() => setShowPositionPicker(false)}
-        />
+        <MaybeSheet sheetVariant={sheetVariant} onClose={() => setShowPositionPicker(false)}>
+          <PositionPickerSheet
+            currentPositions={churchPositions}
+            onConfirm={(positions) => {
+              setChurchPositions(positions);
+              setShowPositionPicker(false);
+            }}
+            onBack={() => setShowPositionPicker(false)}
+          />
+        </MaybeSheet>
       )}
       {showGroupPicker && (
-        <GroupPickerSheet
-          groups={data.groups}
-          currentIds={groupIds}
-          onConfirm={(ids) => {
-            setGroupIds(ids);
-            setShowGroupPicker(false);
-          }}
-          onBack={() => setShowGroupPicker(false)}
-        />
+        <MaybeSheet sheetVariant={sheetVariant} onClose={() => setShowGroupPicker(false)}>
+          <GroupPickerSheet
+            groups={data.groups}
+            currentIds={groupIds}
+            onConfirm={(ids) => {
+              setGroupIds(ids);
+              setShowGroupPicker(false);
+            }}
+            onBack={() => setShowGroupPicker(false)}
+          />
+        </MaybeSheet>
       )}
       {showShepherdPicker && (
-        <ShepherdPickerSheet
-          entries={shepherdEntries}
-          currentIds={shepherdIds}
-          onConfirm={(ids) => {
-            setShepherdIds(ids);
-            setShowShepherdPicker(false);
-          }}
-          onBack={() => setShowShepherdPicker(false)}
-        />
+        <MaybeSheet sheetVariant={sheetVariant} onClose={() => setShowShepherdPicker(false)}>
+          <ShepherdPickerSheet
+            entries={shepherdEntries}
+            currentIds={shepherdIds}
+            onConfirm={(ids) => {
+              setShepherdIds(ids);
+              setShowShepherdPicker(false);
+            }}
+            onBack={() => setShowShepherdPicker(false)}
+          />
+        </MaybeSheet>
       )}
       {showSheepPicker && (shepherdId || !person) && (
-        <SheepPickerSheet
-          people={data.people.filter((p) => !person || p.id !== person.id)}
-          currentIds={sheepIds}
-          onConfirm={(ids) => {
-            setSheepIds(ids);
-            setShowSheepPicker(false);
-          }}
-          onBack={() => setShowSheepPicker(false)}
-        />
+        <MaybeSheet sheetVariant={sheetVariant} onClose={() => setShowSheepPicker(false)}>
+          <SheepPickerSheet
+            people={data.people.filter((p) => !person || p.id !== person.id)}
+            currentIds={sheepIds}
+            onConfirm={(ids) => {
+              setSheepIds(ids);
+              setShowSheepPicker(false);
+            }}
+            onBack={() => setShowSheepPicker(false)}
+          />
+        </MaybeSheet>
       )}
       {showInviteRow && showInvite && person && (
         <InviteSheet
@@ -1050,16 +1109,18 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
         />
       )}
       {showFamilyPicker && (
-        <FamilyPickerSheet
-          families={data.families}
-          people={data.people}
-          currentFamilyId={familyId}
-          onConfirm={(id) => {
-            setFamilyId(id);
-            setShowFamilyPicker(false);
-          }}
-          onBack={() => setShowFamilyPicker(false)}
-        />
+        <MaybeSheet sheetVariant={sheetVariant} onClose={() => setShowFamilyPicker(false)}>
+          <FamilyPickerSheet
+            families={data.families}
+            people={data.people}
+            currentFamilyId={familyId}
+            onConfirm={(id) => {
+              setFamilyId(id);
+              setShowFamilyPicker(false);
+            }}
+            onBack={() => setShowFamilyPicker(false)}
+          />
+        </MaybeSheet>
       )}
     </>
   );
@@ -1070,8 +1131,8 @@ export default PersonFormBody;
 // ── Styles ────────────────────────────────────────────────────────────────────
 
 const langChipStyle: React.CSSProperties = {
-  fontSize: 11,
-  fontWeight: 500,
+  fontSize: 'var(--text-11)',
+  fontWeight: 'var(--font-medium)',
   padding: '0.125rem 0.5rem',
   borderRadius: 'var(--radius-pill)',
   background: 'var(--blue-light)',
@@ -1080,8 +1141,8 @@ const langChipStyle: React.CSSProperties = {
 };
 
 const blueChipStyle: React.CSSProperties = {
-  fontSize: 11,
-  fontWeight: 500,
+  fontSize: 'var(--text-11)',
+  fontWeight: 'var(--font-medium)',
   padding: '0.125rem 0.5rem',
   borderRadius: 'var(--radius-pill)',
   background: 'var(--blue-light)',
@@ -1090,8 +1151,8 @@ const blueChipStyle: React.CSSProperties = {
 };
 
 const sageChipStyle: React.CSSProperties = {
-  fontSize: 11,
-  fontWeight: 500,
+  fontSize: 'var(--text-11)',
+  fontWeight: 'var(--font-medium)',
   padding: '0.125rem 0.5rem',
   borderRadius: 'var(--radius-pill)',
   background: 'var(--sage-light)',
@@ -1106,11 +1167,11 @@ function FormSection({ label, children }: { label: string; children: React.React
     <div style={{ marginBottom: 24 }}>
       <p
         style={{
-          fontSize: 10,
-          fontWeight: 600,
+          fontSize: 'var(--text-10)',
+          fontWeight: 'var(--font-semibold)',
           color: 'var(--text-muted)',
           textTransform: 'uppercase',
-          letterSpacing: '0.06em',
+          letterSpacing: 'var(--tracking-wide-6)',
           marginBottom: 6,
         }}
       >

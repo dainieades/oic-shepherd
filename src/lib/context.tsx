@@ -1661,11 +1661,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
       >
     ): Promise<void> => {
       let snapshot: AppData | undefined;
+      const now = new Date().toISOString();
       setData((prev) => {
         snapshot = prev;
         return {
           ...prev,
-          families: prev.families.map((f) => (f.id === familyId ? { ...f, ...updates } : f)),
+          families: prev.families.map((f) =>
+            f.id === familyId ? { ...f, ...updates, lastEditedAt: now } : f
+          ),
         };
       });
       const supabase = createClient();
@@ -1676,6 +1679,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (updates.primaryContactId !== undefined)
         dbUpdates.primary_contact_id = updates.primaryContactId;
       if (updates.childCount !== undefined) dbUpdates.child_count = updates.childCount;
+      dbUpdates.last_edited_at = new Date().toISOString();
       const { error } = await supabase.from('families').update(dbUpdates).eq('id', familyId);
       if (error) {
         console.error('families update failed:', JSON.stringify(error, null, 2));

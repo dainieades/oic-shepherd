@@ -134,12 +134,12 @@ export default function LogsFilterPanel({
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>Filter</h2>
+          <h2 style={{ fontSize: 'var(--text-16)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)' }}>Filter</h2>
           {draftTotalCount > 0 && (
             <span
               style={{
-                fontSize: 11,
-                fontWeight: 700,
+                fontSize: 'var(--text-11)',
+                fontWeight: 'var(--font-bold)',
                 padding: '0.125rem 0.5rem',
                 borderRadius: 'var(--radius-pill)',
                 background: 'var(--sage)',
@@ -204,8 +204,8 @@ export default function LogsFilterPanel({
               >
                 <span
                   style={{
-                    fontSize: 14,
-                    fontWeight: isActive ? 600 : 400,
+                    fontSize: 'var(--text-14)',
+                    fontWeight: isActive ? 'var(--font-semibold)' : 'var(--font-normal)',
                     color: isActive ? 'var(--sage)' : 'var(--text-primary)',
                   }}
                 >
@@ -214,8 +214,8 @@ export default function LogsFilterPanel({
                 {count > 0 && (
                   <span
                     style={{
-                      fontSize: 10,
-                      fontWeight: 700,
+                      fontSize: 'var(--text-10)',
+                      fontWeight: 'var(--font-bold)',
                       minWidth: 18,
                       height: 18,
                       borderRadius: 'var(--radius-pill)',
@@ -282,10 +282,10 @@ export default function LogsFilterPanel({
                   <div>
                     <p
                       style={{
-                        fontSize: 11,
+                        fontSize: 'var(--text-11)',
                         color: 'var(--text-muted)',
                         marginBottom: 4,
-                        fontWeight: 500,
+                        fontWeight: 'var(--font-medium)',
                       }}
                     >
                       From
@@ -300,7 +300,7 @@ export default function LogsFilterPanel({
                         background: 'var(--bg)',
                         border: '1px solid var(--border)',
                         borderRadius: 'var(--radius-xs)',
-                        fontSize: 13,
+                        fontSize: 'var(--text-13)',
                         color: 'var(--text-primary)',
                         outline: 'none',
                         boxSizing: 'border-box' as const,
@@ -310,10 +310,10 @@ export default function LogsFilterPanel({
                   <div>
                     <p
                       style={{
-                        fontSize: 11,
+                        fontSize: 'var(--text-11)',
                         color: 'var(--text-muted)',
                         marginBottom: 4,
-                        fontWeight: 500,
+                        fontWeight: 'var(--font-medium)',
                       }}
                     >
                       To
@@ -328,7 +328,7 @@ export default function LogsFilterPanel({
                         background: 'var(--bg)',
                         border: '1px solid var(--border)',
                         borderRadius: 'var(--radius-xs)',
-                        fontSize: 13,
+                        fontSize: 'var(--text-13)',
                         color: 'var(--text-primary)',
                         outline: 'none',
                         boxSizing: 'border-box' as const,
@@ -369,7 +369,7 @@ export default function LogsFilterPanel({
                     background: 'var(--bg)',
                     border: '1px solid var(--border)',
                     borderRadius: 'var(--radius-xs)',
-                    fontSize: 13,
+                    fontSize: 'var(--text-13)',
                     color: 'var(--text-primary)',
                     outline: 'none',
                     boxSizing: 'border-box' as const,
@@ -436,8 +436,8 @@ export default function LogsFilterPanel({
             flex: 1,
             background: 'none',
             border: 'none',
-            fontSize: 14,
-            fontWeight: 600,
+            fontSize: 'var(--text-14)',
+            fontWeight: 'var(--font-semibold)',
             color: 'var(--text-secondary)',
             cursor: 'pointer',
             padding: '0.75rem 0',
@@ -454,8 +454,8 @@ export default function LogsFilterPanel({
             border: 'none',
             borderRadius: 'var(--radius)',
             padding: '0.75rem 0',
-            fontSize: 15,
-            fontWeight: 600,
+            fontSize: 'var(--text-15)',
+            fontWeight: 'var(--font-semibold)',
             cursor: 'pointer',
           }}
         >

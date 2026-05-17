@@ -17,7 +17,7 @@ export const rowBtnStyle: React.CSSProperties = {
 export const spacerStyle: React.CSSProperties = { width: 8, flexShrink: 0 };
 
 export const labelStyle: React.CSSProperties = {
-  fontSize: 12,
+  fontSize: 'var(--text-12)',
   color: 'var(--text-muted)',
   width: 76,
   flexShrink: 0,
@@ -28,6 +28,6 @@ export const inputStyle: React.CSSProperties = {
   background: 'none',
   border: 'none',
   outline: 'none',
-  fontSize: 14,
+  fontSize: 'var(--text-14)',
   color: 'var(--text-primary)',
 };
