@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   CheckCircle,
@@ -14,6 +14,7 @@ import {
   Globe,
   HandWaving,
   ArrowSquareOut,
+  Plus,
 } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { useToast } from '@/components/Toast';
@@ -155,10 +156,17 @@ export default function PendingVisitorsPage() {
   const [busyId, setBusyId] = React.useState<string | null>(null);
   const [confirmPromote, setConfirmPromote] = React.useState<VisitorSubmission | null>(null);
   const [confirmDiscard, setConfirmDiscard] = React.useState<VisitorSubmission | null>(null);
+  const [scrolled, setScrolled] = useState(false);
   const inFlightRef = React.useRef<Set<string>>(new Set());
 
   const canAccess =
     currentPersona.role === 'admin' || currentPersona.canTriageVisitors === true;
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const load = React.useCallback(async () => {
     const supabase = createClient();
@@ -234,84 +242,139 @@ export default function PendingVisitorsPage() {
     }
   };
 
+  const btnSize = scrolled ? 30 : 36;
+  const btnFont = scrolled ? 13 : 14;
+  const btnPad = scrolled ? '0 0.75rem' : '0 0.875rem';
+
+  const actionButtons = (
+    <a
+      href="/welcome"
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{
+        height: btnSize,
+        padding: btnPad,
+        borderRadius: 'var(--radius-xs)',
+        background: 'var(--sage)',
+        color: 'var(--on-sage)',
+        fontSize: btnFont,
+        fontWeight: 600,
+        border: 'none',
+        cursor: 'pointer',
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 4,
+        textDecoration: 'none',
+        flexShrink: 0,
+        transition: 'height 0.25s ease, padding 0.25s ease, font-size 0.25s ease',
+      }}
+    >
+      <Plus size={15} weight="bold" />
+      Newcomer
+    </a>
+  );
+
   return (
     <PageContainer width="3xl">
-      <div style={{ paddingTop: 20, paddingBottom: 48 }}>
-        <header style={{ marginBottom: 20 }}>
-          <h1
+    <div style={{ paddingBottom: 32 }}>
+      {/* Sticky collapsing header */}
+      <header
+        className="-mx-4 px-4 lg:mx-0 lg:px-0"
+        style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 'var(--z-sticky)',
+          background: 'var(--bg)',
+          borderBottom: scrolled ? '1px solid var(--border-light)' : 'none',
+        }}
+      >
+        <div
+          style={{
+            height: scrolled ? '2.75rem' : '4.125rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            transition: 'height 0.25s ease',
+          }}
+        >
+          <span
             style={{
-              fontSize: 32,
-              fontWeight: 800,
+              fontSize: scrolled ? '1.0625rem' : '2rem',
+              fontWeight: scrolled ? 600 : 800,
               color: 'var(--text-primary)',
-              letterSpacing: '-0.03em',
+              letterSpacing: scrolled ? '-0.01em' : '-0.03em',
               lineHeight: 1,
+              transition: 'font-size 0.25s ease, letter-spacing 0.25s ease',
             }}
           >
             Newcomers
-          </h1>
-          {submissions && submissions.length > 0 && (
-            <p style={{ marginTop: 8, fontSize: 13, color: 'var(--text-muted)' }}>
-              {submissions.length} card{submissions.length === 1 ? '' : 's'} awaiting review
-            </p>
-          )}
-        </header>
+          </span>
+          {actionButtons}
+        </div>
+      </header>
 
-        {submissions === null ? (
-          <p style={{ color: 'var(--text-muted)', fontSize: 14 }}>Loading…</p>
-        ) : submissions.length === 0 ? (
-          <div
+      {submissions !== null && submissions.length > 0 && (
+        <p style={{ marginBottom: 12, fontSize: 13, color: 'var(--text-muted)' }}>
+          {submissions.length} card{submissions.length === 1 ? '' : 's'} awaiting review
+        </p>
+      )}
+
+      {submissions === null ? (
+        <p style={{ color: 'var(--text-muted)', fontSize: 14 }}>Loading…</p>
+      ) : submissions.length === 0 ? (
+        <div
+          style={{
+            background: 'var(--surface)',
+            borderRadius: 'var(--radius)',
+            border: '1px solid var(--border-light)',
+            padding: '2.5rem 1.25rem',
+            textAlign: 'center',
+            color: 'var(--text-muted)',
+            fontSize: 14,
+          }}
+        >
+          <HandWaving size={32} color="var(--text-muted)" style={{ marginBottom: 12 }} />
+          <p style={{ marginBottom: 4 }}>No newcomer cards pending.</p>
+          <p style={{ fontSize: 12 }}>
+            New self-submissions from <code>/welcome</code> will appear here for review.
+          </p>
+          <a
+            href="/welcome"
+            target="_blank"
+            rel="noopener noreferrer"
             style={{
-              background: 'var(--surface)',
-              borderRadius: 'var(--radius)',
-              border: '1px solid var(--border-light)',
-              padding: '2.5rem 1.25rem',
-              textAlign: 'center',
-              color: 'var(--text-muted)',
-              fontSize: 14,
+              marginTop: 24,
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+              padding: '0.75rem 1.5rem',
+              borderRadius: 'var(--radius-md)',
+              background: 'var(--sage)',
+              color: 'var(--on-sage)',
+              fontSize: 15,
+              fontWeight: 600,
+              textDecoration: 'none',
             }}
           >
-            <HandWaving size={32} color="var(--text-muted)" style={{ marginBottom: 12 }} />
-            <p style={{ marginBottom: 4 }}>No newcomer cards pending.</p>
-            <p style={{ fontSize: 12 }}>
-              New self-submissions from <code>/welcome</code> will appear here for review.
-            </p>
-            <a
-              href="/welcome"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                marginTop: 24,
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 8,
-                padding: '0.75rem 1.5rem',
-                borderRadius: 'var(--radius-md)',
-                background: 'var(--sage)',
-                color: 'var(--on-sage)',
-                fontSize: 15,
-                fontWeight: 600,
-                textDecoration: 'none',
-              }}
-            >
-              Open welcome form
-              <ArrowSquareOut size={16} weight="bold" />
-            </a>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-            {submissions.map((sub) => (
-              <SubmissionCard
-                key={sub.id}
-                submission={sub}
-                busy={busyId === sub.id}
-                onPromote={() => setConfirmPromote(sub)}
-                onDiscard={() => setConfirmDiscard(sub)}
-              />
-            ))}
-          </div>
-        )}
-      </div>
+            Open welcome form
+            <ArrowSquareOut size={16} weight="bold" />
+          </a>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+          {submissions.map((sub) => (
+            <SubmissionCard
+              key={sub.id}
+              submission={sub}
+              busy={busyId === sub.id}
+              onPromote={() => setConfirmPromote(sub)}
+              onDiscard={() => setConfirmDiscard(sub)}
+            />
+          ))}
+        </div>
+      )}
+    </div>
       {confirmPromote && (
         <ConfirmActionSheet
           title="Add to directory?"
@@ -346,6 +409,7 @@ export default function PendingVisitorsPage() {
       )}
     </PageContainer>
   );
+
 }
 
 function SubmissionCard({
@@ -384,6 +448,7 @@ function SubmissionCard({
 
       <div
         style={{
+          flex: 1,
           display: 'flex',
           flexDirection: 'column',
           gap: 6,

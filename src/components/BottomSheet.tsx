@@ -118,26 +118,13 @@ export function SubPanel({
   children: React.ReactNode;
   onBack?: () => void;
 }) {
-  const [closing, setClosing] = React.useState(false);
-
-  const handleBack = React.useCallback(() => {
-    if (!onBack || closing) return;
-    setClosing(true);
-  }, [onBack, closing]);
-
-  React.useEffect(() => {
-    if (!closing || !onBack) return;
-    const t = setTimeout(onBack, 240);
-    return () => clearTimeout(t);
-  }, [closing, onBack]);
-
   React.useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') handleBack();
+      if (e.key === 'Escape') onBack?.();
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [handleBack]);
+  }, [onBack]);
 
   return (
     <div
@@ -145,33 +132,19 @@ export function SubPanel({
         position: 'absolute',
         inset: 0,
         zIndex: 10,
+        background: 'var(--surface)',
+        display: 'flex',
+        flexDirection: 'column',
         overflow: 'hidden',
         borderRadius: 'inherit',
-        pointerEvents: 'none',
       }}
     >
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'var(--surface)',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-          borderRadius: 'inherit',
-          pointerEvents: 'auto',
-          animation: closing
-            ? 'slide-out-right 0.24s cubic-bezier(0.4, 0, 0.6, 1) both'
-            : 'slide-in-right 0.28s cubic-bezier(0.34, 1.2, 0.64, 1) both',
-        }}
-      >
-        {React.Children.map(children, (child) => {
-          if (React.isValidElement(child) && child.type === ModalHeader) {
-            return React.cloneElement(child as React.ReactElement<ModalHeaderProps>, { onCancel: handleBack });
-          }
-          return child;
-        })}
-      </div>
+      {React.Children.map(children, (child) => {
+        if (React.isValidElement(child) && child.type === ModalHeader) {
+          return React.cloneElement(child as React.ReactElement<ModalHeaderProps>, { onCancel: onBack });
+        }
+        return child;
+      })}
     </div>
   );
 }

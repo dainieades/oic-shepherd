@@ -108,7 +108,15 @@ export default function CalendarSyncSheet({ onClose, singleEvent }: Props) {
   }
 
   return (
-    <BottomSheet onClose={onClose} compact aria-labelledby="calendar-sync-title" zIndex={70}>
+    <BottomSheet
+      onClose={onClose}
+      compact
+      variant="confirm"
+      contentStyle={{ maxWidth: '26rem' }}
+      allowBackdropClose
+      aria-labelledby="calendar-sync-title"
+      zIndex={70}
+    >
       <ModalHeader
         title="Calendar Sync"
         titleId="calendar-sync-title"
