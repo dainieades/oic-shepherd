@@ -47,19 +47,27 @@ export type Gender = 'male' | 'female';
 export type MaritalStatus = 'single' | 'married' | 'widowed' | 'divorced';
 
 export const CHURCH_POSITIONS = [
-  'Elder',
-  'Deacon',
-  'Communication Team',
-  'Safety Team',
-  'IT Team',
-  'Welcome Team',
-  'Worship Team',
-  'Operation',
-  'Finance',
-  'PEP',
   'Admin',
-  'Mission',
+  'Children',
   'Coffee',
+  'Communication Team',
+  'Deacon',
+  'Elder',
+  'Finance',
+  'IT Team',
+  'Kitchen',
+  'Livestream',
+  'Mission',
+  'Nursery',
+  'Operation',
+  'Pastor',
+  'PEP',
+  'Safety Team',
+  'Staff',
+  'Welcome Team',
+  'Word',
+  'Worship Team',
+  'Youth',
 ] as const;
 
 export interface Person {
@@ -72,6 +80,7 @@ export interface Person {
   gender?: Gender;
   maritalStatus?: MaritalStatus;
   birthday?: string; // YYYY-MM-DD
+  baptized?: boolean;
   baptismDate?: string; // YYYY-MM-DD
   membershipDate?: string; // YYYY-MM-DD (member only)
   anniversary?: string; // YYYY-MM-DD (married only)

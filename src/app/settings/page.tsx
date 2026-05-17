@@ -81,7 +81,7 @@ export default function SettingsPage() {
     currentPersona.role === 'admin'
       ? 'Pastor / Admin'
       : currentPersona.role === 'shepherd'
-        ? 'Shepherd'
+        ? 'User'
         : 'Welcome Team';
 
   const hasPassword = supabaseUser?.identities?.some((i) => i.provider === 'email') ?? false;
@@ -126,34 +126,28 @@ export default function SettingsPage() {
           borderBottom: scrolled ? '1px solid var(--border-light)' : 'none',
         }}
       >
-        {scrolled ? (
-          <div style={{ height: 44, display: 'flex', alignItems: 'center' }}>
-            <span
-              style={{
-                fontSize: 17,
-                fontWeight: 600,
-                color: 'var(--text-primary)',
-                letterSpacing: '-0.01em',
-              }}
-            >
-              Settings
-            </span>
-          </div>
-        ) : (
-          <div style={{ paddingTop: 20, paddingBottom: 14 }}>
-            <h1
-              style={{
-                fontSize: 32,
-                fontWeight: 800,
-                color: 'var(--text-primary)',
-                letterSpacing: '-0.03em',
-                lineHeight: 1,
-              }}
-            >
-              Settings
-            </h1>
-          </div>
-        )}
+        <div
+          style={{
+            height: scrolled ? '2.75rem' : '4.125rem',
+            display: 'flex',
+            alignItems: 'center',
+            overflow: 'hidden',
+            transition: 'height 0.25s ease',
+          }}
+        >
+          <span
+            style={{
+              fontSize: scrolled ? '1.0625rem' : '2rem',
+              fontWeight: scrolled ? 600 : 800,
+              color: 'var(--text-primary)',
+              letterSpacing: scrolled ? '-0.01em' : '-0.03em',
+              lineHeight: 1,
+              transition: 'font-size 0.25s ease, letter-spacing 0.25s ease',
+            }}
+          >
+            Settings
+          </span>
+        </div>
       </div>
 
       {/* ── Profile row ── */}

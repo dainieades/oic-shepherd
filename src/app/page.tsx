@@ -182,7 +182,7 @@ export default function PeoplePage() {
   });
   const APP_ROLE_LABELS: Record<AppRole, string> = {
     admin: 'Admin',
-    shepherd: 'Shepherd',
+    shepherd: 'User',
     'no-access': 'No Access',
   };
   filters.appRoles.forEach((r) => {
@@ -246,6 +246,7 @@ export default function PeoplePage() {
             color: searchActive ? 'var(--sage)' : 'var(--text-secondary)',
             flexShrink: 0,
             padding: 0,
+            transition: 'width 0.25s ease, height 0.25s ease',
           }}
         >
           <MagnifyingGlass size={14} />
@@ -277,6 +278,7 @@ export default function PeoplePage() {
             border: filterActive ? '1px solid var(--sage-mid)' : '1px solid var(--border)',
             color: filterActive ? 'var(--sage)' : 'var(--text-secondary)',
             padding: 0,
+            transition: 'width 0.25s ease, height 0.25s ease',
           }}
         >
           <Funnel size={14} />
@@ -309,7 +311,7 @@ export default function PeoplePage() {
         <Button
           variant="primary"
           onClick={() => setShowAddChoice((v) => !v)}
-          style={{ height: btnSize, padding: btnPad, fontSize: btnFont }}
+          style={{ height: btnSize, padding: btnPad, fontSize: btnFont, transition: 'height 0.25s ease, padding 0.25s ease, font-size 0.25s ease' }}
         >
           <Plus size={16} weight="bold" />
           People
@@ -413,51 +415,30 @@ export default function PeoplePage() {
             borderBottom: scrolled ? '1px solid var(--border-light)' : 'none',
           }}
         >
-          {scrolled ? (
-            <div
+          <div
+            style={{
+              height: scrolled ? '2.75rem' : '4.125rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              overflow: 'hidden',
+              transition: 'height 0.25s ease',
+            }}
+          >
+            <span
               style={{
-                height: 44,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
+                fontSize: scrolled ? '1.0625rem' : '2rem',
+                fontWeight: scrolled ? 600 : 800,
+                color: 'var(--text-primary)',
+                letterSpacing: scrolled ? '-0.01em' : '-0.03em',
+                lineHeight: 1,
+                transition: 'font-size 0.25s ease, letter-spacing 0.25s ease',
               }}
             >
-              <span
-                style={{
-                  fontSize: 17,
-                  fontWeight: 600,
-                  color: 'var(--text-primary)',
-                  letterSpacing: '-0.01em',
-                }}
-              >
-                People
-              </span>
-              {actionButtons}
-            </div>
-          ) : (
-            <div
-              style={{
-                paddingTop: 20,
-                paddingBottom: 14,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}
-            >
-              <h1
-                style={{
-                  fontSize: 32,
-                  fontWeight: 800,
-                  color: 'var(--text-primary)',
-                  letterSpacing: '-0.03em',
-                  lineHeight: 1,
-                }}
-              >
-                People
-              </h1>
-              {actionButtons}
-            </div>
-          )}
+              People
+            </span>
+            {actionButtons}
+          </div>
         </header>
 
         <main>

@@ -140,6 +140,9 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
     person?.churchAttendance ?? 'visitor'
   );
   const [membershipDate, setMembershipDate] = React.useState(person?.membershipDate ?? '');
+  const [baptized, setBaptized] = React.useState<boolean>(
+    person ? (person.baptized ?? false) : status === 'member'
+  );
   const [baptismDate, setBaptismDate] = React.useState(person?.baptismDate ?? '');
   const [isShepherd, setIsShepherd] = React.useState(person?.isShepherd ?? false);
   const [isBeingDiscipled, setIsBeingDiscipled] = React.useState(person?.isBeingDiscipled ?? false);
@@ -166,7 +169,6 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
   const homePhoneRef = React.useRef<HTMLInputElement>(null);
   const emailRef = React.useRef<HTMLInputElement>(null);
   const addressRef = React.useRef<HTMLTextAreaElement>(null);
-  const membershipDateRef = React.useRef<HTMLInputElement>(null);
 
   const statusBtnRef = React.useRef<HTMLButtonElement>(null);
   const attendanceBtnRef = React.useRef<HTMLButtonElement>(null);
@@ -243,14 +245,14 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
       .map((p) => ({
         id: p.id,
         name: p.name,
-        subtitle: p.role === 'admin' ? 'Pastor' : 'Shepherd',
+        subtitle: p.role === 'admin' ? 'Pastor' : 'User',
         photo: p.personId
           ? data.people.find((person) => person.id === p.personId)?.photo
           : undefined,
       })),
     ...data.people
       .filter((p) => p.isShepherd && !personaPersonIds.has(p.id))
-      .map((p) => ({ id: p.id, name: fullName(p), subtitle: 'Shepherd', photo: p.photo })),
+      .map((p) => ({ id: p.id, name: fullName(p), subtitle: 'User', photo: p.photo })),
   ];
 
   const statusLabel = MEMBERSHIP_OPTIONS.find((o) => o.value === status)?.label ?? '';
@@ -269,6 +271,10 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
     onValidityChange?.(!!firstName.trim());
   }, [firstName, onValidityChange]);
 
+  React.useEffect(() => {
+    if (status === 'member') setBaptized(true);
+  }, [status]);
+
   React.useImperativeHandle(ref, () => ({
     save: async () => {
       if (!firstName.trim()) return;
@@ -286,7 +292,8 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
           membershipStatus: status,
           churchAttendance: attendance,
           membershipDate: status === 'member' && membershipDate ? membershipDate : undefined,
-          baptismDate: baptismDate || undefined,
+          baptized: baptized || undefined,
+          baptismDate: baptized && baptismDate ? baptismDate : undefined,
           isShepherd: isShepherd || undefined,
           isBeingDiscipled: isBeingDiscipled || undefined,
           isStudent: isStudent || undefined,
@@ -393,7 +400,8 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
           membershipStatus: status,
           churchAttendance: attendance,
           membershipDate: status === 'member' && membershipDate ? membershipDate : undefined,
-          baptismDate: baptismDate || undefined,
+          baptized,
+          baptismDate: baptized && baptismDate ? baptismDate : undefined,
           isShepherd: isShepherd || undefined,
           isBeingDiscipled: isBeingDiscipled || undefined,
           isStudent,
@@ -483,10 +491,10 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
                     }}
                   >
                     {appRole === 'shepherd' && canTriageVisitors
-                      ? 'Shepherd · Reviews newcomers'
+                      ? 'User · Reviews newcomers'
                       : {
                           admin: 'Admin',
-                          shepherd: 'Shepherd',
+                          shepherd: 'User',
                           'no-access': 'No Access',
                         }[appRole]}
                   </span>
@@ -596,7 +604,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
             icon={<GenderIntersex size={16} color="var(--text-muted)" />}
             label="Gender"
             value={genderLabel}
-            onClick={() => setOpenPicker('gender')}
+            onClick={() => setOpenPicker((v) => (v === 'gender' ? null : 'gender'))}
           />
           <FloatingDateRow
             icon={<Cake size={16} color="var(--text-muted)" />}
@@ -609,7 +617,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
             icon={<Heart size={16} color="var(--text-muted)" />}
             label="Marital"
             value={maritalLabel}
-            onClick={() => setOpenPicker('marital')}
+            onClick={() => setOpenPicker((v) => (v === 'marital' ? null : 'marital'))}
           />
           {maritalStatus === 'married' && (
             <FloatingDateRow
@@ -637,21 +645,20 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
             icon={<IdentificationCard size={16} color="var(--text-muted)" />}
             label="Status"
             value={statusLabel}
-            onClick={() => setOpenPicker('status')}
+            onClick={() => setOpenPicker((v) => (v === 'status' ? null : 'status'))}
           />
           <PickerRow
             ref={attendanceBtnRef}
             icon={<Pulse size={16} color="var(--text-muted)" />}
             label="Attendance"
             value={attendanceLabel}
-            onClick={() => setOpenPicker('attendance')}
+            onClick={() => setOpenPicker((v) => (v === 'attendance' ? null : 'attendance'))}
           />
           {status === 'member' && (
-            <DateRow
+            <FloatingDateRow
               icon={<CalendarCheck size={16} color="var(--text-muted)" />}
               label="Member Since"
               value={membershipDate}
-              inputRef={membershipDateRef}
               onChange={setMembershipDate}
             />
           )}
@@ -774,12 +781,24 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
             </span>
             <CaretRight size={14} color="var(--text-muted)" />
           </button>
-          <FloatingDateRow
-            icon={<Drop size={16} color="var(--text-muted)" />}
-            label="Baptism Date"
-            value={baptismDate}
-            onChange={setBaptismDate}
-          />
+          <button
+            className="field-row-hover"
+            onClick={() => setBaptized((v) => !v)}
+            style={rowBtnStyle}
+          >
+            <span style={spacerStyle} />
+            <Drop size={16} color="var(--text-muted)" />
+            <span style={{ ...labelStyle, flex: 1 }}>Baptized?</span>
+            <Toggle on={baptized} />
+          </button>
+          {baptized && (
+            <FloatingDateRow
+              icon={<Drop size={16} color="var(--text-muted)" />}
+              label="Baptism Date"
+              value={baptismDate}
+              onChange={setBaptismDate}
+            />
+          )}
         </FormSection>
 
         {canEditVisitorCard && visitorSubmission && (
@@ -789,7 +808,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
               icon={<Megaphone size={16} color="var(--text-muted)" />}
               label="Heard via"
               value={referralSource ? REFERRAL_LABELS[referralSource] : 'Not set'}
-              onClick={() => setOpenPicker('referralSource')}
+              onClick={() => setOpenPicker((v) => (v === 'referralSource' ? null : 'referralSource'))}
             />
             {referralSource && (
               <TextInputRow

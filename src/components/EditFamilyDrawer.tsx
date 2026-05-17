@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { DrawerSection } from '@/components/form/DrawerSection';
 import { useApp } from '@/lib/context';
 import { useToast } from './Toast';
@@ -8,7 +9,6 @@ import { BottomSheet, ModalHeader } from './BottomSheet';
 import { type Family, type Person, type Group } from '@/lib/types';
 import {
   CaretRight,
-  User,
   UsersFour,
   Plus,
   House,
@@ -17,7 +17,6 @@ import {
   MagnifyingGlass,
   Check,
 } from '@phosphor-icons/react';
-import PickerMenu from './PickerMenu';
 import { fullName } from '@/lib/utils';
 import { ShepherdPickerSheet } from './PersonPickerSheets';
 import {
@@ -48,31 +47,22 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
   // State
   const [label, setLabel] = React.useState(family.label.replace(/ Family$/i, ''));
   const [memberIds, setMemberIds] = React.useState<string[]>(family.memberIds);
-  const [primaryContactId, setPrimaryContactId] = React.useState<string>(
-    family.primaryContactId ?? family.memberIds[0] ?? ''
-  );
   const [groupIds, setGroupIds] = React.useState<string[]>(initialGroupIds);
   const [shepherdIds, setShepherdIds] = React.useState<string[]>(initialShepherdIds);
 
   // Picker open state
   const [showMemberPicker, setShowMemberPicker] = React.useState(false);
-  const [showPrimaryContactPicker, setShowPrimaryContactPicker] = React.useState(false);
   const [showGroupPicker, setShowGroupPicker] = React.useState(false);
-  const groupBtnRef = React.useRef<HTMLButtonElement>(null);
   const [showShepherdPicker, setShowShepherdPicker] = React.useState(false);
 
   const labelRef = React.useRef<HTMLInputElement>(null);
 
   // Derived
   const currentMembers = data.people.filter((p) => memberIds.includes(p.id));
-  const primaryContact = currentMembers.find((m) => m.id === primaryContactId);
 
   const handleSave = async () => {
     if (!label.trim()) return;
-    await updateFamily(family.id, {
-      label: `${label.trim()} Family`,
-      primaryContactId: primaryContactId || undefined,
-    });
+    await updateFamily(family.id, { label: `${label.trim()} Family` });
     await updateFamilyMembers(family.id, memberIds);
     await assignGroupsToFamily(family.id, groupIds);
     await assignShepherdsToFamily(family.id, shepherdIds);
@@ -89,19 +79,19 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
     .map((p) => ({
       id: p.id,
       name: p.name,
-      subtitle: p.role === 'admin' ? 'Pastor' : 'Shepherd',
+      subtitle: p.role === 'admin' ? 'Pastor' : 'User',
       photo: p.personId ? data.people.find((person) => person.id === p.personId)?.photo : undefined,
     }));
   const selectedShepherds = shepherdEntries.filter((e) => shepherdIds.includes(e.id));
 
-  const primaryContactOptions = [
-    { value: '', label: 'Not set' },
-    ...currentMembers.map((m) => ({ value: m.id, label: fullName(m) })),
-  ];
-
   return (
     <>
-      <BottomSheet onClose={onClose} variant="side-panel" aria-labelledby="edit-family-title">
+      <BottomSheet
+        onClose={onClose}
+        variant="dialog"
+        contentStyle={{ maxWidth: '44rem', width: '100%' }}
+        aria-labelledby="edit-family-title"
+      >
         <ModalHeader
           title="Edit family"
           titleId="edit-family-title"
@@ -187,9 +177,7 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
                   </span>
                   <button
                     onClick={() => {
-                      const remaining = memberIds.filter((x) => x !== m.id);
-                      setMemberIds(remaining);
-                      if (primaryContactId === m.id) setPrimaryContactId(remaining[0] ?? '');
+                      setMemberIds(memberIds.filter((x) => x !== m.id));
                     }}
                     style={{
                       width: 28,
@@ -238,43 +226,8 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
 
           {/* ── CHURCH ── */}
           <DrawerSection label="Church">
-            {/* Primary Contact */}
-            <button
-              className="field-row-hover"
-              onClick={() => setShowPrimaryContactPicker(true)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 10,
-                paddingTop: 12,
-                paddingBottom: 12,
-                border: 'none',
-                borderBottom: '1px solid var(--border-light)',
-                background: 'none',
-                cursor: 'pointer',
-                width: '100%',
-                textAlign: 'left' as const,
-              }}
-            >
-              <span style={spacerStyle} />
-              <User size={16} color="var(--text-muted)" />
-              <span style={labelStyle}>Primary</span>
-              <span
-                style={{
-                  flex: 1,
-                  fontSize: 14,
-                  color: primaryContact ? 'var(--text-primary)' : 'var(--text-muted)',
-                  textAlign: 'left',
-                }}
-              >
-                {primaryContact ? fullName(primaryContact) : 'Not set'}
-              </span>
-              <CaretRight size={14} color="var(--text-muted)" />
-            </button>
-
             {/* Fellowship Groups */}
             <button
-              ref={groupBtnRef}
               className="field-row-hover"
               onClick={() => setShowGroupPicker((v) => !v)}
               style={{
@@ -368,17 +321,6 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
         </div>
       </BottomSheet>
 
-      {/* Primary Contact Picker */}
-      {showPrimaryContactPicker && (
-        <PickerMenu
-          title="Primary Contact"
-          options={primaryContactOptions}
-          value={primaryContactId}
-          onSelect={(v) => setPrimaryContactId(v)}
-          onClose={() => setShowPrimaryContactPicker(false)}
-        />
-      )}
-
       {/* Member Picker Sheet */}
       {showMemberPicker && (
         <MemberPickerSheet
@@ -386,8 +328,6 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
           currentMemberIds={memberIds}
           onConfirm={(ids) => {
             setMemberIds(ids);
-            // If the current primary contact was removed, reset to first remaining member
-            if (!ids.includes(primaryContactId)) setPrimaryContactId(ids[0] ?? '');
             setShowMemberPicker(false);
           }}
           onBack={() => setShowMemberPicker(false)}
@@ -496,12 +436,13 @@ function MemberPickerSheet({
   const toggle = (id: string) =>
     setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
 
-  return (
+  return createPortal(
     <div
       style={{
         position: 'fixed',
         inset: 0,
         zIndex: Z_SHEET,
+        background: BACKDROP_COLOR,
         display: 'flex',
         alignItems: 'flex-end',
         justifyContent: 'center',
@@ -697,7 +638,8 @@ function MemberPickerSheet({
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -746,7 +688,7 @@ function GroupPickerSheet({
   const toggle = (id: string) =>
     setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
 
-  return (
+  return createPortal(
     <div
       style={{
         position: 'fixed',
@@ -939,6 +881,7 @@ function GroupPickerSheet({
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

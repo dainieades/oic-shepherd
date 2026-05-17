@@ -112,6 +112,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
             fontWeight: 600,
             whiteSpace: 'nowrap',
             flexShrink: 0,
+            transition: 'height 0.25s ease, padding 0.25s ease, font-size 0.25s ease',
           }}
         >
           <PencilSimpleIcon size={scrolled ? 13 : 15} weight="bold" />

@@ -601,7 +601,7 @@ export default function FilterPanel({
               {(['admin', 'shepherd', 'no-access'] as AppRole[]).map((role) => {
                 const labels: Record<AppRole, string> = {
                   admin: 'Admin',
-                  shepherd: 'Shepherd',
+                  shepherd: 'User',
                   'no-access': 'No Access',
                 };
                 return (

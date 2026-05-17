@@ -401,7 +401,7 @@ export default function AddNoticeModal({
                           : `${categories.length} selected`
                     }
                     valueColor={categories.length === 0 ? 'var(--text-muted)' : undefined}
-                    onClick={readOnly ? undefined : () => setShowCategoryPicker(true)}
+                    onClick={readOnly ? undefined : () => setShowCategoryPicker((v) => !v)}
                     readOnly={readOnly}
                   />
 
@@ -409,7 +409,7 @@ export default function AddNoticeModal({
                   <button
                     ref={urgencyBtnRef}
                     className={readOnly ? undefined : 'field-row-hover'}
-                    onClick={readOnly ? undefined : () => setShowUrgencyPicker(true)}
+                    onClick={readOnly ? undefined : () => setShowUrgencyPicker((v) => !v)}
                     disabled={readOnly}
                     style={{
                       display: 'flex',
@@ -471,7 +471,7 @@ export default function AddNoticeModal({
                     icon={<Eye size={16} />}
                     label="Visible to"
                     value={privacyItem.label}
-                    onClick={readOnly ? undefined : () => setShowPrivacyPicker(true)}
+                    onClick={readOnly ? undefined : () => setShowPrivacyPicker((v) => !v)}
                     readOnly={readOnly}
                   />
 

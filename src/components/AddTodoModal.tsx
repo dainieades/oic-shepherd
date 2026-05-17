@@ -258,7 +258,7 @@ export default function AddTodoModal({
                     label="Reminder"
                     value={reminderLabel}
                     valueColor={reminder === 'none' ? 'var(--text-muted)' : undefined}
-                    onClick={() => setShowReminderPicker(true)}
+                    onClick={() => setShowReminderPicker((v) => !v)}
                   />
 
                   {/* Add to Calendar / Sync status */}
@@ -283,7 +283,7 @@ export default function AddTodoModal({
                     label="Repeat"
                     value={repeatLabel}
                     valueColor={repeat === 'none' ? 'var(--text-muted)' : undefined}
-                    onClick={() => setShowRepeatPicker(true)}
+                    onClick={() => setShowRepeatPicker((v) => !v)}
                   />
 
                   {/* Created by — edit mode only */}

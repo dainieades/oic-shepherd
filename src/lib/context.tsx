@@ -151,6 +151,7 @@ interface AppContextType {
         | 'gender'
         | 'maritalStatus'
         | 'birthday'
+        | 'baptized'
         | 'baptismDate'
         | 'anniversary'
         | 'isShepherd'
@@ -247,6 +248,7 @@ const AUDIT_FIELD_KEYS = [
   'gender',
   'maritalStatus',
   'birthday',
+  'baptized',
   'baptismDate',
   'anniversary',
   'isShepherd',
@@ -1140,6 +1142,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         gender: person.gender ?? null,
         marital_status: person.maritalStatus ?? null,
         birthday: person.birthday ?? null,
+        baptized: person.baptized ?? false,
         baptism_date: person.baptismDate ?? null,
         membership_date: person.membershipDate ?? null,
         anniversary: person.anniversary ?? null,
@@ -1284,6 +1287,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           | 'gender'
           | 'maritalStatus'
           | 'birthday'
+          | 'baptized'
           | 'baptismDate'
           | 'anniversary'
           | 'isShepherd'
@@ -1343,6 +1347,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (updates.gender !== undefined) dbUpdates.gender = updates.gender;
       if (updates.maritalStatus !== undefined) dbUpdates.marital_status = updates.maritalStatus;
       if (updates.birthday !== undefined) dbUpdates.birthday = updates.birthday;
+      if (updates.baptized !== undefined) dbUpdates.baptized = updates.baptized;
       if (updates.baptismDate !== undefined) dbUpdates.baptism_date = updates.baptismDate;
       if (updates.anniversary !== undefined) dbUpdates.anniversary = updates.anniversary;
       if (updates.isShepherd !== undefined) dbUpdates.is_shepherd = updates.isShepherd;
@@ -1469,6 +1474,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       let snapshot: AppData | undefined;
       let personName = '';
       let unchanged = false;
+      let newlyAddedShepherdIds: string[] = [];
       setData((prev) => {
         snapshot = prev;
         const p = prev.people.find((p) => p.id === personId);
@@ -1482,6 +1488,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
             unchanged = true;
             return prev;
           }
+          newlyAddedShepherdIds = shepherdIds.filter((id) => !current.includes(id));
+        } else {
+          newlyAddedShepherdIds = shepherdIds;
         }
         const personaIdSet = new Set(prev.personas.map((pp) => pp.id));
         const shepherdPersonaIdSet = new Set(shepherdIds.filter((sid) => personaIdSet.has(sid)));
@@ -1575,14 +1584,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
           }
         }
       }
-      if (shepherdIds.length > 0 && personName) {
+      if (newlyAddedShepherdIds.length > 0 && personName) {
         void fetch('/api/notify', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             type: 'shepherd.assigned',
             personName,
-            shepherdPersonaIds: shepherdIds,
+            shepherdPersonaIds: newlyAddedShepherdIds,
             assignedByName: currentPersona.name,
             actorEmail: currentUserEmail,
             actorUserId: currentPersona.userId,

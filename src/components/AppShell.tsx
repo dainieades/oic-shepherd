@@ -10,6 +10,10 @@ export default function AppShell({ children }: { children: React.ReactNode }): R
   const pathname = usePathname();
   const chromeless = isSideNavHidden(pathname);
 
+  React.useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [pathname]);
+
   if (chromeless) {
     return (
       <main className="mx-auto min-h-screen w-full max-w-[26.875rem] px-4 pb-20 sm:max-w-[32rem] sm:px-12 md:px-16">

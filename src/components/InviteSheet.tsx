@@ -29,7 +29,7 @@ interface Props {
 const ROLES: { value: InviteRole; label: string; description: string; icon: React.ReactNode }[] = [
   {
     value: 'shepherd',
-    label: 'Shepherd',
+    label: 'User',
     description: 'View and log care for assigned people',
     icon: <HandHeart size={18} color="var(--sage)" />,
   },
@@ -428,7 +428,7 @@ export default function InviteSheet({
                       lineHeight: 1.4,
                     }}
                   >
-                    Lets this shepherd review and welcome new sign-ups.
+                    Lets this user review and welcome new sign-ups.
                   </p>
                 </div>
                 <span

@@ -71,7 +71,7 @@ function DesktopSidebar() {
     currentPersona.role === 'admin'
       ? 'Pastor / Admin'
       : currentPersona.role === 'shepherd'
-        ? 'Shepherd'
+        ? 'User'
         : 'Welcome Team';
 
   const hasPassword = supabaseUser?.identities?.some((i) => i.provider === 'email') ?? false;

@@ -220,7 +220,7 @@ const VisitorIntakeForm = React.forwardRef<VisitorIntakeFormHandle, Props>(
             icon={<Megaphone size={16} color="var(--text-muted)" />}
             label="Heard via"
             value={referralSource ? REFERRAL_LABELS[referralSource] : 'Select'}
-            onClick={() => setShowSourcePicker(true)}
+            onClick={() => setShowSourcePicker((v) => !v)}
           />
           {showReferralDetail && (
             <TextInputRow

@@ -278,7 +278,7 @@ export default function AddLogModal({
                     icon={typeItem.icon}
                     label="Type"
                     value={typeItem.label}
-                    onClick={() => setShowTypePicker(true)}
+                    onClick={() => setShowTypePicker((v) => !v)}
                   />
 
                   {/* For */}

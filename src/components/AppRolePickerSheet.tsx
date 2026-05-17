@@ -14,7 +14,7 @@ const ROLE_OPTIONS: { value: AppRole; label: string; description: string }[] = [
   },
   {
     value: 'shepherd',
-    label: 'Shepherd',
+    label: 'User',
     description: 'Can view and log for their assigned people.',
   },
 ];
@@ -485,7 +485,7 @@ export default function AppRolePickerSheet({
                   Review newcomers
                 </p>
                 <p style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.4 }}>
-                  Lets this shepherd review and welcome new sign-ups.
+                  Lets this user review and welcome new sign-ups.
                 </p>
               </div>
               <span

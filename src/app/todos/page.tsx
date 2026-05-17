@@ -811,8 +811,6 @@ function CalendarView({
   const [calMonth, setCalMonth] = useState(today.getMonth()); // 0-indexed
   const [selectedDate, setSelectedDate] = useState<string | null>(null); // 'YYYY-MM-DD'
 
-  const monthLabel = format(new Date(calYear, calMonth, 1), 'MMMM yyyy');
-
   const daysInMonth = getDaysInMonth(new Date(calYear, calMonth));
   const firstDow = getDay(new Date(calYear, calMonth, 1)); // 0=Sun
 
@@ -865,43 +863,67 @@ function CalendarView({
           marginBottom: 12,
         }}
       >
-        <button
-          onClick={prevMonth}
-          style={{
-            width: 32,
-            height: 32,
-            borderRadius: 'var(--radius-xs)',
-            border: '1px solid var(--border)',
-            background: 'transparent',
-            color: 'var(--text-secondary)',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <CaretLeft size={14} />
-        </button>
         <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
-          {monthLabel}
+          <span style={{ color: 'var(--text-primary)' }}>{format(new Date(calYear, calMonth, 1), 'MMMM')}</span>
+          {' '}
+          <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>{calYear}</span>
         </span>
-        <button
-          onClick={nextMonth}
-          style={{
-            width: 32,
-            height: 32,
-            borderRadius: 'var(--radius-xs)',
-            border: '1px solid var(--border)',
-            background: 'transparent',
-            color: 'var(--text-secondary)',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <CaretRight size={14} />
-        </button>
+        <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+          <button
+            onClick={prevMonth}
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: 'var(--radius-xs)',
+              border: '1px solid var(--border)',
+              background: 'transparent',
+              color: 'var(--text-secondary)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <CaretLeft size={14} />
+          </button>
+          <button
+            onClick={() => {
+              setCalMonth(today.getMonth());
+              setCalYear(today.getFullYear());
+              setSelectedDate(null);
+            }}
+            style={{
+              height: 32,
+              padding: '0 0.75rem',
+              borderRadius: 'var(--radius-xs)',
+              border: '1px solid var(--border)',
+              background: 'transparent',
+              color: 'var(--text-secondary)',
+              fontSize: 13,
+              fontWeight: 500,
+              cursor: 'pointer',
+            }}
+          >
+            Today
+          </button>
+          <button
+            onClick={nextMonth}
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: 'var(--radius-xs)',
+              border: '1px solid var(--border)',
+              background: 'transparent',
+              color: 'var(--text-secondary)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <CaretRight size={14} />
+          </button>
+        </div>
       </div>
 
       {/* Day-of-week headers */}
@@ -925,9 +947,9 @@ function CalendarView({
       </div>
 
       {/* Calendar grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 3 }}>
+      <div className="calendar-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 3 }}>
         {cells.map((day, i) => {
-          if (!day) return <div key={`empty-${i}`} />;
+          if (!day) return <div key={`empty-${i}`} className="calendar-tile-empty" />;
           const dateStr = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
           const dayTodos = todosByDate[dateStr] ?? [];
           const isToday = dateStr === todayStr;
@@ -938,15 +960,14 @@ function CalendarView({
           return (
             <button
               key={dateStr}
+              className="calendar-tile"
               onClick={() => setSelectedDate(isSelected ? null : dateStr)}
               style={{
-                aspectRatio: '1',
-                borderRadius: 'var(--radius-xs)',
                 background: isSelected
                   ? 'var(--sage)'
                   : isToday
                     ? 'var(--sage-light)'
-                    : 'transparent',
+                    : 'var(--surface)',
                 border:
                   isToday && !isSelected
                     ? '0.09375rem solid var(--sage-mid)'
@@ -954,32 +975,26 @@ function CalendarView({
                       ? 'none'
                       : '0.0625rem solid transparent',
                 cursor: 'pointer',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 2,
-                padding: 2,
               }}
             >
               <span
                 style={{
-                  fontSize: 13,
+                  fontSize: '0.625rem',
                   fontWeight: isToday || isSelected ? 700 : 400,
                   color: isSelected
                     ? 'var(--on-sage)'
                     : isToday
                       ? 'var(--sage)'
-                      : 'var(--text-primary)',
+                      : 'var(--text-secondary, var(--text-muted))',
                   lineHeight: 1,
                 }}
               >
                 {day}
               </span>
               {dayTodos.length > 0 && (
-                <div style={{ display: 'flex', gap: 2 }}>
+                <span className="calendar-dots" style={{ display: 'flex', gap: 2 }}>
                   {dayTodos.slice(0, 3).map((_, di) => (
-                    <div
+                    <span
                       key={di}
                       style={{
                         width: 4,
@@ -992,20 +1007,44 @@ function CalendarView({
                             : hasIncomplete
                               ? 'var(--sage)'
                               : 'var(--text-muted)',
+                        flexShrink: 0,
                       }}
                     />
                   ))}
                   {dayTodos.length > 3 && (
-                    <div
+                    <span
                       style={{
                         width: 4,
                         height: 4,
                         borderRadius: '50%',
                         background: isSelected ? 'rgba(255,255,255,0.6)' : 'var(--border)',
+                        flexShrink: 0,
                       }}
                     />
                   )}
-                </div>
+                </span>
+              )}
+              {dayTodos.length > 0 && (
+                <ul className="calendar-todo-list">
+                  {dayTodos.slice(0, 2).map((t) => (
+                    <li
+                      key={t.id}
+                      className={`calendar-todo-item ${t.completed ? 'calendar-todo-item--done' : 'calendar-todo-item--pending'}`}
+                      style={isSelected ? { background: 'rgba(255,255,255,0.2)', color: 'var(--on-sage)', textDecoration: t.completed ? 'line-through' : 'none' } : {}}
+                      onClick={(e) => { e.stopPropagation(); onEdit(t); }}
+                    >
+                      {t.title}
+                    </li>
+                  ))}
+                  {dayTodos.length > 2 && (
+                    <li
+                      className="calendar-todo-item calendar-todo-item--more"
+                      style={isSelected ? { color: 'rgba(255,255,255,0.7)' } : {}}
+                    >
+                      +{dayTodos.length - 2} more
+                    </li>
+                  )}
+                </ul>
               )}
             </button>
           );

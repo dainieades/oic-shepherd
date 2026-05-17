@@ -16,7 +16,7 @@ type ApprovedEmail = { email: string; label: string | null; created_at: string }
 
 const ROLE_LABEL: Record<AppRole, string> = {
   admin: 'Admin',
-  shepherd: 'Shepherd',
+  shepherd: 'User',
   'no-access': 'No Access',
 };
 
@@ -270,7 +270,7 @@ export default function AccessManagementPage() {
                 >
                   {linkedPerson
                     ? role === 'shepherd' && linkedPerson.canTriageVisitors
-                      ? 'Shepherd · Reviews newcomers'
+                      ? 'User · Reviews newcomers'
                       : ROLE_LABEL[role]
                     : 'Not linked'}
                 </span>

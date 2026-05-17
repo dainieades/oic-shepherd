@@ -23,7 +23,12 @@ export default function EditPersonDrawer({ person, onClose }: Props) {
 
   return (
     <>
-      <BottomSheet onClose={onClose} variant="side-panel" aria-labelledby="edit-person-title">
+      <BottomSheet
+        onClose={onClose}
+        variant="dialog"
+        contentStyle={{ maxWidth: '44rem', width: '100%' }}
+        aria-labelledby="edit-person-title"
+      >
         <ModalHeader
           title="Edit person"
           titleId="edit-person-title"

@@ -46,6 +46,7 @@ export function mapPerson(
     gender: r.gender ?? undefined,
     maritalStatus: r.marital_status ?? undefined,
     birthday: r.birthday ?? undefined,
+    baptized: r.baptized ?? undefined,
     baptismDate: r.baptism_date ?? undefined,
     membershipDate: r.membership_date ?? undefined,
     anniversary: r.anniversary ?? undefined,

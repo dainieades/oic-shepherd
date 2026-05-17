@@ -15,6 +15,7 @@ export const PersonRowSchema = z.object({
   gender: z.enum(['male', 'female']).nullish().catch(null),
   marital_status: z.enum(['single', 'married', 'widowed', 'divorced']).nullish().catch(null),
   birthday: nullStr,
+  baptized: nullBool,
   baptism_date: nullStr,
   membership_date: nullStr,
   anniversary: nullStr,

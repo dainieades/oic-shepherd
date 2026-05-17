@@ -209,6 +209,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                 fontSize: scrolled ? 13 : 14,
                 fontWeight: 600,
                 whiteSpace: 'nowrap',
+                transition: 'height 0.25s ease, padding 0.25s ease, font-size 0.25s ease',
               }}
             >
               <PencilSimpleIcon size={scrolled ? 13 : 15} weight="bold" />
@@ -237,6 +238,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                 display: 'flex',
                 alignItems: 'center',
                 gap: 4,
+                transition: 'height 0.25s ease, padding 0.25s ease, font-size 0.25s ease',
               }}
             >
               <Plus size={14} weight="bold" />
@@ -258,6 +260,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
+                transition: 'width 0.25s ease, height 0.25s ease',
               }}
             >
               <DotsThreeVertical size={16} />

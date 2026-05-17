@@ -46,6 +46,17 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
   const person = data.people.find((p) => p.id === personId)!;
   const formRef = React.useRef<PersonFormBodyHandle>(null);
   const [canSave, setCanSave] = React.useState(!!person.preferredName.trim());
+  const [isSaving, setIsSaving] = React.useState(false);
+
+  async function handleSave() {
+    if (isSaving) return;
+    setIsSaving(true);
+    try {
+      await formRef.current?.save();
+    } finally {
+      setIsSaving(false);
+    }
+  }
 
   return (
     <>
@@ -81,22 +92,22 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
         </button>
         <span style={navTitleStyle}>My Profile</span>
         <button
-          onClick={() => formRef.current?.save()}
-          disabled={!canSave}
+          onClick={handleSave}
+          disabled={!canSave || isSaving}
           style={{
             height: 32,
             padding: '0 0.875rem',
             borderRadius: 'var(--radius-xs)',
-            background: canSave ? 'var(--sage)' : 'var(--border)',
-            color: canSave ? 'var(--on-sage)' : 'var(--text-muted)',
+            background: canSave && !isSaving ? 'var(--sage)' : 'var(--border)',
+            color: canSave && !isSaving ? 'var(--on-sage)' : 'var(--text-muted)',
             fontSize: 14,
             fontWeight: 600,
             border: 'none',
-            cursor: canSave ? 'pointer' : 'default',
+            cursor: canSave && !isSaving ? 'pointer' : 'default',
             transition: 'background 0.15s',
           }}
         >
-          Save
+          {isSaving ? 'Saving…' : 'Save'}
         </button>
       </div>
 
@@ -124,22 +135,22 @@ function ProfileEditor({ personId, onBack }: { personId: string; onBack: () => v
             Cancel
           </button>
           <button
-            onClick={() => formRef.current?.save()}
-            disabled={!canSave}
+            onClick={handleSave}
+            disabled={!canSave || isSaving}
             style={{
               height: 32,
               padding: '0 0.875rem',
               borderRadius: 'var(--radius-xs)',
-              background: canSave ? 'var(--sage)' : 'var(--border)',
-              color: canSave ? 'var(--on-sage)' : 'var(--text-muted)',
+              background: canSave && !isSaving ? 'var(--sage)' : 'var(--border)',
+              color: canSave && !isSaving ? 'var(--on-sage)' : 'var(--text-muted)',
               fontSize: 14,
               fontWeight: 600,
               border: 'none',
-              cursor: canSave ? 'pointer' : 'default',
+              cursor: canSave && !isSaving ? 'pointer' : 'default',
               transition: 'background 0.15s',
             }}
           >
-            Save
+            {isSaving ? 'Saving…' : 'Save'}
           </button>
         </div>
       </div>
