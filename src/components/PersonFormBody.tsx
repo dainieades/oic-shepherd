@@ -1,6 +1,8 @@
 'use client';
 
 import React from 'react';
+import { createPortal } from 'react-dom';
+import { useFloating, autoUpdate, offset, flip } from '@floating-ui/react';
 import { useApp } from '@/lib/context';
 import { formatPhone, fmtDate, fullName } from '@/lib/utils';
 import {
@@ -20,7 +22,6 @@ import { fetchLatestVisitorSubmission } from '@/lib/mappers';
 import { REFERRAL_LABELS, INTEREST_LABELS } from '@/lib/constants';
 import PickerMenu from './PickerMenu';
 import PhotoAvatar from './PhotoAvatar';
-import AppRolePickerSheet from './AppRolePickerSheet';
 import LanguagePickerSheet from './LanguagePickerSheet';
 import InviteSheet from './InviteSheet';
 import {
@@ -57,6 +58,7 @@ import {
   UsersFour,
   PaperPlaneTilt,
   ArrowsOutSimple,
+  Check,
 } from '@phosphor-icons/react';
 import { BACKDROP_COLOR, SHEET_BORDER_RADIUS } from '@/lib/constants';
 import { TextInputRow, TextareaRow, PickerRow, DateRow, FloatingDateRow } from '@/components/form';
@@ -175,9 +177,37 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
   const maritalBtnRef = React.useRef<HTMLButtonElement>(null);
 
   const [openPicker, setOpenPicker] = React.useState<
-    'status' | 'attendance' | 'gender' | 'marital' | 'appRole' | 'referralSource' | null
+    'status' | 'attendance' | 'gender' | 'marital' | 'referralSource' | null
   >(null);
   const referralBtnRef = React.useRef<HTMLButtonElement>(null);
+
+  const [showAppRoleDropdown, setShowAppRoleDropdown] = React.useState(false);
+  const [appRoleMounted, setAppRoleMounted] = React.useState(false);
+  React.useEffect(() => { setAppRoleMounted(true); }, []);
+  const { refs: appRoleRefs, floatingStyles: appRoleFloatingStyles } = useFloating({
+    placement: 'bottom-end',
+    strategy: 'fixed',
+    middleware: [offset(4), flip({ padding: 8 })],
+    whileElementsMounted: autoUpdate,
+  });
+  React.useEffect(() => {
+    if (!showAppRoleDropdown) return;
+    const handler = (e: MouseEvent) => {
+      const anchor = appRoleRefs.reference.current as Element | null;
+      const floating = appRoleRefs.floating.current;
+      if (!anchor?.contains(e.target as Node) && !floating?.contains(e.target as Node)) {
+        setShowAppRoleDropdown(false);
+      }
+    };
+    document.addEventListener('click', handler);
+    return () => document.removeEventListener('click', handler);
+  }, [showAppRoleDropdown, appRoleRefs.reference, appRoleRefs.floating]);
+  React.useEffect(() => {
+    if (!showAppRoleDropdown) return;
+    const close = () => setShowAppRoleDropdown(false);
+    window.addEventListener('scroll', close, { passive: true, capture: true });
+    return () => window.removeEventListener('scroll', close, { capture: true });
+  }, [showAppRoleDropdown]);
 
   const [visitorSubmission, setVisitorSubmission] = React.useState<VisitorSubmission | null>(null);
   const [referralSource, setReferralSource] = React.useState<ReferralSource | ''>('');
@@ -496,8 +526,9 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
             ) : (
               <>
                 <button
+                  ref={currentPersona.role === 'admin' ? appRoleRefs.setReference : undefined}
                   className={currentPersona.role === 'admin' ? 'field-row-hover' : undefined}
-                  onClick={() => currentPersona.role === 'admin' && setOpenPicker('appRole')}
+                  onClick={() => currentPersona.role === 'admin' && setShowAppRoleDropdown((v) => !v)}
                   style={{
                     ...rowBtnStyle,
                     cursor: currentPersona.role === 'admin' ? 'pointer' : 'default',
@@ -933,21 +964,36 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
           onClose={() => setOpenPicker(null)}
         />
       )}
-      {openPicker === 'appRole' && (
-        <AppRolePickerSheet
-          currentRole={appRole}
-          onSelect={(role) => {
-            setAppRole(role);
-            if (role !== 'shepherd') setOpenPicker(null);
-          }}
-          onRemove={() => {
-            setAppRole('no-access');
-            setOpenPicker(null);
-          }}
-          onClose={() => setOpenPicker(null)}
-          isAdmin={currentPersona.role === 'admin'}
-          personName={person?.preferredName ?? firstName.trim()}
-        />
+      {showAppRoleDropdown && appRoleMounted && createPortal(
+        <div
+          ref={appRoleRefs.setFloating}
+          className="bg-surface border border-border rounded-md overflow-hidden shadow-elevated"
+          style={{ ...appRoleFloatingStyles, zIndex: 100, minWidth: '10rem' }}
+        >
+          {([
+            { value: 'admin' as AppRole, label: 'Admin' },
+            { value: 'shepherd' as AppRole, label: 'User' },
+            { value: 'no-access' as AppRole, label: 'No Access' },
+          ] as const).map((opt, i) => (
+            <button
+              key={opt.value}
+              onClick={() => {
+                setAppRole(opt.value);
+                setShowAppRoleDropdown(false);
+              }}
+              className="w-full flex items-center justify-between gap-3 bg-transparent border-none cursor-pointer text-left text-14"
+              style={{
+                padding: '0.8125rem 1rem',
+                borderBottom: i < 2 ? '1px solid var(--border-light)' : 'none',
+                color: opt.value === 'no-access' ? 'var(--red)' : 'var(--text-primary)',
+              }}
+            >
+              {opt.label}
+              {appRole === opt.value && <Check size={13} weight="bold" color={opt.value === 'no-access' ? 'var(--red)' : 'var(--sage)'} />}
+            </button>
+          ))}
+        </div>,
+        document.body
       )}
       {showLanguagePicker && (
         <MaybeSheet sheetVariant={sheetVariant} onClose={() => setShowLanguagePicker(false)}>
