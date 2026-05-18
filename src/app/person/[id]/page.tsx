@@ -60,7 +60,7 @@ import {
   ArrowsClockwise,
   CaretDown,
   Plus,
-  GraduationCap,
+  Users,
 } from '@phosphor-icons/react';
 import {
   SHEPHERD_AVATAR_PALETTE,
@@ -874,7 +874,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
           {(person.gender ||
             person.birthday ||
             person.maritalStatus ||
-            person.isStudent ||
+            (person.lifeStage && person.lifeStage.length > 0) ||
             (person.language && person.language.length > 0) ||
             family) && (
             <InfoSection title="Personal">
@@ -885,8 +885,12 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                   value={person.language.join(', ')}
                 />
               )}
-              {person.isStudent && (
-                <InfoRow icon={<GraduationCap size={15} />} label="Student" value="Yes" />
+              {person.lifeStage && person.lifeStage.length > 0 && (
+                <InfoRow
+                  icon={<Users size={15} />}
+                  label="Life stage"
+                  value={person.lifeStage.join(', ')}
+                />
               )}
               {person.gender && (
                 <InfoRow

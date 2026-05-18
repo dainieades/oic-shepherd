@@ -16,3 +16,4 @@ _Last audited: 2026-04-22_
 - [ ] Desktop adaptation for list pages (Logs, Todos, Groups)
 - [ ] PeopleTable polish: column visibility menu, density toggle, multi-select bulk actions
 - [ ] `cmd/ctrl+K` keyboard shortcut to focus dashboard search
+- [ ] Remove all inline styles: (1) extend Tailwind config to expose CSS custom properties as utilities, (2) sweep all `style={{ … }}` props and replace with Tailwind classes — see CLAUDE.md Design Tokens for the existing token reference

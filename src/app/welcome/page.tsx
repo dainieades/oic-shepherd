@@ -44,7 +44,7 @@ export default function WelcomePage() {
       alternative_name: values.alternativeName ?? null,
       phone: values.phone ?? null,
       email: values.email ?? null,
-      is_student: values.isStudent,
+      life_stage: values.lifeStage,
       languages: values.languages,
       referral_source: values.referralSource ?? null,
       referral_detail: values.referralDetail ?? null,

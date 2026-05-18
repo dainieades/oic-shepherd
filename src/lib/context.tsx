@@ -161,7 +161,6 @@ interface AppContextType {
         | 'churchPositions'
         | 'appRole'
         | 'canTriageVisitors'
-        | 'isStudent'
       >
     >
   ) => Promise<void>;
@@ -258,7 +257,6 @@ const AUDIT_FIELD_KEYS = [
   'churchPositions',
   'appRole',
   'canTriageVisitors',
-  'isStudent',
 ] as const;
 
 function serializeAuditValue(field: string, value: unknown): string {
@@ -1154,7 +1152,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         email: person.email ?? null,
         home_address: person.homeAddress ?? null,
         is_shepherd: person.isShepherd ?? false,
-        is_student: person.isStudent ?? false,
+        life_stage: person.lifeStage ?? [],
         church_positions: person.churchPositions ?? [],
         membership_status: person.membershipStatus,
         church_attendance: person.churchAttendance,
@@ -1205,7 +1203,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         alternativeName: (r.alternative_name as string | null) ?? undefined,
         phone: (r.phone as string | null) ?? undefined,
         email: (r.email as string | null) ?? undefined,
-        isStudent: (r.is_student as boolean | null) ?? false,
+        lifeStage: (r.life_stage as string[] | null) ?? [],
         language:
           ((r.languages as string[] | null) ?? []).length > 0
             ? (r.languages as string[])
@@ -1298,7 +1296,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
           | 'churchPositions'
           | 'appRole'
           | 'canTriageVisitors'
-          | 'isStudent'
         >
       >
     ): Promise<void> => {
@@ -1361,7 +1358,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (updates.appRole !== undefined) dbUpdates.app_role = updates.appRole;
       if (updates.canTriageVisitors !== undefined)
         dbUpdates.can_triage_visitors = updates.canTriageVisitors;
-      if (updates.isStudent !== undefined) dbUpdates.is_student = updates.isStudent;
       const now = new Date().toISOString();
       dbUpdates.last_edited_at = now;
       dbUpdates.last_edited_by_name = currentPersona.name;

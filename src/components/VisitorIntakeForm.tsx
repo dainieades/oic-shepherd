@@ -7,18 +7,24 @@ import {
   Phone,
   Envelope,
   Globe,
-  GraduationCap,
+  Users,
   Megaphone,
   HandsPraying,
   Heart,
   CaretRight,
 } from '@phosphor-icons/react';
-import { REFERRAL_SOURCES, INTERESTS, type ReferralSource, type Interest } from '@/lib/types';
+import {
+  REFERRAL_SOURCES,
+  INTERESTS,
+  LIFE_STAGE_OPTIONS,
+  type ReferralSource,
+  type Interest,
+} from '@/lib/types';
 import { TextInputRow, TextareaRow, PickerRow } from '@/components/form';
 import { rowBtnStyle, spacerStyle, labelStyle } from '@/components/form/formStyles';
 import LanguagePickerSheet from './LanguagePickerSheet';
 import PickerMenu from './PickerMenu';
-import { ToggleSwitch } from './ToggleSwitch';
+import { BottomSheet } from '@/components/BottomSheet';
 
 export interface VisitorIntakeFormHandle {
   save: () => Promise<void>;
@@ -30,7 +36,7 @@ export interface VisitorIntakeValues {
   alternativeName?: string;
   phone?: string;
   email?: string;
-  isStudent: boolean;
+  lifeStage: string[];
   languages: string[];
   referralSource?: ReferralSource;
   referralDetail?: string;
@@ -66,7 +72,7 @@ const VisitorIntakeForm = React.forwardRef<VisitorIntakeFormHandle, Props>(
     const [alternativeName, setAlternativeName] = React.useState('');
     const [phone, setPhone] = React.useState('');
     const [email, setEmail] = React.useState('');
-    const [isStudent, setIsStudent] = React.useState(false);
+    const [lifeStage, setLifeStage] = React.useState<string[]>([]);
     const [languages, setLanguages] = React.useState<string[]>(['English']);
     const [referralSource, setReferralSource] = React.useState<ReferralSource | ''>('');
     const [referralDetail, setReferralDetail] = React.useState('');
@@ -89,6 +95,12 @@ const VisitorIntakeForm = React.forwardRef<VisitorIntakeFormHandle, Props>(
       onValidityChange?.(preferredName.trim().length > 0);
     }, [preferredName, onValidityChange]);
 
+    const toggleLifeStage = (option: string) => {
+      setLifeStage((prev) =>
+        prev.includes(option) ? prev.filter((s) => s !== option) : [...prev, option]
+      );
+    };
+
     const toggleInterest = (interest: Interest) => {
       setInterests((prev) =>
         prev.includes(interest) ? prev.filter((i) => i !== interest) : [...prev, interest]
@@ -104,7 +116,7 @@ const VisitorIntakeForm = React.forwardRef<VisitorIntakeFormHandle, Props>(
         alternativeName: alternativeName.trim() || undefined,
         phone: phone.trim() || undefined,
         email: email.trim() || undefined,
-        isStudent,
+        lifeStage,
         languages: languages.length > 0 ? languages : ['English'],
         referralSource: referralSource || undefined,
         referralDetail: referralDetail.trim() || undefined,
@@ -117,7 +129,7 @@ const VisitorIntakeForm = React.forwardRef<VisitorIntakeFormHandle, Props>(
       alternativeName,
       phone,
       email,
-      isStudent,
+      lifeStage,
       languages,
       referralSource,
       referralDetail,
@@ -170,9 +182,6 @@ const VisitorIntakeForm = React.forwardRef<VisitorIntakeFormHandle, Props>(
             type="tel"
             autoComplete="tel"
           />
-          <p style={consentNoteStyle}>
-            By providing your phone number, you agree for a member or group leader to contact you.
-          </p>
           <TextInputRow
             icon={<Envelope size={16} color="var(--text-muted)" />}
             label="Email"
@@ -182,15 +191,70 @@ const VisitorIntakeForm = React.forwardRef<VisitorIntakeFormHandle, Props>(
             type="email"
             autoComplete="email"
           />
+          <p style={consentNoteStyle}>
+            By sharing contact info, you consent to being reached out to by a member or group leader.
+          </p>
         </Section>
 
         <Section label="About">
-          <div className="field-row-hover" style={toggleRowStyle}>
-            <span style={spacerStyle} />
-            <GraduationCap size={16} color="var(--text-muted)" />
-            <span style={labelStyle}>Student</span>
-            <div style={{ flex: 1 }} />
-            <ToggleSwitch checked={isStudent} onChange={setIsStudent} label="Student" />
+          <div
+            style={{
+              padding: '0.75rem 0 0.625rem',
+              borderBottom: '1px solid var(--border-light)',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.375rem',
+                marginBottom: '0.5rem',
+              }}
+            >
+              <Users size={16} color="var(--text-muted)" />
+              <span
+                style={{
+                  fontSize: 'var(--text-13)',
+                  fontWeight: 'var(--font-medium)',
+                  color: 'var(--text-secondary)',
+                }}
+              >
+                Life stage
+              </span>
+              <span
+                style={{
+                  fontSize: 'var(--text-11)',
+                  color: 'var(--text-muted)',
+                  marginLeft: '0.25rem',
+                }}
+              >
+                Select all that apply
+              </span>
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+              {LIFE_STAGE_OPTIONS.map((option) => {
+                const selected = lifeStage.includes(option);
+                return (
+                  <button
+                    key={option}
+                    onClick={() => toggleLifeStage(option)}
+                    style={{
+                      fontSize: 'var(--text-13)',
+                      fontWeight: selected ? 'var(--font-semibold)' : 'var(--font-normal)',
+                      padding: '0.375rem 0.875rem',
+                      borderRadius: 'var(--radius-pill)',
+                      border: `1px solid ${selected ? 'var(--sage)' : 'var(--border)'}`,
+                      background: selected ? 'var(--sage)' : 'transparent',
+                      color: selected ? 'var(--on-sage)' : 'var(--text-secondary)',
+                      cursor: 'pointer',
+                      transition: 'background 0.15s, color 0.15s, border-color 0.15s',
+                    }}
+                  >
+                    {option}
+                  </button>
+                );
+              })}
+            </div>
           </div>
           <button
             className="field-row-hover"
@@ -293,14 +357,16 @@ const VisitorIntakeForm = React.forwardRef<VisitorIntakeFormHandle, Props>(
         </Section>
 
         {showLanguagePicker && (
-          <LanguagePickerSheet
-            currentLanguages={languages}
-            onConfirm={(langs) => {
-              setLanguages(langs);
-              setShowLanguagePicker(false);
-            }}
-            onBack={() => setShowLanguagePicker(false)}
-          />
+          <BottomSheet onClose={() => setShowLanguagePicker(false)}>
+            <LanguagePickerSheet
+              currentLanguages={languages}
+              onConfirm={(langs) => {
+                setLanguages(langs);
+                setShowLanguagePicker(false);
+              }}
+              onBack={() => setShowLanguagePicker(false)}
+            />
+          </BottomSheet>
         )}
         {showSourcePicker && (
           <PickerMenu
@@ -353,21 +419,10 @@ function Section({ label, children }: { label: string; children: React.ReactNode
   );
 }
 
-const toggleRowStyle: React.CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-  gap: 8,
-  paddingTop: 12,
-  paddingBottom: 12,
-  paddingRight: 16,
-  borderBottom: '1px solid var(--border-light)',
-};
-
 const consentNoteStyle: React.CSSProperties = {
   fontSize: 'var(--text-11)',
   color: 'var(--text-muted)',
   padding: '0.5rem 0 0.75rem 32px',
   margin: 0,
   lineHeight: 'var(--leading-comfortable)',
-  borderBottom: '1px solid var(--border-light)',
 };

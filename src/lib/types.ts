@@ -94,7 +94,7 @@ export interface Person {
   /** Shepherd-only flag — grants access to the pending newcomer submissions queue. */
   canTriageVisitors?: boolean;
   churchPositions?: string[];
-  isStudent?: boolean;
+  lifeStage?: string[];
   membershipStatus: MembershipStatus;
   churchAttendance: ChurchAttendance;
   language: string[];
@@ -234,6 +234,9 @@ export const INTERESTS: readonly Interest[] = [
   'small-groups',
 ] as const;
 
+export const LIFE_STAGE_OPTIONS = ['Student', 'Young Professional', 'Family', 'Senior'] as const;
+export type LifeStage = (typeof LIFE_STAGE_OPTIONS)[number];
+
 export type VisitorSubmissionSource = 'app' | 'qr';
 export type VisitorSubmissionStatus = 'pending' | 'promoted' | 'discarded';
 
@@ -249,7 +252,7 @@ export interface VisitorSubmission {
   alternativeName?: string;
   phone?: string;
   email?: string;
-  isStudent: boolean;
+  lifeStage: string[];
   languages: string[];
   referralSource?: ReferralSource;
   referralDetail?: string;

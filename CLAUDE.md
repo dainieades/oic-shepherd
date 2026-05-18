@@ -87,6 +87,7 @@ Key mutations: `addPerson` · `updatePerson` · `deletePerson` · `addFamily` ·
 
 - **No hardcoded values** — use CSS custom properties from `globals.css` for all colors, border radii, spacing, shadows, z-index, **and typography**.
 - Light mode only. Tailwind utilities OK; prefer tokens for brand values.
+- **No `!important`** — never use it to override inline styles; refactor to CSS classes instead.
 - **Full reference:** `.claude/docs/tokens.md`
 
 ### Typography tokens (all in `globals.css` `:root`)
@@ -124,7 +125,7 @@ style={{ fontSize: 14, fontWeight: 600, letterSpacing: '0.06em' }}
 
 ## Coding Rules
 
-- **TypeScript strict** — no `any`, no `as` casts without justification; run `npx tsc --noEmit` after every non-trivial change
+- **TypeScript strict** — no `any`, no `as` casts without justification; `tsc --noEmit` runs automatically after every file edit via hook
 - **Server components by default** — `'use client'` only where interactivity requires it
 - **React 19** — prefer `useActionState`, `use()` for async, server actions where appropriate
 - **Always** `import React from 'react'` and use `React.` namespace (`React.useState`, `React.useEffect`, etc.)
@@ -134,6 +135,15 @@ style={{ fontSize: 14, fontWeight: 600, letterSpacing: '0.06em' }}
 - **All shared types** → `src/lib/types.ts`; never widen types to silence errors; no `@ts-ignore` without explanation
 - **Explicit return types** on context mutations
 - **`rem` units only** — use `rem` for all size/spacing/radius values; `px` is allowed only for `1px` borders (e.g. `border: '1px solid …'`)
+- **Verify both breakpoints** — for any UI/CSS change, check mobile and desktop before declaring done
+
+---
+
+## Debugging
+
+- When a fix doesn't work after one attempt, add diagnostic logging or re-read relevant files — don't guess again.
+- For Next.js/Turbopack/Supabase CLI flags, verify the flag exists in the installed version before suggesting it.
+- Watch for React Strict Mode double-invocation when fixing `useEffect`-related bugs.
 
 ---
 

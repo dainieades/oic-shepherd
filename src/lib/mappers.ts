@@ -59,7 +59,7 @@ export function mapPerson(
     appRole: r.app_role ?? 'no-access',
     canTriageVisitors: r.can_triage_visitors ?? false,
     churchPositions: r.church_positions ?? undefined,
-    isStudent: r.is_student ?? undefined,
+    lifeStage: (r.life_stage as string[] | null) ?? [],
     membershipStatus: r.membership_status,
     churchAttendance: r.church_attendance ?? 'regular',
     language: (() => {
@@ -249,7 +249,7 @@ export function mapVisitorSubmission(row: Record<string, unknown>): VisitorSubmi
     alternativeName: r.alternative_name ?? undefined,
     phone: r.phone ?? undefined,
     email: r.email ?? undefined,
-    isStudent: r.is_student ?? false,
+    lifeStage: (r.life_stage as string[] | null) ?? [],
     languages: r.languages ?? [],
     referralSource: r.referral_source ?? undefined,
     referralDetail: r.referral_detail ?? undefined,

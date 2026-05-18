@@ -29,6 +29,7 @@ export const PersonRowSchema = z.object({
   can_triage_visitors: nullBool,
   church_positions: nullStrArr,
   is_student: nullBool,
+  life_stage: nullStrArr,
   membership_status: z.enum(['member', 'non-member', 'membership-track']),
   church_attendance: z
     .enum(['visitor', 'regular', 'on-leave', 'fellowship-group-only', 'archived'])
@@ -188,6 +189,7 @@ export const VisitorSubmissionRowSchema = z.object({
   phone: nullStr,
   email: nullStr,
   is_student: nullBool,
+  life_stage: nullStrArr,
   languages: nullStrArr,
   referral_source: z.enum(['flyer', 'online', 'drive-by', 'school', 'friend', 'other']).nullish(),
   referral_detail: nullStr,

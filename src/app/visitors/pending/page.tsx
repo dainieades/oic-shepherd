@@ -10,7 +10,7 @@ import {
   Megaphone,
   Heart,
   HandsPraying,
-  GraduationCap,
+  Users,
   Globe,
   HandWaving,
   ArrowSquareOut,
@@ -58,7 +58,7 @@ function buildMockSubmissions(): VisitorSubmission[] {
       lastName: 'Garcia',
       phone: '+1-555-0142',
       email: 'maria.garcia@example.com',
-      isStudent: false,
+      lifeStage: ['Family'],
       languages: ['English', 'Spanish'],
       referralSource: 'friend',
       referralDetail: 'Invited by Sarah Williams',
@@ -76,7 +76,7 @@ function buildMockSubmissions(): VisitorSubmission[] {
       lastName: 'Chen',
       phone: '+1-555-0193',
       email: 'jchen.student@example.edu',
-      isStudent: true,
+      lifeStage: ['Student'],
       languages: ['English', 'Mandarin Chinese'],
       referralSource: 'school',
       interests: ['growth', 'small-groups'],
@@ -89,7 +89,7 @@ function buildMockSubmissions(): VisitorSubmission[] {
       status: 'pending',
       personId: null,
       preferredName: 'Lily',
-      isStudent: false,
+      lifeStage: [],
       languages: ['English'],
       referralSource: 'online',
       interests: [],
@@ -106,7 +106,7 @@ function buildMockSubmissions(): VisitorSubmission[] {
       alternativeName: 'Manny',
       phone: '+1-555-0234',
       email: 'emmanuel.a@example.com',
-      isStudent: false,
+      lifeStage: ['Young Professional'],
       languages: ['English', 'French', 'Yoruba'],
       referralSource: 'other',
       referralDetail: 'Moved to the area last month',
@@ -123,7 +123,7 @@ function buildMockSubmissions(): VisitorSubmission[] {
       preferredName: 'Sarah',
       lastName: 'Williams',
       phone: '+1-555-0387',
-      isStudent: false,
+      lifeStage: [],
       languages: ['English'],
       referralSource: 'drive-by',
       interests: [],
@@ -138,7 +138,7 @@ function buildMockSubmissions(): VisitorSubmission[] {
       preferredName: 'David',
       lastName: 'Park',
       email: 'dpark@example.com',
-      isStudent: true,
+      lifeStage: ['Student'],
       languages: ['English', 'Korean'],
       referralSource: 'flyer',
       interests: ['salvation'],
@@ -454,8 +454,10 @@ function SubmissionCard({
             {submission.languages.join(', ')}
           </Row>
         )}
-        {submission.isStudent && (
-          <Row icon={<GraduationCap size={13} color="var(--text-muted)" />}>Student</Row>
+        {submission.lifeStage.length > 0 && (
+          <Row icon={<Users size={13} color="var(--text-muted)" />}>
+            {submission.lifeStage.join(', ')}
+          </Row>
         )}
         {submission.referralSource && (
           <Row icon={<Megaphone size={13} color="var(--text-muted)" />}>

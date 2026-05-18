@@ -149,7 +149,6 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
   const [baptismDate, setBaptismDate] = React.useState(person?.baptismDate ?? '');
   const [isShepherd, setIsShepherd] = React.useState(person?.isShepherd ?? false);
   const [isBeingDiscipled, setIsBeingDiscipled] = React.useState(person?.isBeingDiscipled ?? false);
-  const [isStudent, setIsStudent] = React.useState(person?.isStudent ?? false);
   const [appRole, setAppRole] = React.useState<AppRole>(person?.appRole ?? 'no-access');
   const [churchPositions, setChurchPositions] = React.useState<string[]>(
     person?.churchPositions ?? []
@@ -295,7 +294,6 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
       baptismDate !== (person.baptismDate ?? '') ||
       isShepherd !== (person.isShepherd ?? false) ||
       isBeingDiscipled !== (person.isBeingDiscipled ?? false) ||
-      isStudent !== (person.isStudent ?? false) ||
       appRole !== (person.appRole ?? 'no-access') ||
       sorted(churchPositions) !== sorted(person.churchPositions ?? []) ||
       phone !== (person.phone ? formatPhone(person.phone) : '') ||
@@ -307,7 +305,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [person, firstName, lastName, chineseName, photo, language, gender, birthday, maritalStatus,
       anniversary, groupIds, shepherdIds, sheepIds, status, attendance, membershipDate, baptized,
-      baptismDate, isShepherd, isBeingDiscipled, isStudent, appRole,
+      baptismDate, isShepherd, isBeingDiscipled, appRole,
       churchPositions, phone, homePhone, email, homeAddress, familyId]);
 
   React.useEffect(() => {
@@ -339,7 +337,6 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
           baptismDate: baptized && baptismDate ? baptismDate : undefined,
           isShepherd: isShepherd || undefined,
           isBeingDiscipled: isBeingDiscipled || undefined,
-          isStudent: isStudent || undefined,
           appRole,
           churchPositions: churchPositions.length > 0 ? churchPositions : undefined,
           phone: phone.trim() || undefined,
@@ -446,7 +443,6 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
           baptismDate: baptized && baptismDate ? baptismDate : undefined,
           isShepherd: isShepherd || undefined,
           isBeingDiscipled: isBeingDiscipled || undefined,
-          isStudent,
           appRole,
           churchPositions: churchPositions.length > 0 ? churchPositions : undefined,
           phone: phone.trim() || undefined,
@@ -662,16 +658,6 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
               onChange={setAnniversary}
             />
           )}
-          <button
-            className="field-row-hover"
-            onClick={() => setIsStudent((v) => !v)}
-            style={rowBtnStyle}
-          >
-            <span style={spacerStyle} />
-            <BookOpenText size={16} color="var(--text-muted)" />
-            <span style={{ ...labelStyle, flex: 1 }}>Student?</span>
-            <Toggle on={isStudent} />
-          </button>
         </FormSection>
 
         <FormSection label="Church">
