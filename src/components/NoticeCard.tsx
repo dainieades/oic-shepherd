@@ -46,45 +46,21 @@ export function NoticeCard({ notice, onClick }: { notice: Notice; onClick: () =>
   return (
     <button
       onClick={onClick}
-      className="row-card-hover"
-      style={{
-        textAlign: 'left',
-        cursor: 'pointer',
-        border: '1px solid var(--border-light)',
-        borderRadius: 'var(--radius-md)',
-        padding: '0.75rem 0.875rem',
-        background: style.bg,
-        width: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 6,
-      }}
+      className="row-card-hover text-left cursor-pointer border border-border-light rounded-md py-3 px-3.5 w-full flex flex-col gap-1.5"
+      style={{ background: style.bg }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+      <div className="flex items-center gap-1.5 flex-wrap">
         <span
-          style={{
-            fontSize: 'var(--text-11)',
-            fontWeight: 'var(--font-bold)',
-            padding: '0.125rem 0.5rem',
-            borderRadius: 'var(--radius-pill)',
-            background: style.pillBg,
-            color: style.color,
-            letterSpacing: 'var(--tracking-wide-3)',
-          }}
+          className="text-11 font-bold py-0.5 px-2 rounded-pill tracking-wide-3"
+          style={{ background: style.pillBg, color: style.color }}
         >
           {URGENCY_LABEL[notice.urgency]}
         </span>
         {notice.categories.map((cat) => (
           <span
             key={cat}
+            className="flex items-center gap-0.75 text-11 font-medium py-0.5 px-2 rounded-pill"
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 3,
-              fontSize: 'var(--text-11)',
-              fontWeight: 'var(--font-medium)',
-              padding: '0.125rem 0.5rem',
-              borderRadius: 'var(--radius-pill)',
               background: CATEGORY_STYLE[cat]?.bg,
               color: CATEGORY_STYLE[cat]?.color,
             }}
@@ -95,29 +71,12 @@ export function NoticeCard({ notice, onClick }: { notice: Notice; onClick: () =>
         ))}
       </div>
       <p
-        style={{
-          fontSize: 'var(--text-14)',
-          color: 'var(--text-primary)',
-          lineHeight: 'var(--leading-normal)',
-          margin: 0,
-          overflow: 'hidden',
-          display: '-webkit-box',
-          WebkitLineClamp: 3,
-          WebkitBoxOrient: 'vertical',
-        }}
+        className="text-14 text-text-primary leading-normal m-0 overflow-hidden"
+        style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' }}
       >
         {notice.content}
       </p>
-      <p
-        style={{
-          fontSize: 'var(--text-11)',
-          color: 'var(--text-muted)',
-          margin: 0,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 4,
-        }}
-      >
+      <p className="text-11 text-text-muted m-0 flex items-center gap-1">
         <Eye size={11} />
         {PRIVACY_LABEL[notice.privacy] ?? notice.privacy}
       </p>

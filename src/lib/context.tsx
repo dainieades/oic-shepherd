@@ -2216,11 +2216,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   if (!loaded) {
     return (
-      <div
-        className="flex min-h-screen items-center justify-center"
-        style={{ background: 'var(--bg)' }}
-      >
-        <div style={{ color: 'var(--text-muted)' }}>Loading...</div>
+      <div className="flex min-h-screen items-center justify-center bg-bg">
+        <div className="text-text-muted">Loading...</div>
       </div>
     );
   }

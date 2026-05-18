@@ -23,22 +23,15 @@ export default function SideNav() {
 
   return (
     <aside
-      className="hidden lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col"
-      style={{
-        background: 'var(--surface)',
-        borderRight: '1px solid var(--border-light)',
-      }}
+      className="hidden lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col bg-surface border-r border-border-light"
     >
       <Link
         href="/"
-        className="flex items-center gap-3 px-5 py-5"
-        style={{ textDecoration: 'none', color: 'var(--logo-color)' }}
+        className="flex items-center gap-3 px-5 py-5 no-underline"
+        style={{ color: 'var(--logo-color)' }}
       >
         <Logo height={32} />
-        <span
-          className="font-display"
-          style={{ fontSize: 'var(--text-17)', fontWeight: 'var(--font-semibold)', letterSpacing: 'var(--tracking-tight-1)' }}
-        >
+        <span className="font-display text-17 font-semibold tracking-tight-1">
           Shepherd
         </span>
       </Link>
@@ -51,46 +44,28 @@ export default function SideNav() {
             <Link
               key={item.href}
               href={item.href}
-              className="side-nav-item relative flex items-center gap-3 py-2.5 pr-3"
+              className="side-nav-item relative flex items-center gap-3 py-2.5 pr-3 no-underline rounded-md text-15"
               aria-current={active ? 'page' : undefined}
               style={{
                 paddingLeft: 'calc(0.75rem + 3px)',
-                borderRadius: 'var(--radius-md)',
                 background: active ? 'var(--sage-light)' : 'transparent',
                 color: active ? 'var(--sage-dark)' : 'var(--text-secondary)',
-                fontSize: 'var(--text-15)',
                 fontWeight: active ? 'var(--font-semibold)' : 'var(--font-medium)',
-                textDecoration: 'none',
               }}
             >
               {active && (
                 <span
                   aria-hidden
-                  style={{
-                    position: 'absolute',
-                    left: 0,
-                    top: '0.375rem',
-                    bottom: '0.375rem',
-                    width: '3px',
-                    borderRadius: 'var(--radius-pill)',
-                    background: 'var(--sage-dark)',
-                  }}
+                  className="absolute left-0 rounded-pill bg-sage-dark"
+                  style={{ top: '0.375rem', bottom: '0.375rem', width: '3px' }}
                 />
               )}
               <Icon size={20} weight={active ? 'fill' : 'regular'} />
               <span>{item.label}</span>
               {item.href === '/visitors/pending' && pendingVisitorCount > 0 && (
                 <span
-                  style={{
-                    marginLeft: 'auto',
-                    fontSize: 'var(--text-11)',
-                    fontWeight: 'var(--font-bold)',
-                    padding: '0.0625rem 0.4375rem',
-                    borderRadius: 'var(--radius-pill)',
-                    background: 'var(--sage)',
-                    color: 'var(--on-sage)',
-                    lineHeight: 'var(--leading-comfortable)',
-                  }}
+                  className="ml-auto text-11 font-bold rounded-pill bg-sage text-on-sage leading-comfortable"
+                  style={{ padding: '0.0625rem 0.4375rem' }}
                 >
                   {pendingVisitorCount}
                 </span>
@@ -102,28 +77,14 @@ export default function SideNav() {
 
       <Link
         href="/settings"
-        className="flex items-center gap-3 px-3 py-3"
-        style={{
-          borderTop: '1px solid var(--border-light)',
-          textDecoration: 'none',
-          color: 'var(--text-primary)',
-        }}
+        className="flex items-center gap-3 px-3 py-3 border-t border-border-light no-underline text-text-primary"
       >
         <AvatarBadge size={32} name={currentPersona.name} photo={personaPerson?.photo} />
         <div className="flex min-w-0 flex-col">
-          <span style={{ fontSize: 'var(--text-13)', fontWeight: 'var(--font-semibold)', lineHeight: 'var(--leading-snug)' }}>
+          <span className="text-13 font-semibold leading-snug">
             {currentPersona.name}
           </span>
-          <span
-            style={{
-              fontSize: 'var(--text-11)',
-              color: 'var(--text-muted)',
-              lineHeight: 'var(--leading-snug)',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            }}
-          >
+          <span className="text-11 text-text-muted leading-snug overflow-hidden text-ellipsis whitespace-nowrap">
             {currentPersona.role}
           </span>
         </div>

@@ -93,19 +93,7 @@ function TimeButton({
       onFocus={handleFocus}
       onBlur={handleBlur}
       onKeyDown={handleKeyDown}
-      style={{
-        flex: 1,
-        padding: '0.625rem 0.875rem',
-        background: 'none',
-        border: 'none',
-        outline: 'none',
-        fontSize: 'var(--text-15)',
-        color: 'var(--text-secondary)',
-        whiteSpace: 'nowrap',
-        textAlign: 'right',
-        cursor: 'text',
-        minWidth: 0,
-      }}
+      className="flex-1 bg-transparent border-none outline-none text-15 text-text-secondary whitespace-nowrap text-right cursor-text min-w-0 py-2.5 px-3.5"
     />
   );
 }
@@ -224,46 +212,26 @@ export default function DatePickerSheet({
   const rangeStart = startDate <= endDate ? startDate : endDate;
   const rangeEnd = startDate <= endDate ? endDate : startDate;
 
-  const navBtnStyle: React.CSSProperties = {
-    width: 32,
-    height: 32,
-    borderRadius: 'var(--radius-xs)',
-    background: 'var(--bg)',
-    border: '1px solid var(--border-light)',
-    color: 'var(--text-secondary)',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
-  };
+  const navBtnClass = 'w-8 h-8 rounded-xs bg-bg border border-border-light text-text-secondary cursor-pointer flex items-center justify-center shrink-0';
 
   function Toggle({ on, onToggle }: { on: boolean; onToggle: () => void }) {
     return (
       <button
         onClick={onToggle}
+        className="relative shrink-0 cursor-pointer border-none"
         style={{
           width: 44,
           height: 26,
           borderRadius: 13,
           background: on ? 'var(--sage)' : 'var(--switch-off)',
-          position: 'relative',
-          cursor: 'pointer',
-          border: 'none',
           transition: 'background 0.2s',
-          flexShrink: 0,
         }}
       >
         <div
+          className="absolute w-5 h-5 rounded-full bg-surface shadow-card"
           style={{
-            position: 'absolute',
             top: 3,
             left: on ? 21 : 3,
-            width: 20,
-            height: 20,
-            borderRadius: '50%',
-            background: 'var(--surface)',
-            boxShadow: 'var(--shadow-card)',
             transition: 'left 0.2s',
           }}
         />
@@ -302,16 +270,10 @@ export default function DatePickerSheet({
 
     return (
       <div
+        className="w-full flex items-stretch rounded-sm overflow-hidden bg-bg relative"
         style={{
-          width: '100%',
-          display: 'flex',
-          alignItems: 'stretch',
-          borderRadius: 'var(--radius-sm)',
-          overflow: 'hidden',
           border: `0.125rem solid ${isActive ? 'var(--sage)' : 'var(--border-light)'}`,
-          background: 'var(--bg)',
           transition: 'border-color 0.15s',
-          position: 'relative',
         }}
       >
         {/* Date text input — left half */}
@@ -330,31 +292,13 @@ export default function DatePickerSheet({
             }
           }}
           placeholder="Apr 17, 2026"
-          style={{
-            flex: 1,
-            padding: '0.625rem 0.875rem',
-            background: 'none',
-            border: 'none',
-            outline: 'none',
-            fontSize: 'var(--text-15)',
-            fontWeight: 'var(--font-medium)',
-            color: 'var(--text-primary)',
-            cursor: 'text',
-            minWidth: 0,
-          }}
+          className="flex-1 bg-transparent border-none outline-none text-15 font-medium text-text-primary cursor-text min-w-0 py-2.5 px-3.5"
         />
 
         {/* Time trigger — right half (only when time enabled) */}
         {showTime && (
           <>
-            <div
-              style={{
-                width: 1,
-                background: 'var(--border-light)',
-                margin: '0.5rem 0',
-                flexShrink: 0,
-              }}
-            />
+            <div className="w-px bg-border-light my-2 shrink-0" />
             <TimeButton
               timeVal={timeVal}
               fmtTime={fmtTime}
@@ -374,27 +318,16 @@ export default function DatePickerSheet({
     <BottomSheet onClose={onClose} variant="dialog" zIndex={Z_SHEET}>
       {/* Header */}
       <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '0.875rem 1.25rem 0.75rem',
-          borderBottom: '1px solid var(--border-light)',
-        }}
+        className="flex items-center justify-between border-b border-border-light"
+        style={{ padding: '0.875rem 1.25rem 0.75rem' }}
       >
         <button
           onClick={onClose}
-          style={{
-            fontSize: 'var(--text-14)',
-            color: 'var(--text-secondary)',
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-          }}
+          className="text-14 text-text-secondary bg-transparent border-none cursor-pointer"
         >
           Cancel
         </button>
-        <span style={{ fontSize: 'var(--text-15)', fontWeight: 'var(--font-semibold)', color: 'var(--text-primary)' }}>
+        <span className="text-15 font-semibold text-text-primary">
           {showEndDate ? `${fmtDate(startDate)} → ${fmtDate(endDate)}` : fmtDate(startDate)}
         </span>
         <button
@@ -407,32 +340,18 @@ export default function DatePickerSheet({
               showEndDate && showTime ? endTime : undefined
             )
           }
-          style={{
-            height: 32,
-            padding: '0 0.875rem',
-            borderRadius: 'var(--radius-xs)',
-            background: 'var(--sage)',
-            color: 'var(--on-sage)',
-            fontSize: 'var(--text-14)',
-            fontWeight: 'var(--font-semibold)',
-            border: 'none',
-            cursor: 'pointer',
-          }}
+          className="h-8 py-0 px-3.5 rounded-xs bg-sage text-on-sage text-14 font-semibold border-none cursor-pointer"
         >
           Done
         </button>
       </div>
 
       {/* Scrollable body */}
-      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', paddingBottom: '2.5rem' }}>
+      <div className="flex-1 min-h-0 overflow-y-auto pb-10">
         {/* Date pill inputs */}
         <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 6,
-            padding: '0.625rem 1rem 0.125rem',
-          }}
+          className="flex flex-col gap-1.5"
+          style={{ padding: '0.625rem 1rem 0.125rem' }}
         >
           <DatePill field="start" dateVal={startDate} timeVal={startTime} />
           {showEndDate && <DatePill field="end" dateVal={endDate} timeVal={endTime} />}
@@ -440,21 +359,17 @@ export default function DatePickerSheet({
 
         {/* Month navigation */}
         <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '0.5rem 1rem 0.25rem',
-          }}
+          className="flex items-center justify-between"
+          style={{ padding: '0.5rem 1rem 0.25rem' }}
         >
-          <span style={{ fontSize: 'var(--text-17)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)' }}>
+          <span className="text-17 font-bold text-text-primary">
             {MONTH_NAMES[viewMonth]} {viewYear}
           </span>
-          <div style={{ display: 'flex', gap: 6 }}>
-            <button style={navBtnStyle} onClick={prevMonth}>
+          <div className="flex gap-1.5">
+            <button className={navBtnClass} onClick={prevMonth}>
               <CaretLeft size={14} weight="bold" />
             </button>
-            <button style={navBtnStyle} onClick={nextMonth}>
+            <button className={navBtnClass} onClick={nextMonth}>
               <CaretRight size={14} weight="bold" />
             </button>
           </div>
@@ -462,23 +377,12 @@ export default function DatePickerSheet({
 
         {/* Day headers */}
         <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(7, 1fr)',
-            padding: '0 0.625rem',
-            marginBottom: 0,
-          }}
+          className="grid grid-cols-7 px-2.5"
         >
           {DAY_HEADERS.map((h) => (
             <div
               key={h}
-              style={{
-                textAlign: 'center',
-                fontSize: 'var(--text-11)',
-                fontWeight: 'var(--font-semibold)',
-                color: 'var(--text-muted)',
-                padding: '0.125rem 0',
-              }}
+              className="text-center text-11 font-semibold text-text-muted py-0.5 px-0"
             >
               {h}
             </div>
@@ -487,12 +391,8 @@ export default function DatePickerSheet({
 
         {/* Calendar grid */}
         <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(7, 1fr)',
-            padding: '0 0.625rem',
-            gap: '0.0625rem 0',
-          }}
+          className="grid grid-cols-7 px-2.5"
+          style={{ gap: '0.0625rem 0' }}
         >
           {cells.map((cell, i) => {
             const isStart = cell.dateStr === startDate;
@@ -514,11 +414,8 @@ export default function DatePickerSheet({
                 key={i}
                 disabled={!isClickable}
                 onClick={() => cell.dateStr && handleDayClick(cell.dateStr, cell.inMonth)}
+                className="mx-auto text-15 w-11 h-11 rounded-full"
                 style={{
-                  width: 44,
-                  height: 44,
-                  margin: '0 auto',
-                  borderRadius: '50%',
                   border:
                     isToday && !isSelected
                       ? '0.125rem solid var(--sage)'
@@ -537,7 +434,6 @@ export default function DatePickerSheet({
                         : isToday
                           ? 'var(--sage)'
                           : 'var(--text-primary)',
-                  fontSize: 'var(--text-15)',
                   fontWeight: isSelected || isToday ? 'var(--font-semibold)' : 'var(--font-normal)',
                   cursor: isClickable ? 'pointer' : 'default',
                   opacity: isClickable ? 1 : 0.35,
@@ -550,18 +446,14 @@ export default function DatePickerSheet({
         </div>
 
         {/* Divider */}
-        <div style={{ margin: '0.5rem 1rem 0', borderTop: '1px solid var(--border-light)' }} />
+        <div className="border-t border-border-light mx-4 mt-2" />
 
         {/* End date toggle */}
         <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '0.625rem 1rem 0',
-          }}
+          className="flex items-center justify-between"
+          style={{ padding: '0.625rem 1rem 0' }}
         >
-          <span style={{ fontSize: 'var(--text-15)', color: 'var(--text-primary)' }}>End date</span>
+          <span className="text-15 text-text-primary">End date</span>
           <Toggle
             on={showEndDate}
             onToggle={() => {
@@ -573,14 +465,10 @@ export default function DatePickerSheet({
 
         {/* Include time toggle */}
         <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '0.625rem 1rem 0',
-          }}
+          className="flex items-center justify-between"
+          style={{ padding: '0.625rem 1rem 0' }}
         >
-          <span style={{ fontSize: 'var(--text-15)', color: 'var(--text-primary)' }}>Include time</span>
+          <span className="text-15 text-text-primary">Include time</span>
           <Toggle on={showTime} onToggle={() => setShowTime((v) => !v)} />
         </div>
       </div>

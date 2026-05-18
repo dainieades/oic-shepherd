@@ -458,35 +458,22 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
   return (
     <>
       {showPhotoUpload && (
-        <div
-          style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '1.5rem 0 1.25rem' }}
-        >
+        <div className="flex items-center gap-5 pt-6 pb-5">
           <PhotoAvatar
             photo={photo || undefined}
             name={fullDisplayName || 'Your Name'}
             onPhotoChange={(url) => setPhoto(url)}
             onPhotoRemove={() => setPhoto('')}
           />
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <p
-              style={{
-                fontSize: 'var(--text-20)',
-                fontWeight: 'var(--font-bold)',
-                color: 'var(--text-primary)',
-                margin: 0,
-                letterSpacing: 'var(--tracking-tight-2)',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-              }}
-            >
+          <div className="flex-1 min-w-0">
+            <p className="text-20 font-bold text-text-primary m-0 tracking-tight-2 whitespace-nowrap overflow-hidden text-ellipsis">
               {fullDisplayName || 'Your Name'}
             </p>
           </div>
         </div>
       )}
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+      <div className="flex flex-col">
         {!!person &&
           (currentPersona.role === 'admin' ||
             (currentPersona.role === 'shepherd' &&
@@ -501,7 +488,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
                 <span style={spacerStyle} />
                 <PaperPlaneTilt size={16} color="var(--text-muted)" />
                 <span style={labelStyle}>Invite</span>
-                <span style={{ flex: 1, fontSize: 'var(--text-14)', color: 'var(--sage)', textAlign: 'right' }}>
+                <span className="flex-1 text-14 text-sage text-right">
                   Give app access…
                 </span>
                 <CaretRight size={14} color="var(--text-muted)" />
@@ -519,14 +506,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
                   <span style={spacerStyle} />
                   <IdentificationCard size={16} color="var(--text-muted)" />
                   <span style={labelStyle}>App Role</span>
-                  <span
-                    style={{
-                      flex: 1,
-                      fontSize: 'var(--text-14)',
-                      color: 'var(--text-primary)',
-                      textAlign: 'right',
-                    }}
-                  >
+                  <span className="flex-1 text-14 text-text-primary text-right">
                     {{ admin: 'Admin', shepherd: 'User', 'no-access': 'No Access' }[appRole]}
                   </span>
                   {currentPersona.role === 'admin' && (
@@ -535,34 +515,15 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
                 </button>
                 {isPendingInvite && (
                   <div
-                    style={{
-                      ...rowBtnStyle,
-                      cursor: 'default',
-                      background: 'var(--amber-light, #fffbeb)',
-                      borderTop: '1px solid var(--border-light)',
-                    }}
+                    className="bg-amber-light border-t border-border-light cursor-default"
+                    style={rowBtnStyle}
                   >
                     <span style={spacerStyle} />
                     <PaperPlaneTilt size={16} color="var(--amber, #d97706)" />
-                    <span
-                      style={{
-                        fontSize: 'var(--text-12)',
-                        color: 'var(--amber, #d97706)',
-                        whiteSpace: 'nowrap',
-                        flexShrink: 0,
-                      }}
-                    >
+                    <span className="text-12 text-amber whitespace-nowrap shrink-0">
                       Invite pending
                     </span>
-                    <span
-                      style={{
-                        flex: 1,
-                        fontSize: 'var(--text-13)',
-                        color: 'var(--text-muted)',
-                        textAlign: 'right',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
+                    <span className="flex-1 text-13 text-text-muted text-right whitespace-nowrap">
                       Hasn't signed in yet
                     </span>
                   </div>
@@ -584,7 +545,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
             autoComplete={ownContact ? 'given-name' : undefined}
           />
           <TextInputRow
-            icon={<User size={16} color="var(--text-muted)" style={{ opacity: 0 }} />}
+            icon={<User size={16} color="var(--text-muted)" className="opacity-0" />}
             label="Last"
             inputRef={lastNameRef}
             value={lastName}
@@ -620,11 +581,8 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
             <Globe size={16} color="var(--text-muted)" />
             <span style={labelStyle}>Language</span>
             <span
-              style={{
-                flex: 1,
-                fontSize: 'var(--text-14)',
-                color: language.length > 0 ? 'var(--text-primary)' : 'var(--text-muted)',
-              }}
+              className="flex-1 text-14"
+              style={{ color: language.length > 0 ? 'var(--text-primary)' : 'var(--text-muted)' }}
             >
               {language.length > 0 ? language.join(', ') : 'None'}
             </span>
@@ -691,15 +649,15 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
             <span style={spacerStyle} />
             <UsersFour size={16} color="var(--text-muted)" />
             <span style={labelStyle}>Groups</span>
-            <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+            <div className="flex-1 flex flex-wrap gap-1">
               {selectedGroups.length > 0 ? (
                 selectedGroups.map((g) => (
-                  <span key={g.id} style={blueChipStyle}>
+                  <span key={g.id} className={blueChipClass}>
                     {g.name}
                   </span>
                 ))
               ) : (
-                <span style={{ fontSize: 'var(--text-14)', color: 'var(--text-muted)' }}>None</span>
+                <span className="text-14 text-text-muted">None</span>
               )}
             </div>
             <CaretRight size={14} color="var(--text-muted)" />
@@ -712,17 +670,17 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
             <span style={spacerStyle} />
             <HandHeart size={16} color="var(--text-muted)" />
             <span style={labelStyle}>Shepherd by</span>
-            <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+            <div className="flex-1 flex flex-wrap gap-1">
               {shepherdIds.length > 0 ? (
                 shepherdEntries
                   .filter((e) => shepherdIds.includes(e.id))
                   .map((e) => (
-                    <span key={e.id} style={sageChipStyle}>
+                    <span key={e.id} className={sageChipClass}>
                       {e.name}
                     </span>
                   ))
               ) : (
-                <span style={{ fontSize: 'var(--text-14)', color: 'var(--text-muted)' }}>None</span>
+                <span className="text-14 text-text-muted">None</span>
               )}
             </div>
             <CaretRight size={14} color="var(--text-muted)" />
@@ -746,27 +704,25 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
               <span style={spacerStyle} />
               <HandHeart size={16} color="var(--text-muted)" />
               <span style={labelStyle}>Sheep</span>
-              <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+              <div className="flex-1 flex flex-wrap gap-1">
                 {sheepIds.length > 0 ? (
                   <>
                     {data.people
                       .filter((p) => sheepIds.includes(p.id))
                       .slice(0, 5)
                       .map((p) => (
-                        <span key={p.id} style={sageChipStyle}>
+                        <span key={p.id} className={sageChipClass}>
                           {fullName(p)}
                         </span>
                       ))}
                     {sheepIds.length > 5 && (
-                      <span
-                        style={{ fontSize: 'var(--text-13)', color: 'var(--text-muted)', alignSelf: 'center' }}
-                      >
+                      <span className="text-13 text-text-muted self-center">
                         +{sheepIds.length - 5} more
                       </span>
                     )}
                   </>
                 ) : (
-                  <span style={{ fontSize: 'var(--text-14)', color: 'var(--text-muted)' }}>None</span>
+                  <span className="text-14 text-text-muted">None</span>
                 )}
               </div>
               <CaretRight size={14} color="var(--text-muted)" />
@@ -791,12 +747,8 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
             <Buildings size={16} color="var(--text-muted)" />
             <span style={labelStyle}>Position</span>
             <span
-              style={{
-                flex: 1,
-                fontSize: 'var(--text-14)',
-                color: churchPositions.length > 0 ? 'var(--text-primary)' : 'var(--text-muted)',
-                textAlign: 'right',
-              }}
+              className="flex-1 text-14 text-right"
+              style={{ color: churchPositions.length > 0 ? 'var(--text-primary)' : 'var(--text-muted)' }}
             >
               {churchPositions.length > 0 ? churchPositions.join(', ') : 'None'}
             </span>
@@ -833,7 +785,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
             />
             {referralSource && (
               <TextInputRow
-                icon={<Megaphone size={16} color="var(--text-muted)" style={{ opacity: 0 }} />}
+                icon={<Megaphone size={16} color="var(--text-muted)" className="opacity-0" />}
                 label="Detail"
                 inputRef={referralDetailRef}
                 value={referralDetail}
@@ -845,9 +797,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
               <span style={spacerStyle} />
               <Heart size={16} color="var(--text-muted)" />
               <span style={labelStyle}>Interests</span>
-              <div
-                style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: 6, padding: '0.5rem 0' }}
-              >
+              <div className="flex-1 flex flex-wrap gap-1.5 py-2">
                 {INTERESTS.map((i) => {
                   const on = interests.includes(i);
                   return (
@@ -859,15 +809,12 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
                           prev.includes(i) ? prev.filter((x) => x !== i) : [...prev, i]
                         )
                       }
+                      className="text-12 font-semibold rounded-pill cursor-pointer border"
                       style={{
-                        fontSize: 'var(--text-12)',
-                        fontWeight: 'var(--font-semibold)',
                         padding: '0.25rem 0.625rem',
-                        borderRadius: 'var(--radius-pill)',
                         background: on ? 'var(--sage-light)' : 'transparent',
                         color: on ? 'var(--sage-dark, var(--sage))' : 'var(--text-muted)',
-                        border: `1px solid ${on ? 'var(--sage)' : 'var(--border)'}`,
-                        cursor: 'pointer',
+                        borderColor: on ? 'var(--sage)' : 'var(--border)',
                       }}
                     >
                       {INTEREST_LABELS[i]}
@@ -1098,6 +1045,7 @@ export default PersonFormBody;
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
+// langChipStyle kept for any external use; blueChipClass/sageChipClass used in JSX
 const langChipStyle: React.CSSProperties = {
   fontSize: 'var(--text-11)',
   fontWeight: 'var(--font-medium)',
@@ -1108,53 +1056,19 @@ const langChipStyle: React.CSSProperties = {
   flexShrink: 0,
 };
 
-const blueChipStyle: React.CSSProperties = {
-  fontSize: 'var(--text-11)',
-  fontWeight: 'var(--font-medium)',
-  padding: '0.125rem 0.5rem',
-  borderRadius: 'var(--radius-pill)',
-  background: 'var(--blue-light)',
-  color: 'var(--blue)',
-  flexShrink: 0,
-};
+const blueChipClass = 'text-11 font-medium rounded-pill bg-blue-light text-blue shrink-0 py-0.5 px-2';
 
-const sageChipStyle: React.CSSProperties = {
-  fontSize: 'var(--text-11)',
-  fontWeight: 'var(--font-medium)',
-  padding: '0.125rem 0.5rem',
-  borderRadius: 'var(--radius-pill)',
-  background: 'var(--sage-light)',
-  color: 'var(--sage)',
-  flexShrink: 0,
-};
+const sageChipClass = 'text-11 font-medium rounded-pill bg-sage-light text-sage shrink-0 py-0.5 px-2';
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 
 function FormSection({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div style={{ marginBottom: 24 }}>
-      <p
-        style={{
-          fontSize: 'var(--text-10)',
-          fontWeight: 'var(--font-semibold)',
-          color: 'var(--text-muted)',
-          textTransform: 'uppercase',
-          letterSpacing: 'var(--tracking-wide-6)',
-          marginBottom: 6,
-        }}
-      >
+    <div className="mb-6">
+      <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 mb-1.5">
         {label}
       </p>
-      <div
-        className="no-last-border"
-        style={{
-          background: 'var(--surface)',
-          borderRadius: 'var(--radius)',
-          border: '1px solid var(--border-light)',
-          overflow: 'hidden',
-          padding: '0 1.25rem',
-        }}
-      >
+      <div className="no-last-border bg-surface rounded border border-border-light overflow-hidden px-5">
         {children}
       </div>
     </div>
@@ -1164,25 +1078,16 @@ function FormSection({ label, children }: { label: string; children: React.React
 function Toggle({ on }: { on: boolean }) {
   return (
     <div
+      className="w-[42px] h-6 rounded-md relative shrink-0"
       style={{
-        width: 42,
-        height: 24,
-        borderRadius: 'var(--radius-md)',
         background: on ? 'var(--sage)' : 'var(--switch-off)',
-        position: 'relative',
         transition: 'background 0.2s',
-        flexShrink: 0,
       }}
     >
       <div
+        className="absolute top-[3px] w-[18px] h-[18px] rounded-full bg-surface"
         style={{
-          position: 'absolute',
-          top: 3,
           left: on ? 21 : 3,
-          width: 18,
-          height: 18,
-          borderRadius: '50%',
-          background: 'var(--surface)',
           transition: 'left 0.2s',
         }}
       />

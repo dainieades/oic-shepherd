@@ -55,60 +55,36 @@ export default function NotificationsPage() {
   const visibleOptions = NOTIFICATION_OPTIONS.filter((o) => o.roles.includes(currentPersona.role));
 
   return (
-    <div style={{ paddingBottom: 48 }}>
-      <div className="settings-subpage-navbar" style={navBarStyle}>
-        <button onClick={() => router.push('/settings')} style={backBtnStyle}>
+    <div className="pb-12">
+      <div className="settings-subpage-navbar sticky top-0 -mx-4 px-4 border-b border-border-light bg-bg flex items-center justify-between z-page" style={{ height: 54 }}>
+        <button onClick={() => router.push('/settings')} className="inline-flex items-center gap-1 text-13 text-sage cursor-pointer p-0" style={{ background: 'none', border: 'none' }}>
           <CaretLeft size={16} weight="bold" />
           Settings
         </button>
-        <span style={navTitleStyle}>Notifications</span>
-        <span style={{ width: 72 }} />
+        <span className="text-15 font-semibold text-text-primary">Notifications</span>
+        <span className="w-[4.5rem]" />
       </div>
 
-      <p style={{ fontSize: 'var(--text-13)', color: 'var(--text-muted)', margin: '1rem 0 0.75rem' }}>
+      <p className="text-13 text-text-muted mt-4 mb-3">
         Choose which email notifications you receive.
       </p>
 
-      <div
-        style={{
-          background: 'var(--surface)',
-          borderRadius: 'var(--radius)',
-          border: '1px solid var(--border-light)',
-          overflow: 'hidden',
-        }}
-      >
+      <div className="bg-surface rounded border border-border-light overflow-hidden">
         {visibleOptions.map(({ key, label, description }, i) => (
           <div
             key={key}
+            className="flex items-center gap-3.5"
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 14,
               padding: '0.875rem 1rem',
               borderBottom:
                 i < visibleOptions.length - 1 ? '1px solid var(--border-light)' : 'none',
             }}
           >
-            <span style={{ flex: 1, minWidth: 0 }}>
-              <span
-                style={{
-                  display: 'block',
-                  fontSize: 'var(--text-15)',
-                  fontWeight: 'var(--font-medium)',
-                  color: 'var(--text-primary)',
-                  letterSpacing: 'var(--tracking-tight-1)',
-                }}
-              >
+            <span className="flex-1 min-w-0">
+              <span className="block text-15 font-medium text-text-primary tracking-tight-1">
                 {label}
               </span>
-              <span
-                style={{
-                  display: 'block',
-                  fontSize: 'var(--text-13)',
-                  color: 'var(--text-muted)',
-                  marginTop: '0.125rem',
-                }}
-              >
+              <span className="block text-13 text-text-muted mt-0.5">
                 {description}
               </span>
             </span>
@@ -121,50 +97,10 @@ export default function NotificationsPage() {
         ))}
       </div>
 
-      <p
-        style={{
-          fontSize: 'var(--text-12)',
-          color: 'var(--text-muted)',
-          marginTop: '0.75rem',
-          lineHeight: 'var(--leading-normal)',
-        }}
-      >
+      <p className="text-12 text-text-muted mt-3 leading-normal">
         Invitation emails are always sent and cannot be turned off.
       </p>
     </div>
   );
 }
 
-const navBarStyle: React.CSSProperties = {
-  position: 'sticky',
-  top: 0,
-  zIndex: 'var(--z-page)',
-  background: 'var(--bg)',
-  marginLeft: -16,
-  marginRight: -16,
-  paddingLeft: 16,
-  paddingRight: 16,
-  borderBottom: '1px solid var(--border-light)',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  height: 54,
-};
-
-const backBtnStyle: React.CSSProperties = {
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: 4,
-  fontSize: 'var(--text-13)',
-  color: 'var(--sage)',
-  background: 'none',
-  border: 'none',
-  cursor: 'pointer',
-  padding: 0,
-};
-
-const navTitleStyle: React.CSSProperties = {
-  fontSize: 'var(--text-15)',
-  fontWeight: 'var(--font-semibold)',
-  color: 'var(--text-primary)',
-};

@@ -23,7 +23,6 @@ import { useToast } from '@/components/Toast';
 import { createClient } from '@/utils/supabase/client';
 import type { User } from '@supabase/supabase-js';
 import { MAP_PROVIDER_LABELS, fullName } from '@/lib/utils';
-import { BACKDROP_COLOR, Z_NESTED } from '@/lib/constants';
 
 export default function SettingsPage() {
   const { data, currentPersona, themePreference, mapProvider, calendarSyncEnabled } = useApp();
@@ -111,37 +110,27 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="settings-index-mobile" style={{ paddingBottom: 48 }}>
+    <div className="settings-index-mobile pb-12">
       {/* Sticky header */}
       <div
+        className="sticky top-0 bg-bg -mx-4 px-4 z-sticky"
         style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 'var(--z-sticky)',
-          background: 'var(--bg)',
-          marginLeft: -16,
-          marginRight: -16,
-          paddingLeft: 16,
-          paddingRight: 16,
           borderBottom: scrolled ? '1px solid var(--border-light)' : 'none',
         }}
       >
         <div
+          className="flex items-center overflow-hidden"
           style={{
             height: scrolled ? '2.75rem' : '4.125rem',
-            display: 'flex',
-            alignItems: 'center',
-            overflow: 'hidden',
             transition: 'height 0.25s ease',
           }}
         >
           <span
+            className="text-text-primary leading-none"
             style={{
               fontSize: scrolled ? 'var(--text-17)' : 'var(--text-32)',
               fontWeight: scrolled ? 'var(--font-semibold)' : 'var(--font-extrabold)',
-              color: 'var(--text-primary)',
               letterSpacing: scrolled ? 'var(--tracking-tight-1)' : 'var(--tracking-tight-3)',
-              lineHeight: 'var(--leading-none)',
               transition: 'font-size 0.25s ease, letter-spacing 0.25s ease',
             }}
           >
@@ -153,90 +142,46 @@ export default function SettingsPage() {
       {/* ── Profile row ── */}
       <Link
         href="/settings/profile"
-        style={{ textDecoration: 'none', display: 'block', marginBottom: 28, marginTop: 8 }}
+        className="no-underline block mb-7 mt-2"
       >
-        <div
-          style={{
-            background: 'var(--surface)',
-            borderRadius: 'var(--radius)',
-            border: '1px solid var(--border-light)',
-            padding: '0.875rem 1rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 14,
-          }}
-        >
+        <div className="bg-surface rounded border border-border-light py-[0.875rem] px-4 flex items-center gap-3.5">
           {person?.photo ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={person.photo}
               alt={displayName}
-              style={{
-                width: 52,
-                height: 52,
-                borderRadius: '50%',
-                objectFit: 'cover',
-                flexShrink: 0,
-              }}
+              className="w-[52px] h-[52px] rounded-full object-cover shrink-0"
             />
           ) : avatarUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={avatarUrl}
               alt={displayName}
-              style={{
-                width: 52,
-                height: 52,
-                borderRadius: '50%',
-                objectFit: 'cover',
-                flexShrink: 0,
-              }}
+              className="w-[52px] h-[52px] rounded-full object-cover shrink-0"
             />
           ) : (
-            <div
-              style={{
-                width: 52,
-                height: 52,
-                borderRadius: '50%',
-                background: 'var(--sage)',
-                color: 'var(--on-sage)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 'var(--text-17)',
-                fontWeight: 'var(--font-bold)',
-                flexShrink: 0,
-              }}
-            >
+            <div className="w-[52px] h-[52px] rounded-full bg-sage text-on-sage flex items-center justify-center text-17 font-bold shrink-0">
               {initials}
             </div>
           )}
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-              <p
-                style={{
-                  fontSize: 'var(--text-16)',
-                  fontWeight: 'var(--font-bold)',
-                  color: 'var(--text-primary)',
-                  margin: 0,
-                  letterSpacing: 'var(--tracking-tight-1)',
-                }}
-              >
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <p className="text-16 font-bold text-text-primary m-0 tracking-tight-1">
                 {displayName}
               </p>
               {person?.alternativeName && (
-                <span style={{ fontSize: 'var(--text-13)', color: 'var(--text-muted)', fontWeight: 'var(--font-normal)' }}>
+                <span className="text-13 text-text-muted font-normal">
                   {person.alternativeName}
                 </span>
               )}
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 3 }}>
+            <div className="flex items-center gap-[5px] mt-[3px]">
               {currentPersona.role === 'admin' ? (
                 <ShieldStar size={13} color="var(--sage)" weight="fill" />
               ) : currentPersona.role === 'shepherd' ? (
                 <HandHeart size={13} color="var(--sage)" weight="fill" />
               ) : null}
-              <span style={{ fontSize: 'var(--text-13)', color: 'var(--text-muted)' }}>{roleLabel}</span>
+              <span className="text-13 text-text-muted">{roleLabel}</span>
             </div>
           </div>
           <CaretRight size={16} color="var(--text-muted)" />
@@ -251,7 +196,7 @@ export default function SettingsPage() {
           value={displayEmail}
         />
         {hasPassword && (
-          <Link href="/settings/password" style={{ textDecoration: 'none', display: 'block' }}>
+          <Link href="/settings/password" className="no-underline block">
             <SettingsRow
               icon={<Lock size={18} color="var(--text-muted)" />}
               label="Change Password"
@@ -263,16 +208,7 @@ export default function SettingsPage() {
           <button
             onClick={handleLinkGoogle}
             disabled={linkingGoogle}
-            style={{
-              width: '100%',
-              background: 'none',
-              border: 'none',
-              padding: 0,
-              cursor: linkingGoogle ? 'not-allowed' : 'pointer',
-              textAlign: 'left',
-              display: 'block',
-              opacity: linkingGoogle ? 0.6 : 1,
-            }}
+            className={`w-full bg-transparent border-none p-0 text-left block${linkingGoogle ? ' cursor-not-allowed opacity-60' : ' cursor-pointer'}`}
           >
             <SettingsRow
               icon={<GoogleLogo size={18} color="var(--text-muted)" />}
@@ -285,7 +221,7 @@ export default function SettingsPage() {
 
       {/* ── Preferences ── */}
       <DrawerSection label="Preferences" cardPadding="0">
-        <Link href="/settings/appearance" style={{ textDecoration: 'none', display: 'block' }}>
+        <Link href="/settings/appearance" className="no-underline block">
           <SettingsRow
             icon={<CircleHalf size={18} color="var(--text-muted)" />}
             label="Appearance"
@@ -295,7 +231,7 @@ export default function SettingsPage() {
             chevron
           />
         </Link>
-        <Link href="/settings/maps" style={{ textDecoration: 'none', display: 'block' }}>
+        <Link href="/settings/maps" className="no-underline block">
           <SettingsRow
             icon={<MapPin size={18} color="var(--text-muted)" />}
             label="Maps App"
@@ -303,14 +239,14 @@ export default function SettingsPage() {
             chevron
           />
         </Link>
-        <Link href="/settings/notifications" style={{ textDecoration: 'none', display: 'block' }}>
+        <Link href="/settings/notifications" className="no-underline block">
           <SettingsRow
             icon={<Bell size={18} color="var(--text-muted)" />}
             label="Notifications"
             chevron
           />
         </Link>
-        <Link href="/settings/calendar-sync" style={{ textDecoration: 'none', display: 'block' }}>
+        <Link href="/settings/calendar-sync" className="no-underline block">
           <SettingsRow
             icon={<CalendarBlank size={18} color="var(--text-muted)" />}
             label="Calendar Sync"
@@ -324,7 +260,7 @@ export default function SettingsPage() {
       {currentPersona.role === 'admin' && (
         <>
           <DrawerSection label="Admin" cardPadding="0">
-            <Link href="/settings/access" style={{ textDecoration: 'none', display: 'block' }}>
+            <Link href="/settings/access" className="no-underline block">
               <SettingsRow
                 icon={<Users size={18} color="var(--text-muted)" />}
                 label="Access Management"
@@ -338,93 +274,38 @@ export default function SettingsPage() {
       {/* ── Sign Out ── */}
       <button
         onClick={() => setShowSignOutConfirm(true)}
-        style={{
-          width: '100%',
-          marginTop: 8,
-          background: 'var(--surface)',
-          border: '1px solid var(--border-light)',
-          borderRadius: 'var(--radius)',
-          padding: '1rem',
-          cursor: 'pointer',
-          textAlign: 'left',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-        }}
+        className="w-full mt-2 bg-surface border border-border-light rounded p-4 cursor-pointer text-left flex items-center gap-3"
       >
         <SignOut size={18} color="var(--red)" />
-        <span style={{ fontSize: 'var(--text-15)', fontWeight: 'var(--font-medium)', color: 'var(--red)' }}>Sign Out</span>
+        <span className="text-15 font-medium text-red">Sign Out</span>
       </button>
 
       {showSignOutConfirm && (
         <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: Z_NESTED,
-            background: BACKDROP_COLOR,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '0 2rem',
-          }}
+          className="fixed inset-0 flex items-center justify-center px-8 z-nested bg-backdrop"
           onClick={(e) => {
             if (e.target === e.currentTarget) setShowSignOutConfirm(false);
           }}
         >
-          <div
-            style={{
-              background: 'var(--surface)',
-              borderRadius: 16,
-              width: '100%',
-              maxWidth: 320,
-              overflow: 'hidden',
-            }}
-          >
-            <div style={{ padding: '1.5rem 1.25rem 1rem', textAlign: 'center' }}>
-              <p
-                style={{
-                  fontSize: 'var(--text-16)',
-                  fontWeight: 'var(--font-semibold)',
-                  color: 'var(--text-primary)',
-                  margin: '0 0 0.375rem',
-                }}
-              >
+          <div className="bg-surface rounded-[16px] w-full max-w-[320px] overflow-hidden">
+            <div className="px-5 pt-6 pb-4 text-center">
+              <p className="text-16 font-semibold text-text-primary mt-0 mb-[0.375rem]">
                 Sign out?
               </p>
-              <p style={{ fontSize: 'var(--text-14)', color: 'var(--text-muted)', margin: 0 }}>
+              <p className="text-14 text-text-muted m-0">
                 You can always sign back in.
               </p>
             </div>
-            <div style={{ borderTop: '1px solid var(--border-light)', display: 'flex' }}>
+            <div className="border-t border-border-light flex">
               <button
                 onClick={() => setShowSignOutConfirm(false)}
-                style={{
-                  flex: 1,
-                  height: 50,
-                  background: 'none',
-                  border: 'none',
-                  borderRight: '1px solid var(--border-light)',
-                  fontSize: 'var(--text-15)',
-                  color: 'var(--text-secondary)',
-                  cursor: 'pointer',
-                  fontWeight: 'var(--font-medium)',
-                }}
+                className="flex-1 h-[50px] bg-transparent border-none border-r border-border-light text-15 text-text-secondary cursor-pointer font-medium"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSignOut}
-                style={{
-                  flex: 1,
-                  height: 50,
-                  background: 'none',
-                  border: 'none',
-                  fontSize: 'var(--text-15)',
-                  color: 'var(--sage)',
-                  cursor: 'pointer',
-                  fontWeight: 'var(--font-semibold)',
-                }}
+                className="flex-1 h-[50px] bg-transparent border-none text-15 text-sage cursor-pointer font-semibold"
               >
                 Sign Out
               </button>
@@ -449,20 +330,13 @@ function SettingsRow({
 }) {
   return (
     <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 14,
-        padding: '0.875rem 1rem',
-        borderBottom: '1px solid var(--border-light)',
-      }}
-      className="no-last-border"
+      className="no-last-border flex items-center gap-3.5 py-[0.875rem] px-4 border-b border-border-light"
     >
-      <span style={{ flexShrink: 0 }}>{icon}</span>
-      <span style={{ flex: 1, fontSize: 'var(--text-15)', fontWeight: 'var(--font-medium)', color: 'var(--text-primary)' }}>
+      <span className="shrink-0">{icon}</span>
+      <span className="flex-1 text-15 font-medium text-text-primary">
         {label}
       </span>
-      {value && <span style={{ fontSize: 'var(--text-14)', color: 'var(--text-muted)' }}>{value}</span>}
+      {value && <span className="text-14 text-text-muted">{value}</span>}
       {chevron && <CaretRight size={15} color="var(--text-muted)" />}
     </div>
   );

@@ -33,121 +33,53 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
       }}
     >
       {/* Header */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '0.75rem 1.25rem 0.75rem',
-          flexShrink: 0,
-          borderBottom: '1px solid var(--border-light)',
-        }}
-      >
+      <div className="flex items-center justify-between py-3 shrink-0 border-b border-border-light" style={{ padding: '0.75rem 1.25rem' }}>
         <button
           onClick={onClose}
-          style={{
-            fontSize: 'var(--text-14)',
-            color: 'var(--text-secondary)',
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            padding: 0,
-          }}
+          className="text-14 text-text-secondary bg-transparent border-none cursor-pointer p-0"
         >
           Close
         </button>
-        <span
-          style={{
-            fontSize: 'var(--text-15)',
-            fontWeight: 'var(--font-semibold)',
-            color: 'var(--text-primary)',
-            flex: 1,
-            textAlign: 'center',
-            padding: '0 0.5rem',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-          }}
-        >
+        <span className="text-15 font-semibold text-text-primary flex-1 text-center overflow-hidden text-ellipsis whitespace-nowrap px-2">
           {group.name}
         </span>
         <Link
           href={`/groups/${group.id}`}
           onClick={onClose}
-          style={{
-            fontSize: 'var(--text-13)',
-            color: 'var(--sage)',
-            textDecoration: 'none',
-            whiteSpace: 'nowrap',
-            flexShrink: 0,
-          }}
+          className="text-13 text-sage no-underline whitespace-nowrap shrink-0"
         >
           View full group
         </Link>
       </div>
 
       {/* Scrollable content */}
-      <div
-        style={{
-          flex: 1,
-          overflowY: 'auto',
-          padding: '1rem 1.25rem 0.5rem',
-          background: 'var(--bg)',
-        }}
-      >
+      <div className="flex-1 overflow-y-auto bg-bg" style={{ padding: '1rem 1.25rem 0.5rem' }}>
         {/* Stats + description */}
         <div
-          style={{
-            background: 'var(--surface)',
-            borderRadius: 'var(--radius)',
-            border: '1px solid var(--border-light)',
-            padding: '0.875rem 1rem',
-            marginBottom: 14,
-          }}
+          className="bg-surface rounded border border-border-light"
+          style={{ padding: '0.875rem 1rem', marginBottom: 14 }}
         >
           <div
-            style={{
-              display: 'flex',
-              gap: 8,
-              flexWrap: 'wrap',
-              marginBottom: group.description ? 12 : 0,
-            }}
+            className="flex gap-2 flex-wrap"
+            style={{ marginBottom: group.description ? 12 : 0 }}
           >
             <span
-              style={{
-                fontSize: 'var(--text-11)',
-                fontWeight: 'var(--font-medium)',
-                padding: '0.1875rem 0.625rem',
-                borderRadius: 'var(--radius-pill)',
-                background: 'var(--sage-light)',
-                color: 'var(--sage)',
-              }}
+              className="text-11 font-medium rounded-pill bg-sage-light text-sage"
+              style={{ padding: '0.1875rem 0.625rem' }}
             >
               {group.memberIds.length} {group.memberIds.length === 1 ? 'member' : 'members'}
             </span>
             <span
-              style={{
-                fontSize: 'var(--text-11)',
-                fontWeight: 'var(--font-medium)',
-                padding: '0.1875rem 0.625rem',
-                borderRadius: 'var(--radius-pill)',
-                background: 'var(--blue-light)',
-                color: 'var(--blue)',
-              }}
+              className="text-11 font-medium rounded-pill bg-blue-light text-blue"
+              style={{ padding: '0.1875rem 0.625rem' }}
             >
               {leaders.length} {leaders.length === 1 ? 'leader' : 'leaders'}
             </span>
           </div>
           {group.description && (
             <p
-              style={{
-                fontSize: 'var(--text-13)',
-                color: 'var(--text-secondary)',
-                lineHeight: 'var(--leading-loose)',
-                paddingLeft: 12,
-                borderLeft: '0.125rem solid var(--sage-mid)',
-                margin: 0,
-              }}
+              className="text-13 text-text-secondary leading-loose m-0 pl-3"
+              style={{ borderLeft: '0.125rem solid var(--sage-mid)' }}
             >
               {group.description}
             </p>
@@ -157,26 +89,11 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
         {/* Leaders */}
         {leaders.length > 0 && (
           <div style={{ marginBottom: 14 }}>
-            <p
-              style={{
-                fontSize: 'var(--text-10)',
-                fontWeight: 'var(--font-semibold)',
-                color: 'var(--text-muted)',
-                textTransform: 'uppercase',
-                letterSpacing: 'var(--tracking-wide-6)',
-                marginBottom: 8,
-              }}
-            >
+            <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 mb-2">
               Leaders
             </p>
             <div
-              className="no-last-border"
-              style={{
-                background: 'var(--surface)',
-                borderRadius: 'var(--radius)',
-                border: '1px solid var(--border-light)',
-                overflow: 'hidden',
-              }}
+              className="no-last-border bg-surface rounded border border-border-light overflow-hidden"
             >
               {leaders.map((leader, i) => {
                 const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
@@ -189,52 +106,27 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
                 return (
                   <div
                     key={leader.id}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 12,
-                      padding: '0.625rem 1rem',
-                      borderBottom: '1px solid var(--border-light)',
-                    }}
+                    className="flex items-center gap-3 border-b border-border-light"
+                    style={{ padding: '0.625rem 1rem' }}
                   >
                     <div
+                      className="rounded-full flex items-center justify-center text-12 font-semibold shrink-0"
                       style={{
                         width: 36,
                         height: 36,
-                        borderRadius: '50%',
                         background: palette.bg,
                         color: palette.color,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: 'var(--text-12)',
-                        fontWeight: 'var(--font-semibold)',
-                        flexShrink: 0,
                       }}
                     >
                       {initials}
                     </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 6,
-                          flexWrap: 'wrap',
-                        }}
-                      >
-                        <p
-                          style={{
-                            fontSize: 'var(--text-14)',
-                            fontWeight: 'var(--font-semibold)',
-                            color: 'var(--text-primary)',
-                            margin: 0,
-                          }}
-                        >
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <p className="text-14 font-semibold text-text-primary m-0">
                           {fullName(leader)}
                         </p>
                       </div>
-                      <p style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)', margin: 0 }}>
+                      <p className="text-12 text-text-muted m-0">
                         {getMembershipLabel(leader.membershipStatus)}
                       </p>
                     </div>
@@ -247,27 +139,12 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
 
         {/* Members */}
         {members.length > 0 && (
-          <div style={{ marginBottom: 8 }}>
-            <p
-              style={{
-                fontSize: 'var(--text-10)',
-                fontWeight: 'var(--font-semibold)',
-                color: 'var(--text-muted)',
-                textTransform: 'uppercase',
-                letterSpacing: 'var(--tracking-wide-6)',
-                marginBottom: 8,
-              }}
-            >
+          <div className="mb-2">
+            <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 mb-2">
               Members · {members.length}
             </p>
             <div
-              className="no-last-border"
-              style={{
-                background: 'var(--surface)',
-                borderRadius: 'var(--radius)',
-                border: '1px solid var(--border-light)',
-                overflow: 'hidden',
-              }}
+              className="no-last-border bg-surface rounded border border-border-light overflow-hidden"
             >
               {members.map((m, i) => {
                 const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
@@ -280,46 +157,24 @@ export default function GroupPreviewModal({ groupId, onClose }: Props) {
                 return (
                   <div
                     key={m.id}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 12,
-                      padding: '0.625rem 1rem',
-                      borderBottom: '1px solid var(--border-light)',
-                    }}
+                    className="flex items-center gap-3 border-b border-border-light"
+                    style={{ padding: '0.625rem 1rem' }}
                   >
                     <div
+                      className="rounded-full flex items-center justify-center text-12 font-semibold shrink-0"
                       style={{
                         width: 36,
                         height: 36,
-                        borderRadius: '50%',
                         background: palette.bg,
                         color: palette.color,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: 'var(--text-12)',
-                        fontWeight: 'var(--font-semibold)',
-                        flexShrink: 0,
                       }}
                     >
                       {initials}
                     </div>
                     <div>
-                      <p
-                        style={{
-                          fontSize: 'var(--text-14)',
-                          fontWeight: 'var(--font-medium)',
-                          color: 'var(--text-primary)',
-                          margin: 0,
-                        }}
-                      >
-                        {fullName(m)}
-                      </p>
+                      <p className="text-14 font-medium text-text-primary m-0">{fullName(m)}</p>
                       {m.alternativeName && (
-                        <p style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)', margin: 0 }}>
-                          {m.alternativeName}
-                        </p>
+                        <p className="text-12 text-text-muted m-0">{m.alternativeName}</p>
                       )}
                     </div>
                   </div>

@@ -21,21 +21,10 @@ export default function SortControls(): React.ReactNode {
   const currentSort = SORT_OPTIONS.find((s) => s.key === sortKey) ?? SORT_OPTIONS[0];
 
   return (
-    <div ref={sortRef} style={{ position: 'relative' }}>
+    <div ref={sortRef} className="relative">
       <button
         onClick={() => setShowSort(!showSort)}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 4,
-          padding: '0.25rem 0.5rem',
-          background: 'transparent',
-          border: 'none',
-          fontSize: 'var(--text-12)',
-          color: 'var(--text-muted)',
-          cursor: 'pointer',
-          fontWeight: 'var(--font-medium)',
-        }}
+        className="flex items-center gap-1 py-1 px-2 bg-transparent border-0 text-12 text-text-muted cursor-pointer font-medium"
       >
         <ArrowsDownUp size={11} />
         {currentSort.label}
@@ -43,18 +32,10 @@ export default function SortControls(): React.ReactNode {
 
       {showSort && (
         <div
-          className="animate-pop-in"
+          className="animate-pop-in absolute right-0 bg-surface border border-border rounded-sm py-1 z-page shadow-elevated"
           style={{
-            position: 'absolute',
-            right: 0,
             top: 'calc(100% + 0.25rem)',
-            background: 'var(--surface)',
-            border: '1px solid var(--border)',
-            borderRadius: 'var(--radius-sm)',
-            boxShadow: 'var(--shadow-elevated)',
-            zIndex: 'var(--z-page)',
             minWidth: 160,
-            padding: '0.25rem 0',
           }}
         >
           {SORT_OPTIONS.map((opt) => (
@@ -64,17 +45,8 @@ export default function SortControls(): React.ReactNode {
                 setSortKey(opt.key);
                 setShowSort(false);
               }}
-              style={{
-                width: '100%',
-                padding: '0.5rem 0.875rem',
-                textAlign: 'left',
-                fontSize: 'var(--text-13)',
-                fontWeight: sortKey === opt.key ? 'var(--font-semibold)' : 'var(--font-normal)',
-                color: sortKey === opt.key ? 'var(--sage)' : 'var(--text-primary)',
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-              }}
+              className={`w-full text-left text-13 bg-transparent border-0 cursor-pointer ${sortKey === opt.key ? 'font-semibold text-sage' : 'font-normal text-text-primary'}`}
+              style={{ padding: '0.5rem 0.875rem' }}
             >
               {opt.label}
             </button>

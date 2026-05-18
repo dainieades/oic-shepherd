@@ -37,95 +37,61 @@ export default function AppearancePage() {
   const { themePreference, setThemePreference } = useApp();
 
   return (
-    <div style={{ paddingBottom: 48 }}>
+    <div className="pb-12">
       {/* Nav bar */}
-      <div className="settings-subpage-navbar" style={navBarStyle}>
-        <button onClick={() => router.push('/settings')} style={backBtnStyle}>
+      <div className="settings-subpage-navbar sticky top-0 -mx-4 px-4 border-b border-border-light bg-bg flex items-center justify-between z-page" style={{ height: 54 }}>
+        <button onClick={() => router.push('/settings')} className="inline-flex items-center gap-1 text-13 text-sage cursor-pointer p-0" style={{ background: 'none', border: 'none' }}>
           <CaretLeft size={16} weight="bold" />
           Settings
         </button>
-        <span style={navTitleStyle}>Theme</span>
-        <span style={{ width: 72 }} />
+        <span className="text-15 font-semibold text-text-primary">Theme</span>
+        <span className="w-[4.5rem]" />
       </div>
 
-      <div style={{ marginTop: 24 }}>
-        <div
-          style={{
-            background: 'var(--surface)',
-            borderRadius: 'var(--radius)',
-            border: '1px solid var(--border-light)',
-            overflow: 'hidden',
-          }}
-        >
+      <div className="mt-6">
+        <div className="bg-surface rounded border border-border-light overflow-hidden">
+
           {OPTIONS.map(({ value, icon, label, description }, i) => {
             const active = themePreference === value;
             return (
               <button
                 key={value}
                 onClick={() => setThemePreference(value)}
+                className="w-full flex items-center gap-3.5 p-4 cursor-pointer text-left"
                 style={{
-                  width: '100%',
                   background: active ? 'color-mix(in srgb, var(--sage) 10%, transparent)' : 'none',
                   border: 'none',
                   borderBottom: i < OPTIONS.length - 1 ? '1px solid var(--border-light)' : 'none',
-                  padding: '1rem',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 14,
-                  textAlign: 'left',
                 }}
               >
                 <span
+                  className="shrink-0 flex items-center justify-center rounded-sm"
                   style={{
                     color: active ? 'var(--sage)' : 'var(--text-muted)',
-                    flexShrink: 0,
                     width: 36,
                     height: 36,
-                    borderRadius: 'var(--radius-sm)',
                     background: active
                       ? 'color-mix(in srgb, var(--sage) 15%, transparent)'
                       : 'var(--surface-raised, var(--border-light))',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
                   }}
                 >
                   {icon}
                 </span>
-                <span style={{ flex: 1 }}>
+                <span className="flex-1">
                   <span
+                    className="block text-15 tracking-tight-1"
                     style={{
-                      display: 'block',
-                      fontSize: 'var(--text-15)',
                       fontWeight: active ? 'var(--font-semibold)' : 'var(--font-medium)',
                       color: active ? 'var(--sage)' : 'var(--text-primary)',
-                      letterSpacing: 'var(--tracking-tight-1)',
                     }}
                   >
                     {label}
                   </span>
-                  <span
-                    style={{
-                      display: 'block',
-                      fontSize: 'var(--text-13)',
-                      color: 'var(--text-muted)',
-                      marginTop: 2,
-                    }}
-                  >
+                  <span className="block text-13 text-text-muted mt-0.5">
                     {description}
                   </span>
                 </span>
-                <span
-                  style={{
-                    width: 22,
-                    height: 22,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                  }}
-                >
+                <span className="flex items-center justify-center shrink-0" style={{ width: 22, height: 22 }}>
                   {active && <Check size={20} color="var(--sage)" weight="bold" />}
                 </span>
               </button>
@@ -137,36 +103,3 @@ export default function AppearancePage() {
   );
 }
 
-const navBarStyle: React.CSSProperties = {
-  position: 'sticky',
-  top: 0,
-  zIndex: 'var(--z-page)',
-  background: 'var(--bg)',
-  marginLeft: -16,
-  marginRight: -16,
-  paddingLeft: 16,
-  paddingRight: 16,
-  borderBottom: '1px solid var(--border-light)',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  height: 54,
-};
-
-const backBtnStyle: React.CSSProperties = {
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: 4,
-  fontSize: 'var(--text-13)',
-  color: 'var(--sage)',
-  background: 'none',
-  border: 'none',
-  cursor: 'pointer',
-  padding: 0,
-};
-
-const navTitleStyle: React.CSSProperties = {
-  fontSize: 'var(--text-15)',
-  fontWeight: 'var(--font-semibold)',
-  color: 'var(--text-primary)',
-};

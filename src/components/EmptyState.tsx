@@ -16,41 +16,25 @@ export function EmptyState({
   padding?: string;
 }) {
   return (
-    <div style={{ textAlign: 'center', padding }}>
-      {icon && <div style={{ marginBottom: 8 }}>{icon}</div>}
+    <div className="text-center" style={{ padding }}>
+      {icon && <div className="mb-2">{icon}</div>}
       <p
-        style={{
-          fontSize: 'var(--text-14)',
-          fontWeight: 'var(--font-semibold)',
-          color: 'var(--text-secondary)',
-          marginBottom: description ? 6 : 0,
-        }}
+        className={`text-14 font-semibold text-text-secondary ${description ? 'mb-1.5' : 'mb-0'}`}
       >
         {title}
       </p>
       {description && (
         <p
-          style={{
-            fontSize: 'var(--text-13)',
-            color: 'var(--text-muted)',
-            lineHeight: 'var(--leading-loose)',
-            maxWidth: 260,
-            margin: '0 auto',
-          }}
+          className="text-13 text-text-muted leading-loose mx-auto"
+          style={{ maxWidth: 260 }}
         >
           {description}
         </p>
       )}
       {subtext && (
         <p
-          style={{
-            fontSize: 'var(--text-12)',
-            color: 'var(--text-muted)',
-            lineHeight: 'var(--leading-normal)',
-            maxWidth: 260,
-            margin: '0.625rem auto 0',
-            fontWeight: 'var(--font-semibold)',
-          }}
+          className="text-12 text-text-muted leading-normal font-semibold mx-auto"
+          style={{ maxWidth: 260, marginTop: '0.625rem' }}
         >
           {subtext}
         </p>

@@ -59,68 +59,54 @@ export default function EditGroupDrawer({ group, onClose, onSave }: Props) {
           actionLabel="Save"
         />
 
-        <div
-          style={{
-            flex: 1,
-            overflowY: 'auto',
-            padding: '1.25rem 1.25rem 3rem',
-            background: 'var(--bg)',
-          }}
-        >
+        <div className="flex-1 overflow-y-auto px-5 pt-5 pb-12 bg-bg">
           <DrawerSection label="Details">
             <div
-              className="field-row-hover"
-              style={textRowStyle}
+              className="field-row-hover flex items-center gap-2.5 py-3 border-b border-border-light cursor-text"
               onClick={() => nameRef.current?.focus()}
             >
-              <span style={asteriskStyle}>*</span>
+              <span className="w-[10px] text-14 text-red shrink-0 leading-none">*</span>
               <TextT size={16} color="var(--text-muted)" />
-              <span style={labelStyle}>Name</span>
+              <span className="text-12 text-text-muted w-[60px] shrink-0">Name</span>
               <input
                 ref={nameRef}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Group name"
-                style={inputStyle}
+                className="flex-1 bg-transparent border-0 outline-none text-14 text-text-primary"
               />
             </div>
             <div
-              className="field-row-hover"
-              style={{ ...textRowStyle, alignItems: 'flex-start' }}
+              className="field-row-hover flex items-start gap-2.5 py-3 border-b border-border-light cursor-text"
               onClick={() => descRef.current?.focus()}
             >
-              <span style={spacerStyle} />
-              <span style={{ paddingTop: 2 }}>
+              <span className="w-[10px] shrink-0" />
+              <span className="pt-[2px]">
                 <AlignLeft size={16} color="var(--text-muted)" />
               </span>
-              <span style={{ ...labelStyle, paddingTop: 2 }}>About</span>
+              <span className="text-12 text-text-muted w-[60px] shrink-0 pt-[2px]">About</span>
               <textarea
                 ref={descRef}
                 value={description}
                 onChange={(e) => setDesc(e.target.value)}
                 placeholder="Description…"
                 rows={3}
-                style={{ ...inputStyle, resize: 'none', lineHeight: 'var(--leading-normal)' }}
+                className="flex-1 bg-transparent border-0 outline-none text-14 text-text-primary leading-normal resize-none"
               />
             </div>
           </DrawerSection>
 
           <DrawerSection label="Leaders">
             <button
-              className="field-row-hover"
+              className="field-row-hover flex items-center gap-2.5 py-3 border-b border-border-light border-x-0 border-t-0 bg-transparent cursor-pointer text-left w-full"
               onClick={() => setShowLeaderPicker(true)}
-              style={pickerRowStyle}
             >
-              <span style={spacerStyle} />
+              <span className="w-[10px] shrink-0" />
               <Crown size={16} color="var(--blue)" />
-              <span style={labelStyle}>Leaders</span>
+              <span className="text-12 text-text-muted w-[60px] shrink-0">Leaders</span>
               <span
-                style={{
-                  flex: 1,
-                  fontSize: 'var(--text-14)',
-                  color: selectedLeaders.length ? 'var(--text-primary)' : 'var(--text-muted)',
-                  textAlign: 'left',
-                }}
+                className="flex-1 text-14 text-left"
+                style={{ color: selectedLeaders.length ? 'var(--text-primary)' : 'var(--text-muted)' }}
               >
                 {selectedLeaders.length === 0
                   ? 'None'
@@ -132,16 +118,13 @@ export default function EditGroupDrawer({ group, onClose, onSave }: Props) {
 
           <DrawerSection label="Members">
             <button
-              className="field-row-hover"
+              className="field-row-hover flex items-center gap-2.5 py-3 border-b border-border-light border-x-0 border-t-0 bg-transparent cursor-pointer text-left w-full"
               onClick={() => setShowMemberPicker(true)}
-              style={pickerRowStyle}
             >
-              <span style={spacerStyle} />
+              <span className="w-[10px] shrink-0" />
               <UserList size={16} color="var(--text-muted)" />
-              <span style={labelStyle}>Members</span>
-              <span
-                style={{ flex: 1, fontSize: 'var(--text-14)', color: 'var(--text-primary)', textAlign: 'left' }}
-              >
+              <span className="text-12 text-text-muted w-[60px] shrink-0">Members</span>
+              <span className="flex-1 text-14 text-text-primary text-left">
                 {memberIds.length} {memberIds.length === 1 ? 'person' : 'people'}
               </span>
               <CaretRight size={14} color="var(--text-muted)" />
@@ -215,33 +198,17 @@ function PeoplePickerSheet({
         actionVariant="pill"
       />
 
-      <div
-        style={{
-          padding: '0.625rem 1rem',
-          borderBottom: '1px solid var(--border-light)',
-          flexShrink: 0,
-        }}
-      >
+      <div className="py-2.5 px-4 border-b border-border-light shrink-0">
         <input
           autoFocus
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search…"
-          style={{
-            width: '100%',
-            padding: '0.5rem 0.75rem',
-            borderRadius: 'var(--radius-xs)',
-            border: '1px solid var(--border)',
-            fontSize: 'var(--text-14)',
-            background: 'var(--bg)',
-            color: 'var(--text-primary)',
-            outline: 'none',
-            boxSizing: 'border-box',
-          }}
+          className="w-full py-2 px-3 rounded-xs border border-border text-14 bg-bg text-text-primary outline-none box-border"
         />
       </div>
 
-      <div style={{ flex: 1, overflowY: 'auto' }}>
+      <div className="flex-1 overflow-y-auto">
         {filtered.map((p) => {
           const isSel = selectedIds.includes(p.id);
           const initials = fullName(p)
@@ -254,40 +221,22 @@ function PeoplePickerSheet({
             <button
               key={p.id}
               onClick={() => toggle(p.id)}
-              style={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
-                padding: '0.625rem 1.25rem',
-                background: isSel ? 'var(--sage-light)' : 'none',
-                border: 'none',
-                borderBottom: '1px solid var(--border-light)',
-                cursor: 'pointer',
-                textAlign: 'left',
-              }}
+              className="w-full flex items-center gap-3 py-2.5 px-5 border-b border-border-light border-x-0 border-t-0 cursor-pointer text-left"
+              style={{ background: isSel ? 'var(--sage-light)' : 'transparent' }}
             >
               <div
+                className="w-9 h-9 rounded-full flex items-center justify-center text-12 font-bold shrink-0"
                 style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: '50%',
                   background: isSel ? 'var(--sage)' : 'var(--sage-light)',
                   color: isSel ? 'var(--on-sage)' : 'var(--sage)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 'var(--text-12)',
-                  fontWeight: 'var(--font-bold)',
-                  flexShrink: 0,
                 }}
               >
                 {initials}
               </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
+              <div className="flex-1 min-w-0">
                 <span
+                  className="text-14"
                   style={{
-                    fontSize: 'var(--text-14)',
                     fontWeight: isSel ? 'var(--font-semibold)' : 'var(--font-normal)',
                     color: isSel ? 'var(--sage)' : 'var(--text-primary)',
                   }}
@@ -295,23 +244,16 @@ function PeoplePickerSheet({
                   {fullName(p)}
                 </span>
                 {p.alternativeName && (
-                  <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)', marginLeft: 6 }}>
+                  <span className="text-12 text-text-muted ml-1.5">
                     {p.alternativeName}
                   </span>
                 )}
               </div>
               <div
+                className="w-5 h-5 rounded-[5px] shrink-0 flex items-center justify-center transition-[background] duration-150"
                 style={{
-                  width: 20,
-                  height: 20,
-                  borderRadius: 5,
-                  flexShrink: 0,
                   border: isSel ? 'none' : '0.09375rem solid var(--border)',
                   background: isSel ? 'var(--sage)' : 'transparent',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'background 0.15s',
                 }}
               >
                 {isSel && <Check size={11} color="var(--on-sage)" weight="bold" />}
@@ -324,49 +266,3 @@ function PeoplePickerSheet({
   );
 }
 
-const textRowStyle: React.CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-  gap: 10,
-  paddingTop: 12,
-  paddingBottom: 12,
-  borderBottom: '1px solid var(--border-light)',
-  cursor: 'text',
-};
-
-const pickerRowStyle: React.CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-  gap: 10,
-  paddingTop: 12,
-  paddingBottom: 12,
-  border: 'none',
-  borderBottom: '1px solid var(--border-light)',
-  background: 'none',
-  cursor: 'pointer',
-  textAlign: 'left' as const,
-  width: '100%',
-};
-
-const asteriskStyle: React.CSSProperties = {
-  width: 10,
-  fontSize: 'var(--text-14)',
-  color: 'var(--red)',
-  flexShrink: 0,
-  lineHeight: 'var(--leading-none)',
-};
-const spacerStyle: React.CSSProperties = { width: 10, flexShrink: 0 };
-const labelStyle: React.CSSProperties = {
-  fontSize: 'var(--text-12)',
-  color: 'var(--text-muted)',
-  width: 60,
-  flexShrink: 0,
-};
-const inputStyle: React.CSSProperties = {
-  flex: 1,
-  background: 'none',
-  border: 'none',
-  outline: 'none',
-  fontSize: 'var(--text-14)',
-  color: 'var(--text-primary)',
-};

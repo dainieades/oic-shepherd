@@ -51,19 +51,14 @@ export default function CalendarSyncSheet({ onClose, singleEvent }: Props) {
   }
 
   async function handleSubscribeGoogle() {
-    // Open a blank window synchronously to preserve the user-gesture context —
-    // popup blockers fire when window.open is called after any await.
+    console.log('[CalendarSync] button clicked — origin:', origin, 'calendarFeedToken:', calendarFeedToken);
     const win = window.open('about:blank', '_blank');
-    // Await DB save so the token row exists before Google fetches the feed.
+    console.log('[CalendarSync] win is null (popup blocked)?', win === null);
     const feedUrl = await enableCalendarSync();
-    // Google Calendar's ?cid= param requires the literal unencoded webcal:// prefix.
-    // encodeURIComponent() turns :// into %3A%2F%2F which Google doesn't recognise.
     const webcalUrl = feedUrl.replace(/^https?:\/\//, 'webcal://');
     const googleUrl = `https://calendar.google.com/calendar/r?cid=${webcalUrl}`;
     console.log('[CalendarSync] feedUrl:', feedUrl);
-    console.log('[CalendarSync] webcalUrl:', webcalUrl);
     console.log('[CalendarSync] googleUrl:', googleUrl);
-    console.log('[CalendarSync] win is null (popup blocked)?', win === null);
     if (win) {
       win.location.href = googleUrl;
     } else {
@@ -147,13 +142,13 @@ export default function CalendarSyncSheet({ onClose, singleEvent }: Props) {
         actionVariant="text"
       />
 
-      <div style={{ padding: '1rem 1.25rem 1.25rem' }}>
+      <div className="px-5 pt-4 pb-5">
         {calendarSyncEnabled ? (
           <ConnectedBlock onDisable={handleDisable} />
         ) : (
           <>
-            <p style={sectionHeaderStyle}>Auto-sync your to-dos</p>
-            <p style={sectionDescStyle}>
+            <p className="text-13 font-semibold text-text-muted uppercase tracking-wide-4 mb-1.5">Auto-sync your to-dos</p>
+            <p className="text-13 text-text-muted mb-3.5 leading-normal">
               Add OIC to-dos to your calendar app. New items appear automatically; how often updates
               show up depends on your calendar app.
             </p>
@@ -169,11 +164,11 @@ export default function CalendarSyncSheet({ onClose, singleEvent }: Props) {
         {singleEvent && (
           <>
             <Divider />
-            <p style={sectionHeaderStyle}>Just this one</p>
-            <p style={sectionDescStyle}>
+            <p className="text-13 font-semibold text-text-muted uppercase tracking-wide-4 mb-1.5">Just this one</p>
+            <p className="text-13 text-text-muted mb-3.5 leading-normal">
               Add only this to-do to your calendar without setting up sync.
             </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <div className="flex flex-col gap-2">
               <SmallActionButton
                 icon={<GoogleLogo size={16} color="var(--text-muted)" />}
                 label="Add to Google Calendar"
@@ -195,24 +190,13 @@ export default function CalendarSyncSheet({ onClose, singleEvent }: Props) {
 function ConnectedBlock({ onDisable }: { onDisable: () => void }) {
   return (
     <>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.75rem',
-          padding: '0.875rem 1rem',
-          background: 'var(--sage-light)',
-          border: '1px solid var(--sage-mid)',
-          borderRadius: 'var(--radius)',
-          marginBottom: '0.75rem',
-        }}
-      >
+      <div className="flex items-center gap-3 py-3.5 px-4 bg-sage-light border border-sage-mid rounded mb-3">
         <Check size={20} weight="bold" color="var(--sage)" />
-        <span style={{ flex: 1, fontSize: 'var(--text-15)', color: 'var(--text-primary)' }}>
+        <span className="flex-1 text-15 text-text-primary">
           Synced to <strong>your calendar</strong>
         </span>
       </div>
-      <p style={sectionDescStyle}>
+      <p className="text-13 text-text-muted mb-3.5 leading-normal">
         New to-dos appear in your calendar automatically. To manage the feed URL or rotate it, open
         Settings → Calendar Sync.
       </p>
@@ -237,51 +221,14 @@ function SmallActionButton({
   return (
     <button
       onClick={onClick}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.625rem',
-        padding: '0.625rem 0.875rem',
-        background: 'var(--surface)',
-        border: '1px solid var(--border-light)',
-        borderRadius: 'var(--radius-sm)',
-        cursor: 'pointer',
-        textAlign: 'left',
-        width: '100%',
-        fontSize: 'var(--text-14)',
-        color: 'var(--text-primary)',
-      }}
+      className="flex items-center gap-2.5 py-2.5 px-3.5 bg-surface border border-border-light rounded-sm cursor-pointer text-left w-full text-14 text-text-primary"
     >
-      <span style={{ flexShrink: 0 }}>{icon}</span>
-      <span style={{ flex: 1 }}>{label}</span>
+      <span className="shrink-0">{icon}</span>
+      <span className="flex-1">{label}</span>
     </button>
   );
 }
 
 function Divider() {
-  return (
-    <div
-      style={{
-        height: 1,
-        background: 'var(--border-light)',
-        margin: '1.25rem 0',
-      }}
-    />
-  );
+  return <div className="h-px bg-border-light my-5" />;
 }
-
-const sectionHeaderStyle: React.CSSProperties = {
-  fontSize: 'var(--text-13)',
-  fontWeight: 'var(--font-semibold)',
-  color: 'var(--text-muted)',
-  textTransform: 'uppercase',
-  letterSpacing: 'var(--tracking-wide-4)',
-  margin: '0 0 0.375rem',
-};
-
-const sectionDescStyle: React.CSSProperties = {
-  fontSize: 'var(--text-13)',
-  color: 'var(--text-muted)',
-  margin: '0 0 0.875rem',
-  lineHeight: 'var(--leading-normal)',
-};

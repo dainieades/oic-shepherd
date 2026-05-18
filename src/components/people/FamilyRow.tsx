@@ -28,10 +28,9 @@ const FamilyRow = React.memo(function FamilyRow({
   return (
     <Link
       href={`/family/${family.id}`}
-      className="row-hover"
-      style={{ borderBottom: '1px solid var(--border-light)' }}
+      className="row-hover border-b border-border-light"
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '0.625rem 0' }}>
+      <div className="flex items-center gap-3 py-2.5">
         <AvatarBadge
           name={family.label}
           photo={family.photo}
@@ -41,44 +40,18 @@ const FamilyRow = React.memo(function FamilyRow({
           icon={<House size={22} color="var(--sage-light)" />}
         />
 
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: 6,
-              marginBottom: 3,
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 5,
-                minWidth: 0,
-                overflow: 'hidden',
-              }}
-            >
-              <span
-                style={{
-                  fontSize: 'var(--text-15)',
-                  fontWeight: 'var(--font-semibold)',
-                  color: 'var(--text-primary)',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  flexShrink: 1,
-                }}
-              >
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between gap-1.5 mb-[3px]">
+            <div className="flex items-center gap-[5px] min-w-0 overflow-hidden">
+              <span className="text-15 font-semibold text-text-primary truncate shrink">
                 {family.label}
               </span>
             </div>
             <LogStatusTag daysSince={daysSinceNote} lastNoteTs={lastNoteTs} />
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+          <div className="flex items-center gap-1 flex-wrap">
+            <span className="inline-flex items-center gap-1">
               {members.every((m) => m.assignedShepherdIds.length === 0) && (
                 <>
                   <StatusBadge
@@ -87,30 +60,24 @@ const FamilyRow = React.memo(function FamilyRow({
                     color="var(--amber)"
                     border="1px solid var(--amber-border)"
                   />
-                  <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>·</span>
+                  <span className="text-12 text-text-muted">·</span>
                 </>
               )}
             </span>
             {members.map((m, i) => (
               <span
                 key={m.id}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 3,
-                  fontSize: 'var(--text-12)',
-                  color: 'var(--text-muted)',
-                }}
+                className="inline-flex items-center gap-[3px] text-12 text-text-muted"
               >
                 {i > 0 && <span>,&nbsp;</span>}
                 {m.isShepherd && (
-                  <HandHeart size={11} color="var(--sage)" style={{ flexShrink: 0 }} />
+                  <HandHeart size={11} color="var(--sage)" className="shrink-0" />
                 )}
                 {m.preferredName}
               </span>
             ))}
             {family.childCount && family.childCount > 0 ? (
-              <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>
+              <span className="text-12 text-text-muted">
                 , +{family.childCount} kid{family.childCount !== 1 ? 's' : ''}
               </span>
             ) : null}
@@ -120,32 +87,12 @@ const FamilyRow = React.memo(function FamilyRow({
                 const extra = allGroupIds.length - 1;
                 return (
                   <>
-                    <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>·</span>
-                    <span
-                      style={{
-                        fontSize: 'var(--text-10)',
-                        padding: '0.125rem 0.4375rem',
-                        borderRadius: 'var(--radius-pill)',
-                        background: 'var(--blue-light)',
-                        color: 'var(--blue)',
-                        fontWeight: 'var(--font-semibold)',
-                        flexShrink: 0,
-                      }}
-                    >
+                    <span className="text-12 text-text-muted">·</span>
+                    <span className="text-10 py-0.5 px-[7px] rounded-pill bg-blue-light text-blue font-semibold shrink-0">
                       {group.name}
                     </span>
                     {extra > 0 && (
-                      <span
-                        style={{
-                          fontSize: 'var(--text-10)',
-                          padding: '0.125rem 0.375rem',
-                          borderRadius: 'var(--radius-pill)',
-                          background: 'var(--blue-light)',
-                          color: 'var(--blue)',
-                          fontWeight: 'var(--font-semibold)',
-                          flexShrink: 0,
-                        }}
-                      >
+                      <span className="text-10 py-0.5 px-1.5 rounded-pill bg-blue-light text-blue font-semibold shrink-0">
                         +{extra}
                       </span>
                     )}

@@ -88,43 +88,14 @@ export default function AppRolePickerSheet({
   return (
     <BottomSheet onClose={onClose} variant="confirm" allowBackdropClose compact>
       {/* Header */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '0.75rem 1rem 0.625rem 1.25rem',
-          borderBottom: '1px solid var(--border-light)',
-        }}
-      >
-        <p
-          style={{
-            fontSize: 'var(--text-12)',
-            fontWeight: 'var(--font-semibold)',
-            color: 'var(--text-muted)',
-            textTransform: 'uppercase',
-            letterSpacing: 'var(--tracking-wide-6)',
-            margin: 0,
-          }}
-        >
+      <div className="flex items-center justify-between pt-3 pr-4 pb-[0.625rem] pl-5 border-b border-border-light">
+        <p className="text-12 font-semibold text-text-muted uppercase tracking-wide-6 m-0">
           App Role
         </p>
         <button
           onClick={onClose}
           aria-label="Close"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 28,
-            height: 28,
-            borderRadius: '50%',
-            background: 'var(--border-light)',
-            border: 'none',
-            cursor: 'pointer',
-            color: 'var(--text-muted)',
-            flexShrink: 0,
-          }}
+          className="flex items-center justify-center w-7 h-7 rounded-full bg-[var(--border-light)] border-none cursor-pointer text-text-muted shrink-0"
         >
           <X size={14} weight="bold" />
         </button>
@@ -132,30 +103,11 @@ export default function AppRolePickerSheet({
 
       {editingEmail ? (
         /* ── Edit email address ── */
-        <div style={{ padding: '1.25rem 1.25rem 0.5rem' }}>
-          <p
-            style={{
-              fontSize: 'var(--text-13)',
-              color: 'var(--text-secondary)',
-              textAlign: 'center',
-              lineHeight: 'var(--leading-normal)',
-              marginTop: 0,
-              marginBottom: 16,
-            }}
-          >
+        <div className="px-5 pt-5 pb-2">
+          <p className="text-13 text-text-secondary text-center leading-normal mt-0 mb-4">
             Update the email {personName ? `${personName} uses` : 'used'} to sign in.
           </p>
-          <label
-            style={{
-              display: 'block',
-              fontSize: 'var(--text-12)',
-              fontWeight: 'var(--font-semibold)',
-              color: 'var(--text-muted)',
-              textTransform: 'uppercase',
-              letterSpacing: 'var(--tracking-wide-6)',
-              marginBottom: 6,
-            }}
-          >
+          <label className="block text-12 font-semibold text-text-muted uppercase tracking-wide-6 mb-1.5">
             Email address
           </label>
           <input
@@ -171,40 +123,23 @@ export default function AppRolePickerSheet({
             }}
             placeholder="name@example.com"
             autoComplete="email"
+            className="w-full rounded-sm text-15 text-text-primary bg-bg outline-none box-border"
             style={{
-              width: '100%',
               padding: '0.6875rem 0.875rem',
-              borderRadius: 'var(--radius-sm)',
               border: `0.09375rem solid ${emailError ? 'var(--red)' : 'var(--border)'}`,
-              fontSize: 'var(--text-15)',
-              color: 'var(--text-primary)',
-              background: 'var(--bg)',
-              outline: 'none',
-              boxSizing: 'border-box',
               marginBottom: emailError ? 4 : 16,
             }}
           />
           {emailError && (
-            <p role="alert" style={{ fontSize: 'var(--text-12)', color: 'var(--red)', margin: '0 0 12px' }}>
+            <p role="alert" className="text-12 text-red m-0 mb-3">
               {emailError}
             </p>
           )}
           <button
             onClick={handleSaveEmail}
             disabled={saving}
-            style={{
-              width: '100%',
-              padding: '0.875rem',
-              background: 'var(--sage)',
-              color: 'var(--on-sage)',
-              border: 'none',
-              borderRadius: 'var(--radius-md)',
-              fontSize: 'var(--text-15)',
-              fontWeight: 'var(--font-semibold)',
-              cursor: saving ? 'not-allowed' : 'pointer',
-              opacity: saving ? 0.6 : 1,
-              marginBottom: 10,
-            }}
+            className="w-full py-3.5 bg-sage text-on-sage border-none rounded-md text-15 font-semibold mb-2.5"
+            style={{ cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.6 : 1 }}
           >
             {saving ? 'Saving…' : 'Save Email'}
           </button>
@@ -214,58 +149,22 @@ export default function AppRolePickerSheet({
               setEmailError('');
             }}
             disabled={saving}
-            style={{
-              width: '100%',
-              padding: '0.875rem',
-              background: 'none',
-              color: 'var(--text-secondary)',
-              border: 'none',
-              fontSize: 'var(--text-15)',
-              fontWeight: 'var(--font-medium)',
-              cursor: saving ? 'not-allowed' : 'pointer',
-              marginBottom: 4,
-            }}
+            className="w-full py-3.5 bg-transparent text-text-secondary border-none text-15 font-medium mb-1"
+            style={{ cursor: saving ? 'not-allowed' : 'pointer' }}
           >
             Cancel
           </button>
         </div>
       ) : confirmRemove ? (
         /* ── Warning state ── */
-        <div style={{ padding: '1.5rem 1.25rem 0.5rem' }}>
-          <div
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: '50%',
-              background: 'var(--red-light)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              margin: '0 auto 1rem',
-            }}
-          >
+        <div className="px-5 pt-6 pb-2">
+          <div className="w-11 h-11 rounded-full bg-red-light flex items-center justify-center mx-auto mb-4">
             <Warning size={20} color="var(--red)" />
           </div>
-          <p
-            style={{
-              fontSize: 'var(--text-16)',
-              fontWeight: 'var(--font-bold)',
-              color: 'var(--text-primary)',
-              textAlign: 'center',
-              marginBottom: 8,
-            }}
-          >
+          <p className="text-16 font-bold text-text-primary text-center mb-2">
             Remove access?
           </p>
-          <p
-            style={{
-              fontSize: 'var(--text-14)',
-              color: 'var(--text-secondary)',
-              textAlign: 'center',
-              lineHeight: 'var(--leading-normal)',
-              marginBottom: 24,
-            }}
-          >
+          <p className="text-14 text-text-secondary text-center leading-normal mb-6">
             {personName ? `${personName} will` : 'This person will'} no longer be able to log into
             the app.
           </p>
@@ -277,70 +176,30 @@ export default function AppRolePickerSheet({
               onClose();
             }}
             disabled={saving}
-            style={{
-              width: '100%',
-              padding: '0.875rem',
-              background: 'var(--red)',
-              color: 'var(--on-red)',
-              border: 'none',
-              borderRadius: 'var(--radius-md)',
-              fontSize: 'var(--text-15)',
-              fontWeight: 'var(--font-semibold)',
-              cursor: saving ? 'not-allowed' : 'pointer',
-              opacity: saving ? 0.6 : 1,
-              marginBottom: 10,
-            }}
+            className="w-full py-3.5 bg-red text-on-red border-none rounded-md text-15 font-semibold mb-2.5"
+            style={{ cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.6 : 1 }}
           >
             {saving ? 'Removing…' : 'Remove Access'}
           </button>
           <button
             onClick={() => setConfirmRemove(false)}
             disabled={saving}
-            style={{
-              width: '100%',
-              padding: '0.875rem',
-              background: 'none',
-              color: 'var(--text-secondary)',
-              border: 'none',
-              fontSize: 'var(--text-15)',
-              fontWeight: 'var(--font-medium)',
-              cursor: saving ? 'not-allowed' : 'pointer',
-              marginBottom: 4,
-            }}
+            className="w-full py-3.5 bg-transparent text-text-secondary border-none text-15 font-medium mb-1"
+            style={{ cursor: saving ? 'not-allowed' : 'pointer' }}
           >
             Cancel
           </button>
         </div>
       ) : noPersonLinked ? (
         /* ── No person record linked ── */
-        <div style={{ padding: '1.5rem 1.25rem 1.25rem', textAlign: 'center' }}>
-          <div
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: '50%',
-              background: 'var(--border-light)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              margin: '0 auto 1rem',
-            }}
-          >
+        <div className="px-5 pt-6 pb-5 text-center">
+          <div className="w-11 h-11 rounded-full bg-[var(--border-light)] flex items-center justify-center mx-auto mb-4">
             <Warning size={20} color="var(--text-muted)" />
           </div>
-          <p
-            style={{ fontSize: 'var(--text-15)', fontWeight: 'var(--font-semibold)', color: 'var(--text-primary)', marginBottom: 8 }}
-          >
+          <p className="text-15 font-semibold text-text-primary mb-2">
             No person record linked
           </p>
-          <p
-            style={{
-              fontSize: 'var(--text-13)',
-              color: 'var(--text-secondary)',
-              lineHeight: 'var(--leading-normal)',
-              marginBottom: 24,
-            }}
-          >
+          <p className="text-13 text-text-secondary leading-normal mb-6">
             To manage this person&apos;s role, open their person record and add this email address
             to their profile.
           </p>
@@ -349,22 +208,7 @@ export default function AppRolePickerSheet({
               {canEditEmail && (
                 <button
                   onClick={() => setEditingEmail(true)}
-                  style={{
-                    width: '100%',
-                    padding: '0.875rem',
-                    background: 'none',
-                    border: '1px solid var(--border-light)',
-                    color: 'var(--text-primary)',
-                    borderRadius: 'var(--radius-md)',
-                    fontSize: 'var(--text-15)',
-                    fontWeight: 'var(--font-medium)',
-                    cursor: 'pointer',
-                    marginBottom: 10,
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 8,
-                  }}
+                  className="w-full py-3.5 bg-transparent border border-border-light text-text-primary rounded-md text-15 font-medium cursor-pointer mb-2.5 inline-flex items-center justify-center gap-2"
                 >
                   <PencilSimple size={15} />
                   Edit Email
@@ -372,18 +216,7 @@ export default function AppRolePickerSheet({
               )}
               <button
                 onClick={() => setConfirmRemove(true)}
-                style={{
-                  width: '100%',
-                  padding: '0.875rem',
-                  background: 'none',
-                  border: '1px solid var(--border-light)',
-                  color: 'var(--red)',
-                  borderRadius: 'var(--radius-md)',
-                  fontSize: 'var(--text-15)',
-                  fontWeight: 'var(--font-semibold)',
-                  cursor: 'pointer',
-                  marginBottom: 10,
-                }}
+                className="w-full py-3.5 bg-transparent border border-border-light text-red rounded-md text-15 font-semibold cursor-pointer mb-2.5"
               >
                 Remove Access
               </button>
@@ -391,17 +224,7 @@ export default function AppRolePickerSheet({
           )}
           <button
             onClick={onClose}
-            style={{
-              width: '100%',
-              padding: '0.875rem',
-              background: 'var(--surface)',
-              border: '1px solid var(--border-light)',
-              color: 'var(--text-primary)',
-              borderRadius: 'var(--radius-md)',
-              fontSize: 'var(--text-15)',
-              fontWeight: 'var(--font-medium)',
-              cursor: 'pointer',
-            }}
+            className="w-full py-3.5 bg-surface border border-border-light text-text-primary rounded-md text-15 font-medium cursor-pointer"
           >
             Done
           </button>
@@ -419,42 +242,31 @@ export default function AppRolePickerSheet({
                   onSelect(opt.value);
                   if (opt.value !== 'shepherd') onClose();
                 }}
+                className="w-full flex items-center gap-3 border-none border-b border-border-light cursor-pointer text-left"
                 style={{
-                  width: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 12,
                   padding: '0.875rem 1.25rem',
                   background: isSelected ? 'var(--sage-light)' : 'none',
-                  border: 'none',
-                  borderBottom: '1px solid var(--border-light)',
-                  cursor: 'pointer',
-                  textAlign: 'left',
                 }}
               >
-                <div style={{ flex: 1 }}>
+                <div className="flex-1">
                   <p
+                    className="text-15 mb-0.5"
                     style={{
-                      fontSize: 'var(--text-15)',
                       fontWeight: isSelected ? 'var(--font-semibold)' : 'var(--font-normal)',
                       color: isSelected ? 'var(--sage)' : 'var(--text-primary)',
-                      marginBottom: 2,
                     }}
                   >
                     {opt.label}
                   </p>
                   <p
-                    style={{
-                      fontSize: 'var(--text-12)',
-                      color: isSelected ? 'var(--sage)' : 'var(--text-muted)',
-                      lineHeight: 'var(--leading-comfortable)',
-                    }}
+                    className="text-12 leading-comfortable"
+                    style={{ color: isSelected ? 'var(--sage)' : 'var(--text-muted)' }}
                   >
                     {opt.description}
                   </p>
                 </div>
                 {isSelected && (
-                  <Check size={16} color="var(--sage)" weight="bold" style={{ flexShrink: 0 }} />
+                  <Check size={16} color="var(--sage)" weight="bold" className="shrink-0" />
                 )}
               </button>
             );
@@ -465,21 +277,8 @@ export default function AppRolePickerSheet({
               {canEditEmail && (
                 <button
                   onClick={() => setEditingEmail(true)}
-                  style={{
-                    width: '100%',
-                    padding: '0.9375rem 1.25rem',
-                    background: 'none',
-                    border: 'none',
-                    borderBottom: '1px solid var(--border-light)',
-                    fontSize: 'var(--text-15)',
-                    fontWeight: 'var(--font-medium)',
-                    color: 'var(--text-primary)',
-                    cursor: 'pointer',
-                    textAlign: 'left',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 10,
-                  }}
+                  className="w-full bg-transparent border-none border-b border-border-light text-15 font-medium text-text-primary cursor-pointer text-left flex items-center gap-2.5"
+                  style={{ padding: '0.9375rem 1.25rem' }}
                 >
                   <PencilSimple size={16} color="var(--text-muted)" />
                   Edit Email
@@ -487,18 +286,8 @@ export default function AppRolePickerSheet({
               )}
               <button
                 onClick={() => setConfirmRemove(true)}
-                style={{
-                  width: '100%',
-                  padding: '0.9375rem 1.25rem',
-                  background: 'none',
-                  border: 'none',
-                  borderBottom: '1px solid var(--border-light)',
-                  fontSize: 'var(--text-15)',
-                  fontWeight: 'var(--font-medium)',
-                  color: 'var(--red)',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                }}
+                className="w-full bg-transparent border-none border-b border-border-light text-15 font-medium text-red cursor-pointer text-left"
+                style={{ padding: '0.9375rem 1.25rem' }}
               >
                 Remove Access
               </button>

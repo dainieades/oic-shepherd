@@ -18,54 +18,32 @@ export default function EmailPreviewClient({ emails }: { emails: EmailEntry[] })
   };
 
   return (
-    <div
-      style={{
-        background: '#e8e8e8',
-        minHeight: '100vh',
-        padding: '2rem',
-        fontFamily: 'system-ui, sans-serif',
-      }}
-    >
-      <h1 style={{ margin: '0 0 2rem', fontSize: 'var(--text-18)', fontWeight: 'var(--font-bold)', color: '#111' }}>
+    <div className="min-h-screen p-8" style={{ background: '#e8e8e8', fontFamily: 'system-ui, sans-serif' }}>
+      <h1 className="text-18 font-bold mb-8" style={{ color: '#111' }}>
         Email Previews
       </h1>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
+      <div className="flex flex-col" style={{ gap: '3rem' }}>
         {emails.map(({ label, subject, html }) => (
           <div key={label}>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'baseline',
-                gap: '1rem',
-                marginBottom: '0.5rem',
-              }}
-            >
+            <div className="flex items-baseline gap-4 mb-2">
               <span
-                style={{
-                  fontSize: 'var(--text-11)',
-                  fontWeight: 'var(--font-bold)',
-                  textTransform: 'uppercase',
-                  letterSpacing: 'var(--tracking-wide-6)',
-                  color: '#888',
-                }}
+                className="text-11 font-bold uppercase tracking-wide-6"
+                style={{ color: '#888' }}
               >
                 {label}
               </span>
-              <span style={{ fontSize: 'var(--text-13)', color: '#444', flex: 1 }}>
+              <span className="text-13 flex-1" style={{ color: '#444' }}>
                 Subject: <strong>{subject}</strong>
               </span>
               <button
                 type="button"
                 onClick={() => handleCopy(label, html)}
+                className="text-12 font-semibold py-1.5 px-3 border cursor-pointer"
                 style={{
-                  fontSize: 'var(--text-12)',
-                  fontWeight: 'var(--font-semibold)',
-                  padding: '0.375rem 0.75rem',
                   border: '1px solid #ccc',
                   borderRadius: '0.375rem',
                   background: copiedLabel === label ? '#705a8c' : '#fff',
                   color: copiedLabel === label ? '#fff' : '#333',
-                  cursor: 'pointer',
                 }}
               >
                 {copiedLabel === label ? 'Copied' : 'Copy HTML'}
@@ -73,7 +51,8 @@ export default function EmailPreviewClient({ emails }: { emails: EmailEntry[] })
             </div>
             <iframe
               srcDoc={html}
-              style={{ width: '100%', border: 'none', borderRadius: '0.5rem', display: 'block' }}
+              className="w-full block rounded-xs"
+              style={{ border: 'none' }}
               onLoad={(e) => {
                 const iframe = e.currentTarget;
                 const doc = iframe.contentDocument;

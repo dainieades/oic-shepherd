@@ -30,42 +30,10 @@ const InvitePersonPickerSheet = React.lazy(() =>
   import('@/components/PersonPickerSheets').then((m) => ({ default: m.InvitePersonPickerSheet }))
 );
 
-const addMenuItemStyle: React.CSSProperties = {
-  width: '100%',
-  display: 'flex',
-  alignItems: 'center',
-  gap: 10,
-  padding: '0.625rem 0.875rem',
-  background: 'none',
-  border: 'none',
-  borderBottom: '1px solid var(--border-light)',
-  cursor: 'pointer',
-  textAlign: 'left',
-};
-
-const addMenuIconStyle: React.CSSProperties = {
-  width: 28,
-  height: 28,
-  borderRadius: 'var(--radius-sm)',
-  background: 'var(--sage-light)',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  flexShrink: 0,
-};
-
-const addMenuLabelStyle: React.CSSProperties = {
-  fontSize: 'var(--text-14)',
-  fontWeight: 'var(--font-semibold)',
-  color: 'var(--text-primary)',
-  margin: 0,
-};
-
-const addMenuDescStyle: React.CSSProperties = {
-  fontSize: 'var(--text-11)',
-  color: 'var(--text-muted)',
-  margin: '0.0625rem 0 0',
-};
+const addMenuItemCn = 'w-full flex items-center gap-2.5 py-2.5 px-3.5 bg-transparent border-0 border-b border-border-light cursor-pointer text-left';
+const addMenuIconCn = 'w-7 h-7 rounded-sm bg-sage-light flex items-center justify-center shrink-0';
+const addMenuLabelCn = 'text-14 font-semibold text-text-primary m-0';
+const addMenuDescCn = 'text-11 text-text-muted mt-px mb-0';
 
 export default function PeoplePage() {
   const {
@@ -220,7 +188,7 @@ export default function PeoplePage() {
   const filterActive = activeFilterCount > 0;
 
   const actionButtons = (
-    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+    <div className="flex gap-2 items-center">
       {/* Search button — hidden on desktop when search is expanded */}
       <div className={showSearch ? 'lg:hidden' : undefined}>
         <Button
@@ -239,13 +207,13 @@ export default function PeoplePage() {
               }, 50);
             }
           }}
+          className="shrink-0"
           style={{
             width: btnSize,
             height: btnSize,
             background: searchActive ? 'var(--sage-light)' : 'transparent',
             border: searchActive ? '1px solid var(--sage-mid)' : '1px solid var(--border)',
             color: searchActive ? 'var(--sage)' : 'var(--text-secondary)',
-            flexShrink: 0,
             padding: 0,
             transition: 'width 0.25s ease, height 0.25s ease',
           }}
@@ -264,7 +232,7 @@ export default function PeoplePage() {
         onClose={() => setShowSearch(false)}
       />
       {/* Filter button */}
-      <div style={{ position: 'relative', flexShrink: 0 }}>
+      <div className="relative shrink-0">
         <Button
           variant="ghost"
           aria-label="Filter people"
@@ -286,29 +254,15 @@ export default function PeoplePage() {
         </Button>
         {filterActive && (
           <span
-            style={{
-              position: 'absolute',
-              top: -5,
-              right: -5,
-              width: 15,
-              height: 15,
-              borderRadius: '50%',
-              background: 'var(--sage)',
-              color: 'var(--on-sage)',
-              fontSize: 'var(--text-9)',
-              fontWeight: 'var(--font-bold)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              pointerEvents: 'none',
-            }}
+            className="absolute rounded-full bg-sage text-on-sage text-9 font-bold flex items-center justify-center pointer-events-none"
+            style={{ top: -5, right: -5, width: 15, height: 15 }}
           >
             {activeFilterCount}
           </span>
         )}
       </div>
       {/* Add button + dropdown */}
-      <div ref={addBtnRef} style={{ position: 'relative' }}>
+      <div ref={addBtnRef} className="relative">
         <Button
           variant="primary"
           onClick={() => setShowAddChoice((v) => !v)}
@@ -319,17 +273,10 @@ export default function PeoplePage() {
         </Button>
         {showAddChoice && (
           <div
+            className="absolute right-0 bg-surface rounded-md border border-border-light overflow-hidden z-dropdown shadow-elevated"
             style={{
-              position: 'absolute',
               top: 'calc(100% + 0.375rem)',
-              right: 0,
-              zIndex: 'var(--z-dropdown)' as unknown as number,
-              background: 'var(--surface)',
-              borderRadius: 'var(--radius-md)',
-              boxShadow: 'var(--shadow-elevated)',
-              border: '1px solid var(--border-light)',
               width: 220,
-              overflow: 'hidden',
             }}
           >
             {(() => {
@@ -340,14 +287,14 @@ export default function PeoplePage() {
                     setShowAddChoice(false);
                     setShowAddPerson(true);
                   }}
-                  style={addMenuItemStyle}
+                  className={addMenuItemCn}
                 >
-                  <div style={addMenuIconStyle}>
+                  <div className={addMenuIconCn}>
                     <Plus size={16} color="var(--sage)" weight="bold" />
                   </div>
                   <div>
-                    <p style={addMenuLabelStyle}>Individual</p>
-                    <p style={addMenuDescStyle}>Add a single person</p>
+                    <p className={addMenuLabelCn}>Individual</p>
+                    <p className={addMenuDescCn}>Add a single person</p>
                   </div>
                 </button>
               );
@@ -358,14 +305,14 @@ export default function PeoplePage() {
                     setShowAddChoice(false);
                     setShowAddFamily(true);
                   }}
-                  style={addMenuItemStyle}
+                  className={addMenuItemCn}
                 >
-                  <div style={addMenuIconStyle}>
+                  <div className={addMenuIconCn}>
                     <UsersThree size={16} color="var(--sage)" />
                   </div>
                   <div>
-                    <p style={addMenuLabelStyle}>Family</p>
-                    <p style={addMenuDescStyle}>Group people into a family</p>
+                    <p className={addMenuLabelCn}>Family</p>
+                    <p className={addMenuDescCn}>Group people into a family</p>
                   </div>
                 </button>
               );
@@ -376,14 +323,14 @@ export default function PeoplePage() {
                     setShowAddChoice(false);
                     setShowInvitePicker(true);
                   }}
-                  style={addMenuItemStyle}
+                  className={addMenuItemCn}
                 >
-                  <div style={addMenuIconStyle}>
+                  <div className={addMenuIconCn}>
                     <PaperPlaneTilt size={16} color="var(--sage)" />
                   </div>
                   <div>
-                    <p style={addMenuLabelStyle}>Invite to app</p>
-                    <p style={addMenuDescStyle}>Give someone access</p>
+                    <p className={addMenuLabelCn}>Invite to app</p>
+                    <p className={addMenuDescCn}>Give someone access</p>
                   </div>
                 </button>
               );
@@ -391,7 +338,7 @@ export default function PeoplePage() {
               return items.map((item, i) =>
                 i === items.length - 1
                   ? React.cloneElement(item, {
-                      style: { ...addMenuItemStyle, borderBottom: 'none' },
+                      className: addMenuItemCn.replace('border-b border-border-light', ''),
                     })
                   : item
               );
@@ -404,34 +351,27 @@ export default function PeoplePage() {
 
   return (
     <PageContainer>
-      <div style={{ paddingBottom: 32 }}>
+      <div className="pb-8">
         {/* ── Sticky collapsing header ─────────── */}
         <header
-          className="-mx-4 px-4 lg:mx-0 lg:px-0"
+          className="-mx-4 px-4 lg:mx-0 lg:px-0 sticky top-0 bg-bg z-sticky"
           style={{
-            position: 'sticky',
-            top: 0,
-            zIndex: 'var(--z-sticky)',
-            background: 'var(--bg)',
             borderBottom: scrolled ? '1px solid var(--border-light)' : 'none',
           }}
         >
           <div
+            className="flex items-center justify-between"
             style={{
               height: scrolled ? '2.75rem' : '4.125rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
               transition: 'height 0.25s ease',
             }}
           >
             <span
+              className="text-text-primary leading-none"
               style={{
                 fontSize: scrolled ? 'var(--text-17)' : 'var(--text-32)',
                 fontWeight: scrolled ? 'var(--font-semibold)' : 'var(--font-extrabold)',
-                color: 'var(--text-primary)',
                 letterSpacing: scrolled ? 'var(--tracking-tight-1)' : 'var(--tracking-tight-3)',
-                lineHeight: 'var(--leading-none)',
                 transition: 'font-size 0.25s ease, letter-spacing 0.25s ease',
               }}
             >
@@ -457,29 +397,15 @@ export default function PeoplePage() {
           {/* ── Active filter chips ────────────── */}
           {chips.length > 0 && (
             <div
-              className="no-scrollbar mb-2.5 flex gap-1.5 overflow-x-auto"
-              style={{ paddingBottom: 2 }}
+              className="no-scrollbar mb-2.5 flex gap-1.5 overflow-x-auto pb-0.5"
             >
               {chips.map((chip) => (
                 <button
                   key={chip.key}
                   onClick={chip.clear}
                   aria-label={`Remove ${chip.label} filter`}
-                  style={{
-                    flexShrink: 0,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 4,
-                    padding: '0.3125rem 0.625rem',
-                    minHeight: 28,
-                    borderRadius: 'var(--radius-pill)',
-                    background: 'var(--sage-light)',
-                    border: '1px solid var(--sage-mid)',
-                    color: 'var(--sage-dark)',
-                    fontSize: 'var(--text-11)',
-                    fontWeight: 'var(--font-medium)',
-                    cursor: 'pointer',
-                  }}
+                  className="shrink-0 flex items-center gap-1 min-h-7 rounded-pill bg-sage-light border border-sage-mid text-sage-dark text-11 font-medium cursor-pointer"
+                  style={{ padding: '0.3125rem 0.625rem' }}
                 >
                   {chip.label}
                   <X size={16} aria-hidden="true" />
@@ -489,8 +415,8 @@ export default function PeoplePage() {
           )}
 
           {/* ── Count + Sort ──────────────────── */}
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
-            <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)', flex: 1 }}>
+          <div className="flex items-center mb-2.5">
+            <span className="text-12 text-text-muted flex-1">
               {familyCount > 0
                 ? `${familyCount} ${familyCount === 1 ? 'family' : 'families'}`
                 : `${individualCount} people`}
@@ -508,11 +434,8 @@ export default function PeoplePage() {
 
           {/* ── List ──────────────────────────── */}
           <div
-            className="no-last-border lg:hidden"
+            className="no-last-border lg:hidden bg-surface rounded overflow-hidden"
             style={{
-              background: 'var(--surface)',
-              borderRadius: 'var(--radius)',
-              overflow: 'hidden',
               opacity: isSearchPending ? 0.6 : 1,
               transition: 'opacity 0.15s',
             }}

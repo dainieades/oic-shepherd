@@ -124,87 +124,46 @@ export default function LogsFilterPanel({
     <BottomSheet onClose={onClose} zIndex={50} allowBackdropClose>
       {/* Header */}
       <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '0.875rem 1.25rem 0.75rem',
-          flexShrink: 0,
-          borderBottom: '1px solid var(--border-light)',
-        }}
+        className="flex items-center justify-between shrink-0 border-b border-border-light"
+        style={{ padding: '0.875rem 1.25rem 0.75rem' }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <h2 style={{ fontSize: 'var(--text-16)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)' }}>Filter</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="text-16 font-bold text-text-primary">Filter</h2>
           {draftTotalCount > 0 && (
-            <span
-              style={{
-                fontSize: 'var(--text-11)',
-                fontWeight: 'var(--font-bold)',
-                padding: '0.125rem 0.5rem',
-                borderRadius: 'var(--radius-pill)',
-                background: 'var(--sage)',
-                color: 'var(--on-sage)',
-              }}
-            >
+            <span className="text-11 font-bold py-0.5 px-2 rounded-pill bg-sage text-on-sage">
               {draftTotalCount}
             </span>
           )}
         </div>
         <button
           onClick={onClose}
-          style={{
-            width: 28,
-            height: 28,
-            borderRadius: '50%',
-            background: 'var(--bg)',
-            border: 'none',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'var(--text-muted)',
-          }}
+          className="w-7 h-7 rounded-full bg-bg border-none cursor-pointer flex items-center justify-center text-text-muted"
         >
           <X size={12} />
         </button>
       </div>
 
       {/* Two-column body */}
-      <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+      <div className="flex-1 flex overflow-hidden">
         {/* Left: category nav */}
-        <div
-          style={{
-            width: 120,
-            background: 'var(--bg)',
-            borderRight: '1px solid var(--border-light)',
-            overflowY: 'auto',
-            flexShrink: 0,
-          }}
-        >
+        <div className="w-[120px] bg-bg border-r border-border-light overflow-y-auto shrink-0">
           {CATEGORIES.map(({ key, label, count }) => {
             const isActive = activeCategory === key;
             return (
               <button
                 key={key}
                 onClick={() => setActiveCategory(key)}
+                className="w-full text-left border-none cursor-pointer flex items-center justify-between py-3.5 px-4"
                 style={{
-                  width: '100%',
-                  padding: '0.875rem 1rem',
-                  textAlign: 'left',
                   background: isActive ? 'var(--surface)' : 'none',
-                  border: 'none',
                   borderLeft: isActive
                     ? '0.1875rem solid var(--sage)'
                     : '0.1875rem solid transparent',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
                 }}
               >
                 <span
+                  className="text-14"
                   style={{
-                    fontSize: 'var(--text-14)',
                     fontWeight: isActive ? 'var(--font-semibold)' : 'var(--font-normal)',
                     color: isActive ? 'var(--sage)' : 'var(--text-primary)',
                   }}
@@ -212,22 +171,7 @@ export default function LogsFilterPanel({
                   {label}
                 </span>
                 {count > 0 && (
-                  <span
-                    style={{
-                      fontSize: 'var(--text-10)',
-                      fontWeight: 'var(--font-bold)',
-                      minWidth: 18,
-                      height: 18,
-                      borderRadius: 'var(--radius-pill)',
-                      padding: '0 0.25rem',
-                      background: 'var(--sage)',
-                      color: 'var(--on-sage)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0,
-                    }}
-                  >
+                  <span className="text-10 font-bold min-w-[18px] h-[18px] rounded-pill px-1 bg-sage text-on-sage flex items-center justify-center shrink-0">
                     {count}
                   </span>
                 )}
@@ -237,7 +181,7 @@ export default function LogsFilterPanel({
         </div>
 
         {/* Right: options */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '1rem 1.25rem' }}>
+        <div className="flex-1 overflow-y-auto py-4 px-5">
           {activeCategory === 'type' && (
             <>
               <SectionLabel>Log type</SectionLabel>
@@ -278,61 +222,29 @@ export default function LogsFilterPanel({
                 </RadioRow>
               ))}
               {draft.datePreset === 'custom' && (
-                <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div className="mt-4 flex flex-col gap-2.5">
                   <div>
-                    <p
-                      style={{
-                        fontSize: 'var(--text-11)',
-                        color: 'var(--text-muted)',
-                        marginBottom: 4,
-                        fontWeight: 'var(--font-medium)',
-                      }}
-                    >
+                    <p className="text-11 text-text-muted mb-1 font-medium">
                       From
                     </p>
                     <input
                       type="date"
                       value={draft.dateFrom}
                       onChange={(e) => setDraft((d) => ({ ...d, dateFrom: e.target.value }))}
-                      style={{
-                        width: '100%',
-                        padding: '0.4375rem 0.625rem',
-                        background: 'var(--bg)',
-                        border: '1px solid var(--border)',
-                        borderRadius: 'var(--radius-xs)',
-                        fontSize: 'var(--text-13)',
-                        color: 'var(--text-primary)',
-                        outline: 'none',
-                        boxSizing: 'border-box' as const,
-                      }}
+                      className="w-full bg-bg border border-border rounded-xs text-13 text-text-primary outline-none box-border"
+                      style={{ padding: '0.4375rem 0.625rem' }}
                     />
                   </div>
                   <div>
-                    <p
-                      style={{
-                        fontSize: 'var(--text-11)',
-                        color: 'var(--text-muted)',
-                        marginBottom: 4,
-                        fontWeight: 'var(--font-medium)',
-                      }}
-                    >
+                    <p className="text-11 text-text-muted mb-1 font-medium">
                       To
                     </p>
                     <input
                       type="date"
                       value={draft.dateTo}
                       onChange={(e) => setDraft((d) => ({ ...d, dateTo: e.target.value }))}
-                      style={{
-                        width: '100%',
-                        padding: '0.4375rem 0.625rem',
-                        background: 'var(--bg)',
-                        border: '1px solid var(--border)',
-                        borderRadius: 'var(--radius-xs)',
-                        fontSize: 'var(--text-13)',
-                        color: 'var(--text-primary)',
-                        outline: 'none',
-                        boxSizing: 'border-box' as const,
-                      }}
+                      className="w-full bg-bg border border-border rounded-xs text-13 text-text-primary outline-none box-border"
+                      style={{ padding: '0.4375rem 0.625rem' }}
                     />
                   </div>
                 </div>
@@ -343,37 +255,19 @@ export default function LogsFilterPanel({
           {activeCategory === 'shepherd' && isAdmin && (
             <>
               <SectionLabel>Shepherd</SectionLabel>
-              <div style={{ position: 'relative', marginBottom: 10 }}>
+              <div className="relative mb-2.5">
                 <MagnifyingGlass
                   size={13}
                   color="var(--text-muted)"
-                  style={{
-                    position: 'absolute',
-                    left: 9,
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    pointerEvents: 'none',
-                  }}
+                  className="absolute left-[9px] top-1/2 -translate-y-1/2 pointer-events-none"
                 />
                 <input
                   type="text"
                   value={shepherdSearch}
                   onChange={(e) => setShepherdSearch(e.target.value)}
                   placeholder="Search…"
-                  style={{
-                    width: '100%',
-                    paddingLeft: 28,
-                    paddingRight: 10,
-                    paddingTop: 7,
-                    paddingBottom: 7,
-                    background: 'var(--bg)',
-                    border: '1px solid var(--border)',
-                    borderRadius: 'var(--radius-xs)',
-                    fontSize: 'var(--text-13)',
-                    color: 'var(--text-primary)',
-                    outline: 'none',
-                    boxSizing: 'border-box' as const,
-                  }}
+                  className="w-full bg-bg border border-border rounded-xs text-13 text-text-primary outline-none box-border"
+                  style={{ paddingLeft: 28, paddingRight: 10, paddingTop: 7, paddingBottom: 7 }}
                 />
               </div>
               {('my sheep'.includes(shepherdSearch.toLowerCase()) ||
@@ -421,43 +315,18 @@ export default function LogsFilterPanel({
 
       {/* Footer */}
       <div
-        style={{
-          padding: '0.625rem 1.25rem 1rem',
-          flexShrink: 0,
-          borderTop: '1px solid var(--border-light)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-        }}
+        className="shrink-0 border-t border-border-light flex items-center gap-3"
+        style={{ padding: '0.625rem 1.25rem 1rem' }}
       >
         <button
           onClick={clearFilter}
-          style={{
-            flex: 1,
-            background: 'none',
-            border: 'none',
-            fontSize: 'var(--text-14)',
-            fontWeight: 'var(--font-semibold)',
-            color: 'var(--text-secondary)',
-            cursor: 'pointer',
-            padding: '0.75rem 0',
-          }}
+          className="flex-1 bg-transparent border-none text-14 font-semibold text-text-secondary cursor-pointer py-3"
         >
           Clear filters
         </button>
         <button
           onClick={applyFilter}
-          style={{
-            flex: 2,
-            background: 'var(--sage)',
-            color: 'var(--on-sage)',
-            border: 'none',
-            borderRadius: 'var(--radius)',
-            padding: '0.75rem 0',
-            fontSize: 'var(--text-15)',
-            fontWeight: 'var(--font-semibold)',
-            cursor: 'pointer',
-          }}
+          className="flex-[2] bg-sage text-on-sage border-none rounded py-3 text-15 font-semibold cursor-pointer"
         >
           Apply
         </button>

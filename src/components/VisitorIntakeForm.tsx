@@ -191,63 +191,36 @@ const VisitorIntakeForm = React.forwardRef<VisitorIntakeFormHandle, Props>(
             type="email"
             autoComplete="email"
           />
-          <p style={consentNoteStyle}>
+          <p className="text-11 text-text-muted py-2 pb-3 pl-8 m-0 leading-comfortable">
             By sharing contact info, you consent to being reached out to by a member or group leader.
           </p>
         </Section>
 
         <Section label="About">
-          <div
-            style={{
-              padding: '0.75rem 0 0.625rem',
-              borderBottom: '1px solid var(--border-light)',
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.375rem',
-                marginBottom: '0.5rem',
-              }}
-            >
+          <div className="pt-3 pb-[0.625rem] border-b border-border-light">
+            <div className="flex items-center gap-1.5 mb-2">
               <Users size={16} color="var(--text-muted)" />
-              <span
-                style={{
-                  fontSize: 'var(--text-13)',
-                  fontWeight: 'var(--font-medium)',
-                  color: 'var(--text-secondary)',
-                }}
-              >
+              <span className="text-13 font-medium text-text-secondary">
                 Life stage
               </span>
-              <span
-                style={{
-                  fontSize: 'var(--text-11)',
-                  color: 'var(--text-muted)',
-                  marginLeft: '0.25rem',
-                }}
-              >
+              <span className="text-11 text-text-muted ml-1">
                 Select all that apply
               </span>
             </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <div className="flex flex-wrap gap-2">
               {LIFE_STAGE_OPTIONS.map((option) => {
                 const selected = lifeStage.includes(option);
                 return (
                   <button
                     key={option}
                     onClick={() => toggleLifeStage(option)}
+                    className="text-13 rounded-pill cursor-pointer transition-[background,color,border-color] duration-150"
                     style={{
-                      fontSize: 'var(--text-13)',
                       fontWeight: selected ? 'var(--font-semibold)' : 'var(--font-normal)',
                       padding: '0.375rem 0.875rem',
-                      borderRadius: 'var(--radius-pill)',
                       border: `1px solid ${selected ? 'var(--sage)' : 'var(--border)'}`,
                       background: selected ? 'var(--sage)' : 'transparent',
                       color: selected ? 'var(--on-sage)' : 'var(--text-secondary)',
-                      cursor: 'pointer',
-                      transition: 'background 0.15s, color 0.15s, border-color 0.15s',
                     }}
                   >
                     {option}
@@ -265,10 +238,8 @@ const VisitorIntakeForm = React.forwardRef<VisitorIntakeFormHandle, Props>(
             <Globe size={16} color="var(--text-muted)" />
             <span style={labelStyle}>Language</span>
             <span
+              className="flex-1 text-14 text-left"
               style={{
-                flex: 1,
-                fontSize: 'var(--text-14)',
-                textAlign: 'left',
                 color: languages.length > 0 ? 'var(--text-primary)' : 'var(--text-muted)',
               }}
             >
@@ -338,16 +309,7 @@ const VisitorIntakeForm = React.forwardRef<VisitorIntakeFormHandle, Props>(
                   {INTEREST_LABELS[interest]}
                 </span>
                 {selected && (
-                  <span
-                    style={{
-                      fontSize: 'var(--text-11)',
-                      fontWeight: 'var(--font-bold)',
-                      padding: '0.125rem 0.5rem',
-                      borderRadius: 'var(--radius-pill)',
-                      background: 'var(--sage)',
-                      color: 'var(--on-sage)',
-                    }}
-                  >
+                  <span className="text-11 font-bold py-0.5 px-2 rounded-pill bg-sage text-on-sage">
                     Selected
                   </span>
                 )}
@@ -390,39 +352,15 @@ export default VisitorIntakeForm;
 
 function Section({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div style={{ marginBottom: 24 }}>
-      <p
-        style={{
-          fontSize: 'var(--text-10)',
-          fontWeight: 'var(--font-semibold)',
-          color: 'var(--text-muted)',
-          textTransform: 'uppercase',
-          letterSpacing: 'var(--tracking-wide-6)',
-          marginBottom: 6,
-        }}
-      >
+    <div className="mb-6">
+      <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 mb-1.5">
         {label}
       </p>
       <div
-        className="no-last-border"
-        style={{
-          background: 'var(--surface)',
-          borderRadius: 'var(--radius)',
-          border: '1px solid var(--border-light)',
-          overflow: 'hidden',
-          padding: '0 1.25rem',
-        }}
+        className="no-last-border bg-surface rounded border border-border-light overflow-hidden px-5"
       >
         {children}
       </div>
     </div>
   );
 }
-
-const consentNoteStyle: React.CSSProperties = {
-  fontSize: 'var(--text-11)',
-  color: 'var(--text-muted)',
-  padding: '0.5rem 0 0.75rem 32px',
-  margin: 0,
-  lineHeight: 'var(--leading-comfortable)',
-};

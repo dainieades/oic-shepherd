@@ -110,47 +110,23 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
           />
 
           {/* Search */}
-          <div style={{ padding: '0.75rem 1rem 0.5rem', flexShrink: 0 }}>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                background: 'var(--bg)',
-                borderRadius: 'var(--radius-sm)',
-                padding: '0.5rem 0.75rem',
-              }}
-            >
+          <div className="py-3 px-4 pb-2 shrink-0">
+            <div className="flex items-center gap-2 bg-bg rounded-sm py-2 px-3">
               <MagnifyingGlass size={16} color="var(--text-muted)" />
               <input
                 ref={searchRef}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search people…"
-                style={{
-                  flex: 1,
-                  background: 'none',
-                  border: 'none',
-                  outline: 'none',
-                  fontSize: 'var(--text-14)',
-                  color: 'var(--text-primary)',
-                }}
+                className="flex-1 bg-transparent border-none outline-none text-14 text-text-primary"
               />
             </div>
           </div>
 
           {/* List */}
-          <div style={{ flex: 1, overflowY: 'auto', padding: '0 1rem 2rem' }}>
+          <div className="flex-1 overflow-y-auto px-4 pb-8">
             {sorted.length === 0 && (
-              <p
-                style={{
-                  fontSize: 'var(--text-13)',
-                  color: 'var(--text-muted)',
-                  textAlign: 'center',
-                  paddingTop: 32,
-                  fontStyle: 'italic',
-                }}
-              >
+              <p className="text-13 text-text-muted text-center pt-8 italic">
                 {q ? 'No people match your search.' : 'All individuals are already in families.'}
               </p>
             )}
@@ -168,67 +144,46 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
                 <button
                   key={p.id}
                   onClick={() => toggle(p.id)}
+                  className="w-full flex items-center gap-3 border-none border-b border-border-light cursor-pointer text-left rounded-none m-0"
                   style={{
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 12,
                     padding: '0.625rem 0',
                     background: isSelected ? 'var(--sage-light)' : 'none',
-                    border: 'none',
-                    borderBottom: '1px solid var(--border-light)',
-                    cursor: 'pointer',
-                    textAlign: 'left',
                     borderRadius: 0,
-                    margin: 0,
                   }}
                 >
                   <div
+                    className="shrink-0 rounded-full flex items-center justify-center text-12 font-bold"
                     style={{
                       width: 36,
                       height: 36,
-                      borderRadius: '50%',
-                      flexShrink: 0,
                       background: isSelected ? 'var(--sage)' : palette.bg,
                       color: isSelected ? 'var(--on-sage)' : palette.color,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: 'var(--text-12)',
-                      fontWeight: 'var(--font-bold)',
                     }}
                   >
                     {initials}
                   </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
+                  <div className="flex-1 min-w-0">
                     <p
+                      className="m-0 text-14"
                       style={{
-                        fontSize: 'var(--text-14)',
                         fontWeight: isSelected ? 'var(--font-semibold)' : 'var(--font-medium)',
                         color: isSelected ? 'var(--sage)' : 'var(--text-primary)',
-                        margin: 0,
                       }}
                     >
                       {fullName(p)}
                     </p>
                     {p.alternativeName && (
-                      <p style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)', margin: 0 }}>
-                        {p.alternativeName}
-                      </p>
+                      <p className="text-12 text-text-muted m-0">{p.alternativeName}</p>
                     )}
                   </div>
                   <div
+                    className="shrink-0 flex items-center justify-center transition-[background] duration-150"
                     style={{
                       width: 20,
                       height: 20,
                       borderRadius: 5,
-                      flexShrink: 0,
                       border: isSelected ? 'none' : '0.09375rem solid var(--border)',
                       background: isSelected ? 'var(--sage)' : 'transparent',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      transition: 'background 0.15s',
                     }}
                   >
                     {isSelected && <Check size={11} color="var(--on-sage)" weight="bold" />}
@@ -253,29 +208,13 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
             actionDisabled={!familyName.trim()}
           />
 
-          <div
-            style={{
-              flex: 1,
-              overflowY: 'auto',
-              padding: '1.5rem 1.25rem 3rem',
-              background: 'var(--bg)',
-            }}
-          >
+          <div className="flex-1 overflow-y-auto bg-bg" style={{ padding: '1.5rem 1.25rem 3rem' }}>
             {/* Members preview */}
-            <div style={{ marginBottom: 24 }}>
-              <p
-                style={{
-                  fontSize: 'var(--text-10)',
-                  fontWeight: 'var(--font-semibold)',
-                  color: 'var(--text-muted)',
-                  textTransform: 'uppercase',
-                  letterSpacing: 'var(--tracking-wide-6)',
-                  marginBottom: 8,
-                }}
-              >
+            <div className="mb-6">
+              <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 mb-2">
                 Members ({selectedPeople.length})
               </p>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              <div className="flex flex-wrap gap-2">
                 {selectedPeople.map((p) => {
                   const initials = fullName(p)
                     .split(' ')
@@ -290,34 +229,21 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
                   return (
                     <div
                       key={p.id}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 6,
-                        background: 'var(--surface)',
-                        borderRadius: 'var(--radius-xl)',
-                        padding: '0.25rem 0.625rem 0.25rem 0.25rem',
-                        border: '1px solid var(--border-light)',
-                      }}
+                      className="flex items-center gap-1.5 bg-surface rounded-xl border border-border-light"
+                      style={{ padding: '0.25rem 0.625rem 0.25rem 0.25rem' }}
                     >
                       <div
+                        className="rounded-full flex items-center justify-center text-10 font-bold shrink-0"
                         style={{
                           width: 24,
                           height: 24,
-                          borderRadius: '50%',
                           background: palette.bg,
                           color: palette.color,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: 'var(--text-10)',
-                          fontWeight: 'var(--font-bold)',
-                          flexShrink: 0,
                         }}
                       >
                         {initials}
                       </div>
-                      <span style={{ fontSize: 'var(--text-13)', color: 'var(--text-primary)', fontWeight: 'var(--font-medium)' }}>
+                      <span className="text-13 text-text-primary font-medium">
                         {p.preferredName}
                       </span>
                     </div>
@@ -327,49 +253,21 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
             </div>
 
             {/* Family name input */}
-            <div style={{ marginBottom: 24 }}>
-              <p
-                style={{
-                  fontSize: 'var(--text-10)',
-                  fontWeight: 'var(--font-semibold)',
-                  color: 'var(--text-muted)',
-                  textTransform: 'uppercase',
-                  letterSpacing: 'var(--tracking-wide-6)',
-                  marginBottom: 4,
-                }}
-              >
+            <div className="mb-6">
+              <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 mb-1">
                 Last name
               </p>
-              <div
-                style={{
-                  background: 'var(--surface)',
-                  borderRadius: 'var(--radius)',
-                  border: '1px solid var(--border-light)',
-                  padding: '0 1rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 4,
-                }}
-              >
+              <div className="bg-surface rounded border border-border-light px-4 flex items-center gap-1">
                 <input
                   ref={nameRef}
                   value={familyName}
                   onChange={(e) => setFamilyName(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
                   placeholder="e.g. Smith"
-                  style={{
-                    flex: 1,
-                    padding: '0.875rem 0',
-                    background: 'none',
-                    border: 'none',
-                    outline: 'none',
-                    fontSize: 'var(--text-16)',
-                    color: 'var(--text-primary)',
-                  }}
+                  className="flex-1 bg-transparent border-none outline-none text-16 text-text-primary"
+                  style={{ padding: '0.875rem 0' }}
                 />
-                <span style={{ fontSize: 'var(--text-16)', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
-                  Family
-                </span>
+                <span className="text-16 text-text-muted whitespace-nowrap">Family</span>
               </div>
             </div>
           </div>
@@ -378,35 +276,15 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
 
       {/* ── Success state ── */}
       {submitted && (
-        <div
-          style={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 12,
-          }}
-        >
+        <div className="flex-1 flex flex-col items-center justify-center gap-3">
           <div
-            style={{
-              width: 56,
-              height: 56,
-              borderRadius: '50%',
-              background: 'var(--sage-light)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
+            className="rounded-full bg-sage-light flex items-center justify-center"
+            style={{ width: 56, height: 56 }}
           >
             <Check size={24} color="var(--sage)" weight="bold" />
           </div>
-          <p style={{ fontSize: 'var(--text-16)', fontWeight: 'var(--font-semibold)', color: 'var(--text-primary)' }}>
-            Family created
-          </p>
-          <p style={{ fontSize: 'var(--text-13)', color: 'var(--text-muted)' }}>
-            {familyName} Family has been added.
-          </p>
+          <p className="text-16 font-semibold text-text-primary">Family created</p>
+          <p className="text-13 text-text-muted">{familyName} Family has been added.</p>
         </div>
       )}
     </BottomSheet>

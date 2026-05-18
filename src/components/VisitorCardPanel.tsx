@@ -63,26 +63,14 @@ export function VisitorCardPanel({ person }: { person: Person }) {
 
     return (
       <div>
-        <p style={sectionLabelStyle}>Newcomer card</p>
+        <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 mb-2">Newcomer card</p>
         <button
           type="button"
           onClick={() => setExpanded(true)}
-          className="field-row-hover"
-          style={{
-            width: '100%',
-            background: 'var(--surface)',
-            borderRadius: 'var(--radius)',
-            padding: '0.75rem 1rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            border: 'none',
-            cursor: 'pointer',
-            textAlign: 'left',
-          }}
+          className="field-row-hover w-full bg-surface rounded px-4 py-3 flex items-center gap-2 border-0 cursor-pointer text-left"
         >
           <Sparkle size={14} color="var(--text-muted)" />
-          <span style={{ flex: 1, fontSize: 'var(--text-13)', color: 'var(--text-muted)' }}>
+          <span className="flex-1 text-13 text-text-muted">
             {summaryParts.join(' · ')}
           </span>
           <CaretRight size={14} color="var(--text-muted)" />
@@ -93,46 +81,20 @@ export function VisitorCardPanel({ person }: { person: Person }) {
 
   return (
     <div>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: 8,
-        }}
-      >
-        <p style={{ ...sectionLabelStyle, marginBottom: 0 }}>Newcomer card</p>
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 mb-0">Newcomer card</p>
         {!isActiveVisitor && (
           <button
             type="button"
             onClick={() => setExpanded(false)}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 4,
-              fontSize: 'var(--text-11)',
-              color: 'var(--text-muted)',
-              padding: 0,
-            }}
+            className="bg-transparent border-0 cursor-pointer flex items-center gap-1 text-11 text-text-muted p-0"
           >
             Collapse
             <CaretDown size={11} />
           </button>
         )}
       </div>
-      <div
-        style={{
-          background: 'var(--surface)',
-          borderRadius: 'var(--radius)',
-          padding: '0.875rem 1rem',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 12,
-        }}
-      >
+      <div className="bg-surface rounded px-4 py-[14px] flex flex-col gap-3">
         {referralLabel && (
           <Row icon={<Megaphone size={15} color="var(--text-muted)" />} label="Heard via">
             {referralLabel}
@@ -141,18 +103,11 @@ export function VisitorCardPanel({ person }: { person: Person }) {
 
         {submission.interests.length > 0 && (
           <Row icon={<Heart size={15} color="var(--text-muted)" />} label="Interested in">
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            <div className="flex flex-wrap gap-1.5">
               {submission.interests.map((i) => (
                 <span
                   key={i}
-                  style={{
-                    fontSize: 'var(--text-12)',
-                    fontWeight: 'var(--font-semibold)',
-                    padding: '0.125rem 0.5rem',
-                    borderRadius: 'var(--radius-pill)',
-                    background: 'var(--sage-light)',
-                    color: 'var(--sage-dark, var(--sage))',
-                  }}
+                  className="text-12 font-semibold py-0.5 px-2 rounded-pill bg-sage-light text-sage-dark"
                 >
                   {INTEREST_LABELS[i]}
                 </span>
@@ -163,19 +118,11 @@ export function VisitorCardPanel({ person }: { person: Person }) {
 
         {submission.prayerRequest && (
           <Row icon={<HandsPraying size={15} color="var(--text-muted)" />} label="Prayer request">
-            <span style={{ whiteSpace: 'pre-wrap' }}>{submission.prayerRequest}</span>
+            <span className="whitespace-pre-wrap">{submission.prayerRequest}</span>
           </Row>
         )}
 
-        <div
-          style={{
-            fontSize: 'var(--text-11)',
-            color: 'var(--text-muted)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 4,
-          }}
-        >
+        <div className="text-11 text-text-muted flex items-center gap-1">
           <Sparkle size={11} />
           {submission.source === 'qr'
             ? 'Self-submitted via public form'
@@ -188,15 +135,6 @@ export function VisitorCardPanel({ person }: { person: Person }) {
   );
 }
 
-const sectionLabelStyle: React.CSSProperties = {
-  fontSize: 'var(--text-10)',
-  fontWeight: 'var(--font-semibold)',
-  color: 'var(--text-muted)',
-  textTransform: 'uppercase',
-  letterSpacing: 'var(--tracking-wide-6)',
-  marginBottom: 8,
-};
-
 function Row({
   icon,
   label,
@@ -207,11 +145,11 @@ function Row({
   children: React.ReactNode;
 }) {
   return (
-    <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-      <div style={{ paddingTop: 2 }}>{icon}</div>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{ fontSize: 'var(--text-11)', color: 'var(--text-muted)', marginBottom: 2 }}>{label}</p>
-        <div style={{ fontSize: 'var(--text-14)', color: 'var(--text-primary)', lineHeight: 'var(--leading-comfortable)' }}>
+    <div className="flex gap-2.5 items-start">
+      <div className="pt-0.5">{icon}</div>
+      <div className="flex-1 min-w-0">
+        <p className="text-11 text-text-muted mb-0.5">{label}</p>
+        <div className="text-14 text-text-primary leading-comfortable">
           {children}
         </div>
       </div>

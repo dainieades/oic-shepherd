@@ -40,38 +40,19 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     <ToastContext.Provider value={{ showToast }}>
       {children}
       <div
-        style={{
-          position: 'fixed',
-          bottom: 84,
-          left: 0,
-          right: 0,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: 8,
-          zIndex: 'var(--z-toast)',
-          pointerEvents: 'none',
-        }}
+        className="fixed left-0 right-0 flex flex-col items-center gap-2 pointer-events-none z-toast"
+        style={{ bottom: 84 }}
       >
         {toasts.map((toast) => (
           <div
             key={toast.id}
-            className={toast.exiting ? 'toast-exit' : 'toast-enter'}
+            className={`${toast.exiting ? 'toast-exit' : 'toast-enter'} flex items-center gap-2 text-white text-14 font-medium rounded-pill whitespace-nowrap shadow-elevated`}
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
               background:
                 toast.type === 'error' ? 'rgba(180, 40, 40, 0.92)' : 'rgba(31, 37, 51, 0.92)',
-              color: '#fff',
               padding: '0.625rem 1.125rem',
-              borderRadius: 'var(--radius-pill)',
-              fontSize: 'var(--text-14)',
-              fontWeight: 'var(--font-medium)',
-              boxShadow: 'var(--shadow-elevated)',
               backdropFilter: 'blur(0.5rem)',
               WebkitBackdropFilter: 'blur(0.5rem)',
-              whiteSpace: 'nowrap',
             }}
           >
             {toast.type === 'error' ? (

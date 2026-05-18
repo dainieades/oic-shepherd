@@ -49,39 +49,29 @@ export default function ResetPasswordPage() {
 
   const content =
     status.type === 'success' ? (
-      <div style={outerStyle}>
-        <div style={cardStyle}>
-          <div style={{ textAlign: 'center' }}>
-            <h2
-              className="font-display"
-              style={{ fontSize: 'var(--text-22)', fontWeight: 'var(--font-bold)', marginBottom: 10 }}
-            >
+      <div className="fixed inset-0 flex items-center justify-center bg-bg py-6 px-4 overflow-y-auto z-[60]">
+        <div className="w-full max-w-[390px] bg-surface rounded-xl border border-border shadow-elevated" style={{ padding: '2.25rem 1.75rem 2rem' }}>
+          <div className="text-center">
+            <h2 className="font-display text-22 font-bold mb-2.5">
               Password updated
             </h2>
-            <p
-              style={{
-                fontSize: 'var(--text-15)',
-                color: 'var(--text-secondary)',
-                lineHeight: 'var(--leading-loose)',
-                marginBottom: 24,
-              }}
-            >
+            <p className="text-15 text-text-secondary leading-loose mb-6">
               Your new password is active.
             </p>
-            <button onClick={() => router.push('/')} style={primaryButtonStyle}>
+            <button onClick={() => router.push('/')} className="w-full text-15 font-semibold text-on-sage bg-sage rounded-md cursor-pointer" style={{ padding: '0.8125rem 1.25rem', border: 'none' }}>
               Continue to app
             </button>
           </div>
         </div>
       </div>
     ) : (
-      <div style={outerStyle}>
-        <div style={cardStyle}>
-          <div style={{ textAlign: 'center', marginBottom: 24 }}>
-            <h1 className="font-display" style={headingStyle}>
+      <div className="fixed inset-0 flex items-center justify-center bg-bg py-6 px-4 overflow-y-auto z-[60]">
+        <div className="w-full max-w-[390px] bg-surface rounded-xl border border-border shadow-elevated" style={{ padding: '2.25rem 1.75rem 2rem' }}>
+          <div className="text-center mb-6">
+            <h1 className="font-display text-30 font-bold text-text-primary mb-1.5">
               Set new password
             </h1>
-            <p style={{ fontSize: 'var(--text-15)', color: 'var(--text-secondary)' }}>
+            <p className="text-15 text-text-secondary">
               Choose a password for your account.
             </p>
           </div>
@@ -93,10 +83,10 @@ export default function ResetPasswordPage() {
               e.preventDefault();
               handleReset();
             }}
-            style={{ display: 'contents' }}
+            className="contents"
           >
-            <div style={{ marginBottom: 12 }}>
-              <label style={labelStyle}>New password</label>
+            <div className="mb-3">
+              <label className="block text-13 font-semibold text-text-primary mb-1.5">New password</label>
               <input
                 type="password"
                 name="password"
@@ -106,12 +96,13 @@ export default function ResetPasswordPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isLoading}
                 autoFocus
-                style={inputStyle}
+                className="w-full text-15 text-text-primary bg-surface rounded-md outline-none"
+                style={{ padding: '0.75rem 0.875rem', border: '0.09375rem solid var(--border)' }}
               />
             </div>
 
-            <div style={{ marginBottom: 20 }}>
-              <label style={labelStyle}>Confirm password</label>
+            <div className="mb-5">
+              <label className="block text-13 font-semibold text-text-primary mb-1.5">Confirm password</label>
               <input
                 type="password"
                 name="confirm-password"
@@ -120,15 +111,18 @@ export default function ResetPasswordPage() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 disabled={isLoading}
-                style={inputStyle}
+                className="w-full text-15 text-text-primary bg-surface rounded-md outline-none"
+                style={{ padding: '0.75rem 0.875rem', border: '0.09375rem solid var(--border)' }}
               />
             </div>
 
             <button
               type="submit"
               disabled={isLoading}
+              className="w-full text-15 font-semibold text-on-sage bg-sage rounded-md"
               style={{
-                ...primaryButtonStyle,
+                padding: '0.8125rem 1.25rem',
+                border: 'none',
                 opacity: isLoading ? 0.6 : 1,
                 cursor: isLoading ? 'not-allowed' : 'pointer',
               }}
@@ -144,79 +138,10 @@ export default function ResetPasswordPage() {
   return ReactDOM.createPortal(content, document.body);
 }
 
-const outerStyle: React.CSSProperties = {
-  position: 'fixed',
-  inset: 0,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  background: 'var(--bg)',
-  padding: '1.5rem 1rem',
-  zIndex: 60,
-  overflowY: 'auto',
-};
-
-const cardStyle: React.CSSProperties = {
-  width: '100%',
-  maxWidth: 390,
-  background: 'var(--surface)',
-  borderRadius: 'var(--radius-xl)',
-  border: '1px solid var(--border)',
-  padding: '2.25rem 1.75rem 2rem',
-  boxShadow: 'var(--shadow-elevated)',
-};
-
-const headingStyle: React.CSSProperties = {
-  fontSize: 'var(--text-30)',
-  fontWeight: 'var(--font-bold)',
-  color: 'var(--text-primary)',
-  marginBottom: 6,
-};
-
-const labelStyle: React.CSSProperties = {
-  display: 'block',
-  fontSize: 'var(--text-13)',
-  fontWeight: 'var(--font-semibold)',
-  color: 'var(--text-primary)',
-  marginBottom: 6,
-};
-
-const inputStyle: React.CSSProperties = {
-  width: '100%',
-  padding: '0.75rem 0.875rem',
-  borderRadius: 'var(--radius-md)',
-  border: '0.09375rem solid var(--border)',
-  fontSize: 'var(--text-15)',
-  color: 'var(--text-primary)',
-  background: 'var(--surface)',
-  outline: 'none',
-};
-
-const primaryButtonStyle: React.CSSProperties = {
-  width: '100%',
-  padding: '0.8125rem 1.25rem',
-  borderRadius: 'var(--radius-md)',
-  border: 'none',
-  background: 'var(--sage)',
-  fontSize: 'var(--text-15)',
-  fontWeight: 'var(--font-semibold)',
-  color: 'var(--on-sage)',
-  cursor: 'pointer',
-};
 
 function ErrorBanner({ message }: { message: string }) {
   return (
-    <div
-      style={{
-        background: 'var(--red-light)',
-        border: '1px solid var(--red-border)',
-        borderRadius: 'var(--radius-sm)',
-        padding: '0.625rem 0.875rem',
-        marginBottom: 16,
-        fontSize: 'var(--text-13)',
-        color: 'var(--red)',
-      }}
-    >
+    <div className="bg-red-light border border-red-border rounded-sm text-13 text-red mb-4" style={{ padding: '0.625rem 0.875rem' }}>
       {message}
     </div>
   );

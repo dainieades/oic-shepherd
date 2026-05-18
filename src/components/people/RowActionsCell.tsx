@@ -11,7 +11,7 @@ import {
   Archive,
   Trash,
 } from '@phosphor-icons/react';
-import { Z_DROPDOWN, archiveConfirmCopy, deletePersonConfirmCopy } from '@/lib/constants';
+import { archiveConfirmCopy, deletePersonConfirmCopy } from '@/lib/constants';
 import { useApp } from '@/lib/context';
 import AddLogModal from '@/components/AddLogModal';
 import AddTodoModal from '@/components/AddTodoModal';
@@ -26,41 +26,14 @@ type Target = { kind: 'person'; person: Person } | { kind: 'family'; family: Fam
 type ActiveModal = 'log' | 'todo' | 'notice' | 'edit' | null;
 type ConfirmAction = 'archive' | 'delete' | null;
 
-const cellStyle: React.CSSProperties = {
-  padding: '0.625rem 0.5rem',
-  borderBottom: '1px solid var(--border-light)',
-  verticalAlign: 'middle',
-  width: '2.5rem',
-  textAlign: 'right',
-};
+const cellClassName = 'border-b border-border-light align-middle text-right w-10';
+const cellStyle: React.CSSProperties = { padding: '0.625rem 0.5rem' };
 
-const triggerStyle: React.CSSProperties = {
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: '1.75rem',
-  height: '1.75rem',
-  borderRadius: 'var(--radius-sm)',
-  background: 'transparent',
-  border: 'none',
-  color: 'var(--text-muted)',
-  cursor: 'pointer',
-  padding: 0,
-};
+const triggerClassName = 'inline-flex items-center justify-center bg-transparent border-0 text-text-muted cursor-pointer p-0 rounded-sm';
+const triggerStyle: React.CSSProperties = { width: '1.75rem', height: '1.75rem' };
 
-const menuItemStyle: React.CSSProperties = {
-  width: '100%',
-  display: 'flex',
-  alignItems: 'center',
-  gap: 10,
-  padding: '0.5rem 0.75rem',
-  background: 'none',
-  border: 'none',
-  fontSize: 'var(--text-13)',
-  color: 'var(--text-primary)',
-  cursor: 'pointer',
-  textAlign: 'left',
-};
+const menuItemClassName = 'w-full flex items-center gap-2.5 bg-transparent border-0 text-13 text-text-primary cursor-pointer text-left';
+const menuItemStyle: React.CSSProperties = { padding: '0.5rem 0.75rem' };
 
 export default function RowActionsCell({ target }: { target: Target }) {
   const { currentPersona, updatePerson, deletePerson } = useApp();
@@ -129,7 +102,7 @@ export default function RowActionsCell({ target }: { target: Target }) {
   const editLabel = target.kind === 'person' ? 'Edit person' : 'Edit family';
 
   return (
-    <td style={cellStyle} onClick={stop}>
+    <td className={cellClassName} style={cellStyle} onClick={stop}>
       <button
         ref={refs.setReference}
         type="button"
@@ -141,7 +114,7 @@ export default function RowActionsCell({ target }: { target: Target }) {
           setOpen((v) => !v);
         }}
         style={triggerStyle}
-        className="row-actions-trigger"
+        className={`row-actions-trigger ${triggerClassName}`}
       >
         <DotsThreeVertical size={18} weight="bold" />
       </button>
@@ -150,23 +123,15 @@ export default function RowActionsCell({ target }: { target: Target }) {
         <div
           ref={refs.setFloating}
           role="menu"
-          style={{
-            ...floatingStyles,
-            background: 'var(--surface)',
-            borderRadius: 'var(--radius-md)',
-            boxShadow: 'var(--shadow-elevated)',
-            border: '1px solid var(--border-light)',
-            minWidth: '11rem',
-            padding: '0.25rem 0',
-            zIndex: Z_DROPDOWN,
-          }}
+          className="bg-surface rounded-md border border-border-light py-1 shadow-elevated z-dropdown min-w-[11rem]"
+          style={{ ...floatingStyles }}
           onClick={stop}
         >
           <button
             type="button"
             role="menuitem"
             style={menuItemStyle}
-            className="row-actions-item"
+            className={`row-actions-item ${menuItemClassName}`}
             onClick={() => choose('log')}
           >
             <NotePencil size={15} color="var(--text-muted)" />
@@ -176,7 +141,7 @@ export default function RowActionsCell({ target }: { target: Target }) {
             type="button"
             role="menuitem"
             style={menuItemStyle}
-            className="row-actions-item"
+            className={`row-actions-item ${menuItemClassName}`}
             onClick={() => choose('todo')}
           >
             <ListChecks size={15} color="var(--text-muted)" />
@@ -186,7 +151,7 @@ export default function RowActionsCell({ target }: { target: Target }) {
             type="button"
             role="menuitem"
             style={menuItemStyle}
-            className="row-actions-item"
+            className={`row-actions-item ${menuItemClassName}`}
             onClick={() => choose('notice')}
           >
             <Megaphone size={15} color="var(--text-muted)" />
@@ -196,7 +161,7 @@ export default function RowActionsCell({ target }: { target: Target }) {
             type="button"
             role="menuitem"
             style={menuItemStyle}
-            className="row-actions-item"
+            className={`row-actions-item ${menuItemClassName}`}
             onClick={() => choose('edit')}
           >
             <PencilSimple size={15} color="var(--text-muted)" />
@@ -204,18 +169,12 @@ export default function RowActionsCell({ target }: { target: Target }) {
           </button>
           {isPerson && canEdit && (
             <>
-              <div
-                style={{
-                  height: '1px',
-                  background: 'var(--border-light)',
-                  margin: '0.25rem 0',
-                }}
-              />
+              <div className="h-px bg-border-light my-1" />
               <button
                 type="button"
                 role="menuitem"
                 style={menuItemStyle}
-                className="row-actions-item"
+                className={`row-actions-item ${menuItemClassName}`}
                 onClick={() => {
                   setOpen(false);
                   setConfirmAction('archive');
@@ -227,8 +186,8 @@ export default function RowActionsCell({ target }: { target: Target }) {
               <button
                 type="button"
                 role="menuitem"
-                style={{ ...menuItemStyle, color: 'var(--red)' }}
-                className="row-actions-item"
+                style={menuItemStyle}
+                className={`row-actions-item ${menuItemClassName} text-red`}
                 onClick={() => {
                   setOpen(false);
                   setConfirmAction('delete');

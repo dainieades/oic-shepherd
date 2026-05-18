@@ -149,21 +149,13 @@ export default function AddTodoModal({
         {isEditing && todo && !showWhoPicker && (
           <button
             onClick={() => setShowDeleteConfirm(true)}
+            className="absolute flex items-center justify-center cursor-pointer bg-red-light border border-red-border text-red rounded-full shadow-card"
             style={{
-              position: 'absolute',
               bottom: 28,
               left: 24,
               width: 44,
               height: 44,
-              borderRadius: '50%',
-              background: 'var(--red-light)',
-              border: '0.09375rem solid var(--red-border)',
-              color: 'var(--red)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              boxShadow: 'var(--shadow-card)',
+              borderWidth: '0.09375rem',
             }}
             title="Delete to-do"
           >
@@ -172,7 +164,7 @@ export default function AddTodoModal({
         )}
 
         {showWhoPicker && (
-          <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <div className="flex-1 overflow-hidden flex flex-col">
             <PersonFamilyPicker
               data={data}
               initialFamilyIds={familyIds}
@@ -204,30 +196,15 @@ export default function AddTodoModal({
 
             {/* Scrollable body */}
             <div
-              style={{
-                flex: 1,
-                minHeight: 0,
-                overflowY: 'auto',
-                padding: `1rem 1.25rem ${isEditing ? 80 : 16}px`,
-                background: 'var(--bg)',
-                display: 'flex',
-                flexDirection: 'column',
-              }}
+              className="flex-1 min-h-0 overflow-y-auto bg-bg flex flex-col"
+              style={{ padding: `1rem 1.25rem ${isEditing ? 80 : 16}px` }}
             >
               {/* Field rows */}
               <div
-                style={{
-                  background: 'var(--surface)',
-                  borderRadius: 'var(--radius)',
-                  border: '1px solid var(--border-light)',
-                  overflow: 'hidden',
-                  padding: '0 1rem',
-                  flexShrink: 0,
-                }}
+                className="bg-surface rounded border border-border-light overflow-hidden px-4 shrink-0"
               >
                 <div
-                  className="no-last-border"
-                  style={{ display: 'flex', flexDirection: 'column' }}
+                  className="no-last-border flex flex-col"
                 >
                   {/* For */}
                   <FieldRow
@@ -292,37 +269,14 @@ export default function AddTodoModal({
                     (() => {
                       const creator = data.personas.find((p) => p.id === todo.createdBy);
                       return (
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 10,
-                            paddingTop: 12,
-                            paddingBottom: 12,
-                          }}
-                        >
-                          <span
-                            style={{
-                              width: 24,
-                              display: 'flex',
-                              justifyContent: 'center',
-                              flexShrink: 0,
-                              color: 'var(--text-muted)',
-                            }}
-                          >
+                        <div className="flex items-center gap-2.5 py-3">
+                          <span className="w-6 flex justify-center shrink-0 text-text-muted">
                             <UserPlus size={16} />
                           </span>
-                          <span
-                            style={{
-                              fontSize: 'var(--text-12)',
-                              color: 'var(--text-muted)',
-                              width: 60,
-                              flexShrink: 0,
-                            }}
-                          >
+                          <span className="text-12 text-text-muted w-[60px] shrink-0">
                             Created by
                           </span>
-                          <span style={{ flex: 1, fontSize: 'var(--text-14)', color: 'var(--text-secondary)' }}>
+                          <span className="flex-1 text-14 text-text-secondary">
                             {creator?.name ?? 'Unknown'}
                           </span>
                         </div>
@@ -337,22 +291,7 @@ export default function AddTodoModal({
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="To-dos are upcoming things to act on — a call to make, a visit to plan, or anything you want to follow up on."
                 autoFocus
-                style={{
-                  flex: 1,
-                  width: '100%',
-                  marginTop: 16,
-                  padding: 12,
-                  minHeight: 220,
-                  background: 'var(--surface)',
-                  border: '1px solid var(--border-light)',
-                  borderRadius: 'var(--radius-sm)',
-                  fontSize: 'var(--text-15)',
-                  color: 'var(--text-primary)',
-                  resize: 'vertical',
-                  outline: 'none',
-                  lineHeight: 'var(--leading-normal)',
-                  boxSizing: 'border-box',
-                }}
+                className="flex-1 w-full mt-4 p-3 bg-surface border border-border-light rounded-sm text-15 text-text-primary leading-normal outline-none box-border resize-y min-h-[220px]"
               />
             </div>
           </>
@@ -451,42 +390,18 @@ function FieldRow({
   return (
     <button
       ref={btnRef}
-      className="field-row-hover"
+      className="field-row-hover flex items-center gap-2.5 py-3 bg-transparent border-0 border-b border-border-light cursor-pointer text-left"
       onClick={onClick}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 10,
-        paddingTop: 12,
-        paddingBottom: 12,
-        background: 'none',
-        border: 'none',
-        borderBottom: '1px solid var(--border-light)',
-        cursor: 'pointer',
-        textAlign: 'left' as const,
-      }}
     >
-      <span
-        style={{
-          width: 24,
-          display: 'flex',
-          justifyContent: 'center',
-          flexShrink: 0,
-          color: 'var(--text-muted)',
-        }}
-      >
+      <span className="w-6 flex justify-center shrink-0 text-text-muted">
         {icon}
       </span>
-      <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)', width: 60, flexShrink: 0 }}>
+      <span className="text-12 text-text-muted w-[60px] shrink-0">
         {label}
       </span>
       <span
-        style={{
-          fontSize: 'var(--text-14)',
-          color: valueColor ?? 'var(--text-primary)',
-          flex: 1,
-          wordBreak: 'break-word',
-        }}
+        className="flex-1 text-14 break-words"
+        style={{ color: valueColor ?? 'var(--text-primary)' }}
       >
         {value}
       </span>

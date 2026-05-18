@@ -108,68 +108,48 @@ export default function ChangePasswordPage() {
   const canGoBack = !isLoading;
 
   return (
-    <div style={{ paddingBottom: 48 }}>
-      <div className="settings-subpage-navbar" style={navBarStyle}>
+    <div className="pb-12">
+      <div
+        className="settings-subpage-navbar sticky top-0 -mx-4 px-4 border-b border-border-light flex items-center justify-between h-[54px] bg-bg z-page"
+      >
         <button
           onClick={() => router.push('/settings')}
           disabled={!canGoBack}
-          style={{ ...backBtnStyle, opacity: canGoBack ? 1 : 0.5 }}
+          className="inline-flex items-center gap-1 text-13 text-sage bg-transparent border-none cursor-pointer p-0"
+          style={{ opacity: canGoBack ? 1 : 0.5 }}
         >
           <CaretLeft size={16} weight="bold" />
           Settings
         </button>
-        <span style={navTitleStyle}>Change Password</span>
-        <span style={{ width: 64 }} />
+        <span className="text-15 font-semibold text-text-primary">Change Password</span>
+        <span className="w-16" />
       </div>
 
       {step.type === 'success' && (
-        <div style={{ marginTop: 40, textAlign: 'center' }}>
-          <p
-            style={{
-              fontSize: 'var(--text-17)',
-              fontWeight: 'var(--font-semibold)',
-              color: 'var(--text-primary)',
-              margin: '0 0 0.5rem',
-              letterSpacing: 'var(--tracking-tight-1)',
-            }}
-          >
+        <div className="mt-10 text-center">
+          <p className="text-17 font-semibold text-text-primary mb-2 tracking-tight-1">
             Password updated
           </p>
-          <p style={{ fontSize: 'var(--text-14)', color: 'var(--text-muted)', margin: '0 0 1.5rem' }}>
+          <p className="text-14 text-text-muted mb-6">
             Your new password is active.
           </p>
-          <button onClick={() => router.push('/settings')} style={primaryButtonStyle}>
+          <button onClick={() => router.push('/settings')} className="h-11 px-6 rounded-sm bg-sage text-on-sage border-none text-15 font-semibold cursor-pointer">
             Done
           </button>
         </div>
       )}
 
       {step.type === 'reset-sent' && (
-        <div style={{ marginTop: 40, textAlign: 'center', padding: '0 0.5rem' }}>
-          <p
-            style={{
-              fontSize: 'var(--text-17)',
-              fontWeight: 'var(--font-semibold)',
-              color: 'var(--text-primary)',
-              margin: '0 0 0.5rem',
-              letterSpacing: 'var(--tracking-tight-1)',
-            }}
-          >
+        <div className="mt-10 text-center px-2">
+          <p className="text-17 font-semibold text-text-primary mb-2 tracking-tight-1">
             Check your inbox
           </p>
-          <p
-            style={{
-              fontSize: 'var(--text-14)',
-              color: 'var(--text-muted)',
-              margin: '0 0 1.5rem',
-              lineHeight: 'var(--leading-normal)',
-            }}
-          >
+          <p className="text-14 text-text-muted mb-6 leading-normal">
             We sent a password reset link to <strong>{step.email}</strong>.
             <br />
             Click the link in the email to set a new password.
           </p>
-          <button onClick={() => router.push('/settings')} style={primaryButtonStyle}>
+          <button onClick={() => router.push('/settings')} className="h-11 px-6 rounded-sm bg-sage text-on-sage border-none text-15 font-semibold cursor-pointer">
             Back to settings
           </button>
         </div>
@@ -181,7 +161,7 @@ export default function ChangePasswordPage() {
             e.preventDefault();
             handleSave();
           }}
-          style={{ marginTop: 24 }}
+          className="mt-6"
         >
           {/* Hidden username field so password managers attach the new password to this account */}
           <input
@@ -190,37 +170,18 @@ export default function ChangePasswordPage() {
             autoComplete="username"
             value={user?.email ?? ''}
             readOnly
-            style={{ display: 'none' }}
+            className="hidden"
           />
 
           {status.type === 'error' && (
-            <div
-              style={{
-                background: 'var(--red-light)',
-                border: '1px solid var(--red-border)',
-                borderRadius: 'var(--radius-sm)',
-                padding: '0.5625rem 0.8125rem',
-                marginBottom: 16,
-                fontSize: 'var(--text-13)',
-                color: 'var(--red)',
-              }}
-            >
+            <div className="bg-red-light border border-red-border rounded-sm mb-4 text-13 text-red" style={{ padding: '0.5625rem 0.8125rem' }}>
               {status.message}
             </div>
           )}
 
-          <div
-            style={{
-              background: 'var(--surface)',
-              borderRadius: 'var(--radius)',
-              border: '1px solid var(--border-light)',
-              overflow: 'hidden',
-            }}
-          >
-            <div
-              style={{ padding: '0.875rem 1rem', borderBottom: '1px solid var(--border-light)' }}
-            >
-              <label style={labelStyle}>Current password</label>
+          <div className="bg-surface rounded border border-border-light overflow-hidden">
+            <div className="px-4 py-3.5 border-b border-border-light">
+              <label className="block text-12 font-semibold text-text-muted uppercase tracking-wide-5 mb-1.5">Current password</label>
               <input
                 type="password"
                 name="current-password"
@@ -233,17 +194,20 @@ export default function ChangePasswordPage() {
                 }}
                 disabled={isLoading}
                 autoFocus
+                className="w-full rounded-sm text-15 text-text-primary bg-bg outline-none box-border"
                 style={{
-                  ...inputStyle,
-                  borderColor: currentPasswordError ? 'var(--red)' : 'var(--border)',
+                  padding: '0.6875rem 0.8125rem',
+                  border: `0.09375rem solid ${currentPasswordError ? 'var(--red)' : 'var(--border)'}`,
                 }}
               />
-              {currentPasswordError && <p style={helperErrorStyle}>{currentPasswordError}</p>}
+              {currentPasswordError && (
+                <p className="text-12 text-red leading-comfortable mt-1.5">
+                  {currentPasswordError}
+                </p>
+              )}
             </div>
-            <div
-              style={{ padding: '0.875rem 1rem', borderBottom: '1px solid var(--border-light)' }}
-            >
-              <label style={labelStyle}>New password</label>
+            <div className="px-4 py-3.5 border-b border-border-light">
+              <label className="block text-12 font-semibold text-text-muted uppercase tracking-wide-5 mb-1.5">New password</label>
               <input
                 type="password"
                 name="new-password"
@@ -252,16 +216,10 @@ export default function ChangePasswordPage() {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 disabled={isLoading}
-                style={inputStyle}
+                className="w-full rounded-sm border border-border text-15 text-text-primary bg-bg outline-none box-border"
+                style={{ padding: '0.6875rem 0.8125rem' }}
               />
-              <div
-                style={{
-                  marginTop: 8,
-                  display: 'flex',
-                  gap: 12,
-                  flexWrap: 'wrap',
-                }}
-              >
+              <div className="mt-2 flex gap-3 flex-wrap">
                 {[
                   { met: hasMinLength, label: '8+ characters' },
                   { met: hasUppercase, label: '1 uppercase' },
@@ -269,11 +227,8 @@ export default function ChangePasswordPage() {
                 ].map((rule) => (
                   <span
                     key={rule.label}
+                    className="inline-flex items-center gap-1 text-12"
                     style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 4,
-                      fontSize: 'var(--text-12)',
                       color: rule.met ? 'var(--sage)' : 'var(--text-muted)',
                       fontWeight: rule.met ? 'var(--font-semibold)' : 'var(--font-normal)',
                       transition: 'color 0.15s',
@@ -285,8 +240,8 @@ export default function ChangePasswordPage() {
                 ))}
               </div>
             </div>
-            <div style={{ padding: '0.875rem 1rem' }}>
-              <label style={labelStyle}>Confirm new password</label>
+            <div className="px-4 py-3.5">
+              <label className="block text-12 font-semibold text-text-muted uppercase tracking-wide-5 mb-1.5">Confirm new password</label>
               <input
                 type="password"
                 name="confirm-new-password"
@@ -295,22 +250,25 @@ export default function ChangePasswordPage() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 disabled={isLoading}
+                className="w-full rounded-sm text-15 text-text-primary bg-bg outline-none box-border"
                 style={{
-                  ...inputStyle,
-                  borderColor: confirmMismatch ? 'var(--red)' : 'var(--border)',
+                  padding: '0.6875rem 0.8125rem',
+                  border: `0.09375rem solid ${confirmMismatch ? 'var(--red)' : 'var(--border)'}`,
                 }}
               />
-              {confirmMismatch && <p style={helperErrorStyle}>Passwords don&apos;t match</p>}
+              {confirmMismatch && (
+                <p className="text-12 text-red leading-comfortable mt-1.5">
+                  Passwords don&apos;t match
+                </p>
+              )}
             </div>
           </div>
 
           <button
             type="submit"
             disabled={isLoading}
+            className="w-full h-11 px-6 rounded-sm bg-sage text-on-sage border-none text-15 font-semibold mt-5"
             style={{
-              ...primaryButtonStyle,
-              width: '100%',
-              marginTop: 20,
               opacity: isLoading ? 0.6 : 1,
               cursor: isLoading ? 'not-allowed' : 'pointer',
             }}
@@ -322,17 +280,8 @@ export default function ChangePasswordPage() {
             type="button"
             onClick={handleForgot}
             disabled={isLoading || !user?.email}
+            className="block w-full mt-2 py-3 bg-transparent border-none text-sage text-14 font-medium text-center"
             style={{
-              display: 'block',
-              width: '100%',
-              marginTop: 8,
-              padding: '0.75rem 0',
-              background: 'none',
-              border: 'none',
-              color: 'var(--sage)',
-              fontSize: 'var(--text-14)',
-              fontWeight: 'var(--font-medium)',
-              textAlign: 'center',
               cursor: isLoading || !user?.email ? 'not-allowed' : 'pointer',
               opacity: isLoading || !user?.email ? 0.5 : 1,
             }}
@@ -344,78 +293,3 @@ export default function ChangePasswordPage() {
     </div>
   );
 }
-
-const navBarStyle: React.CSSProperties = {
-  position: 'sticky',
-  top: 0,
-  zIndex: 'var(--z-page)',
-  background: 'var(--bg)',
-  marginLeft: -16,
-  marginRight: -16,
-  paddingLeft: 16,
-  paddingRight: 16,
-  borderBottom: '1px solid var(--border-light)',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  height: 54,
-};
-
-const backBtnStyle: React.CSSProperties = {
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: 4,
-  fontSize: 'var(--text-13)',
-  color: 'var(--sage)',
-  background: 'none',
-  border: 'none',
-  cursor: 'pointer',
-  padding: 0,
-};
-
-const navTitleStyle: React.CSSProperties = {
-  fontSize: 'var(--text-15)',
-  fontWeight: 'var(--font-semibold)',
-  color: 'var(--text-primary)',
-};
-
-const labelStyle: React.CSSProperties = {
-  display: 'block',
-  fontSize: 'var(--text-12)',
-  fontWeight: 'var(--font-semibold)',
-  color: 'var(--text-muted)',
-  textTransform: 'uppercase',
-  letterSpacing: 'var(--tracking-wide-5)',
-  marginBottom: 6,
-};
-
-const inputStyle: React.CSSProperties = {
-  width: '100%',
-  padding: '0.6875rem 0.8125rem',
-  borderRadius: 'var(--radius-sm)',
-  border: '0.09375rem solid var(--border)',
-  fontSize: 'var(--text-15)',
-  color: 'var(--text-primary)',
-  background: 'var(--bg)',
-  outline: 'none',
-  boxSizing: 'border-box',
-};
-
-const helperErrorStyle: React.CSSProperties = {
-  margin: '6px 0 0',
-  fontSize: 'var(--text-12)',
-  color: 'var(--red)',
-  lineHeight: 'var(--leading-comfortable)',
-};
-
-const primaryButtonStyle: React.CSSProperties = {
-  height: 44,
-  padding: '0 1.5rem',
-  borderRadius: 'var(--radius-sm)',
-  background: 'var(--sage)',
-  color: 'var(--on-sage)',
-  border: 'none',
-  fontSize: 'var(--text-15)',
-  fontWeight: 'var(--font-semibold)',
-  cursor: 'pointer',
-};

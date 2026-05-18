@@ -52,95 +52,35 @@ export default function GroupsPage() {
 
   return (
     <PageContainer>
-    <div style={{ paddingBottom: 32 }}>
+    <div className="pb-8">
       {/* Sticky collapsing header */}
       <div
-        className="-mx-4 px-4 lg:mx-0 lg:px-0"
+        className="-mx-4 px-4 lg:mx-0 lg:px-0 sticky top-0 bg-bg z-sticky"
         style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 'var(--z-sticky)',
-          background: 'var(--bg)',
           borderBottom: scrolled ? '1px solid var(--border-light)' : 'none',
         }}
       >
         {scrolled ? (
-          <div
-            style={{
-              height: 44,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-          >
-            <span
-              style={{
-                fontSize: 'var(--text-17)',
-                fontWeight: 'var(--font-semibold)',
-                color: 'var(--text-primary)',
-                letterSpacing: 'var(--tracking-tight-1)',
-              }}
-            >
+          <div className="h-11 flex items-center justify-between">
+            <span className="text-17 font-semibold text-text-primary tracking-tight-1">
               Fellowship Groups
             </span>
             <button
               onClick={() => setShowAdd(true)}
-              style={{
-                height: 32,
-                padding: '0 0.875rem',
-                borderRadius: 'var(--radius-xs)',
-                background: 'var(--sage)',
-                color: 'var(--on-sage)',
-                border: 'none',
-                cursor: 'pointer',
-                fontSize: 'var(--text-13)',
-                fontWeight: 'var(--font-semibold)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 4,
-              }}
+              className="h-8 px-3.5 rounded-xs bg-sage text-on-sage border-none cursor-pointer text-13 font-semibold flex items-center gap-1"
             >
               <Plus size={14} weight="bold" />
               Add
             </button>
           </div>
         ) : (
-          <div
-            style={{
-              paddingTop: 20,
-              paddingBottom: 14,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-          >
-            <h1
-              style={{
-                fontSize: 'var(--text-32)',
-                fontWeight: 'var(--font-extrabold)',
-                color: 'var(--text-primary)',
-                letterSpacing: 'var(--tracking-tight-3)',
-                lineHeight: 'var(--leading-none)',
-              }}
-            >
+          <div className="pt-5 pb-3.5 flex items-center justify-between">
+            <h1 className="text-32 font-extrabold text-text-primary tracking-tight-3 leading-none">
               Fellowship Groups
             </h1>
             <button
               onClick={() => setShowAdd(true)}
-              style={{
-                height: 36,
-                padding: '0 1rem',
-                borderRadius: 'var(--radius-xs)',
-                background: 'var(--sage)',
-                color: 'var(--on-sage)',
-                border: 'none',
-                cursor: 'pointer',
-                fontSize: 'var(--text-14)',
-                fontWeight: 'var(--font-semibold)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 4,
-              }}
+              className="h-9 px-4 rounded-xs bg-sage text-on-sage border-none cursor-pointer text-14 font-semibold flex items-center gap-1"
             >
               <Plus size={15} weight="bold" />
               Add
@@ -149,7 +89,7 @@ export default function GroupsPage() {
         )}
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, paddingTop: 8 }}>
+      <div className="flex flex-col gap-3 pt-2">
         {sortedGroups.map((group) => {
           const members = data.people.filter((p) => group.memberIds.includes(p.id));
           const leaders = data.people.filter((p) => group.leaderIds.includes(p.id));
@@ -161,7 +101,7 @@ export default function GroupsPage() {
             <Link
               key={group.id}
               href={`/groups/${group.id}`}
-              style={{ textDecoration: 'none' }}
+              className="no-underline"
               onClick={(e) => {
                 if (
                   typeof window !== 'undefined' &&
@@ -177,10 +117,8 @@ export default function GroupsPage() {
               }}
             >
               <div
-                className="row-card-hover"
+                className="row-card-hover bg-surface rounded"
                 style={{
-                  background: 'var(--surface)',
-                  borderRadius: 'var(--radius)',
                   border: iAmInvolved
                     ? '0.09375rem solid var(--sage-mid)'
                     : '0.0625rem solid var(--border-light)',
@@ -190,53 +128,28 @@ export default function GroupsPage() {
                   outlineOffset: previewId === group.id ? '-0.125rem' : undefined,
                 }}
               >
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    marginBottom: 8,
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <h3 style={{ fontSize: 'var(--text-15)', fontWeight: 'var(--font-semibold)', color: 'var(--text-primary)' }}>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-1.5">
+                    <h3 className="text-15 font-semibold text-text-primary">
                       {group.name}
                     </h3>
                   </div>
                   {iAmInvolved && (
-                    <span style={{ fontSize: 'var(--text-11)', color: 'var(--sage)', fontWeight: 'var(--font-medium)' }}>
+                    <span className="text-11 text-sage font-medium">
                       You&apos;re a leader
                     </span>
                   )}
                 </div>
 
                 {/* Chips row */}
-                <div style={{ display: 'flex', gap: 6, marginBottom: group.description ? 8 : 10 }}>
-                  <span
-                    style={{
-                      fontSize: 'var(--text-11)',
-                      fontWeight: 'var(--font-medium)',
-                      padding: '0.125rem 0.5rem',
-                      borderRadius: 'var(--radius-pill)',
-                      background: 'var(--sage-light)',
-                      color: 'var(--sage)',
-                    }}
-                  >
+                <div
+                  className="flex gap-1.5"
+                  style={{ marginBottom: group.description ? 8 : 10 }}
+                >
+                  <span className="text-11 font-medium py-0.5 px-2 rounded-pill bg-sage-light text-sage">
                     {members.length} {members.length === 1 ? 'member' : 'members'}
                   </span>
-                  <span
-                    style={{
-                      fontSize: 'var(--text-11)',
-                      fontWeight: 'var(--font-medium)',
-                      padding: '0.125rem 0.5rem',
-                      borderRadius: 'var(--radius-pill)',
-                      background: 'var(--blue-light)',
-                      color: 'var(--blue)',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 4,
-                    }}
-                  >
+                  <span className="text-11 font-medium py-0.5 px-2 rounded-pill bg-blue-light text-blue inline-flex items-center gap-1">
                     <Crown size={11} />
                     {leaders.length} {leaders.length === 1 ? 'leader' : 'leaders'}
                   </span>
@@ -244,12 +157,8 @@ export default function GroupsPage() {
 
                 {group.description && (
                   <p
+                    className="text-12 text-text-secondary leading-normal mb-2.5 overflow-hidden"
                     style={{
-                      fontSize: 'var(--text-12)',
-                      color: 'var(--text-secondary)',
-                      lineHeight: 'var(--leading-normal)',
-                      marginBottom: 10,
-                      overflow: 'hidden',
                       display: '-webkit-box',
                       WebkitLineClamp: 2,
                       WebkitBoxOrient: 'vertical',
@@ -267,14 +176,8 @@ export default function GroupsPage() {
       {/* Add Group Modal */}
       {showAdd && (
         <div
+          className="fixed inset-0 flex items-center justify-center px-4 z-modal"
           style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 'var(--z-modal)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '0 1rem',
             background: 'rgba(0,0,0,0.4)',
           }}
           onClick={(e) => {
@@ -282,54 +185,24 @@ export default function GroupsPage() {
           }}
         >
           <div
-            style={{
-              background: 'var(--surface)',
-              borderRadius: 'var(--radius-lg)',
-              padding: '1.25rem 1.25rem 1.5rem',
-              width: '100%',
-              maxWidth: 480,
-              boxShadow: 'var(--shadow-elevated)',
-            }}
+            className="bg-surface rounded-lg w-full shadow-[var(--shadow-elevated)]"
+            style={{ padding: '1.25rem 1.25rem 1.5rem', maxWidth: 480 }}
           >
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: 20,
-              }}
-            >
-              <h2 style={{ fontSize: 'var(--text-17)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)' }}>
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-17 font-bold text-text-primary">
                 New Fellowship Group
               </h2>
               <button
                 onClick={() => setShowAdd(false)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  fontSize: 'var(--text-22)',
-                  color: 'var(--text-muted)',
-                  cursor: 'pointer',
-                  lineHeight: 'var(--leading-none)',
-                }}
+                className="bg-transparent border-none text-22 text-text-muted cursor-pointer leading-none"
               >
                 ×
               </button>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div className="flex flex-col gap-3">
               <div>
-                <label
-                  style={{
-                    fontSize: 'var(--text-12)',
-                    fontWeight: 'var(--font-semibold)',
-                    color: 'var(--text-muted)',
-                    textTransform: 'uppercase',
-                    letterSpacing: 'var(--tracking-wide-5)',
-                    display: 'block',
-                    marginBottom: 6,
-                  }}
-                >
+                <label className="text-12 font-semibold text-text-muted uppercase tracking-wide-5 block mb-1.5">
                   Name *
                 </label>
                 <input
@@ -337,32 +210,13 @@ export default function GroupsPage() {
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
                   placeholder="Group name"
-                  style={{
-                    width: '100%',
-                    padding: '0.625rem 0.75rem',
-                    borderRadius: 'var(--radius-sm)',
-                    border: '1px solid var(--border)',
-                    fontSize: 'var(--text-15)',
-                    background: 'var(--bg)',
-                    color: 'var(--text-primary)',
-                    outline: 'none',
-                    boxSizing: 'border-box',
-                  }}
+                  className="w-full rounded-sm border border-border text-15 bg-bg text-text-primary outline-none box-border"
+                  style={{ padding: '0.625rem 0.75rem' }}
                   onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
                 />
               </div>
               <div>
-                <label
-                  style={{
-                    fontSize: 'var(--text-12)',
-                    fontWeight: 'var(--font-semibold)',
-                    color: 'var(--text-muted)',
-                    textTransform: 'uppercase',
-                    letterSpacing: 'var(--tracking-wide-5)',
-                    display: 'block',
-                    marginBottom: 6,
-                  }}
-                >
+                <label className="text-12 font-semibold text-text-muted uppercase tracking-wide-5 block mb-1.5">
                   Description
                 </label>
                 <textarea
@@ -370,18 +224,8 @@ export default function GroupsPage() {
                   onChange={(e) => setNewDesc(e.target.value)}
                   placeholder="Optional description…"
                   rows={3}
-                  style={{
-                    width: '100%',
-                    padding: '0.625rem 0.75rem',
-                    borderRadius: 'var(--radius-sm)',
-                    border: '1px solid var(--border)',
-                    fontSize: 'var(--text-14)',
-                    background: 'var(--bg)',
-                    color: 'var(--text-primary)',
-                    outline: 'none',
-                    resize: 'none',
-                    boxSizing: 'border-box',
-                  }}
+                  className="w-full rounded-sm border border-border text-14 bg-bg text-text-primary outline-none resize-none box-border"
+                  style={{ padding: '0.625rem 0.75rem' }}
                 />
               </div>
             </div>

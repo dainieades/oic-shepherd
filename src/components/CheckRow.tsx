@@ -12,17 +12,12 @@ interface CheckRowProps {
 export function CheckboxMark({ checked }: { checked: boolean }) {
   return (
     <div
+      className={`shrink-0 flex items-center justify-center transition-[background] duration-150 ${checked ? 'bg-sage border-0' : 'bg-transparent'}`}
       style={{
         width: 20,
         height: 20,
         borderRadius: 5,
-        flexShrink: 0,
         border: checked ? 'none' : '0.09375rem solid var(--border)',
-        background: checked ? 'var(--sage)' : 'transparent',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        transition: 'background 0.15s',
       }}
     >
       {checked && <Check size={11} color="var(--on-sage)" weight="bold" />}
@@ -34,34 +29,21 @@ export function CheckRow({ checked, onToggle, children }: CheckRowProps) {
   return (
     <button
       onClick={onToggle}
-      style={{
-        width: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        gap: 10,
-        padding: '0.4375rem 0.125rem',
-        background: 'none',
-        border: 'none',
-        cursor: 'pointer',
-        textAlign: 'left',
-      }}
+      className="w-full flex items-center gap-2.5 bg-transparent border-0 cursor-pointer text-left"
+      style={{ padding: '0.4375rem 0.125rem' }}
     >
       <div
+        className={`shrink-0 flex items-center justify-center ${checked ? 'bg-sage border-0' : 'bg-transparent'}`}
         style={{
           width: 18,
           height: 18,
           borderRadius: 5,
-          flexShrink: 0,
           border: checked ? 'none' : '0.09375rem solid var(--text-secondary)',
-          background: checked ? 'var(--sage)' : 'transparent',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
         }}
       >
         {checked && <Check size={10} color="var(--on-sage)" weight="bold" />}
       </div>
-      <span style={{ fontSize: 'var(--text-14)', color: 'var(--text-primary)', fontWeight: checked ? 'var(--font-medium)' : 'var(--font-normal)' }}>
+      <span className={`text-14 text-text-primary ${checked ? 'font-medium' : 'font-normal'}`}>
         {children}
       </span>
     </button>

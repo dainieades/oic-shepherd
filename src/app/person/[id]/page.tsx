@@ -164,7 +164,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
   const person = data.people.find((p) => p.id === id);
   if (!person) {
     return (
-      <div style={{ paddingTop: 64, textAlign: 'center', color: 'var(--text-muted)' }}>
+      <div className="pt-16 text-center text-text-muted">
         Person not found
       </div>
     );
@@ -255,75 +255,35 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
 
   return (
     <div className="person-page-shell">
-      <div className="person-content-wrapper" style={{ paddingBottom: 32 }}>
+      <div className="person-content-wrapper pb-8">
       {/* ── Nav bar ── */}
       <div
-        style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 'var(--z-header)',
-          background: 'var(--bg)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          height: 54,
-        }}
+        className="sticky top-0 bg-bg flex items-center justify-between h-[3.375rem] z-header"
       >
         <button
           onClick={() => router.push(fromParam ?? '/')}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 4,
-            fontSize: 'var(--text-13)',
-            color: 'var(--sage)',
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            flexShrink: 0,
-          }}
+          className="inline-flex items-center gap-1 text-13 text-sage bg-transparent border-none cursor-pointer shrink-0"
         >
           <CaretLeft size={16} />
           Back
         </button>
 
         <span
-          className="person-nav-title"
-          style={{
-            fontSize: 'var(--text-14)',
-            fontWeight: 'var(--font-medium)',
-            color: 'var(--text-secondary)',
-            flex: 1,
-            textAlign: 'center',
-            padding: '0 0.5rem',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-          }}
+          className="person-nav-title text-14 font-medium text-text-secondary flex-1 text-center px-2 overflow-hidden text-ellipsis whitespace-nowrap"
         >
           {firstName}
         </span>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+        <div className="flex items-center gap-2 shrink-0">
           {activeTab === 'info' ? (
             canEdit && (
               <button
                 onClick={() => setShowEditPerson(true)}
+                className="rounded-xs bg-sage text-on-sage border-none cursor-pointer flex items-center gap-[0.3125rem] font-semibold whitespace-nowrap transition-[height,padding,font-size] duration-[250ms] ease-in-out"
                 style={{
                   height: scrolled ? 30 : 36,
                   padding: scrolled ? '0 0.625rem' : '0 0.75rem',
-                  borderRadius: 'var(--radius-xs)',
-                  background: 'var(--sage)',
-                  color: 'var(--on-sage)',
-                  border: 'none',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 5,
                   fontSize: scrolled ? 'var(--text-13)' : 'var(--text-14)',
-                  fontWeight: 'var(--font-semibold)',
-                  whiteSpace: 'nowrap',
-                  transition: 'height 0.25s ease, padding 0.25s ease, font-size 0.25s ease',
                 }}
               >
                 <PencilSimpleIcon size={scrolled ? 13 : 15} weight="bold" />
@@ -334,21 +294,11 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
             canManage && (
               <button
                 onClick={() => setShowAddNotice(true)}
+                className="rounded-xs bg-sage text-on-sage font-semibold border-none cursor-pointer whitespace-nowrap flex items-center gap-1 transition-[height,padding,font-size] duration-[250ms] ease-in-out"
                 style={{
                   height: scrolled ? 30 : 36,
                   padding: scrolled ? '0 0.75rem' : '0 0.875rem',
-                  borderRadius: 'var(--radius-xs)',
-                  background: 'var(--sage)',
-                  color: 'var(--on-sage)',
                   fontSize: scrolled ? 'var(--text-13)' : 'var(--text-14)',
-                  fontWeight: 'var(--font-semibold)',
-                  border: 'none',
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 4,
-                  transition: 'height 0.25s ease, padding 0.25s ease, font-size 0.25s ease',
                 }}
               >
                 <Plus size={14} weight="bold" />
@@ -360,21 +310,11 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
               onClick={
                 activeTab === 'logs' ? () => setShowAddLog(true) : () => setShowAddTodo(true)
               }
+              className="rounded-xs bg-sage text-on-sage font-semibold border-none cursor-pointer whitespace-nowrap flex items-center gap-1 transition-[height,padding,font-size] duration-[250ms] ease-in-out"
               style={{
                 height: scrolled ? 30 : 36,
                 padding: scrolled ? '0 0.75rem' : '0 0.875rem',
-                borderRadius: 'var(--radius-xs)',
-                background: 'var(--sage)',
-                color: 'var(--on-sage)',
                 fontSize: scrolled ? 'var(--text-13)' : 'var(--text-14)',
-                fontWeight: 'var(--font-semibold)',
-                border: 'none',
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 4,
-                transition: 'height 0.25s ease, padding 0.25s ease, font-size 0.25s ease',
               }}
             >
               <Plus size={14} weight="bold" />
@@ -383,39 +323,23 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
           )}
 
           {canEdit && (
-            <div ref={kebabRef} style={{ position: 'relative' }}>
+            <div ref={kebabRef} className="relative">
               <button
                 aria-label="More options"
                 onClick={() => setShowKebab((v) => !v)}
+                className="rounded-full bg-surface border border-border text-text-muted flex items-center justify-center cursor-pointer transition-[width,height] duration-[250ms] ease-in-out"
                 style={{
                   width: scrolled ? 30 : 36,
                   height: scrolled ? 30 : 36,
-                  borderRadius: '50%',
-                  background: 'var(--surface)',
-                  border: '1px solid var(--border)',
-                  color: 'var(--text-muted)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  transition: 'width 0.25s ease, height 0.25s ease',
                 }}
               >
                 <DotsThreeVertical size={16} />
               </button>
               {showKebab && (
                 <div
+                  className="absolute right-0 bg-surface border border-border rounded-md overflow-hidden min-w-[11.25rem] z-dropdown shadow-elevated"
                   style={{
-                    position: 'absolute',
                     top: 'calc(100% + 0.375rem)',
-                    right: 0,
-                    zIndex: 'var(--z-dropdown)',
-                    background: 'var(--surface)',
-                    border: '1px solid var(--border)',
-                    borderRadius: 'var(--radius-md)',
-                    boxShadow: 'var(--shadow-elevated)',
-                    minWidth: 180,
-                    overflow: 'hidden',
                   }}
                 >
                   {activeTab !== 'info' && (
@@ -424,20 +348,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                         setShowKebab(false);
                         setShowEditPerson(true);
                       }}
-                      style={{
-                        width: '100%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 10,
-                        padding: '0.8125rem 1rem',
-                        background: 'none',
-                        border: 'none',
-                        borderBottom: '1px solid var(--border-light)',
-                        cursor: 'pointer',
-                        fontSize: 'var(--text-14)',
-                        color: 'var(--text-primary)',
-                        textAlign: 'left',
-                      }}
+                      className="w-full flex items-center gap-2.5 py-[0.8125rem] px-4 bg-transparent border-none border-b border-border-light cursor-pointer text-14 text-text-primary text-left"
                     >
                       <PencilSimpleIcon size={16} />
                       Edit info
@@ -448,20 +359,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                       setShowKebab(false);
                       setConfirmAction('archive');
                     }}
-                    style={{
-                      width: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 10,
-                      padding: '0.8125rem 1rem',
-                      background: 'none',
-                      border: 'none',
-                      borderBottom: '1px solid var(--border-light)',
-                      cursor: 'pointer',
-                      fontSize: 'var(--text-14)',
-                      color: 'var(--text-primary)',
-                      textAlign: 'left',
-                    }}
+                    className="w-full flex items-center gap-2.5 py-[0.8125rem] px-4 bg-transparent border-none border-b border-border-light cursor-pointer text-14 text-text-primary text-left"
                   >
                     <Archive size={16} />
                     {person.churchAttendance === 'archived' ? 'Unarchive' : 'Archive'}
@@ -471,19 +369,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                       setShowKebab(false);
                       setConfirmAction('delete');
                     }}
-                    style={{
-                      width: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 10,
-                      padding: '0.8125rem 1rem',
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      fontSize: 'var(--text-14)',
-                      color: 'var(--red)',
-                      textAlign: 'left',
-                    }}
+                    className="w-full flex items-center gap-2.5 py-[0.8125rem] px-4 bg-transparent border-none cursor-pointer text-14 text-red text-left"
                   >
                     <Trash size={16} />
                     Delete
@@ -498,7 +384,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
       <div className="person-body">
       <div className="person-sidebar-col">
       {/* ── Large title — scrolls away ── */}
-      <div className="person-header-block" style={{ padding: '1.75rem 0 1.25rem', display: 'flex', gap: 16 }}>
+      <div className="person-header-block pt-7 pb-5 flex gap-4">
         {/* Avatar */}
         <PhotoAvatar
           photo={person.photo}
@@ -514,65 +400,36 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
         />
 
         {/* Name + meta */}
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: 7,
-              marginBottom: 5,
-            }}
-          >
-            <div className="person-name-row" style={{ minWidth: 0 }}>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between gap-[0.4375rem] mb-[0.3125rem]">
+            <div className="person-name-row min-w-0">
               <h1
-                className="person-name-h1"
-                style={{
-                  fontSize: 'var(--text-26)',
-                  fontWeight: 'var(--font-extrabold)',
-                  color: 'var(--text-primary)',
-                  lineHeight: 'var(--leading-tight)',
-                  letterSpacing: 'var(--tracking-tight-2)',
-                }}
+                className="person-name-h1 text-26 font-extrabold text-text-primary leading-tight tracking-tight-2"
               >
                 {fullName(person)}
               </h1>
               {person.alternativeName && (
                 <span
-                  className="person-alt-name"
-                  style={{
-                    fontSize: 'var(--text-14)',
-                    fontWeight: 'var(--font-normal)',
-                    color: 'var(--text-muted)',
-                  }}
+                  className="person-alt-name text-14 font-normal text-text-muted"
                 >
                   {person.alternativeName}
                 </span>
               )}
             </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 'var(--text-13)', color: 'var(--text-secondary)' }}>
+          <div className="flex items-center gap-[0.3125rem] flex-wrap">
+            <span className="text-13 text-text-secondary">
               {getMembershipLabel(person.membershipStatus)}
             </span>
             {groups.map((g) => (
               <>
-                <span key={`dot-${g.id}`} style={{ fontSize: 'var(--text-13)', color: 'var(--text-muted)' }}>
+                <span key={`dot-${g.id}`} className="text-13 text-text-muted">
                   ·
                 </span>
                 <button
                   key={g.id}
                   onClick={() => setPreviewGroupId(g.id)}
-                  style={{
-                    fontSize: 'var(--text-11)',
-                    padding: '0.125rem 0.4375rem',
-                    borderRadius: 'var(--radius-pill)',
-                    background: 'var(--blue-light)',
-                    color: 'var(--blue)',
-                    fontWeight: 'var(--font-semibold)',
-                    border: 'none',
-                    cursor: 'pointer',
-                  }}
+                  className="text-11 py-0.5 px-[0.4375rem] rounded-pill bg-blue-light text-blue font-semibold border-none cursor-pointer"
                 >
                   {g.name}
                 </button>
@@ -644,69 +501,29 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
       {/* ── Tabs — sticky below nav bar (mobile) ── */}
       {visibleTabs.length > 1 && (
         <div
-          className="person-tabs-mobile"
-          style={{
-            position: 'sticky',
-            top: 54,
-            zIndex: Z_SUBHEADER,
-            background: 'var(--bg)',
-            display: 'flex',
-            borderBottom: '0.125rem solid var(--border-light)',
-            marginBottom: 20,
-          }}
+          className="person-tabs-mobile sticky top-[3.375rem] bg-bg flex border-b-2 border-border-light mb-5 z-subheader"
         >
           {visibleTabs.map((t) => (
             <button
               key={t}
               onClick={() => setTab(t as Tab)}
+              className="flex-1 py-[0.625rem] text-13 bg-transparent border-none cursor-pointer -mb-0.5 flex items-center justify-center gap-[0.3125rem] transition-[color,border-bottom-color] duration-[180ms] ease-in-out"
               style={{
-                flex: 1,
-                padding: '0.625rem 0',
-                fontSize: 'var(--text-13)',
                 fontWeight: activeTab === t ? 'var(--font-bold)' : 'var(--font-normal)',
                 color: activeTab === t ? 'var(--sage)' : 'var(--text-muted)',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
                 borderBottom:
                   activeTab === t ? '0.125rem solid var(--sage)' : '0.125rem solid transparent',
-                marginBottom: -2,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 5,
-                transition: 'color 0.18s ease, border-bottom-color 0.18s ease',
               }}
             >
               <TabIcon tab={t as Tab} active={activeTab === t} />
               {TAB_LABELS[t as Tab]}
               {t === 'todos' && incompleteTodosCount > 0 && (
-                <span
-                  style={{
-                    fontSize: 'var(--text-11)',
-                    fontWeight: 'var(--font-semibold)',
-                    background: 'var(--sage)',
-                    color: 'var(--on-sage)',
-                    borderRadius: 'var(--radius-sm)',
-                    padding: '0.0625rem 0.375rem',
-                    lineHeight: 'var(--leading-normal)',
-                  }}
-                >
+                <span className="text-11 font-semibold bg-sage text-on-sage rounded-sm py-[0.0625rem] px-1.5 leading-normal">
                   {incompleteTodosCount}
                 </span>
               )}
               {t === 'notices' && notices.length > 0 && (
-                <span
-                  style={{
-                    fontSize: 'var(--text-11)',
-                    fontWeight: 'var(--font-semibold)',
-                    background: 'var(--sage)',
-                    color: 'var(--on-sage)',
-                    borderRadius: 'var(--radius-sm)',
-                    padding: '0.0625rem 0.375rem',
-                    lineHeight: 'var(--leading-normal)',
-                  }}
-                >
+                <span className="text-11 font-semibold bg-sage text-on-sage rounded-sm py-[0.0625rem] px-1.5 leading-normal">
                   {notices.length}
                 </span>
               )}
@@ -742,15 +559,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
             });
             return (
               <LogSection key={group.label} label={group.label} count={group.items.length}>
-                <div
-                  className="no-last-border"
-                  style={{
-                    background: 'var(--surface)',
-                    borderRadius: 'var(--radius)',
-                    overflow: 'hidden',
-                    padding: 0,
-                  }}
-                >
+                <div className="no-last-border bg-surface rounded overflow-hidden p-0">
                   {rows}
                 </div>
               </LogSection>
@@ -829,7 +638,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
             />
           )}
           {notices.length > 0 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div className="flex flex-col gap-2.5">
               {/* Sort: urgent first, then moderate, then ongoing */}
               {(['urgent', 'moderate', 'ongoing'] as const).flatMap((level) => {
                 const group = notices.filter((n) => n.urgency === level);
@@ -849,7 +658,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
       {/* Sheep tab — only for shepherds */}
       {/* Info tab */}
       {activeTab === 'info' && (
-        <div className="tab-fade" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <div className="tab-fade flex flex-col gap-6">
           <VisitorCardPanel person={person} />
           {/* ACCESS */}
           {(() => {
@@ -929,13 +738,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                   value={
                     <Link
                       href={`/family/${family.id}`}
-                      style={{
-                        color: 'var(--blue)',
-                        textDecoration: 'none',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: 4,
-                      }}
+                      className="text-blue no-underline inline-flex items-center gap-1"
                     >
                       {family.label}
                       <CaretRight size={13} />
@@ -977,25 +780,15 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                 icon={<HandHeart size={15} />}
                 label="Shepherd by"
                 value={
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: 6,
-                      alignItems: 'flex-end',
-                    }}
-                  >
+                  <div className="flex flex-col gap-1.5 items-end">
                     {shepherds.map((s) => {
                       const sp = s.personId ? data.people.find((p) => p.id === s.personId) : null;
                       const inner = (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <div className="flex items-center gap-1.5">
                           <AvatarBadge name={s.name} photo={sp?.photo} size={24} />
                           <span
-                            style={{
-                              fontSize: 'var(--text-13)',
-                              fontWeight: 'var(--font-medium)',
-                              color: sp ? 'var(--blue)' : 'var(--text-primary)',
-                            }}
+                            className="text-13 font-medium"
+                            style={{ color: sp ? 'var(--blue)' : 'var(--text-primary)' }}
                           >
                             {s.name}
                           </span>
@@ -1006,7 +799,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                         <Link
                           key={s.id}
                           href={`/person/${sp.id}?from=/person/${id}`}
-                          style={{ textDecoration: 'none' }}
+                          className="no-underline"
                         >
                           {inner}
                         </Link>
@@ -1021,51 +814,22 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
             {person.isShepherd && (
               <>
                 {/* Sheep row — visible to all; edit only for admin/shepherd */}
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '0.6875rem 1rem',
-                    borderBottom: '1px solid var(--border-light)',
-                    gap: 12,
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ color: 'var(--text-muted)', display: 'flex' }}>
+                <div className="flex items-center justify-between py-[0.6875rem] px-4 border-b border-border-light gap-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-text-muted flex">
                       <HandHeart size={15} />
                     </span>
-                    <span style={{ fontSize: 'var(--text-13)', color: 'var(--text-muted)' }}>Sheep</span>
+                    <span className="text-13 text-text-muted">Sheep</span>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <div className="flex items-center gap-1.5">
                     {sheep.length > 2 && (
                       <button
                         onClick={() => setSheepExpanded((v) => !v)}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 4,
-                          fontSize: 'var(--text-12)',
-                          fontWeight: 'var(--font-medium)',
-                          color: 'var(--text-secondary)',
-                          background: 'none',
-                          border: 'none',
-                          cursor: 'pointer',
-                          padding: 0,
-                        }}
+                        className="flex items-center gap-1 text-12 font-medium text-text-secondary bg-transparent border-none cursor-pointer p-0"
                       >
                         {sheepExpanded ? 'Hide' : 'Show all'}
                         {!sheepExpanded && (
-                          <span
-                            style={{
-                              fontSize: 'var(--text-11)',
-                              fontWeight: 'var(--font-semibold)',
-                              padding: '0.0625rem 0.4375rem',
-                              borderRadius: 'var(--radius-pill)',
-                              background: 'var(--sage-light)',
-                              color: 'var(--sage)',
-                            }}
-                          >
+                          <span className="text-11 font-semibold py-[0.0625rem] px-[0.4375rem] rounded-pill bg-sage-light text-sage">
                             {sheep.length}
                           </span>
                         )}
@@ -1079,16 +843,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                       </button>
                     )}
                     {sheep.length <= 2 && sheep.length > 0 && (
-                      <span
-                        style={{
-                          fontSize: 'var(--text-11)',
-                          fontWeight: 'var(--font-semibold)',
-                          padding: '0.0625rem 0.4375rem',
-                          borderRadius: 'var(--radius-pill)',
-                          background: 'var(--sage-light)',
-                          color: 'var(--sage)',
-                        }}
-                      >
+                      <span className="text-11 font-semibold py-[0.0625rem] px-[0.4375rem] rounded-pill bg-sage-light text-sage">
                         {sheep.length}
                       </span>
                     )}
@@ -1097,39 +852,28 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                 {/* Inline sheep list — always shown for ≤2; shown when expanded for >2 */}
                 {sheep.length > 0 && (sheep.length <= 2 || sheepExpanded) && (
                   <div
-                    style={{
-                      padding: '0.5rem 1rem 0.75rem',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: 8,
-                      borderBottom: '1px solid var(--border-light)',
-                    }}
+                    className="pt-2 px-4 pb-3 flex flex-col gap-2 border-b border-border-light"
                   >
                     {sheep.map((s) => {
                       return (
                         <Link
                           key={s.id}
                           href={`/person/${s.id}?from=/person/${id}`}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 8,
-                            textDecoration: 'none',
-                          }}
+                          className="flex items-center gap-2 no-underline"
                         >
                           <AvatarBadge name={fullName(s)} photo={s.photo} size={24} />
-                          <span style={{ fontSize: 'var(--text-13)', fontWeight: 'var(--font-medium)', color: 'var(--blue)' }}>
+                          <span className="text-13 font-medium text-blue">
                             {fullName(s)}
                           </span>
                           {s.alternativeName && (
-                            <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>
+                            <span className="text-12 text-text-muted">
                               {s.alternativeName}
                             </span>
                           )}
                           <CaretRight
                             size={11}
                             color="var(--blue)"
-                            style={{ marginLeft: 'auto' }}
+                            className="ml-auto"
                           />
                         </Link>
                       );
@@ -1153,28 +897,12 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                 icon={<UsersFour size={15} />}
                 label="Group"
                 value={
-                  <div
-                    style={{
-                      display: 'flex',
-                      gap: 5,
-                      flexWrap: 'wrap',
-                      justifyContent: 'flex-end',
-                    }}
-                  >
+                  <div className="flex gap-[0.3125rem] flex-wrap justify-end">
                     {groups.map((g) => (
                       <button
                         key={g.id}
                         onClick={() => setPreviewGroupId(g.id)}
-                        style={{
-                          fontSize: 'var(--text-11)',
-                          padding: '0.1875rem 0.5625rem',
-                          borderRadius: 'var(--radius-pill)',
-                          background: 'var(--blue-light)',
-                          color: 'var(--blue)',
-                          fontWeight: 'var(--font-medium)',
-                          border: 'none',
-                          cursor: 'pointer',
-                        }}
+                        className="text-11 py-[0.1875rem] px-[0.5625rem] rounded-pill bg-blue-light text-blue font-medium border-none cursor-pointer"
                       >
                         {g.name}
                       </button>
@@ -1195,7 +923,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                   value={
                     <a
                       href={`tel:${person.phone}`}
-                      style={{ color: 'var(--blue)', textDecoration: 'none' }}
+                      className="text-blue no-underline"
                     >
                       {person.phone}
                     </a>
@@ -1209,7 +937,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                   value={
                     <a
                       href={`tel:${person.homePhone}`}
-                      style={{ color: 'var(--blue)', textDecoration: 'none' }}
+                      className="text-blue no-underline"
                     >
                       {person.homePhone}
                     </a>
@@ -1223,7 +951,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                   value={
                     <a
                       href={`mailto:${person.email}`}
-                      style={{ color: 'var(--blue)', textDecoration: 'none' }}
+                      className="text-blue no-underline"
                     >
                       {person.email}
                     </a>
@@ -1239,14 +967,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                       href={getMapUrl(person.homeAddress, mapProvider)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      style={{
-                        color: 'var(--blue)',
-                        textDecoration: 'none',
-                        textAlign: 'right',
-                        lineHeight: 'var(--leading-normal)',
-                        display: 'block',
-                        whiteSpace: 'pre-wrap',
-                      }}
+                      className="text-blue no-underline text-right leading-normal block whitespace-pre-wrap"
                     >
                       {person.homeAddress}
                     </a>
@@ -1281,11 +1002,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                   currentPersona.role === 'admin' ? (
                     <Link
                       href={`/person/${person.id}/audit`}
-                      style={{
-                        color: 'var(--sage)',
-                        textDecoration: 'underline',
-                        textUnderlineOffset: '0.2em',
-                      }}
+                      className="text-sage underline underline-offset-[0.2em]"
                     >
                       {format(parseISO(person.lastEditedAt), 'MMM d, yyyy')}
                     </Link>
@@ -1425,23 +1142,13 @@ function TodoSection({
 }) {
   const [open, setOpen] = React.useState(defaultOpen);
   return (
-    <div style={{ marginBottom: 16 }}>
+    <div className="mb-4">
       <button
         onClick={() => setOpen(!open)}
+        className="flex items-center gap-1.5 py-1 bg-transparent border-none cursor-pointer text-10 font-semibold uppercase tracking-wide-6"
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6,
-          padding: '0.25rem 0',
           marginBottom: open ? 8 : 0,
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          fontSize: 'var(--text-10)',
-          fontWeight: 'var(--font-semibold)',
           color: labelColor ?? 'var(--text-muted)',
-          textTransform: 'uppercase',
-          letterSpacing: 'var(--tracking-wide-6)',
         }}
       >
         {label} · {todos.length}
@@ -1454,15 +1161,7 @@ function TodoSection({
         />
       </button>
       {open && (
-        <div
-          className="no-last-border"
-          style={{
-            background: 'var(--surface)',
-            borderRadius: 'var(--radius)',
-            overflow: 'hidden',
-            padding: 0,
-          }}
-        >
+        <div className="no-last-border bg-surface rounded overflow-hidden p-0">
           {todos.map((t) => {
             const person = t.personId ? data.people.find((p) => p.id === t.personId) : null;
             const family = t.familyId ? data.families.find((f) => f.id === t.familyId) : null;
@@ -1471,86 +1170,44 @@ function TodoSection({
             return (
               <div
                 key={t.id}
-                className="row-card-hover"
-                style={{
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: 10,
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  borderBottom: '1px solid var(--border-light)',
-                }}
+                className="row-card-hover flex items-start gap-2.5 pt-2.5 pb-2.5 border-b border-border-light"
               >
                 <button
                   aria-label={t.completed ? 'Mark as incomplete' : 'Mark as complete'}
                   onClick={() => onToggle(t.id)}
+                  className="w-5 h-5 rounded-full shrink-0 mt-0.5 flex items-center justify-center cursor-pointer"
                   style={{
-                    width: 20,
-                    height: 20,
-                    borderRadius: '50%',
-                    flexShrink: 0,
-                    marginTop: 2,
                     border: t.completed ? 'none' : '0.125rem solid var(--border)',
                     background: t.completed ? 'var(--sage)' : 'transparent',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
                   }}
                 >
                   {t.completed && <Check size={11} color="var(--on-sage)" weight="bold" />}
                 </button>
                 <button
                   onClick={() => onEdit(t)}
-                  style={{
-                    flex: 1,
-                    minWidth: 0,
-                    background: 'none',
-                    border: 'none',
-                    textAlign: 'left',
-                    cursor: 'pointer',
-                    padding: 0,
-                  }}
+                  className="flex-1 min-w-0 bg-transparent border-none text-left cursor-pointer p-0"
                 >
                   <p
+                    className="text-14 leading-comfortable mb-1"
                     style={{
-                      fontSize: 'var(--text-14)',
                       color: t.completed ? 'var(--text-muted)' : 'var(--text-primary)',
-                      lineHeight: 'var(--leading-comfortable)',
-                      marginBottom: 4,
                       textDecoration: t.completed ? 'line-through' : 'none',
                     }}
                   >
                     {t.title}
                   </p>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div className="flex items-center gap-2.5">
                     {t.dueDate && (
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 4,
-                          color: 'var(--text-muted)',
-                        }}
-                      >
+                      <div className="flex items-center gap-1 text-text-muted">
                         <Clock size={12} />
-                        <span style={{ fontSize: 'var(--text-11)', color: 'var(--text-muted)' }}>
+                        <span className="text-11 text-text-muted">
                           {fmtDue(t.dueDate)}
                         </span>
                       </div>
                     )}
                     {hasRepeat && <ArrowsClockwise size={12} color="var(--text-muted)" />}
                     {tag && (
-                      <span
-                        style={{
-                          fontSize: 'var(--text-10)',
-                          color: 'var(--blue)',
-                          padding: '0.0625rem 0.375rem',
-                          borderRadius: 'var(--radius-pill)',
-                          background: 'var(--blue-light)',
-                          fontWeight: 'var(--font-medium)',
-                        }}
-                      >
+                      <span className="text-10 text-blue py-[0.0625rem] px-1.5 rounded-pill bg-blue-light font-medium">
                         {tag}
                       </span>
                     )}
@@ -1576,24 +1233,11 @@ function LogSection({
 }) {
   const [open, setOpen] = React.useState(true);
   return (
-    <div style={{ marginBottom: 16 }}>
+    <div className="mb-4">
       <button
         onClick={() => setOpen(!open)}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6,
-          padding: '0.25rem 0',
-          marginBottom: open ? 8 : 0,
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          fontSize: 'var(--text-10)',
-          fontWeight: 'var(--font-semibold)',
-          color: 'var(--text-muted)',
-          textTransform: 'uppercase',
-          letterSpacing: 'var(--tracking-wide-6)',
-        }}
+        className="flex items-center gap-1.5 py-1 bg-transparent border-none cursor-pointer text-10 font-semibold text-text-muted uppercase tracking-wide-6"
+        style={{ marginBottom: open ? 8 : 0 }}
       >
         {label} · {count}
         <CaretDown
@@ -1620,27 +1264,10 @@ function InfoSection({
 }) {
   return (
     <div>
-      <p
-        style={{
-          fontSize: 'var(--text-10)',
-          fontWeight: 'var(--font-semibold)',
-          color: 'var(--text-muted)',
-          textTransform: 'uppercase',
-          letterSpacing: 'var(--tracking-wide-6)',
-          marginBottom: 8,
-        }}
-      >
+      <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 mb-2">
         {title}
       </p>
-      <div
-        className="no-last-border"
-        style={{
-          background: 'var(--surface)',
-          borderRadius: 'var(--radius)',
-          overflow: 'hidden',
-          padding: 0,
-        }}
-      >
+      <div className="no-last-border bg-surface rounded overflow-hidden p-0">
         {children}
       </div>
     </div>

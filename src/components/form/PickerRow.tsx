@@ -13,7 +13,7 @@ export const PickerRow = React.forwardRef<
       <span style={spacerStyle} />
       {icon}
       <span style={labelStyle}>{label}</span>
-      <span style={{ flex: 1, fontSize: 'var(--text-14)', color: 'var(--text-primary)', textAlign: 'left' }}>
+      <span className="flex-1 text-14 text-text-primary text-left">
         {value}
       </span>
       <CaretRight size={14} color="var(--text-muted)" />

@@ -23,7 +23,6 @@ import PickerMenu from './PickerMenu';
 import DatePickerSheet from './DatePickerSheet';
 import { BottomSheet, ModalHeader } from './BottomSheet';
 import { fmtDateTime, truncateWhoLabel, fullName } from '@/lib/utils';
-import { BACKDROP_COLOR, Z_NESTED } from '@/lib/constants';
 
 interface AddLogModalProps {
   onClose: () => void;
@@ -142,7 +141,7 @@ export default function AddLogModal({
     <>
       <BottomSheet onClose={onClose} variant="dialog" aria-labelledby="add-log-title">
         {showWhoPicker && (
-          <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <div className="flex-1 overflow-hidden flex flex-col">
             <PersonFamilyPicker
               data={data}
               initialFamilyIds={familyIds}
@@ -164,21 +163,11 @@ export default function AddLogModal({
         {isEditing && note && !showWhoPicker && (
           <button
             onClick={() => setShowDeleteConfirm(true)}
+            className="absolute w-11 h-11 rounded-full bg-red-light text-red flex items-center justify-center cursor-pointer shadow-card"
             style={{
-              position: 'absolute',
               bottom: 28,
               left: 24,
-              width: 44,
-              height: 44,
-              borderRadius: '50%',
-              background: 'var(--red-light)',
               border: '0.09375rem solid var(--red-border)',
-              color: 'var(--red)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              boxShadow: 'var(--shadow-card)',
             }}
             title="Delete log"
           >
@@ -198,46 +187,21 @@ export default function AddLogModal({
 
             {/* Scrollable body */}
             <div
-              style={{
-                flex: 1,
-                minHeight: 0,
-                overflowY: 'auto',
-                padding: `1rem 1.25rem ${isEditing ? 80 : 16}px`,
-                background: 'var(--bg)',
-                display: 'flex',
-                flexDirection: 'column',
-              }}
+              className="flex-1 min-h-0 overflow-y-auto bg-bg flex flex-col"
+              style={{ padding: `1rem 1.25rem ${isEditing ? 80 : 16}px` }}
             >
               {linkedTodo &&
                 (() => {
                   const interactive = !!onOpenTodo;
+                  const chipClass = 'inline-flex items-center self-start gap-1.5 mb-3 bg-sage-light text-sage rounded-pill text-12 font-semibold max-w-full border-none text-left';
                   const chipStyle: React.CSSProperties = {
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    alignSelf: 'flex-start',
-                    gap: 6,
                     padding: '0.375rem 0.625rem',
-                    marginBottom: 12,
-                    background: 'var(--sage-light)',
-                    color: 'var(--sage)',
-                    borderRadius: 'var(--radius-pill)',
-                    fontSize: 'var(--text-12)',
-                    fontWeight: 'var(--font-semibold)',
-                    maxWidth: '100%',
-                    border: 'none',
                     cursor: interactive ? 'pointer' : 'default',
-                    textAlign: 'left',
                   };
                   const contents = (
                     <>
                       <ListChecks size={13} weight="bold" />
-                      <span
-                        style={{
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
+                      <span className="overflow-hidden text-ellipsis whitespace-nowrap">
                         From to-do: {linkedTodo.title}
                       </span>
                       {interactive && <CaretRight size={12} weight="bold" />}
@@ -247,30 +211,22 @@ export default function AddLogModal({
                     <button
                       type="button"
                       onClick={() => onOpenTodo!(linkedTodo.id)}
+                      className={chipClass}
                       style={chipStyle}
                     >
                       {contents}
                     </button>
                   ) : (
-                    <div style={chipStyle}>{contents}</div>
+                    <div className={chipClass} style={chipStyle}>{contents}</div>
                   );
                 })()}
 
               {/* Fields */}
               <div
-                style={{
-                  background: 'var(--surface)',
-                  borderRadius: 'var(--radius)',
-                  border: '1px solid var(--border-light)',
-                  overflow: 'hidden',
-                  padding: '0 1rem',
-                  marginBottom: 16,
-                  flexShrink: 0,
-                }}
+                className="bg-surface rounded border border-border-light overflow-hidden px-4 mb-4 shrink-0"
               >
                 <div
-                  className="no-last-border"
-                  style={{ display: 'flex', flexDirection: 'column', gap: 0 }}
+                  className="no-last-border flex flex-col"
                 >
                   {/* Type */}
                   <FieldRow
@@ -306,36 +262,19 @@ export default function AddLogModal({
                       const creator = data.personas.find((p) => p.id === note.createdBy);
                       return (
                         <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 10,
-                            paddingTop: 12,
-                            paddingBottom: 12,
-                          }}
+                          className="flex items-center gap-2.5 py-3"
                         >
                           <span
-                            style={{
-                              width: 24,
-                              display: 'flex',
-                              justifyContent: 'center',
-                              flexShrink: 0,
-                              color: 'var(--text-muted)',
-                            }}
+                            className="w-6 flex justify-center shrink-0 text-text-muted"
                           >
                             <UserPlus size={16} />
                           </span>
                           <span
-                            style={{
-                              fontSize: 'var(--text-12)',
-                              color: 'var(--text-muted)',
-                              width: 60,
-                              flexShrink: 0,
-                            }}
+                            className="text-12 text-text-muted w-[60px] shrink-0"
                           >
                             Created by
                           </span>
-                          <span style={{ flex: 1, fontSize: 'var(--text-14)', color: 'var(--text-secondary)' }}>
+                          <span className="flex-1 text-14 text-text-secondary">
                             {creator?.name ?? 'Unknown'}
                           </span>
                         </div>
@@ -349,22 +288,8 @@ export default function AddLogModal({
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="Logs capture past interactions — a conversation, a check-in, a prayer request, or a moment you shared together."
-                style={{
-                  flex: 1,
-                  width: '100%',
-                  marginTop: 0,
-                  padding: 12,
-                  minHeight: 220,
-                  background: 'var(--surface)',
-                  border: '1px solid var(--border-light)',
-                  borderRadius: 'var(--radius-sm)',
-                  fontSize: 'var(--text-14)',
-                  color: 'var(--text-primary)',
-                  resize: 'vertical',
-                  outline: 'none',
-                  lineHeight: 'var(--leading-normal)',
-                  boxSizing: 'border-box',
-                }}
+                className="flex-1 w-full mt-0 p-3 bg-surface border border-border-light rounded-sm text-14 text-text-primary resize-y outline-none leading-normal box-border"
+                style={{ minHeight: 220 }}
               />
             </div>
           </>
@@ -429,42 +354,20 @@ function FieldRow({
   return (
     <button
       ref={btnRef}
-      className="field-row-hover"
+      className="field-row-hover flex items-center gap-2.5 py-3 bg-transparent border-none border-b border-border-light cursor-pointer text-left w-full"
       onClick={onClick}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 10,
-        paddingTop: 12,
-        paddingBottom: 12,
-        background: 'none',
-        border: 'none',
-        borderBottom: '1px solid var(--border-light)',
-        cursor: 'pointer',
-        textAlign: 'left' as const,
-      }}
     >
       <span
-        style={{
-          width: 24,
-          display: 'flex',
-          justifyContent: 'center',
-          flexShrink: 0,
-          color: 'var(--text-muted)',
-        }}
+        className="w-6 flex justify-center shrink-0 text-text-muted"
       >
         {icon}
       </span>
-      <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)', width: 60, flexShrink: 0 }}>
+      <span className="text-12 text-text-muted w-[60px] shrink-0">
         {label}
       </span>
       <span
-        style={{
-          fontSize: 'var(--text-14)',
-          color: valueColor ?? 'var(--text-primary)',
-          flex: 1,
-          wordBreak: 'break-word',
-        }}
+        className="text-14 flex-1 break-words"
+        style={{ color: valueColor ?? 'var(--text-primary)' }}
       >
         {value}
       </span>
@@ -489,73 +392,36 @@ export function DeleteConfirmDialog({
 
   const overlay = (
     <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: Z_NESTED,
-        background: BACKDROP_COLOR,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '0 2rem',
-      }}
+      className="fixed inset-0 flex items-center justify-center px-8 z-nested bg-backdrop"
       onClick={(e) => {
         if (e.target === e.currentTarget) onCancel();
       }}
     >
       <div
-        style={{
-          background: 'var(--surface)',
-          borderRadius: 16,
-          width: '100%',
-          maxWidth: 320,
-          overflow: 'hidden',
-        }}
+        className="bg-surface w-full max-w-xs overflow-hidden"
+        style={{ borderRadius: 16 }}
       >
-        <div style={{ padding: '1.5rem 1.25rem 1rem', textAlign: 'center' }}>
+        <div className="px-5 pt-6 pb-4 text-center">
           <p
-            style={{
-              fontSize: 'var(--text-16)',
-              fontWeight: 'var(--font-semibold)',
-              color: 'var(--text-primary)',
-              margin: '0 0 0.5rem',
-            }}
+            className="text-16 font-semibold text-text-primary"
+            style={{ margin: '0 0 0.5rem' }}
           >
             {label}
           </p>
-          <p style={{ fontSize: 'var(--text-14)', color: 'var(--text-muted)', margin: 0 }}>
+          <p className="text-14 text-text-muted m-0">
             This action cannot be undone.
           </p>
         </div>
-        <div style={{ borderTop: '1px solid var(--border-light)', display: 'flex' }}>
+        <div className="border-t border-border-light flex">
           <button
             onClick={onCancel}
-            style={{
-              flex: 1,
-              height: 50,
-              background: 'none',
-              border: 'none',
-              borderRight: '1px solid var(--border-light)',
-              fontSize: 'var(--text-15)',
-              color: 'var(--text-secondary)',
-              cursor: 'pointer',
-              fontWeight: 'var(--font-medium)',
-            }}
+            className="flex-1 h-[50px] bg-transparent border-none border-r border-border-light text-15 text-text-secondary cursor-pointer font-medium"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
-            style={{
-              flex: 1,
-              height: 50,
-              background: 'none',
-              border: 'none',
-              fontSize: 'var(--text-15)',
-              color: 'var(--red)',
-              cursor: 'pointer',
-              fontWeight: 'var(--font-semibold)',
-            }}
+            className="flex-1 h-[50px] bg-transparent border-none text-15 text-red cursor-pointer font-semibold"
           >
             Delete
           </button>

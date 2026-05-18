@@ -161,7 +161,7 @@ export default function TodosPage() {
   const btnPad = scrolled ? '0 0.75rem' : '0 0.875rem';
 
   const actionButtons = (
-    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+    <div className="flex gap-2 items-center">
       {/* Search — hidden on desktop when expanded */}
       <div className={showSearch ? 'lg:hidden' : undefined}>
         <button
@@ -180,18 +180,13 @@ export default function TodosPage() {
               }, 50);
             }
           }}
+          className="rounded-xs flex items-center justify-center cursor-pointer shrink-0"
           style={{
             width: btnSize,
             height: btnSize,
-            borderRadius: 'var(--radius-xs)',
             background: showSearch || search ? 'var(--sage-light)' : 'transparent',
             border: showSearch || search ? '1px solid var(--sage-mid)' : '1px solid var(--border)',
             color: showSearch || search ? 'var(--sage)' : 'var(--text-secondary)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            flexShrink: 0,
           }}
         >
           <MagnifyingGlass size={14} />
@@ -209,42 +204,23 @@ export default function TodosPage() {
       />
       {/* Filter (admin only) */}
       {isAdmin && (
-        <div style={{ position: 'relative', flexShrink: 0 }}>
+        <div className="relative shrink-0">
           <button
             onClick={openFilter}
+            className="rounded-xs flex items-center justify-center cursor-pointer"
             style={{
               width: btnSize,
               height: btnSize,
-              borderRadius: 'var(--radius-xs)',
               background: filterActive ? 'var(--sage-light)' : 'transparent',
               border: filterActive ? '1px solid var(--sage-mid)' : '1px solid var(--border)',
               color: filterActive ? 'var(--sage)' : 'var(--text-secondary)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
             }}
           >
             <Funnel size={14} />
           </button>
           {filterActive && (
             <span
-              style={{
-                position: 'absolute',
-                top: -5,
-                right: -5,
-                width: 15,
-                height: 15,
-                borderRadius: '50%',
-                background: 'var(--sage)',
-                color: 'var(--on-sage)',
-                fontSize: 'var(--text-9)',
-                fontWeight: 'var(--font-bold)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                pointerEvents: 'none',
-              }}
+              className="absolute -top-[0.3125rem] -right-[0.3125rem] w-[0.9375rem] h-[0.9375rem] bg-sage text-on-sage text-9 font-bold flex items-center justify-center pointer-events-none rounded-full"
             >
               {activeFilterCount}
             </span>
@@ -254,19 +230,11 @@ export default function TodosPage() {
       {/* Add to-do */}
       <button
         onClick={() => setShowAddTodo(true)}
+        className="rounded-xs bg-sage text-on-sage font-semibold border-none cursor-pointer flex items-center gap-1"
         style={{
           height: btnSize,
           padding: btnPad,
-          borderRadius: 'var(--radius-xs)',
-          background: 'var(--sage)',
-          color: 'var(--on-sage)',
           fontSize: btnFont,
-          fontWeight: 'var(--font-semibold)',
-          border: 'none',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 4,
         }}
       >
         <Plus size={15} weight="bold" />
@@ -277,58 +245,24 @@ export default function TodosPage() {
 
   return (
     <PageContainer>
-    <div style={{ paddingBottom: 32 }}>
+    <div className="pb-8">
       {/* Sticky collapsing header */}
       <div
-        className="-mx-4 px-4 lg:mx-0 lg:px-0"
+        className="-mx-4 px-4 lg:mx-0 lg:px-0 sticky top-0 bg-bg z-sticky"
         style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 'var(--z-sticky)',
-          background: 'var(--bg)',
           borderBottom: scrolled ? '1px solid var(--border-light)' : 'none',
         }}
       >
         {scrolled ? (
-          <div
-            style={{
-              height: 44,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-          >
-            <span
-              style={{
-                fontSize: 'var(--text-17)',
-                fontWeight: 'var(--font-semibold)',
-                color: 'var(--text-primary)',
-                letterSpacing: 'var(--tracking-tight-1)',
-              }}
-            >
+          <div className="h-11 flex items-center justify-between">
+            <span className="text-17 font-semibold text-text-primary tracking-tight-1">
               To-dos
             </span>
             {actionButtons}
           </div>
         ) : (
-          <div
-            style={{
-              paddingTop: 20,
-              paddingBottom: 14,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-          >
-            <h1
-              style={{
-                fontSize: 'var(--text-32)',
-                fontWeight: 'var(--font-extrabold)',
-                color: 'var(--text-primary)',
-                letterSpacing: 'var(--tracking-tight-3)',
-                lineHeight: 'var(--leading-none)',
-              }}
-            >
+          <div className="pt-5 pb-3.5 flex items-center justify-between">
+            <h1 className="text-32 font-extrabold text-text-primary tracking-tight-3 leading-none">
               To-dos
             </h1>
             {actionButtons}
@@ -339,8 +273,7 @@ export default function TodosPage() {
       {/* Search bar */}
       {(showSearch || search) && (
         <div
-          className="lg:hidden"
-          style={{ position: 'relative', marginBottom: 10, marginTop: 8 }}
+          className="lg:hidden relative mb-2.5 mt-2"
         >
           <MagnifyingGlass
             size={14}
@@ -359,33 +292,14 @@ export default function TodosPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search to-dos…"
-            style={{
-              width: '100%',
-              paddingLeft: 32,
-              paddingRight: 12,
-              paddingTop: 8,
-              paddingBottom: 8,
-              background: 'var(--surface)',
-              border: '1px solid var(--border)',
-              borderRadius: 'var(--radius-sm)',
-              fontSize: 'var(--text-14)',
-              color: 'var(--text-primary)',
-              outline: 'none',
-            }}
+            className="w-full pl-8 pr-3 py-2 bg-surface border border-border rounded-sm text-14 text-text-primary outline-none"
           />
         </div>
       )}
 
       {/* Filter chips + view toggle row */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: 10,
-        }}
-      >
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
+      <div className="flex items-center justify-between mb-2.5">
+        <div className="flex gap-1.5 flex-wrap items-center">
           {isAdmin &&
             shepherdFilter.map((sid) => {
               const label =
@@ -396,19 +310,7 @@ export default function TodosPage() {
                 <button
                   key={sid}
                   onClick={() => setShepherdFilter((f) => f.filter((s) => s !== sid))}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 4,
-                    padding: '0.1875rem 0.5625rem',
-                    borderRadius: 'var(--radius-pill)',
-                    background: 'var(--sage-light)',
-                    border: '1px solid var(--sage-mid)',
-                    color: 'var(--sage-dark)',
-                    fontSize: 'var(--text-11)',
-                    fontWeight: 'var(--font-medium)',
-                    cursor: 'pointer',
-                  }}
+                  className="flex items-center gap-1 rounded-pill bg-sage-light border border-sage-mid text-sage-dark text-11 font-medium cursor-pointer py-[0.1875rem] px-[0.5625rem]"
                 >
                   {label}
                   <X size={9} />
@@ -417,28 +319,16 @@ export default function TodosPage() {
             })}
         </div>
         <div
-          style={{
-            display: 'flex',
-            background: 'var(--surface)',
-            border: '1px solid var(--border)',
-            borderRadius: 'var(--radius-xs)',
-            overflow: 'hidden',
-            flexShrink: 0,
-          }}
+          className="flex bg-surface border border-border rounded-xs overflow-hidden shrink-0"
         >
           <button
             onClick={() => setViewMode('list')}
+            className="border-none border-r border-border flex items-center justify-center cursor-pointer"
             style={{
               width: 30,
               height: 30,
               background: viewMode === 'list' ? 'var(--sage-light)' : 'transparent',
-              border: 'none',
-              borderRight: '1px solid var(--border)',
               color: viewMode === 'list' ? 'var(--sage)' : 'var(--text-secondary)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
             }}
             aria-label="List view"
           >
@@ -446,16 +336,12 @@ export default function TodosPage() {
           </button>
           <button
             onClick={() => setViewMode('calendar')}
+            className="border-none flex items-center justify-center cursor-pointer"
             style={{
               width: 30,
               height: 30,
               background: viewMode === 'calendar' ? 'var(--sage-light)' : 'transparent',
-              border: 'none',
               color: viewMode === 'calendar' ? 'var(--sage)' : 'var(--text-secondary)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
             }}
             aria-label="Calendar view"
           >
@@ -519,38 +405,18 @@ export default function TodosPage() {
       )}
 
       {myTodos.length === 0 && (
-        <div style={{ textAlign: 'center', padding: '4rem 2rem 2rem' }}>
-          <p
-            style={{
-              fontSize: 'var(--text-15)',
-              fontWeight: 'var(--font-semibold)',
-              color: 'var(--text-secondary)',
-              marginBottom: 8,
-            }}
-          >
+        <div className="text-center pt-16 px-8 pb-8">
+          <p className="text-15 font-semibold text-text-secondary mb-2">
             Nothing coming up
           </p>
           <p
-            style={{
-              fontSize: 'var(--text-13)',
-              color: 'var(--text-muted)',
-              lineHeight: 'var(--leading-loose)',
-              maxWidth: 260,
-              margin: '0 auto',
-            }}
+            className="text-13 text-text-muted leading-loose mx-auto max-w-[16.25rem]"
           >
             To-dos are upcoming things to act on — a call to make, a visit to plan, or anything you
             want to follow up on.
           </p>
           <p
-            style={{
-              fontSize: 'var(--text-12)',
-              color: 'var(--text-muted)',
-              lineHeight: 'var(--leading-normal)',
-              maxWidth: 260,
-              margin: '0.625rem auto 0',
-              fontWeight: 'var(--font-semibold)',
-            }}
+            className="text-12 text-text-muted leading-normal font-semibold mx-auto mt-2.5 max-w-[16.25rem]"
           >
             Only assigned shepherds and pastors can see these.
           </p>
@@ -608,78 +474,38 @@ export default function TodosPage() {
       {/* Filter bottom sheet (admin only) */}
       {showFilter && (
         <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: BACKDROP_COLOR,
-            zIndex: 'var(--z-dropdown)',
-            display: 'flex',
-            alignItems: 'flex-end',
-            justifyContent: 'center',
-          }}
+          className="fixed inset-0 flex items-end justify-center z-dropdown bg-backdrop"
           onClick={(e) => {
             if (e.target === e.currentTarget) setShowFilter(false);
           }}
         >
           <div
-            className="animate-slide-up"
+            className="animate-slide-up bg-surface w-full flex flex-col overflow-hidden"
             style={{
-              background: 'var(--surface)',
               borderRadius: SHEET_BORDER_RADIUS,
-              width: '100%',
               maxWidth: SHEET_MAX_WIDTH,
               maxHeight: 'calc(100dvh - 5rem)',
-              display: 'flex',
-              flexDirection: 'column',
-              overflow: 'hidden',
             }}
           >
             <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '0.875rem 1.25rem 0.75rem',
-                flexShrink: 0,
-                borderBottom: '1px solid var(--border-light)',
-              }}
+              className="flex items-center justify-between pt-3.5 px-5 pb-3 shrink-0 border-b border-border-light"
             >
-              <h2 style={{ fontSize: 'var(--text-16)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)' }}>
+              <h2 className="text-16 font-bold text-text-primary">
                 Filter
               </h2>
               <button
                 onClick={() => setShowFilter(false)}
-                style={{
-                  width: 28,
-                  height: 28,
-                  borderRadius: '50%',
-                  background: 'var(--bg)',
-                  border: 'none',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'var(--text-muted)',
-                }}
+                className="w-7 h-7 rounded-full bg-bg border-none cursor-pointer flex items-center justify-center text-text-muted"
               >
                 <X size={12} />
               </button>
             </div>
 
-            <div style={{ flex: 1, overflowY: 'auto', padding: '1rem 1.25rem' }}>
-              <p
-                style={{
-                  fontSize: 'var(--text-10)',
-                  fontWeight: 'var(--font-semibold)',
-                  color: 'var(--text-muted)',
-                  textTransform: 'uppercase',
-                  letterSpacing: 'var(--tracking-wide-6)',
-                  marginBottom: 10,
-                }}
-              >
+            <div className="grow overflow-y-auto py-4 px-5">
+              <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 mb-2.5">
                 Shepherd by
               </p>
-              <div style={{ position: 'relative', marginBottom: 10 }}>
+              <div className="relative mb-2.5">
                 <MagnifyingGlass
                   size={13}
                   color="var(--text-muted)"
@@ -696,20 +522,7 @@ export default function TodosPage() {
                   value={shepherdSearch}
                   onChange={(e) => setShepherdSearch(e.target.value)}
                   placeholder="Search…"
-                  style={{
-                    width: '100%',
-                    paddingLeft: 28,
-                    paddingRight: 10,
-                    paddingTop: 7,
-                    paddingBottom: 7,
-                    background: 'var(--bg)',
-                    border: '1px solid var(--border)',
-                    borderRadius: 'var(--radius-xs)',
-                    fontSize: 'var(--text-13)',
-                    color: 'var(--text-primary)',
-                    outline: 'none',
-                    boxSizing: 'border-box' as const,
-                  }}
+                  className="w-full pl-7 pr-2.5 py-[0.4375rem] bg-bg border border-border rounded-xs text-13 text-text-primary outline-none box-border"
                 />
               </div>
               {('my sheep'.includes(shepherdSearch.toLowerCase()) ||
@@ -747,42 +560,17 @@ export default function TodosPage() {
             </div>
 
             <div
-              style={{
-                padding: '0.625rem 1.25rem 1rem',
-                flexShrink: 0,
-                borderTop: '1px solid var(--border-light)',
-                display: 'flex',
-                gap: 12,
-              }}
+              className="pt-2.5 px-5 pb-4 shrink-0 border-t border-border-light flex gap-3"
             >
               <button
                 onClick={clearFilter}
-                style={{
-                  flex: 1,
-                  background: 'none',
-                  border: 'none',
-                  fontSize: 'var(--text-14)',
-                  fontWeight: 'var(--font-semibold)',
-                  color: 'var(--text-secondary)',
-                  cursor: 'pointer',
-                  padding: '0.75rem 0',
-                }}
+                className="flex-1 bg-transparent border-none text-14 font-semibold text-text-secondary cursor-pointer py-3 px-0"
               >
                 Clear
               </button>
               <button
                 onClick={applyFilter}
-                style={{
-                  flex: 2,
-                  background: 'var(--sage)',
-                  color: 'var(--on-sage)',
-                  border: 'none',
-                  borderRadius: 'var(--radius)',
-                  padding: '0.75rem 0',
-                  fontSize: 'var(--text-15)',
-                  fontWeight: 'var(--font-semibold)',
-                  cursor: 'pointer',
-                }}
+                className="flex-[2] bg-sage text-on-sage border-none rounded text-15 font-semibold cursor-pointer py-3 px-0"
               >
                 Apply
               </button>
@@ -855,34 +643,16 @@ function CalendarView({
   return (
     <div>
       {/* Month nav */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: 12,
-        }}
-      >
-        <span style={{ fontSize: 'var(--text-15)', fontWeight: 'var(--font-semibold)', color: 'var(--text-primary)' }}>
-          <span style={{ color: 'var(--text-primary)' }}>{format(new Date(calYear, calMonth, 1), 'MMMM')}</span>
+      <div className="flex items-center justify-between mb-3">
+        <span className="text-15 font-semibold text-text-primary">
+          <span className="text-text-primary">{format(new Date(calYear, calMonth, 1), 'MMMM')}</span>
           {' '}
-          <span style={{ color: 'var(--text-muted)', fontWeight: 'var(--font-normal)' }}>{calYear}</span>
+          <span className="text-text-muted font-normal">{calYear}</span>
         </span>
-        <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+        <div className="flex gap-1 items-center">
           <button
             onClick={prevMonth}
-            style={{
-              width: 32,
-              height: 32,
-              borderRadius: 'var(--radius-xs)',
-              border: '1px solid var(--border)',
-              background: 'transparent',
-              color: 'var(--text-secondary)',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
+            className="w-8 h-8 rounded-xs border border-border bg-transparent text-text-secondary cursor-pointer flex items-center justify-center"
           >
             <CaretLeft size={14} />
           </button>
@@ -892,34 +662,13 @@ function CalendarView({
               setCalYear(today.getFullYear());
               setSelectedDate(null);
             }}
-            style={{
-              height: 32,
-              padding: '0 0.75rem',
-              borderRadius: 'var(--radius-xs)',
-              border: '1px solid var(--border)',
-              background: 'transparent',
-              color: 'var(--text-secondary)',
-              fontSize: 'var(--text-13)',
-              fontWeight: 'var(--font-medium)',
-              cursor: 'pointer',
-            }}
+            className="h-8 px-3 rounded-xs border border-border bg-transparent text-text-secondary text-13 font-medium cursor-pointer"
           >
             Today
           </button>
           <button
             onClick={nextMonth}
-            style={{
-              width: 32,
-              height: 32,
-              borderRadius: 'var(--radius-xs)',
-              border: '1px solid var(--border)',
-              background: 'transparent',
-              color: 'var(--text-secondary)',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
+            className="w-8 h-8 rounded-xs border border-border bg-transparent text-text-secondary cursor-pointer flex items-center justify-center"
           >
             <CaretRight size={14} />
           </button>
@@ -927,19 +676,11 @@ function CalendarView({
       </div>
 
       {/* Day-of-week headers */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', marginBottom: 4 }}>
+      <div className="grid grid-cols-7 mb-1">
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => (
           <div
             key={d}
-            style={{
-              textAlign: 'center',
-              fontSize: 'var(--text-10)',
-              fontWeight: 'var(--font-semibold)',
-              color: 'var(--text-muted)',
-              textTransform: 'uppercase',
-              letterSpacing: 'var(--tracking-wide-4)',
-              paddingBottom: 4,
-            }}
+            className="text-center text-10 font-semibold text-text-muted uppercase tracking-wide-4 pb-1"
           >
             {d}
           </div>
@@ -947,7 +688,7 @@ function CalendarView({
       </div>
 
       {/* Calendar grid */}
-      <div className="calendar-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 3 }}>
+      <div className="calendar-grid grid grid-cols-7 gap-[0.1875rem]">
         {cells.map((day, i) => {
           if (!day) return <div key={`empty-${i}`} className="calendar-tile-empty" />;
           const dateStr = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -960,7 +701,7 @@ function CalendarView({
           return (
             <button
               key={dateStr}
-              className="calendar-tile"
+              className="calendar-tile cursor-pointer"
               onClick={() => setSelectedDate(isSelected ? null : dateStr)}
               style={{
                 background: isSelected
@@ -974,32 +715,28 @@ function CalendarView({
                     : isSelected
                       ? 'none'
                       : '0.0625rem solid transparent',
-                cursor: 'pointer',
               }}
             >
               <span
+                className="text-10 leading-none"
                 style={{
-                  fontSize: 'var(--text-10)',
                   fontWeight: isToday || isSelected ? 'var(--font-bold)' : 'var(--font-normal)',
                   color: isSelected
                     ? 'var(--on-sage)'
                     : isToday
                       ? 'var(--sage)'
                       : 'var(--text-secondary, var(--text-muted))',
-                  lineHeight: 'var(--leading-none)',
                 }}
               >
                 {day}
               </span>
               {dayTodos.length > 0 && (
-                <span className="calendar-dots" style={{ display: 'flex', gap: 2 }}>
+                <span className="calendar-dots flex gap-0.5">
                   {dayTodos.slice(0, 3).map((_, di) => (
                     <span
                       key={di}
+                      className="w-1 h-1 rounded-full shrink-0"
                       style={{
-                        width: 4,
-                        height: 4,
-                        borderRadius: '50%',
                         background: isSelected
                           ? 'rgba(255,255,255,0.8)'
                           : allComplete
@@ -1007,18 +744,14 @@ function CalendarView({
                             : hasIncomplete
                               ? 'var(--sage)'
                               : 'var(--text-muted)',
-                        flexShrink: 0,
                       }}
                     />
                   ))}
                   {dayTodos.length > 3 && (
                     <span
+                      className="w-1 h-1 rounded-full shrink-0"
                       style={{
-                        width: 4,
-                        height: 4,
-                        borderRadius: '50%',
                         background: isSelected ? 'rgba(255,255,255,0.6)' : 'var(--border)',
-                        flexShrink: 0,
                       }}
                     />
                   )}
@@ -1053,31 +786,17 @@ function CalendarView({
 
       {/* Selected day todos */}
       {selectedDate && (
-        <div style={{ marginTop: 16 }}>
-          <p
-            style={{
-              fontSize: 'var(--text-10)',
-              fontWeight: 'var(--font-semibold)',
-              color: 'var(--text-muted)',
-              textTransform: 'uppercase',
-              letterSpacing: 'var(--tracking-wide-6)',
-              marginBottom: 8,
-            }}
-          >
+        <div className="mt-4">
+          <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 mb-2">
             {format(parseISO(`${selectedDate}T00:00:00`), 'EEEE, MMMM d')} · {selectedTodos.length}
           </p>
           {selectedTodos.length === 0 ? (
-            <p style={{ fontSize: 'var(--text-13)', color: 'var(--text-muted)', padding: '0.75rem 0' }}>
+            <p className="text-13 text-text-muted py-3">
               No to-dos on this day.
             </p>
           ) : (
             <div
-              className="no-last-border"
-              style={{
-                background: 'var(--surface)',
-                borderRadius: 'var(--radius)',
-                overflow: 'hidden',
-              }}
+              className="no-last-border bg-surface rounded overflow-hidden"
             >
               {selectedTodos.map((t) => {
                 const person = t.personId ? data.people.find((p) => p.id === t.personId) : null;
@@ -1088,52 +807,28 @@ function CalendarView({
                 return (
                   <div
                     key={t.id}
-                    className="row-card-hover"
-                    style={{
-                      display: 'flex',
-                      alignItems: 'flex-start',
-                      gap: 10,
-                      paddingTop: 10,
-                      paddingBottom: 10,
-                      borderBottom: '1px solid var(--border-light)',
-                    }}
+                    className="row-card-hover flex items-start gap-2.5 pt-2.5 pb-2.5 border-b border-border-light"
                   >
                     <button
                       onClick={() => onToggle(t.id)}
+                      className="rounded-full shrink-0 mt-0.5 flex items-center justify-center cursor-pointer"
                       style={{
                         width: 20,
                         height: 20,
-                        borderRadius: '50%',
-                        flexShrink: 0,
-                        marginTop: 2,
                         border: t.completed ? 'none' : '0.125rem solid var(--border)',
                         background: t.completed ? 'var(--sage)' : 'transparent',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
                       }}
                     >
                       {t.completed && <Check size={11} color="var(--on-sage)" weight="bold" />}
                     </button>
                     <button
                       onClick={() => onEdit(t)}
-                      style={{
-                        flex: 1,
-                        minWidth: 0,
-                        background: 'none',
-                        border: 'none',
-                        textAlign: 'left',
-                        cursor: 'pointer',
-                        padding: 0,
-                      }}
+                      className="flex-1 min-w-0 bg-transparent border-none text-left cursor-pointer p-0"
                     >
                       <p
+                        className="text-14 leading-comfortable mb-1"
                         style={{
-                          fontSize: 'var(--text-14)',
                           color: t.completed ? 'var(--text-muted)' : 'var(--text-primary)',
-                          lineHeight: 'var(--leading-comfortable)',
-                          marginBottom: 4,
                           textDecoration: t.completed ? 'line-through' : 'none',
                         }}
                       >
@@ -1141,14 +836,7 @@ function CalendarView({
                       </p>
                       {targetChips.length > 0 && (
                         <span
-                          style={{
-                            fontSize: 'var(--text-10)',
-                            color: 'var(--blue)',
-                            padding: '0.0625rem 0.375rem',
-                            borderRadius: 'var(--radius-pill)',
-                            background: 'var(--blue-light)',
-                            fontWeight: 'var(--font-medium)',
-                          }}
+                          className="text-10 text-blue rounded-pill bg-blue-light font-medium py-[0.0625rem] px-1.5"
                         >
                           {targetChips[0]}
                         </span>
@@ -1164,7 +852,7 @@ function CalendarView({
 
       {/* No-date todos note */}
       {todos.filter((t) => !t.dueDate && !t.completed).length > 0 && (
-        <p style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)', marginTop: 16 }}>
+        <p className="text-12 text-text-muted mt-4">
           {todos.filter((t) => !t.dueDate && !t.completed).length} to-do
           {todos.filter((t) => !t.dueDate && !t.completed).length !== 1 ? 's' : ''} with no due date
           — switch to list view to see them.
@@ -1193,23 +881,13 @@ function TodoSection({
 }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div style={{ marginBottom: 16 }}>
+    <div className="mb-4">
       <button
         onClick={() => setOpen(!open)}
+        className="flex items-center gap-1.5 py-1 px-0 bg-transparent border-none cursor-pointer text-10 font-semibold uppercase tracking-wide-6"
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6,
-          padding: '0.25rem 0',
           marginBottom: open ? 8 : 0,
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          fontSize: 'var(--text-10)',
-          fontWeight: 'var(--font-semibold)',
           color: labelColor ?? 'var(--text-muted)',
-          textTransform: 'uppercase',
-          letterSpacing: 'var(--tracking-wide-6)',
         }}
       >
         {label} · {todos.length}
@@ -1223,12 +901,7 @@ function TodoSection({
       </button>
       {open && (
         <div
-          className="no-last-border"
-          style={{
-            background: 'var(--surface)',
-            borderRadius: 'var(--radius)',
-            overflow: 'hidden',
-          }}
+          className="no-last-border bg-surface rounded overflow-hidden"
         >
           {todos.map((t) => {
             const person = t.personId ? data.people.find((p) => p.id === t.personId) : null;
@@ -1240,77 +913,38 @@ function TodoSection({
             return (
               <div
                 key={t.id}
-                className="row-card-hover"
-                style={{
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: 10,
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  borderBottom: '1px solid var(--border-light)',
-                }}
+                className="row-card-hover flex items-start gap-2.5 pt-2.5 pb-2.5 border-b border-border-light"
               >
                 <button
                   onClick={() => onToggle(t.id)}
+                  className="rounded-full shrink-0 mt-0.5 flex items-center justify-center cursor-pointer"
                   style={{
                     width: 20,
                     height: 20,
-                    borderRadius: '50%',
-                    flexShrink: 0,
-                    marginTop: 2,
                     border: t.completed ? 'none' : '0.125rem solid var(--border)',
                     background: t.completed ? 'var(--sage)' : 'transparent',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
                   }}
                 >
                   {t.completed && <Check size={11} color="var(--on-sage)" weight="bold" />}
                 </button>
                 <button
                   onClick={() => onEdit(t)}
-                  style={{
-                    flex: 1,
-                    minWidth: 0,
-                    background: 'none',
-                    border: 'none',
-                    textAlign: 'left',
-                    cursor: 'pointer',
-                    padding: 0,
-                  }}
+                  className="flex-1 min-w-0 bg-transparent border-none text-left cursor-pointer p-0"
                 >
                   <p
+                    className="text-14 leading-comfortable mb-1"
                     style={{
-                      fontSize: 'var(--text-14)',
                       color: t.completed ? 'var(--text-muted)' : 'var(--text-primary)',
-                      lineHeight: 'var(--leading-comfortable)',
-                      marginBottom: 4,
                       textDecoration: t.completed ? 'line-through' : 'none',
                     }}
                   >
                     {t.title}
                   </p>
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 10,
-                      flexWrap: 'nowrap',
-                      overflow: 'hidden',
-                    }}
-                  >
+                  <div className="flex items-center gap-2.5 flex-nowrap overflow-hidden">
                     {t.dueDate && (
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 4,
-                          color: 'var(--text-muted)',
-                        }}
-                      >
+                      <div className="flex items-center gap-1 text-text-muted">
                         <Clock size={12} />
-                        <span style={{ fontSize: 'var(--text-11)', color: 'var(--text-muted)' }}>
+                        <span className="text-11 text-text-muted">
                           {fmtDue(t.dueDate)}
                         </span>
                       </div>
@@ -1318,30 +952,14 @@ function TodoSection({
                     {hasRepeat && <ArrowsClockwise size={12} color="var(--text-muted)" />}
                     {targetChips.length > 0 && (
                       <span
-                        style={{
-                          fontSize: 'var(--text-10)',
-                          color: 'var(--blue)',
-                          padding: '0.0625rem 0.375rem',
-                          borderRadius: 'var(--radius-pill)',
-                          background: 'var(--blue-light)',
-                          fontWeight: 'var(--font-medium)',
-                          flexShrink: 0,
-                        }}
+                        className="text-10 text-blue rounded-pill bg-blue-light font-medium shrink-0 py-[0.0625rem] px-1.5"
                       >
                         {targetChips[0]}
                       </span>
                     )}
                     {targetChips.length > 1 && (
                       <span
-                        style={{
-                          fontSize: 'var(--text-10)',
-                          color: 'var(--blue)',
-                          padding: '0.0625rem 0.375rem',
-                          borderRadius: 'var(--radius-pill)',
-                          background: 'var(--blue-light)',
-                          fontWeight: 'var(--font-medium)',
-                          flexShrink: 0,
-                        }}
+                        className="text-10 text-blue rounded-pill bg-blue-light font-medium shrink-0 py-[0.0625rem] px-1.5"
                       >
                         +{targetChips.length - 1}
                       </span>

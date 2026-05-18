@@ -27,29 +27,12 @@ interface PeopleTableProps {
 
 type SortDirection = 'asc' | 'desc' | null;
 
-const headerCellStyle: React.CSSProperties = {
-  position: 'sticky',
-  top: 0,
-  background: 'var(--surface)',
-  borderBottom: '1px solid var(--border)',
-  padding: '0.625rem 0.5rem',
-  fontSize: 'var(--text-11)',
-  fontWeight: 'var(--font-semibold)',
-  letterSpacing: 'var(--tracking-wide-4)',
-  textTransform: 'uppercase',
-  color: 'var(--text-muted)',
-  textAlign: 'left',
-  whiteSpace: 'nowrap',
-  zIndex: 1,
-};
+const headerCellClass =
+  'sticky top-0 bg-surface border-b border-border text-11 font-semibold tracking-wide-4 uppercase text-text-muted text-left whitespace-nowrap z-[1]';
+const headerCellPadding = { padding: '0.625rem 0.5rem' };
 
-const cellStyle: React.CSSProperties = {
-  padding: '0.625rem 0.5rem',
-  borderBottom: '1px solid var(--border-light)',
-  fontSize: 'var(--text-13)',
-  color: 'var(--text-primary)',
-  verticalAlign: 'middle',
-};
+const cellClass = 'border-b border-border-light text-13 text-text-primary align-middle';
+const cellPadding = { padding: '0.625rem 0.5rem' };
 
 interface Counts {
   todos: number;
@@ -152,21 +135,8 @@ export default function PeopleTable({ entries }: PeopleTableProps) {
   }
 
   return (
-    <div
-      style={{
-        background: 'var(--surface)',
-        borderRadius: 'var(--radius)',
-        border: '1px solid var(--border-light)',
-        overflow: 'hidden',
-      }}
-    >
-      <table
-        style={{
-          width: '100%',
-          borderCollapse: 'collapse',
-          tableLayout: 'auto',
-        }}
-      >
+    <div className="bg-surface rounded border border-border-light overflow-hidden">
+      <table className="w-full border-collapse" style={{ tableLayout: 'auto' }}>
         <thead>
           <tr>
             <SortableHeader
@@ -211,7 +181,11 @@ export default function PeopleTable({ entries }: PeopleTableProps) {
                 setHomeSortKey((k) => toggleSort(k, 'last-contacted', 'last-contacted-recent'))
               }
             />
-            <th style={{ ...headerCellStyle, width: '2.5rem' }} aria-label="Actions" />
+            <th
+              className={`${headerCellClass} w-10`}
+              style={headerCellPadding}
+              aria-label="Actions"
+            />
           </tr>
         </thead>
         <tbody>
@@ -278,22 +252,15 @@ function SortableHeader({
   const active = direction !== null;
   const Icon = direction === 'asc' ? CaretUp : direction === 'desc' ? CaretDown : CaretUpDown;
   return (
-    <th style={headerCellStyle}>
+    <th className={headerCellClass} style={headerCellPadding}>
       <button
         type="button"
         onClick={onSort}
+        className="inline-flex items-center gap-1 bg-transparent border-none p-0 font-[inherit] tracking-[inherit] uppercase cursor-pointer"
         style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 4,
-          background: 'none',
-          border: 'none',
-          padding: 0,
-          font: 'inherit',
           letterSpacing: 'inherit',
           textTransform: 'inherit',
           color: active ? 'var(--text-primary)' : 'inherit',
-          cursor: 'pointer',
         }}
       >
         {label}
@@ -330,16 +297,10 @@ function FamilyTableRow({
       data-href={`/family/${family.id}`}
       onClick={onRowClick(`/family/${family.id}`)}
     >
-      <td style={cellStyle}>
+      <td className={cellClass} style={cellPadding}>
         <Link
           href={`/family/${family.id}`}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-            color: 'var(--text-primary)',
-            textDecoration: 'none',
-          }}
+          className="flex items-center gap-2.5 text-text-primary no-underline"
         >
           <AvatarBadge
             name={family.label}
@@ -349,51 +310,43 @@ function FamilyTableRow({
             color="var(--sage-light)"
             icon={<House size={16} color="var(--sage-light)" />}
           />
-          <div style={{ minWidth: 0 }}>
-            <div style={{ fontWeight: 'var(--font-semibold)', whiteSpace: 'nowrap' }}>{family.label}</div>
-            <div style={{ fontSize: 'var(--text-11)', color: 'var(--text-muted)' }}>{adultsLabel}</div>
+          <div className="min-w-0">
+            <div className="font-semibold whitespace-nowrap">{family.label}</div>
+            <div className="text-11 text-text-muted">{adultsLabel}</div>
           </div>
         </Link>
       </td>
-      <td style={cellStyle}>
+      <td className={cellClass} style={cellPadding}>
         {shepherdIds.length === 0 ? (
-          <span
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}
-          >
+          <span className="inline-flex items-center gap-1.5 flex-wrap">
             <StatusBadge
               label="No shepherd"
               bg="var(--amber-light)"
               color="var(--amber)"
               border="1px solid var(--amber-border)"
             />
-            <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>
-              {aggregateMembership(members)}
-            </span>
+            <span className="text-12 text-text-muted">{aggregateMembership(members)}</span>
           </span>
         ) : (
-          <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>
-            {aggregateMembership(members)}
-          </span>
+          <span className="text-12 text-text-muted">{aggregateMembership(members)}</span>
         )}
       </td>
-      <td style={cellStyle}>
-        <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-          {aggregateAttendance(members)}
-        </span>
+      <td className={cellClass} style={cellPadding}>
+        <span className="text-12 text-text-muted">{aggregateAttendance(members)}</span>
       </td>
-      <td style={cellStyle}>
+      <td className={cellClass} style={cellPadding}>
         <GroupCells groups={allGroups} />
       </td>
-      <td style={cellStyle}>
+      <td className={cellClass} style={cellPadding}>
         <CountCell value={counts.logs} />
       </td>
-      <td style={cellStyle}>
+      <td className={cellClass} style={cellPadding}>
         <CountCell value={counts.todos} />
       </td>
-      <td style={cellStyle}>
+      <td className={cellClass} style={cellPadding}>
         <CountCell value={counts.notices} />
       </td>
-      <td style={cellStyle}>
+      <td className={cellClass} style={cellPadding}>
         <LastContactCell lastNoteTs={lastNoteTs} />
       </td>
       <RowActionsCell target={{ kind: 'family', family }} />
@@ -427,33 +380,19 @@ function IndividualTableRow({
       data-href={`/person/${person.id}`}
       onClick={onRowClick(`/person/${person.id}`)}
     >
-      <td style={cellStyle}>
+      <td className={cellClass} style={cellPadding}>
         <Link
           href={`/person/${person.id}`}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-            color: 'var(--text-primary)',
-            textDecoration: 'none',
-          }}
+          className="flex items-center gap-2.5 text-text-primary no-underline"
         >
           <AvatarBadge name={fullName(person)} photo={person.photo} size={32} />
-          <div style={{ minWidth: 0 }}>
-            <div
-              style={{
-                fontWeight: 'var(--font-semibold)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 4,
-                whiteSpace: 'nowrap',
-              }}
-            >
+          <div className="min-w-0">
+            <div className="font-semibold flex items-center gap-1 whitespace-nowrap">
               {person.isShepherd && (
                 <span
                   title="Shepherd"
                   aria-label="Shepherd"
-                  style={{ display: 'inline-flex', alignItems: 'center' }}
+                  className="inline-flex items-center"
                 >
                   <HandHeart size={12} color="var(--sage)" />
                 </span>
@@ -461,57 +400,48 @@ function IndividualTableRow({
               {fullName(person)}
             </div>
             {subtitle && (
-              <div
-                style={{
-                  fontSize: 'var(--text-11)',
-                  color: 'var(--text-muted)',
-                }}
-              >
-                {subtitle}
-              </div>
+              <div className="text-11 text-text-muted">{subtitle}</div>
             )}
           </div>
         </Link>
       </td>
-      <td style={cellStyle}>
+      <td className={cellClass} style={cellPadding}>
         {person.assignedShepherdIds.length === 0 ? (
-          <span
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}
-          >
+          <span className="inline-flex items-center gap-1.5 flex-wrap">
             <StatusBadge
               label="No shepherd"
               bg="var(--amber-light)"
               color="var(--amber)"
               border="1px solid var(--amber-border)"
             />
-            <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>
+            <span className="text-12 text-text-muted">
               {getMembershipLabel(person.membershipStatus)}
             </span>
           </span>
         ) : (
-          <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>
+          <span className="text-12 text-text-muted">
             {getMembershipLabel(person.membershipStatus)}
           </span>
         )}
       </td>
-      <td style={cellStyle}>
-        <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+      <td className={cellClass} style={cellPadding}>
+        <span className="text-12 text-text-muted">
           {getChurchAttendanceLabel(person.churchAttendance)}
         </span>
       </td>
-      <td style={cellStyle}>
+      <td className={cellClass} style={cellPadding}>
         <GroupCells groups={personGroups} />
       </td>
-      <td style={cellStyle}>
+      <td className={cellClass} style={cellPadding}>
         <CountCell value={counts.logs} />
       </td>
-      <td style={cellStyle}>
+      <td className={cellClass} style={cellPadding}>
         <CountCell value={counts.todos} />
       </td>
-      <td style={cellStyle}>
+      <td className={cellClass} style={cellPadding}>
         <CountCell value={counts.notices} />
       </td>
-      <td style={cellStyle}>
+      <td className={cellClass} style={cellPadding}>
         <LastContactCell lastNoteTs={lastNoteTs} />
       </td>
       <RowActionsCell target={{ kind: 'person', person }} />
@@ -522,26 +452,16 @@ function IndividualTableRow({
 function CountCell({ value }: { value: number }) {
   return (
     <span
-      style={{
-        fontSize: 'var(--text-13)',
-        color: value === 0 ? 'var(--text-muted)' : 'var(--text-primary)',
-      }}
+      className={`text-13 ${value === 0 ? 'text-text-muted' : 'text-text-primary'}`}
     >
       {value}
     </span>
   );
 }
 
-const groupChipStyle: React.CSSProperties = {
-  fontSize: 'var(--text-10)',
-  padding: '0.125rem 0.4375rem',
-  borderRadius: 'var(--radius-pill)',
-  background: 'var(--blue-light)',
-  color: 'var(--blue)',
-  fontWeight: 'var(--font-semibold)',
-  whiteSpace: 'nowrap',
-  flexShrink: 0,
-};
+const groupChipClass =
+  'text-10 rounded-pill bg-blue-light text-blue font-semibold whitespace-nowrap shrink-0';
+const groupChipPadding = { padding: '0.125rem 0.4375rem' };
 
 function GroupCells({ groups }: { groups: Group[] }) {
   const containerRef = React.useRef<HTMLDivElement>(null);
@@ -571,7 +491,7 @@ function GroupCells({ groups }: { groups: Group[] }) {
   }, [groups]);
 
   if (groups.length === 0) {
-    return <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>No group</span>;
+    return <span className="text-12 text-text-muted">No group</span>;
   }
 
   const visible = groups.slice(0, visibleCount);
@@ -580,19 +500,18 @@ function GroupCells({ groups }: { groups: Group[] }) {
   return (
     <div
       ref={containerRef}
-      style={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        alignItems: 'center',
-        gap: '0.25rem',
-      }}
+      className="flex flex-wrap items-center gap-1"
     >
       {visible.map((g) => (
-        <span key={g.id} style={groupChipStyle}>
+        <span key={g.id} className={groupChipClass} style={groupChipPadding}>
           {g.name}
         </span>
       ))}
-      {hidden > 0 && <span style={groupChipStyle}>+{hidden}</span>}
+      {hidden > 0 && (
+        <span className={groupChipClass} style={groupChipPadding}>
+          +{hidden}
+        </span>
+      )}
     </div>
   );
 }

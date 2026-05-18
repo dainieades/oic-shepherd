@@ -238,21 +238,11 @@ export default function PendingVisitorsPage() {
       href="/welcome"
       target="_blank"
       rel="noopener noreferrer"
+      className="rounded-xs bg-sage text-on-sage font-semibold border-none cursor-pointer inline-flex items-center gap-1 no-underline shrink-0"
       style={{
         height: btnSize,
         padding: btnPad,
-        borderRadius: 'var(--radius-xs)',
-        background: 'var(--sage)',
-        color: 'var(--on-sage)',
         fontSize: btnFont,
-        fontWeight: 'var(--font-semibold)',
-        border: 'none',
-        cursor: 'pointer',
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: 4,
-        textDecoration: 'none',
-        flexShrink: 0,
         transition: 'height 0.25s ease, padding 0.25s ease, font-size 0.25s ease',
       }}
     >
@@ -263,34 +253,27 @@ export default function PendingVisitorsPage() {
 
   return (
     <PageContainer width="3xl">
-    <div style={{ paddingBottom: 32 }}>
+    <div className="pb-8">
       {/* Sticky collapsing header */}
       <header
-        className="-mx-4 px-4 lg:mx-0 lg:px-0"
+        className="-mx-4 px-4 lg:mx-0 lg:px-0 sticky top-0 bg-bg z-sticky"
         style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 'var(--z-sticky)',
-          background: 'var(--bg)',
           borderBottom: scrolled ? '1px solid var(--border-light)' : 'none',
         }}
       >
         <div
+          className="flex items-center justify-between"
           style={{
             height: scrolled ? '2.75rem' : '4.125rem',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
             transition: 'height 0.25s ease',
           }}
         >
           <span
+            className="text-text-primary leading-none"
             style={{
               fontSize: scrolled ? 'var(--text-17)' : 'var(--text-32)',
               fontWeight: scrolled ? 'var(--font-semibold)' : 'var(--font-extrabold)',
-              color: 'var(--text-primary)',
               letterSpacing: scrolled ? 'var(--tracking-tight-1)' : 'var(--tracking-tight-3)',
-              lineHeight: 'var(--leading-none)',
               transition: 'font-size 0.25s ease, letter-spacing 0.25s ease',
             }}
           >
@@ -301,48 +284,27 @@ export default function PendingVisitorsPage() {
       </header>
 
       {submissions !== null && submissions.length > 0 && (
-        <p style={{ marginBottom: 12, fontSize: 'var(--text-13)', color: 'var(--text-muted)' }}>
+        <p className="mb-3 text-13 text-text-muted">
           {submissions.length} card{submissions.length === 1 ? '' : 's'} awaiting review
         </p>
       )}
 
       {submissions === null ? (
-        <p style={{ color: 'var(--text-muted)', fontSize: 'var(--text-14)' }}>Loading…</p>
+        <p className="text-text-muted text-14">Loading…</p>
       ) : submissions.length === 0 ? (
         <div
-          style={{
-            background: 'var(--surface)',
-            borderRadius: 'var(--radius)',
-            border: '1px solid var(--border-light)',
-            padding: '2.5rem 1.25rem',
-            textAlign: 'center',
-            color: 'var(--text-muted)',
-            fontSize: 'var(--text-14)',
-          }}
+          className="bg-surface rounded border border-border-light text-center text-text-muted text-14 py-10 px-5"
         >
-          <HandWaving size={32} color="var(--text-muted)" style={{ display: 'block', margin: '0 auto 12px' }} />
-          <p style={{ marginBottom: 4 }}>No newcomer cards pending.</p>
-          <p style={{ fontSize: 'var(--text-12)' }}>
+          <HandWaving size={32} color="var(--text-muted)" className="block mx-auto mb-3" />
+          <p className="mb-1">No newcomer cards pending.</p>
+          <p className="text-12">
             New self-submissions from <code>/welcome</code> will appear here for review.
           </p>
           <a
             href="/welcome"
             target="_blank"
             rel="noopener noreferrer"
-            style={{
-              marginTop: 24,
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 8,
-              padding: '0.75rem 1.5rem',
-              borderRadius: 'var(--radius-md)',
-              background: 'var(--sage)',
-              color: 'var(--on-sage)',
-              fontSize: 'var(--text-15)',
-              fontWeight: 'var(--font-semibold)',
-              textDecoration: 'none',
-            }}
+            className="mt-6 inline-flex items-center justify-center gap-2 py-3 px-6 rounded-md bg-sage text-on-sage text-15 font-semibold no-underline"
           >
             Open welcome form
             <ArrowSquareOut size={16} weight="bold" />
@@ -415,33 +377,19 @@ function SubmissionCard({
 
   return (
     <div
-      style={{
-        background: 'var(--surface)',
-        borderRadius: 'var(--radius)',
-        border: '1px solid var(--border-light)',
-        padding: '1rem 1.125rem',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 10,
-      }}
+      className="bg-surface rounded border border-border-light flex flex-col gap-2.5"
+      style={{ padding: '1rem 1.125rem' }}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-        <h2 style={{ fontSize: 'var(--text-17)', fontWeight: 'var(--font-semibold)', color: 'var(--text-primary)' }}>{name}</h2>
-        <span style={{ fontSize: 'var(--text-11)', color: 'var(--text-muted)' }}>
+      <div className="flex justify-between items-baseline">
+        <h2 className="text-17 font-semibold text-text-primary">{name}</h2>
+        <span className="text-11 text-text-muted">
           {submittedAt.toLocaleDateString()}{' '}
           {submittedAt.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
         </span>
       </div>
 
       <div
-        style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 6,
-          fontSize: 'var(--text-13)',
-          color: 'var(--text-secondary)',
-        }}
+        className="flex-1 flex flex-col gap-1.5 text-13 text-text-secondary"
       >
         {submission.phone && (
           <Row icon={<Phone size={13} color="var(--text-muted)" />}>{submission.phone}</Row>
@@ -472,28 +420,17 @@ function SubmissionCard({
         )}
         {submission.prayerRequest && (
           <Row icon={<HandsPraying size={13} color="var(--text-muted)" />}>
-            <span style={{ whiteSpace: 'pre-wrap' }}>{submission.prayerRequest}</span>
+            <span className="whitespace-pre-wrap">{submission.prayerRequest}</span>
           </Row>
         )}
       </div>
 
-      <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+      <div className="flex gap-2 mt-1">
         <button
           onClick={onPromote}
           disabled={busy}
+          className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-md border-none bg-sage text-on-sage text-14 font-semibold"
           style={{
-            flex: 1,
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 6,
-            padding: '0.625rem 0.75rem',
-            borderRadius: 'var(--radius-md)',
-            border: 'none',
-            background: 'var(--sage)',
-            color: 'var(--on-sage)',
-            fontSize: 'var(--text-14)',
-            fontWeight: 'var(--font-semibold)',
             cursor: busy ? 'wait' : 'pointer',
             opacity: busy ? 0.6 : 1,
           }}
@@ -504,18 +441,8 @@ function SubmissionCard({
         <button
           onClick={onDiscard}
           disabled={busy}
+          className="inline-flex items-center justify-center gap-1.5 py-2.5 px-3.5 border border-border bg-transparent text-text-muted text-14 font-medium rounded-md"
           style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 6,
-            padding: '0.625rem 0.875rem',
-            borderRadius: 'var(--radius-md)',
-            border: '1px solid var(--border)',
-            background: 'transparent',
-            color: 'var(--text-muted)',
-            fontSize: 'var(--text-14)',
-            fontWeight: 'var(--font-medium)',
             cursor: busy ? 'wait' : 'pointer',
           }}
         >
@@ -529,9 +456,9 @@ function SubmissionCard({
 
 function Row({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-      <div style={{ paddingTop: 2 }}>{icon}</div>
-      <div style={{ flex: 1, minWidth: 0 }}>{children}</div>
+    <div className="flex items-start gap-2">
+      <div className="pt-0.5">{icon}</div>
+      <div className="flex-1 min-w-0">{children}</div>
     </div>
   );
 }

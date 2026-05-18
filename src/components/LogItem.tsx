@@ -28,49 +28,14 @@ export function LogItem({
 }) {
   return (
     <button
-      className="row-card-hover"
+      className="row-card-hover text-left cursor-pointer border-none py-2.5 border-b border-border-light"
       onClick={onClick}
-      style={{
-        textAlign: 'left',
-        cursor: 'pointer',
-        border: 'none',
-        paddingTop: 10,
-        paddingBottom: 10,
-        borderBottom: '1px solid var(--border-light)',
-      }}
     >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: 4,
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-            flexWrap: 'nowrap',
-            flex: 1,
-            minWidth: 0,
-            overflow: 'hidden',
-          }}
-        >
+      <div className="flex items-center justify-between mb-1">
+        <div className="flex items-center gap-1.5 flex-nowrap flex-1 min-w-0 overflow-hidden">
           <span
-            style={{
-              fontSize: 'var(--text-10)',
-              fontWeight: 'var(--font-semibold)',
-              padding: '0.125rem 0.4375rem',
-              borderRadius: 'var(--radius-pill)',
-              background: 'var(--sage-light)',
-              color: 'var(--sage)',
-              flexShrink: 0,
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 4,
-            }}
+            className="text-10 font-semibold rounded-pill bg-sage-light text-sage shrink-0 inline-flex items-center gap-1"
+            style={{ padding: '0.125rem 0.4375rem' }}
           >
             {note.type === 'check-in' && <CheckCircle size={11} weight="bold" />}
             {note.type === 'prayer-request' && <HandsPraying size={11} weight="bold" />}
@@ -80,18 +45,8 @@ export function LogItem({
           </span>
           {targetChips && targetChips.length > 0 && (
             <span
-              style={{
-                fontSize: 'var(--text-10)',
-                color: 'var(--blue)',
-                fontWeight: 'var(--font-medium)',
-                padding: '0.0625rem 0.375rem',
-                borderRadius: 'var(--radius-pill)',
-                background: 'var(--blue-light)',
-                flexShrink: 0,
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 3,
-              }}
+              className="text-10 text-blue font-medium rounded-pill bg-blue-light shrink-0 inline-flex items-center gap-[0.1875rem]"
+              style={{ padding: '0.0625rem 0.375rem' }}
             >
               {targetChips[0].isFamily ? (
                 <House size={10} weight="bold" />
@@ -103,33 +58,21 @@ export function LogItem({
           )}
           {targetChips && targetChips.length > 1 && (
             <span
-              style={{
-                fontSize: 'var(--text-10)',
-                color: 'var(--blue)',
-                fontWeight: 'var(--font-medium)',
-                padding: '0.0625rem 0.375rem',
-                borderRadius: 'var(--radius-pill)',
-                background: 'var(--blue-light)',
-                flexShrink: 0,
-              }}
+              className="text-10 text-blue font-medium rounded-pill bg-blue-light shrink-0"
+              style={{ padding: '0.0625rem 0.375rem' }}
             >
               +{targetChips.length - 1}
             </span>
           )}
         </div>
-        <span style={{ fontSize: 'var(--text-11)', color: 'var(--text-muted)', flexShrink: 0, marginLeft: 8 }}>
+        <span className="text-11 text-text-muted shrink-0 ml-2">
           {getTimeAgo(note.createdAt)}
         </span>
       </div>
       {note.content && (
         <p
+          className="text-13 text-text-primary leading-normal mb-1 overflow-hidden text-ellipsis"
           style={{
-            fontSize: 'var(--text-13)',
-            color: 'var(--text-primary)',
-            lineHeight: 'var(--leading-normal)',
-            marginBottom: 4,
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
             display: '-webkit-box',
             WebkitLineClamp: 2,
             WebkitBoxOrient: 'vertical',
@@ -139,25 +82,14 @@ export function LogItem({
         </p>
       )}
       {linkedTodoTitle && (
-        <p
-          style={{
-            fontSize: 'var(--text-11)',
-            color: 'var(--text-muted)',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 4,
-            marginBottom: 2,
-            maxWidth: '100%',
-            overflow: 'hidden',
-          }}
-        >
+        <p className="text-11 text-text-muted inline-flex items-center gap-1 mb-0.5 max-w-full overflow-hidden">
           <ListChecks size={11} weight="bold" />
-          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <span className="overflow-hidden text-ellipsis whitespace-nowrap">
             From to-do: {linkedTodoTitle}
           </span>
         </p>
       )}
-      <p style={{ fontSize: 'var(--text-11)', color: 'var(--text-muted)' }}>by {creatorName ?? 'Unknown'}</p>
+      <p className="text-11 text-text-muted">by {creatorName ?? 'Unknown'}</p>
     </button>
   );
 }

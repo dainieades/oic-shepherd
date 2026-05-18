@@ -20,7 +20,7 @@ export function CalendarSubscribeOptions({
 
   return (
     <>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+      <div className="flex flex-col gap-3">
         <AppRow
           icon={<AppleLogo size={20} color="var(--text-primary)" weight="fill" />}
           label="Apple Calendar"
@@ -37,7 +37,7 @@ export function CalendarSubscribeOptions({
 
       <button
         onClick={() => setShowAdvanced((v) => !v)}
-        style={disclosureBtnStyle}
+        className="inline-flex items-center gap-1.5 bg-none border-none cursor-pointer py-3 mt-2 text-13 text-text-secondary"
         aria-expanded={showAdvanced}
       >
         {showAdvanced ? (
@@ -49,15 +49,15 @@ export function CalendarSubscribeOptions({
       </button>
 
       {showAdvanced && (
-        <div style={{ marginTop: '0.5rem' }}>
-          <p style={advancedHintStyle}>
+        <div className="mt-2">
+          <p className="text-13 text-text-muted leading-normal mb-2" style={{ marginTop: '0.125rem' }}>
             Copy this URL and add it as a subscribed calendar inside your app (Outlook, Fantastical,
             etc.).
           </p>
-          <div style={feedUrlBoxStyle}>{feedUrl || 'Generating…'}</div>
-          <button onClick={onCopy} style={copyBtnStyle}>
+          <div className="bg-surface border border-border-light rounded p-3 font-mono text-12 text-text-secondary mb-2" style={{ wordBreak: 'break-all' }}>{feedUrl || 'Generating…'}</div>
+          <button onClick={onCopy} className="flex items-center gap-2.5 py-2.5 px-3.5 bg-surface border border-border-light rounded-sm cursor-pointer w-full text-14 text-text-primary">
             <Copy size={16} color="var(--text-muted)" />
-            <span style={{ flex: 1, textAlign: 'left' }}>Copy feed URL</span>
+            <span className="flex-1 text-left">Copy feed URL</span>
           </button>
         </div>
       )}
@@ -79,80 +79,17 @@ function AppRow({
   return (
     <button
       onClick={onOpen}
-      style={{
-        background: 'var(--surface)',
-        border: '1px solid var(--border-light)',
-        borderRadius: 'var(--radius)',
-        padding: '0.875rem 1rem',
-        width: '100%',
-        textAlign: 'left',
-        cursor: 'pointer',
-        display: 'block',
-      }}
+      className="bg-surface border border-border-light rounded py-3.5 px-4 w-full text-left cursor-pointer block"
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.875rem' }}>
-        <span style={{ flexShrink: 0 }}>{icon}</span>
-        <span style={{ flex: 1, fontSize: 'var(--text-15)', color: 'var(--text-primary)' }}>
+      <div className="flex items-center gap-3.5">
+        <span className="shrink-0">{icon}</span>
+        <span className="flex-1 text-15 text-text-primary">
           {label}
         </span>
         <CaretRight size={16} weight="bold" color="var(--text-muted)" />
       </div>
-      <p style={hintStyle}>{hint}</p>
+      <p className="text-13 text-text-muted leading-normal mt-1.5" style={{ paddingLeft: 'calc(20px + 0.875rem)' }}>{hint}</p>
     </button>
   );
 }
 
-const disclosureBtnStyle: React.CSSProperties = {
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: '0.375rem',
-  background: 'none',
-  border: 'none',
-  cursor: 'pointer',
-  padding: '0.75rem 0',
-  marginTop: '0.5rem',
-  fontSize: 'var(--text-13)',
-  color: 'var(--text-secondary)',
-};
-
-const hintStyle: React.CSSProperties = {
-  fontSize: 'var(--text-13)',
-  color: 'var(--text-muted)',
-  margin: '0.375rem 0 0',
-  paddingLeft: 'calc(20px + 0.875rem)',
-  lineHeight: 'var(--leading-normal)',
-};
-
-const advancedHintStyle: React.CSSProperties = {
-  fontSize: 'var(--text-13)',
-  color: 'var(--text-muted)',
-  marginTop: '0.125rem',
-  marginBottom: '0.5rem',
-  lineHeight: 'var(--leading-normal)',
-};
-
-const feedUrlBoxStyle: React.CSSProperties = {
-  background: 'var(--surface)',
-  border: '1px solid var(--border-light)',
-  borderRadius: 'var(--radius)',
-  padding: '0.75rem',
-  fontFamily: 'var(--font-mono)',
-  fontSize: 'var(--text-12)',
-  color: 'var(--text-secondary)',
-  wordBreak: 'break-all',
-  marginBottom: '0.5rem',
-};
-
-const copyBtnStyle: React.CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-  gap: '0.625rem',
-  padding: '0.625rem 0.875rem',
-  background: 'var(--surface)',
-  border: '1px solid var(--border-light)',
-  borderRadius: 'var(--radius-sm)',
-  cursor: 'pointer',
-  width: '100%',
-  fontSize: 'var(--text-14)',
-  color: 'var(--text-primary)',
-};

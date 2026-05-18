@@ -118,137 +118,76 @@ function FloatingCalendar({
     }
   }
 
-  const navBtnStyle: React.CSSProperties = {
-    width: 30,
-    height: 30,
-    borderRadius: 'var(--radius-xs)',
-    background: 'var(--bg)',
-    border: '1px solid var(--border-light)',
-    color: 'var(--text-secondary)',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
-  };
-
   return createPortal(
     <>
       <div
         role="presentation"
-        style={{ position: 'fixed', inset: 0, zIndex: Z_FLOAT }}
+        className="fixed inset-0 z-float"
         onClick={onClose}
       />
       <div
+        className="fixed overflow-hidden bg-surface rounded-[16px] border border-border shadow-elevated"
         style={{
-          position: 'fixed',
           top,
           left,
           width: calWidth,
           zIndex: Z_FLOAT + 1,
-          background: 'var(--surface)',
-          borderRadius: 16,
-          boxShadow: 'var(--shadow-elevated)',
-          border: '1px solid var(--border)',
-          overflow: 'hidden',
         }}
       >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '0.75rem 1rem 0.625rem',
-            borderBottom: '1px solid var(--border-light)',
-          }}
-        >
+        <div className="flex items-center justify-between px-4 pt-3 pb-2.5 border-b border-border-light">
           <button
             onClick={onClose}
-            style={{
-              fontSize: 'var(--text-14)',
-              color: 'var(--text-secondary)',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-            }}
+            className="text-14 text-text-secondary bg-transparent border-0 cursor-pointer p-0"
           >
             Cancel
           </button>
           <button
             onClick={() => onSelect(selectedDate)}
-            style={{
-              height: 28,
-              padding: '0 0.75rem',
-              borderRadius: 'var(--radius-xs)',
-              background: 'var(--sage)',
-              color: 'var(--on-sage)',
-              fontSize: 'var(--text-14)',
-              fontWeight: 'var(--font-semibold)',
-              border: 'none',
-              cursor: 'pointer',
-            }}
+            className="h-7 px-3 rounded-xs bg-sage text-on-sage text-14 font-semibold border-0 cursor-pointer"
           >
             Done
           </button>
         </div>
 
-        <div style={{ padding: '0.625rem 0.75rem 0.375rem' }}>
+        <div className="px-3 pt-2.5 pb-1.5">
           <input
             key={selectedDate}
             type="text"
             defaultValue={selectedDate ? fmtDisplay(selectedDate) : ''}
             onBlur={handleDateInputBlur}
             placeholder="Apr 17, 2026"
-            style={{
-              width: '100%',
-              boxSizing: 'border-box',
-              padding: '0.5625rem 0.75rem',
-              borderRadius: 'var(--radius-sm)',
-              border: '0.125rem solid var(--sage)',
-              background: 'var(--bg)',
-              outline: 'none',
-              fontSize: 'var(--text-15)',
-              fontWeight: 'var(--font-medium)',
-              color: 'var(--text-primary)',
-            }}
+            className="w-full box-border rounded-sm border-2 border-sage bg-bg outline-none text-15 font-medium text-text-primary"
+            style={{ padding: '0.5625rem 0.75rem' }}
           />
         </div>
 
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '0.25rem 0.875rem',
-          }}
-        >
-          <span style={{ fontSize: 'var(--text-15)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)' }}>
+        <div className="flex items-center justify-between px-[14px] py-1">
+          <span className="text-15 font-bold text-text-primary">
             {MONTH_NAMES[viewMonth]} {viewYear}
           </span>
-          <div style={{ display: 'flex', gap: 6 }}>
-            <button style={navBtnStyle} aria-label="Previous month" onClick={prevMonth}>
+          <div className="flex gap-1.5">
+            <button
+              className="w-[30px] h-[30px] rounded-xs bg-bg border border-border-light text-text-secondary cursor-pointer flex items-center justify-center shrink-0"
+              aria-label="Previous month"
+              onClick={prevMonth}
+            >
               <CaretLeft size={12} weight="bold" />
             </button>
-            <button style={navBtnStyle} aria-label="Next month" onClick={nextMonth}>
+            <button
+              className="w-[30px] h-[30px] rounded-xs bg-bg border border-border-light text-text-secondary cursor-pointer flex items-center justify-center shrink-0"
+              aria-label="Next month"
+              onClick={nextMonth}
+            >
               <CaretRight size={12} weight="bold" />
             </button>
           </div>
         </div>
 
-        <div
-          style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', padding: '0 0.5rem' }}
-        >
+        <div className="grid grid-cols-7 px-2">
           {DAY_HEADERS.map((h) => (
             <div
               key={h}
-              style={{
-                textAlign: 'center',
-                fontSize: 'var(--text-11)',
-                fontWeight: 'var(--font-semibold)',
-                color: 'var(--text-muted)',
-                padding: '0.125rem 0',
-              }}
+              className="text-center text-11 font-semibold text-text-muted py-0.5"
             >
               {h}
             </div>
@@ -256,12 +195,8 @@ function FloatingCalendar({
         </div>
 
         <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(7, 1fr)',
-            padding: '0 0.5rem 0.625rem',
-            gap: '0.0625rem 0',
-          }}
+          className="grid grid-cols-7 px-2 pb-2.5"
+          style={{ gap: '0.0625rem 0' }}
         >
           {cells.map((cell, i) => {
             const isSelected = cell.dateStr === selectedDate;
@@ -280,16 +215,13 @@ function FloatingCalendar({
                     setViewMonth(parseInt(cell.dateStr.slice(5, 7)) - 1);
                   }
                 }}
+                className="w-9 h-9 mx-auto rounded-full flex items-center justify-center text-13"
                 style={{
-                  width: 36,
-                  height: 36,
-                  margin: '0 auto',
-                  borderRadius: '50%',
                   border:
                     isToday && !isSelected
                       ? '0.125rem solid var(--sage)'
                       : '0.125rem solid transparent',
-                  background: isSelected ? 'var(--sage)' : 'none',
+                  background: isSelected ? 'var(--sage)' : 'transparent',
                   color: isSelected
                     ? 'var(--on-sage)'
                     : isFuture
@@ -299,13 +231,9 @@ function FloatingCalendar({
                         : isToday
                           ? 'var(--sage)'
                           : 'var(--text-primary)',
-                  fontSize: 'var(--text-13)',
                   fontWeight: isSelected || isToday ? 'var(--font-semibold)' : 'var(--font-normal)',
                   cursor: isClickable ? 'pointer' : 'default',
                   opacity: isClickable ? 1 : 0.35,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
                 }}
               >
                 {cell.day}
@@ -348,12 +276,8 @@ export function FloatingDateRow({
         {icon}
         <span style={labelStyle}>{label}</span>
         <span
-          style={{
-            flex: 1,
-            fontSize: 'var(--text-14)',
-            color: value ? 'var(--text-primary)' : 'var(--text-muted)',
-            textAlign: 'left',
-          }}
+          className="flex-1 text-14 text-left"
+          style={{ color: value ? 'var(--text-primary)' : 'var(--text-muted)' }}
         >
           {value ? fmtDate(value) : 'Not set'}
         </span>

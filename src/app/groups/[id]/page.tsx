@@ -30,7 +30,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
   if (!group) {
     return (
       <PageContainer width="3xl">
-        <div style={{ paddingTop: 64, textAlign: 'center', color: 'var(--text-muted)' }}>
+        <div className="pt-16 text-center text-text-muted">
           Group not found
         </div>
       </PageContainer>
@@ -47,71 +47,33 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
 
   return (
     <PageContainer width="3xl">
-    <div style={{ paddingBottom: 32 }}>
+    <div className="pb-8">
       {/* ── Sticky nav bar ── */}
       <div
-        style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 'var(--z-header)',
-          background: 'var(--bg)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          height: 54,
-        }}
+        className="sticky top-0 bg-bg flex items-center justify-between h-[54px] z-header"
       >
         <button
           onClick={() => router.push('/groups')}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 4,
-            fontSize: 'var(--text-13)',
-            color: 'var(--sage)',
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            flexShrink: 0,
-          }}
+          className="inline-flex items-center gap-1 text-13 text-sage bg-transparent border-none cursor-pointer shrink-0"
         >
           <CaretLeft size={16} />
           Back
         </button>
 
         <span
-          style={{
-            fontSize: 'var(--text-14)',
-            fontWeight: 'var(--font-medium)',
-            color: 'var(--text-secondary)',
-            flex: 1,
-            textAlign: 'center',
-            padding: '0 0.5rem',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-          }}
+          className="text-14 font-medium text-text-secondary flex-1 text-center overflow-hidden text-ellipsis whitespace-nowrap px-2"
         >
           {scrolled ? group.name : ''}
         </span>
 
         <button
           onClick={() => setShowEdit(true)}
+          className="rounded-xs bg-sage text-on-sage border-none cursor-pointer flex items-center font-semibold whitespace-nowrap shrink-0"
           style={{
             height: scrolled ? 30 : 36,
             padding: scrolled ? '0 0.625rem' : '0 0.75rem',
-            borderRadius: 'var(--radius-xs)',
-            background: 'var(--sage)',
-            color: 'var(--on-sage)',
-            border: 'none',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
             gap: 5,
             fontSize: scrolled ? 'var(--text-13)' : 'var(--text-14)',
-            fontWeight: 'var(--font-semibold)',
-            whiteSpace: 'nowrap',
-            flexShrink: 0,
             transition: 'height 0.25s ease, padding 0.25s ease, font-size 0.25s ease',
           }}
         >
@@ -121,29 +83,16 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
       </div>
 
       {/* ── Group header card ── */}
-      <div
-        style={{
-          background: 'var(--surface)',
-          borderRadius: 'var(--radius-lg)',
-          border: '1px solid var(--border-light)',
-          padding: '1.25rem',
-          marginBottom: 14,
-        }}
-      >
-        <div style={{ marginBottom: 10 }}>
+      <div className="bg-surface rounded-lg border border-border-light p-5 mb-3.5">
+        <div className="mb-2.5">
           <h1
-            style={{
-              fontSize: 'var(--text-22)',
-              fontWeight: 'var(--font-bold)',
-              color: 'var(--text-primary)',
-              letterSpacing: 'var(--tracking-tight-2)',
-              marginBottom: iAmLeader ? 4 : 0,
-            }}
+            className="text-22 font-bold text-text-primary tracking-tight-2"
+            style={{ marginBottom: iAmLeader ? 4 : 0 }}
           >
             {group.name}
           </h1>
           {iAmLeader && (
-            <span style={{ fontSize: 'var(--text-12)', color: 'var(--sage)', fontWeight: 'var(--font-medium)' }}>
+            <span className="text-12 text-sage font-medium">
               You&apos;re a leader
             </span>
           )}
@@ -151,37 +100,18 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
 
         {/* Consistent chip row: always show all three */}
         <div
-          style={{
-            display: 'flex',
-            gap: 8,
-            marginBottom: group.description ? 14 : 0,
-            flexWrap: 'wrap',
-          }}
+          className="flex gap-2 flex-wrap"
+          style={{ marginBottom: group.description ? 14 : 0 }}
         >
           <span
-            style={{
-              fontSize: 'var(--text-11)',
-              fontWeight: 'var(--font-medium)',
-              padding: '0.1875rem 0.625rem',
-              borderRadius: 'var(--radius-pill)',
-              background: 'var(--sage-light)',
-              color: 'var(--sage)',
-            }}
+            className="text-11 font-medium rounded-pill bg-sage-light text-sage"
+            style={{ padding: '0.1875rem 0.625rem' }}
           >
             {group.memberIds.length} {group.memberIds.length === 1 ? 'member' : 'members'}
           </span>
           <span
-            style={{
-              fontSize: 'var(--text-11)',
-              fontWeight: 'var(--font-medium)',
-              padding: '0.1875rem 0.625rem',
-              borderRadius: 'var(--radius-pill)',
-              background: 'var(--blue-light)',
-              color: 'var(--blue)',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 4,
-            }}
+            className="text-11 font-medium rounded-pill bg-blue-light text-blue inline-flex items-center gap-1"
+            style={{ padding: '0.1875rem 0.625rem' }}
           >
             <Crown size={11} />
             {leaders.length} {leaders.length === 1 ? 'leader' : 'leaders'}
@@ -190,14 +120,8 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
 
         {group.description && (
           <p
-            style={{
-              fontSize: 'var(--text-13)',
-              color: 'var(--text-secondary)',
-              lineHeight: 'var(--leading-loose)',
-              paddingLeft: 12,
-              borderLeft: '0.125rem solid var(--sage-mid)',
-              marginTop: 14,
-            }}
+            className="text-13 text-text-secondary leading-loose pl-3 mt-3.5"
+            style={{ borderLeft: '0.125rem solid var(--sage-mid)' }}
           >
             {group.description}
           </p>
@@ -206,16 +130,10 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
 
       {/* ── Leaders ── */}
       {leaders.length > 0 && (
-        <div style={{ marginBottom: 14 }}>
+        <div className="mb-3.5">
           <SectionLabel>Leaders</SectionLabel>
           <div
-            className="no-last-border"
-            style={{
-              background: 'var(--surface)',
-              borderRadius: 'var(--radius)',
-              border: '1px solid var(--border-light)',
-              overflow: 'hidden',
-            }}
+            className="no-last-border bg-surface rounded border border-border-light overflow-hidden"
           >
             {leaders.map((leader, i) => {
               const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
@@ -223,16 +141,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
                 <Link
                   key={leader.id}
                   href={`/person/${leader.id}?from=/groups/${id}`}
-                  className="row-card-hover"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 12,
-                    paddingTop: 12,
-                    paddingBottom: 12,
-                    borderBottom: '1px solid var(--border-light)',
-                    textDecoration: 'none',
-                  }}
+                  className="row-card-hover flex items-center gap-3 py-3 border-b border-border-light no-underline"
                 >
                   <AvatarBadge
                     name={fullName(leader)}
@@ -241,15 +150,13 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
                     bg={palette.bg}
                     color={palette.color}
                   />
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div
-                      style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}
-                    >
-                      <span style={{ fontSize: 'var(--text-14)', fontWeight: 'var(--font-semibold)', color: 'var(--text-primary)' }}>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="text-14 font-semibold text-text-primary">
                         {fullName(leader)}
                       </span>
                       {leader.alternativeName && (
-                        <span style={{ fontSize: 'var(--text-11)', color: 'var(--text-muted)' }}>
+                        <span className="text-11 text-text-muted">
                           {leader.alternativeName}
                         </span>
                       )}
@@ -267,18 +174,12 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
       <div>
         <SectionLabel>Group members · {members.length}</SectionLabel>
         {members.length === 0 ? (
-          <p style={{ fontSize: 'var(--text-13)', color: 'var(--text-muted)', fontStyle: 'italic' }}>
+          <p className="text-13 text-text-muted italic">
             No members yet. Tap Edit to add members.
           </p>
         ) : (
           <div
-            className="no-last-border"
-            style={{
-              background: 'var(--surface)',
-              borderRadius: 'var(--radius)',
-              border: '1px solid var(--border-light)',
-              overflow: 'hidden',
-            }}
+            className="no-last-border bg-surface rounded border border-border-light overflow-hidden"
           >
             {members.map((m, i) => {
               const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
@@ -287,16 +188,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
                 <Link
                   key={m.id}
                   href={`/person/${m.id}?from=/groups/${id}`}
-                  className="row-card-hover"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 12,
-                    paddingTop: 12,
-                    paddingBottom: 12,
-                    borderBottom: '1px solid var(--border-light)',
-                    textDecoration: 'none',
-                  }}
+                  className="row-card-hover flex items-center gap-3 py-3 border-b border-border-light no-underline"
                 >
                   <AvatarBadge
                     name={fullName(m)}
@@ -305,22 +197,20 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
                     bg={palette.bg}
                     color={palette.color}
                   />
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div
-                      style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}
-                    >
-                      <span style={{ fontSize: 'var(--text-14)', fontWeight: 'var(--font-semibold)', color: 'var(--text-primary)' }}>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="text-14 font-semibold text-text-primary">
                         {fullName(m)}
                       </span>
                       {m.alternativeName && (
-                        <span style={{ fontSize: 'var(--text-11)', color: 'var(--text-muted)' }}>
+                        <span className="text-11 text-text-muted">
                           {m.alternativeName}
                         </span>
                       )}
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
+                    <div className="flex items-center gap-1 mt-0.5">
                       {m.lastContactDate && (
-                        <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>
+                        <span className="text-12 text-text-muted">
                           &nbsp;· {getTimeAgo(m.lastContactDate)}
                         </span>
                       )}

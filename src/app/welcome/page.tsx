@@ -63,56 +63,22 @@ export default function WelcomePage() {
 
   if (done) {
     return (
-      <div
-        style={{
-          minHeight: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          textAlign: 'center',
-          padding: '2rem 1.25rem',
-          gap: 16,
-        }}
-      >
+      <div className="min-h-screen flex flex-col items-center justify-center text-center py-8 px-5 gap-4">
         <Logo height={88} />
-        <div
-          style={{
-            width: 72,
-            height: 72,
-            borderRadius: '50%',
-            background: 'var(--sage-light)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
+        <div className="w-[72px] h-[72px] rounded-full bg-sage-light flex items-center justify-center">
           <CheckCircle size={36} color="var(--sage)" weight="fill" />
         </div>
-        <h1
-          className="font-display"
-          style={{ fontSize: 'var(--text-24)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)' }}
-        >
+        <h1 className="font-display text-24 font-bold text-text-primary">
           Thank you for visiting!
         </h1>
-        <p style={{ fontSize: 'var(--text-15)', color: 'var(--text-secondary)', lineHeight: 'var(--leading-normal)', maxWidth: 320 }}>
+        <p className="text-15 text-text-secondary leading-normal max-w-[320px]">
           We've received your info. Someone from our Welcome Team will reach out to you soon. We're
           so glad you're here.
         </p>
         <button
           type="button"
           onClick={handleReset}
-          style={{
-            marginTop: 8,
-            padding: '0.75rem 1.25rem',
-            borderRadius: 'var(--radius-md)',
-            border: '1px solid var(--border)',
-            background: 'transparent',
-            color: 'var(--text-secondary)',
-            fontSize: 'var(--text-15)',
-            fontWeight: 'var(--font-semibold)',
-            cursor: 'pointer',
-          }}
+          className="mt-2 py-3 px-5 rounded-md border border-border bg-transparent text-text-secondary text-15 font-semibold cursor-pointer"
         >
           Welcome another newcomer
         </button>
@@ -121,16 +87,13 @@ export default function WelcomePage() {
   }
 
   return (
-    <div style={{ paddingTop: 24, paddingBottom: 48 }}>
-      <header style={{ textAlign: 'center', marginBottom: 24 }}>
+    <div className="pt-6 pb-12">
+      <header className="text-center mb-6">
         <Logo height={96} style={{ margin: '0 auto 16px' }} />
-        <h1
-          className="font-display"
-          style={{ fontSize: 'var(--text-24)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)', marginBottom: 6 }}
-        >
+        <h1 className="font-display text-24 font-bold text-text-primary mb-[6px]">
           Welcome!
         </h1>
-        <p style={{ fontSize: 'var(--text-14)', color: 'var(--text-muted)', lineHeight: 'var(--leading-comfortable)' }}>
+        <p className="text-14 text-text-muted leading-comfortable">
           We'd love to get to know you. Fill out this card so we can stay in touch.
         </p>
       </header>
@@ -143,7 +106,7 @@ export default function WelcomePage() {
         tabIndex={-1}
         autoComplete="off"
         aria-hidden="true"
-        style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, opacity: 0 }}
+        className="absolute opacity-0 left-[-9999px] w-px h-px"
       />
 
       <VisitorIntakeForm
@@ -154,16 +117,7 @@ export default function WelcomePage() {
       />
 
       {error && (
-        <p
-          style={{
-            background: 'var(--red-light, #fee2e2)',
-            color: 'var(--red, #b91c1c)',
-            padding: '0.75rem 1rem',
-            borderRadius: 'var(--radius)',
-            fontSize: 'var(--text-13)',
-            marginBottom: 16,
-          }}
-        >
+        <p className="bg-red-light text-red py-3 px-4 rounded text-13 mb-4">
           {error}
         </p>
       )}
@@ -171,15 +125,10 @@ export default function WelcomePage() {
       <button
         onClick={() => formRef.current?.save()}
         disabled={!canSubmit || submitting}
+        className="w-full py-[0.875rem] px-5 rounded-md border-none text-16 font-semibold"
         style={{
-          width: '100%',
-          padding: '0.875rem 1.25rem',
-          borderRadius: 'var(--radius-md)',
-          border: 'none',
           background: canSubmit && !submitting ? 'var(--sage)' : 'var(--border)',
           color: canSubmit && !submitting ? 'var(--on-sage)' : 'var(--text-muted)',
-          fontSize: 'var(--text-16)',
-          fontWeight: 'var(--font-semibold)',
           cursor: canSubmit && !submitting ? 'pointer' : 'not-allowed',
         }}
       >

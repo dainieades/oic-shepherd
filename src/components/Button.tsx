@@ -37,10 +37,6 @@ export function Button({
     border: 'none',
     cursor: disabled ? 'default' : 'pointer',
     transition: 'background 0.15s',
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
   };
 
   const variants: Record<string, React.CSSProperties> = {
@@ -72,7 +68,7 @@ export function Button({
       type={type}
       onClick={disabled ? undefined : onClick}
       disabled={disabled}
-      className={className}
+      className={`inline-flex items-center justify-center gap-1.5 ${className ?? ''}`}
       aria-label={ariaLabel}
       style={{ ...base, ...variants[variant], ...styleProp }}
     >

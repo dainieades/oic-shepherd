@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useFloating, autoUpdate, offset, flip, size } from '@floating-ui/react';
 import { Check } from '@phosphor-icons/react';
-import { Z_NESTED } from '@/lib/constants';
 
 interface PickerOption {
   value: string;
@@ -91,40 +90,24 @@ export default function PickerMenu({
   return createPortal(
     <div
       ref={refs.setFloating}
+      className="bg-surface rounded-md border border-border-light overflow-y-auto shadow-elevated z-nested"
       style={{
         ...(anchorRef?.current ? floatingStyles : fallbackStyle),
-        background: 'var(--surface)',
-        borderRadius: 'var(--radius-md)',
-        boxShadow: 'var(--shadow-elevated)',
-        border: '1px solid var(--border-light)',
         maxHeight: 300,
-        overflowY: 'auto',
-        zIndex: Z_NESTED,
       }}
     >
       {showSearch && (
         <div
-          style={{
-            padding: '0.625rem 0.875rem',
-            borderBottom: '1px solid var(--border-light)',
-            position: 'sticky',
-            top: 0,
-            background: 'var(--surface)',
-          }}
+          className="sticky top-0 border-b border-border-light bg-surface"
+          style={{ padding: '0.625rem 0.875rem' }}
         >
           <input
             autoFocus
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search…"
-            style={{
-              width: '100%',
-              border: 'none',
-              outline: 'none',
-              fontSize: 'var(--text-14)',
-              background: 'transparent',
-              color: 'var(--text-primary)',
-            }}
+            className="w-full text-14 text-text-primary outline-none"
+            style={{ border: 'none', background: 'transparent' }}
           />
         </div>
       )}
@@ -139,36 +122,26 @@ export default function PickerMenu({
               onSelect(opt.value);
               if (!multiSelect) onClose();
             }}
+            className="w-full flex items-center gap-2.5 text-14 cursor-pointer text-left"
             style={{
-              width: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 10,
               padding: '0.625rem 0.875rem',
               background: isSelected ? 'var(--sage-light)' : 'none',
               border: 'none',
               borderBottom: '1px solid var(--border-light)',
-              fontSize: 'var(--text-14)',
-              cursor: 'pointer',
-              textAlign: 'left' as const,
             }}
           >
             {opt.icon && (
               <span
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  flexShrink: 0,
-                  color: isSelected ? 'var(--sage)' : 'var(--text-muted)',
-                }}
+                className="inline-flex items-center shrink-0"
+                style={{ color: isSelected ? 'var(--sage)' : 'var(--text-muted)' }}
               >
                 {opt.icon}
               </span>
             )}
-            <span style={{ flex: 1 }}>
+            <span className="flex-1">
               <span
+                className="block"
                 style={{
-                  display: 'block',
                   fontWeight: isSelected ? 'var(--font-semibold)' : 'var(--font-normal)',
                   color: isSelected ? 'var(--sage)' : 'var(--text-primary)',
                 }}
@@ -176,30 +149,20 @@ export default function PickerMenu({
                 {opt.label}
               </span>
               {opt.description && (
-                <span
-                  style={{
-                    display: 'block',
-                    fontSize: 'var(--text-12)',
-                    color: 'var(--text-muted)',
-                    marginTop: 1,
-                  }}
-                >
+                <span className="block text-12 text-text-muted" style={{ marginTop: 1 }}>
                   {opt.description}
                 </span>
               )}
             </span>
             {multiSelect ? (
               <span
+                className="inline-flex items-center justify-center shrink-0"
                 style={{
                   width: 16,
                   height: 16,
                   borderRadius: 4,
                   border: `0.125rem solid ${isSelected ? 'var(--sage)' : 'var(--border)'}`,
                   background: isSelected ? 'var(--sage)' : 'transparent',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0,
                 }}
               >
                 {isSelected && <Check size={10} color="var(--on-sage)" weight="bold" />}

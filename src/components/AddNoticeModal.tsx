@@ -33,10 +33,8 @@ import {
 } from '@/lib/types';
 import { fullName } from '@/lib/utils';
 import {
-  BACKDROP_COLOR,
   NOTICE_VISIBILITY_WARNING_DISMISS_DAYS,
   NOTICE_VISIBILITY_WARNING_STORAGE_KEY,
-  Z_NESTED,
 } from '@/lib/constants';
 import PersonFamilyPicker from './PersonFamilyPicker';
 import PickerMenu from './PickerMenu';
@@ -284,7 +282,7 @@ export default function AddNoticeModal({
     <>
       <BottomSheet onClose={onClose} variant="dialog">
         {showWhoPicker && (
-          <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <div className="flex-1 overflow-hidden flex flex-col">
             <PersonFamilyPicker
               data={data}
               initialFamilyIds={familyIds}
@@ -303,22 +301,7 @@ export default function AddNoticeModal({
         {isEditing && notice && !showWhoPicker && !readOnly && (
           <button
             onClick={() => setShowDeleteConfirm(true)}
-            style={{
-              position: 'absolute',
-              bottom: 28,
-              left: 24,
-              width: 44,
-              height: 44,
-              borderRadius: '50%',
-              background: 'var(--red-light)',
-              border: '0.09375rem solid var(--red-border)',
-              color: 'var(--red)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              boxShadow: 'var(--shadow-card)',
-            }}
+            className="absolute bottom-7 left-6 w-11 h-11 rounded-full bg-red-light border border-red-border text-red flex items-center justify-center cursor-pointer shadow-[var(--shadow-card)]"
             title="Delete notice"
           >
             <Trash size={18} />
@@ -341,31 +324,12 @@ export default function AddNoticeModal({
 
             {/* Scrollable body */}
             <div
-              style={{
-                flex: 1,
-                overflowY: 'auto',
-                padding: `1rem 1.25rem ${isEditing && !readOnly ? 80 : 16}px`,
-                background: 'var(--bg)',
-                display: 'flex',
-                flexDirection: 'column',
-              }}
+              className="flex-1 overflow-y-auto bg-bg flex flex-col"
+              style={{ padding: `1rem 1.25rem ${isEditing && !readOnly ? 80 : 16}px` }}
             >
               {/* Fields card */}
-              <div
-                style={{
-                  background: 'var(--surface)',
-                  borderRadius: 'var(--radius)',
-                  border: '1px solid var(--border-light)',
-                  overflow: 'hidden',
-                  padding: '0 1rem',
-                  marginBottom: 16,
-                  flexShrink: 0,
-                }}
-              >
-                <div
-                  className="no-last-border"
-                  style={{ display: 'flex', flexDirection: 'column', gap: 0 }}
-                >
+              <div className="bg-surface rounded border border-border-light overflow-hidden px-4 mb-4 shrink-0">
+                <div className="no-last-border flex flex-col">
                   {/* For whom — top row */}
                   <FieldRow
                     icon={<User size={16} />}
@@ -407,53 +371,24 @@ export default function AddNoticeModal({
                   {/* Urgency */}
                   <button
                     ref={urgencyBtnRef}
-                    className={readOnly ? undefined : 'field-row-hover'}
+                    className={`flex items-center gap-2.5 py-3 bg-transparent border-none border-b border-border-light text-left${readOnly ? ' cursor-not-allowed' : ' cursor-pointer'}${readOnly ? '' : ' field-row-hover'}`}
                     onClick={readOnly ? undefined : () => setShowUrgencyPicker((v) => !v)}
                     disabled={readOnly}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 10,
-                      paddingTop: 12,
-                      paddingBottom: 12,
-                      background: 'none',
-                      border: 'none',
-                      borderBottom: '1px solid var(--border-light)',
-                      cursor: readOnly ? 'not-allowed' : 'pointer',
-                      textAlign: 'left' as const,
-                    }}
                   >
-                    <span
-                      style={{
-                        width: 24,
-                        display: 'flex',
-                        justifyContent: 'center',
-                        flexShrink: 0,
-                        color: 'var(--text-muted)',
-                      }}
-                    >
+                    <span className="w-6 flex justify-center shrink-0 text-text-muted">
                       <Warning size={16} />
                     </span>
-                    <span
-                      style={{
-                        fontSize: 'var(--text-12)',
-                        color: 'var(--text-muted)',
-                        width: 60,
-                        flexShrink: 0,
-                      }}
-                    >
+                    <span className="text-12 text-text-muted w-[60px] shrink-0">
                       Urgency
                     </span>
-                    <span style={{ flex: 1 }}>
+                    <span className="flex-1">
                       <span
+                        className="text-12 font-semibold rounded-pill border"
                         style={{
-                          fontSize: 'var(--text-12)',
-                          fontWeight: 'var(--font-semibold)',
                           padding: '0.1875rem 0.5625rem',
-                          borderRadius: 'var(--radius-pill)',
                           background: urgencyStyle.bg,
                           color: urgencyStyle.color,
-                          border: `1px solid ${urgencyStyle.border}`,
+                          borderColor: urgencyStyle.border,
                           userSelect: readOnly ? 'text' : undefined,
                           cursor: readOnly ? 'text' : undefined,
                         }}
@@ -480,37 +415,14 @@ export default function AddNoticeModal({
                     (() => {
                       const creator = data.personas.find((p) => p.id === notice.createdBy);
                       return (
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 10,
-                            paddingTop: 12,
-                            paddingBottom: 12,
-                          }}
-                        >
-                          <span
-                            style={{
-                              width: 24,
-                              display: 'flex',
-                              justifyContent: 'center',
-                              flexShrink: 0,
-                              color: 'var(--text-muted)',
-                            }}
-                          >
+                        <div className="flex items-center gap-2.5 py-3">
+                          <span className="w-6 flex justify-center shrink-0 text-text-muted">
                             <UserPlus size={16} />
                           </span>
-                          <span
-                            style={{
-                              fontSize: 'var(--text-12)',
-                              color: 'var(--text-muted)',
-                              width: 60,
-                              flexShrink: 0,
-                            }}
-                          >
+                          <span className="text-12 text-text-muted w-[60px] shrink-0">
                             Added by
                           </span>
-                          <span style={{ flex: 1, fontSize: 'var(--text-14)', color: 'var(--text-secondary)' }}>
+                          <span className="flex-1 text-14 text-text-secondary">
                             {creator?.name ?? 'Unknown'} ·{' '}
                             {format(parseISO(notice.createdAt), 'MMM d, yyyy')}
                           </span>
@@ -527,21 +439,7 @@ export default function AddNoticeModal({
                 placeholder="Notices are things worth flagging for your shepherds or pastor — a health condition, a difficult season, or anything that calls for collective awareness."
                 autoFocus={!isEditing && !readOnly}
                 readOnly={readOnly}
-                style={{
-                  flex: 1,
-                  width: '100%',
-                  padding: 12,
-                  minHeight: 200,
-                  background: 'var(--surface)',
-                  border: '1px solid var(--border-light)',
-                  borderRadius: 'var(--radius-sm)',
-                  fontSize: 'var(--text-14)',
-                  color: 'var(--text-primary)',
-                  resize: 'vertical',
-                  outline: 'none',
-                  lineHeight: 'var(--leading-normal)',
-                  boxSizing: 'border-box',
-                }}
+                className="flex-1 w-full p-3 min-h-[200px] bg-surface border border-border-light rounded-sm text-14 text-text-primary resize-y outline-none leading-normal box-border"
               />
             </div>
           </>
@@ -615,43 +513,13 @@ export default function AddNoticeModal({
 
 function ReadOnlyNoticeHeader({ onClose }: { onClose: () => void }) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '0.875rem 1.25rem 0.75rem',
-        flexShrink: 0,
-        borderBottom: '1px solid var(--border-light)',
-        gap: 12,
-      }}
-    >
-      <span style={{ width: 60, flexShrink: 0 }} />
-      <span
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-          minWidth: 0,
-        }}
-      >
-        <span style={{ fontSize: 'var(--text-15)', fontWeight: 'var(--font-semibold)', color: 'var(--text-primary)' }}>
+    <div className="flex items-center justify-between py-[0.875rem] px-5 pb-3 shrink-0 border-b border-border-light gap-3">
+      <span className="w-[60px] shrink-0" />
+      <span className="flex items-center gap-2 min-w-0">
+        <span className="text-15 font-semibold text-text-primary">
           Notice
         </span>
-        <span
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 4,
-            fontSize: 'var(--text-11)',
-            fontWeight: 'var(--font-semibold)',
-            padding: '0.125rem 0.5rem',
-            borderRadius: 'var(--radius-pill)',
-            background: 'var(--border-light)',
-            color: 'var(--text-muted)',
-            letterSpacing: 'var(--tracking-wide-2)',
-          }}
-        >
+        <span className="inline-flex items-center gap-1 text-11 font-semibold py-0.5 px-2 rounded-pill bg-[var(--border-light)] text-text-muted tracking-wide-2">
           <Lock size={11} weight="bold" />
           View only
         </span>
@@ -683,45 +551,24 @@ function FieldRow({
   readOnly?: boolean;
 }) {
   const interactive = !!onClick;
+  const cursorClass = interactive ? 'cursor-pointer' : readOnly ? 'cursor-not-allowed' : 'cursor-default';
   return (
     <button
       ref={btnRef}
-      className={interactive ? 'field-row-hover' : undefined}
+      className={`flex items-center gap-2.5 py-3 bg-transparent border-none border-b border-border-light text-left ${cursorClass}${interactive ? ' field-row-hover' : ''}`}
       onClick={onClick}
       disabled={!interactive}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 10,
-        paddingTop: 12,
-        paddingBottom: 12,
-        background: 'none',
-        border: 'none',
-        borderBottom: '1px solid var(--border-light)',
-        cursor: interactive ? 'pointer' : readOnly ? 'not-allowed' : 'default',
-        textAlign: 'left' as const,
-      }}
     >
-      <span
-        style={{
-          width: 24,
-          display: 'flex',
-          justifyContent: 'center',
-          flexShrink: 0,
-          color: 'var(--text-muted)',
-        }}
-      >
+      <span className="w-6 flex justify-center shrink-0 text-text-muted">
         {icon}
       </span>
-      <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)', width: 60, flexShrink: 0 }}>
+      <span className="text-12 text-text-muted w-[60px] shrink-0">
         {label}
       </span>
       <span
+        className="text-14 flex-1 break-words"
         style={{
-          fontSize: 'var(--text-14)',
           color: valueColor ?? 'var(--text-primary)',
-          flex: 1,
-          wordBreak: 'break-word',
           userSelect: readOnly ? 'text' : undefined,
           cursor: readOnly ? 'text' : undefined,
         }}
@@ -754,120 +601,45 @@ function NoticeVisibilityWarningDialog({
 
   return (
     <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: Z_NESTED,
-        background: BACKDROP_COLOR,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '0 2rem',
-      }}
+      className="fixed inset-0 flex items-center justify-center px-8 z-nested bg-backdrop"
       onClick={(e) => {
         if (e.target === e.currentTarget) onCancel();
       }}
     >
-      <div
-        style={{
-          background: 'var(--surface)',
-          borderRadius: 16,
-          width: '100%',
-          maxWidth: 360,
-          overflow: 'hidden',
-        }}
-      >
-        <div style={{ padding: '1.5rem 1.25rem 1rem', textAlign: 'center' }}>
-          <div
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: '50%',
-              background: 'var(--amber-light)',
-              color: 'var(--amber)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              margin: '0 auto 0.75rem',
-            }}
-          >
+      <div className="bg-surface rounded-[16px] w-full max-w-[360px] overflow-hidden">
+        <div className="px-5 pt-6 pb-4 text-center">
+          <div className="w-11 h-11 rounded-full bg-amber-light text-amber flex items-center justify-center mx-auto mb-3">
             <Icon size={22} weight="bold" />
           </div>
-          <p
-            style={{
-              fontSize: 'var(--text-16)',
-              fontWeight: 'var(--font-semibold)',
-              color: 'var(--text-primary)',
-              margin: '0 0 0.5rem',
-            }}
-          >
+          <p className="text-16 font-semibold text-text-primary mt-0 mb-2">
             Post this notice?
           </p>
-          <p
-            style={{
-              fontSize: 'var(--text-14)',
-              color: 'var(--text-secondary)',
-              margin: '0 0 0.5rem',
-              lineHeight: 'var(--leading-semi)',
-            }}
-          >
+          <p className="text-14 text-text-secondary mt-0 mb-2 leading-semi">
             It will be visible to{' '}
-            <strong style={{ color: 'var(--text-primary)' }}>
+            <strong className="text-text-primary">
               {audienceLabel} ({peopleLabel})
             </strong>
             .
           </p>
-          <p
-            style={{
-              fontSize: 'var(--text-13)',
-              color: 'var(--text-muted)',
-              margin: 0,
-              lineHeight: 'var(--leading-semi)',
-            }}
-          >
+          <p className="text-13 text-text-muted m-0 leading-semi">
             They may receive an email notification when you post it.
           </p>
         </div>
-        <div
-          style={{
-            padding: '0 1.25rem 0.75rem',
-            display: 'flex',
-            justifyContent: 'center',
-          }}
-        >
+        <div className="px-5 pb-3 flex justify-center">
           <CheckRow checked={dontShowAgain} onToggle={() => setDontShowAgain((v) => !v)}>
             Don&rsquo;t show this warning for {NOTICE_VISIBILITY_WARNING_DISMISS_DAYS} days
           </CheckRow>
         </div>
-        <div style={{ borderTop: '1px solid var(--border-light)', display: 'flex' }}>
+        <div className="border-t border-border-light flex">
           <button
             onClick={onCancel}
-            style={{
-              flex: 1,
-              height: 50,
-              background: 'none',
-              border: 'none',
-              borderRight: '1px solid var(--border-light)',
-              fontSize: 'var(--text-15)',
-              color: 'var(--text-secondary)',
-              cursor: 'pointer',
-              fontWeight: 'var(--font-medium)',
-            }}
+            className="flex-1 h-[50px] bg-transparent border-none border-r border-border-light text-15 text-text-secondary cursor-pointer font-medium"
           >
             Cancel
           </button>
           <button
             onClick={() => onConfirm(dontShowAgain)}
-            style={{
-              flex: 1,
-              height: 50,
-              background: 'none',
-              border: 'none',
-              fontSize: 'var(--text-15)',
-              color: 'var(--sage)',
-              cursor: 'pointer',
-              fontWeight: 'var(--font-semibold)',
-            }}
+            className="flex-1 h-[50px] bg-transparent border-none text-15 text-sage cursor-pointer font-semibold"
           >
             Post notice
           </button>

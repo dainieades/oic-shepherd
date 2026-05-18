@@ -384,6 +384,25 @@
   --leading-normal: var(--leading-normal);
   --leading-open: var(--leading-open);
   --leading-loose: var(--leading-loose);
+
+  /* Z-index scale */
+  --z-sticky: var(--z-sticky);
+  --z-page: var(--z-page);
+  --z-subheader: var(--z-subheader);
+  --z-header: var(--z-header);
+  --z-dropdown: var(--z-dropdown);
+  --z-modal: var(--z-modal);
+  --z-sheet: var(--z-sheet);
+  --z-nested: var(--z-nested);
+  --z-float: var(--z-float);
+  --z-toast: var(--z-toast);
+
+  /* Shadows */
+  --shadow-card: var(--shadow-card);
+  --shadow-elevated: var(--shadow-elevated);
+
+  /* Backdrop */
+  --color-backdrop: var(--backdrop);
 }
 
 /* ── Base ──────────────────────────────────────── */

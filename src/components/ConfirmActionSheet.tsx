@@ -28,61 +28,30 @@ export default function ConfirmActionSheet({
   const isDanger = tone === 'danger';
   return (
     <BottomSheet onClose={onCancel} compact zIndex={Z_SHEET} variant="confirm">
-      <div style={{ padding: '2rem 1.75rem 1.75rem' }}>
+      <div className="pt-8" style={{ paddingLeft: '1.75rem', paddingRight: '1.75rem', paddingBottom: '1.75rem' }}>
         <p
-          style={{
-            fontSize: 'var(--text-20)',
-            fontWeight: 'var(--font-bold)',
-            color: isDanger ? 'var(--red)' : 'var(--text-primary)',
-            textAlign: 'center',
-            marginTop: 0,
-            marginBottom: '0.625rem',
-          }}
+          className={`text-20 font-bold text-center mt-0 ${isDanger ? 'text-red' : 'text-text-primary'}`}
+          style={{ marginBottom: '0.625rem' }}
         >
           {title}
         </p>
         <p
-          style={{
-            fontSize: 'var(--text-14)',
-            color: 'var(--text-muted)',
-            textAlign: 'center',
-            lineHeight: 'var(--leading-open)',
-            marginTop: 0,
-            marginBottom: '1.75rem',
-          }}
+          className="text-14 text-text-muted text-center leading-open mt-0"
+          style={{ marginBottom: '1.75rem' }}
         >
           {description}
         </p>
         <button
           onClick={onConfirm}
-          style={{
-            width: '100%',
-            height: '2.625rem',
-            borderRadius: 'var(--radius)',
-            background: isDanger ? 'var(--red)' : 'var(--sage)',
-            color: isDanger ? 'var(--on-red)' : 'var(--on-sage)',
-            fontSize: 'var(--text-15)',
-            fontWeight: 'var(--font-semibold)',
-            border: 'none',
-            cursor: 'pointer',
-            marginBottom: '0.5rem',
-          }}
+          className={`w-full rounded text-15 font-semibold border-0 cursor-pointer mb-2 ${isDanger ? 'text-on-red bg-red' : 'text-on-sage bg-sage'}`}
+          style={{ height: '2.625rem' }}
         >
           {confirmLabel}
         </button>
         <button
           onClick={onCancel}
-          style={{
-            width: '100%',
-            height: '2.375rem',
-            borderRadius: 'var(--radius)',
-            background: 'transparent',
-            color: 'var(--text-secondary)',
-            fontSize: 'var(--text-15)',
-            fontWeight: 'var(--font-medium)',
-            border: 'none',
-            cursor: 'pointer',
-          }}
+          className="w-full rounded text-15 font-medium text-text-secondary bg-transparent border-0 cursor-pointer"
+          style={{ height: '2.375rem' }}
         >
           {cancelLabel}
         </button>

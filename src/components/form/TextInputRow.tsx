@@ -26,21 +26,11 @@ export function TextInputRow({
 }) {
   return (
     <div
-      className="field-row-hover"
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 8,
-        paddingTop: 12,
-        paddingBottom: 12,
-        paddingRight: 16,
-        borderBottom: '1px solid var(--border-light)',
-        cursor: 'text',
-      }}
+      className="field-row-hover flex items-center gap-2 pt-3 pb-3 pr-4 border-b border-border-light cursor-text"
       tabIndex={-1}
       onClick={() => inputRef.current?.focus()}
     >
-      <span style={{ width: 8, fontSize: 'var(--text-14)', color: 'var(--red)', flexShrink: 0, lineHeight: 'var(--leading-none)' }}>
+      <span className="w-2 text-14 text-red shrink-0 leading-none">
         {required ? '*' : ''}
       </span>
       {icon}

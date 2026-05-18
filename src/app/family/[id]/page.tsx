@@ -117,7 +117,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
   const family = data.families.find((f) => f.id === id);
   if (!family) {
     return (
-      <div style={{ paddingTop: 64, textAlign: 'center', color: 'var(--text-muted)' }}>
+      <div className="pt-16 text-center text-text-muted">
         Family not found
       </div>
     );
@@ -165,58 +165,32 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
 
   return (
     <div className="family-page-shell">
-    <div style={{ paddingBottom: 40 }}>
+    <div className="pb-10">
       {/* ── Nav bar ── */}
       <div
-        style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 'var(--z-header)',
-          background: 'var(--bg)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          height: 54,
-        }}
+        className="sticky top-0 bg-bg flex items-center justify-between h-[3.375rem] z-header"
       >
         <Link
           href="/"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 3,
-            fontSize: 'var(--text-13)',
-            color: 'var(--sage)',
-            textDecoration: 'none',
-            fontWeight: 'var(--font-medium)',
-          }}
+          className="inline-flex items-center gap-[0.1875rem] text-13 text-sage no-underline font-medium"
         >
           <CaretLeft size={16} />
           Back
         </Link>
 
-        <span style={{ fontSize: 'var(--text-14)', fontWeight: 'var(--font-medium)', color: 'var(--text-secondary)' }}>
+        <span className="text-14 font-medium text-text-secondary">
           {family.label.split(' ')[0]}
         </span>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div className="flex items-center gap-2">
           {tab === 'info' ? (
             <button
               onClick={() => setShowEditFamily(true)}
+              className="rounded-xs bg-sage text-on-sage border-none cursor-pointer flex items-center gap-[0.3125rem] font-semibold whitespace-nowrap"
               style={{
                 height: scrolled ? 30 : 36,
                 padding: scrolled ? '0 0.625rem' : '0 0.75rem',
-                borderRadius: 'var(--radius-xs)',
-                background: 'var(--sage)',
-                color: 'var(--on-sage)',
-                border: 'none',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 5,
                 fontSize: scrolled ? 'var(--text-13)' : 'var(--text-14)',
-                fontWeight: 'var(--font-semibold)',
-                whiteSpace: 'nowrap',
                 transition: 'height 0.25s ease, padding 0.25s ease, font-size 0.25s ease',
               }}
             >
@@ -232,20 +206,11 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                     ? () => setShowAddTodo(true)
                     : () => setShowAddNotice(true)
               }
+              className="rounded-xs bg-sage text-on-sage font-semibold border-none cursor-pointer whitespace-nowrap flex items-center gap-1"
               style={{
                 height: scrolled ? 30 : 36,
                 padding: scrolled ? '0 0.75rem' : '0 0.875rem',
-                borderRadius: 'var(--radius-xs)',
-                background: 'var(--sage)',
-                color: 'var(--on-sage)',
                 fontSize: scrolled ? 'var(--text-13)' : 'var(--text-14)',
-                fontWeight: 'var(--font-semibold)',
-                border: 'none',
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 4,
                 transition: 'height 0.25s ease, padding 0.25s ease, font-size 0.25s ease',
               }}
             >
@@ -253,21 +218,14 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
               {tab === 'logs' ? 'Log' : tab === 'todos' ? 'To-do' : 'Notice'}
             </button>
           )}
-          <div ref={kebabRef} style={{ position: 'relative' }}>
+          <div ref={kebabRef} className="relative">
             <button
               aria-label="More options"
               onClick={() => setShowKebab(!showKebab)}
+              className="rounded-full bg-surface border border-border text-text-muted flex items-center justify-center cursor-pointer"
               style={{
                 width: scrolled ? 30 : 36,
                 height: scrolled ? 30 : 36,
-                borderRadius: '50%',
-                background: 'var(--surface)',
-                border: '1px solid var(--border)',
-                color: 'var(--text-muted)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
                 transition: 'width 0.25s ease, height 0.25s ease',
               }}
             >
@@ -275,17 +233,9 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
             </button>
             {showKebab && (
               <div
+                className="absolute right-0 bg-surface border border-border rounded-md overflow-hidden min-w-[11.25rem] z-dropdown shadow-elevated"
                 style={{
-                  position: 'absolute',
-                  right: 0,
                   top: 'calc(100% + 0.375rem)',
-                  background: 'var(--surface)',
-                  border: '1px solid var(--border)',
-                  borderRadius: 'var(--radius-md)',
-                  boxShadow: 'var(--shadow-elevated)',
-                  zIndex: 'var(--z-dropdown)',
-                  minWidth: 180,
-                  overflow: 'hidden',
                 }}
               >
                 <button
@@ -293,19 +243,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                     setShowKebab(false);
                     setShowEditFamily(true);
                   }}
-                  style={{
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 10,
-                    padding: '0.8125rem 1rem',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontSize: 'var(--text-14)',
-                    color: 'var(--text-primary)',
-                    textAlign: 'left',
-                  }}
+                  className="w-full flex items-center gap-2.5 py-[0.8125rem] px-4 bg-none border-none cursor-pointer text-14 text-text-primary text-left"
                 >
                   <PencilSimpleIcon size={16} />
                   Edit info
@@ -319,7 +257,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
       <div className="family-body">
       <div className="family-sidebar-col">
       {/* ── Page header — scrolls away ── */}
-      <div style={{ padding: '1.75rem 0 1.25rem', display: 'flex', alignItems: 'center', gap: 16 }}>
+      <div className="pt-[1.75rem] pb-5 flex items-center gap-4">
         {/* Avatar / Photo */}
         <PhotoAvatar
           photo={family.photo}
@@ -336,36 +274,20 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
         />
 
         {/* Name + meta */}
-        <div style={{ flex: 1, minWidth: 0 }}>
+        <div className="flex-1 min-w-0">
           <h1
-            style={{
-              fontSize: 'var(--text-26)',
-              fontWeight: 'var(--font-extrabold)',
-              color: 'var(--text-primary)',
-              lineHeight: 'var(--leading-tight)',
-              letterSpacing: 'var(--tracking-tight-2)',
-              marginBottom: 5,
-            }}
+            className="text-26 font-extrabold text-text-primary leading-tight tracking-tight-2 mb-[0.3125rem]"
           >
             {family.label}
           </h1>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 'var(--text-13)', color: 'var(--text-secondary)' }}>{memberCountText}</span>
+          <div className="flex items-center gap-[0.3125rem] flex-wrap">
+            <span className="text-13 text-text-secondary">{memberCountText}</span>
             {familyGroups.map((g) => (
               <React.Fragment key={g.id}>
-                <span style={{ fontSize: 'var(--text-13)', color: 'var(--text-muted)' }}>·</span>
+                <span className="text-13 text-text-muted">·</span>
                 <button
                   onClick={() => setPreviewGroupId(g.id)}
-                  style={{
-                    fontSize: 'var(--text-11)',
-                    padding: '0.125rem 0.4375rem',
-                    borderRadius: 'var(--radius-pill)',
-                    background: 'var(--blue-light)',
-                    color: 'var(--blue)',
-                    fontWeight: 'var(--font-semibold)',
-                    border: 'none',
-                    cursor: 'pointer',
-                  }}
+                  className="text-11 py-[0.125rem] px-[0.4375rem] rounded-pill bg-blue-light text-blue font-semibold border-none cursor-pointer"
                 >
                   {g.name}
                 </button>
@@ -436,67 +358,28 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
       <div className="family-main-col">
       {/* ── Tabs — sticky below nav bar (mobile) ── */}
       <div
-        className="family-tabs-mobile"
-        style={{
-          position: 'sticky',
-          top: 54,
-          zIndex: Z_SUBHEADER,
-          background: 'var(--bg)',
-          display: 'flex',
-          borderBottom: '0.125rem solid var(--border-light)',
-          marginBottom: 20,
-        }}
+        className="family-tabs-mobile sticky top-[3.375rem] bg-bg flex border-b-[0.125rem] border-border-light mb-5 z-subheader"
       >
         {visibleTabs.map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
+            className="flex-1 flex items-center justify-center gap-[0.3125rem] text-13 border-none cursor-pointer bg-none py-[0.625rem] px-0 -mb-[0.125rem]"
             style={{
-              flex: 1,
-              padding: '0.625rem 0',
-              fontSize: 'var(--text-13)',
               fontWeight: tab === t ? 'var(--font-semibold)' : 'var(--font-normal)',
               color: tab === t ? 'var(--sage)' : 'var(--text-muted)',
-              background: 'none',
-              border: 'none',
               borderBottom: tab === t ? '0.125rem solid var(--sage)' : '0.125rem solid transparent',
-              cursor: 'pointer',
-              marginBottom: -2,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 5,
             }}
           >
             <TabIcon tab={t} active={tab === t} />
             {TAB_LABELS[t]}
             {t === 'todos' && incompleteTodosCount > 0 && (
-              <span
-                style={{
-                  fontSize: 'var(--text-11)',
-                  fontWeight: 'var(--font-semibold)',
-                  background: 'var(--sage)',
-                  color: 'var(--on-sage)',
-                  borderRadius: 'var(--radius-sm)',
-                  padding: '0.0625rem 0.375rem',
-                  lineHeight: 'var(--leading-normal)',
-                }}
-              >
+              <span className="text-11 font-semibold bg-sage text-on-sage rounded-sm py-[0.0625rem] px-[0.375rem] leading-normal">
                 {incompleteTodosCount}
               </span>
             )}
             {t === 'notices' && notices.length > 0 && (
-              <span
-                style={{
-                  fontSize: 'var(--text-11)',
-                  fontWeight: 'var(--font-semibold)',
-                  background: 'var(--sage)',
-                  color: 'var(--on-sage)',
-                  borderRadius: 'var(--radius-sm)',
-                  padding: '0.0625rem 0.375rem',
-                  lineHeight: 'var(--leading-normal)',
-                }}
-              >
+              <span className="text-11 font-semibold bg-sage text-on-sage rounded-sm py-[0.0625rem] px-[0.375rem] leading-normal">
                 {notices.length}
               </span>
             )}
@@ -532,13 +415,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
             return (
               <LogSection key={group.label} label={group.label} count={group.items.length}>
                 <div
-                  className="no-last-border"
-                  style={{
-                    background: 'var(--surface)',
-                    borderRadius: 'var(--radius)',
-                    overflow: 'hidden',
-                    padding: 0,
-                  }}
+                  className="no-last-border bg-surface rounded overflow-hidden p-0"
                 >
                   {rows}
                 </div>
@@ -608,7 +485,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
             />
           )}
           {notices.length > 0 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div className="flex flex-col gap-2.5">
               {(['urgent', 'moderate', 'ongoing'] as const).map((level) => {
                 const group = notices.filter((n) => n.urgency === level);
                 if (group.length === 0) return null;
@@ -627,29 +504,14 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
 
       {/* ── Family Info tab ── */}
       {tab === 'info' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <div className="flex flex-col gap-6">
           {/* Members */}
           <div>
-            <p
-              style={{
-                fontSize: 'var(--text-11)',
-                fontWeight: 'var(--font-semibold)',
-                color: 'var(--text-muted)',
-                textTransform: 'uppercase',
-                letterSpacing: 'var(--tracking-wide-6)',
-                marginBottom: 8,
-              }}
-            >
+            <p className="text-11 font-semibold text-text-muted uppercase tracking-wide-6 mb-2">
               Members
             </p>
             <div
-              className="no-last-border"
-              style={{
-                background: 'var(--surface)',
-                borderRadius: 'var(--radius)',
-                overflow: 'hidden',
-                padding: 0,
-              }}
+              className="no-last-border bg-surface rounded overflow-hidden p-0"
             >
               {members.map((m, i) => {
                 const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
@@ -657,15 +519,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                   <Link
                     key={m.id}
                     href={`/person/${m.id}?from=/family/${id}`}
-                    className="row-card-hover"
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 12,
-                      paddingTop: 12,
-                      paddingBottom: 12,
-                      borderBottom: '1px solid var(--border-light)',
-                    }}
+                    className="row-card-hover flex items-center gap-3 pt-3 pb-3 border-b border-border-light"
                   >
                     <AvatarBadge
                       name={fullName(m)}
@@ -674,30 +528,16 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                       bg={palette.bg}
                       color={palette.color}
                     />
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <p
-                        style={{
-                          fontSize: 'var(--text-14)',
-                          fontWeight: 'var(--font-semibold)',
-                          color: 'var(--text-primary)',
-                          marginBottom: 2,
-                        }}
-                      >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-14 font-semibold text-text-primary mb-[0.125rem]">
                         {fullName(m)}
                         {m.alternativeName && (
-                          <span
-                            style={{
-                              fontWeight: 'var(--font-normal)',
-                              fontSize: 'var(--text-12)',
-                              color: 'var(--text-muted)',
-                              marginLeft: 6,
-                            }}
-                          >
+                          <span className="font-normal text-12 text-text-muted ml-[0.375rem]">
                             {m.alternativeName}
                           </span>
                         )}
                       </p>
-                      <p style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>
+                      <p className="text-12 text-text-muted">
                         {getMembershipLabel(m.membershipStatus)}
                         {m.lastContactDate && (
                           <span> · Logged {format(parseISO(m.lastContactDate), 'MMM d')}</span>
@@ -709,42 +549,15 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                 );
               })}
               {family.childCount && family.childCount > 0 && (
-                <div
-                  style={{
-                    paddingTop: 11,
-                    paddingBottom: 11,
-                    borderBottom: '1px solid var(--border-light)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 12,
-                  }}
-                >
-                  <div
-                    style={{
-                      width: 38,
-                      height: 38,
-                      borderRadius: '50%',
-                      background: 'var(--sage-light)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0,
-                    }}
-                  >
+                <div className="pt-[0.6875rem] pb-[0.6875rem] border-b border-border-light flex items-center gap-3">
+                  <div className="w-[2.375rem] h-[2.375rem] rounded-full bg-sage-light flex items-center justify-center shrink-0">
                     <Baby size={20} color="var(--sage)" />
                   </div>
                   <div>
-                    <p
-                      style={{
-                        fontSize: 'var(--text-14)',
-                        fontWeight: 'var(--font-semibold)',
-                        color: 'var(--text-primary)',
-                        marginBottom: 2,
-                      }}
-                    >
+                    <p className="text-14 font-semibold text-text-primary mb-[0.125rem]">
                       Children
                     </p>
-                    <p style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>
+                    <p className="text-12 text-text-muted">
                       {family.childCount} {family.childCount === 1 ? 'child' : 'children'}
                     </p>
                   </div>
@@ -755,26 +568,11 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
 
           {/* Details */}
           <div>
-            <p
-              style={{
-                fontSize: 'var(--text-11)',
-                fontWeight: 'var(--font-semibold)',
-                color: 'var(--text-muted)',
-                textTransform: 'uppercase',
-                letterSpacing: 'var(--tracking-wide-6)',
-                marginBottom: 8,
-              }}
-            >
+            <p className="text-11 font-semibold text-text-muted uppercase tracking-wide-6 mb-2">
               Details
             </p>
             <div
-              className="no-last-border"
-              style={{
-                background: 'var(--surface)',
-                borderRadius: 'var(--radius)',
-                overflow: 'hidden',
-                padding: 0,
-              }}
+              className="no-last-border bg-surface rounded overflow-hidden p-0"
             >
               {family.primaryContactId &&
                 (() => {
@@ -788,28 +586,12 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                   icon={<UsersFour size={15} />}
                   label="Groups"
                   value={
-                    <div
-                      style={{
-                        display: 'flex',
-                        gap: 5,
-                        flexWrap: 'wrap',
-                        justifyContent: 'flex-end',
-                      }}
-                    >
+                    <div className="flex gap-[0.3125rem] flex-wrap justify-end">
                       {familyGroups.map((g) => (
                         <button
                           key={g.id}
                           onClick={() => setPreviewGroupId(g.id)}
-                          style={{
-                            fontSize: 'var(--text-11)',
-                            padding: '0.125rem 0.5rem',
-                            borderRadius: 'var(--radius-pill)',
-                            background: 'var(--blue-light)',
-                            color: 'var(--blue)',
-                            fontWeight: 'var(--font-medium)',
-                            border: 'none',
-                            cursor: 'pointer',
-                          }}
+                          className="text-11 py-[0.125rem] px-2 rounded-pill bg-blue-light text-blue font-medium border-none cursor-pointer"
                         >
                           {g.name}
                         </button>
@@ -823,23 +605,15 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                   icon={<HandHeart size={15} />}
                   label="Shepherd"
                   value={
-                    <div
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 6,
-                        alignItems: 'flex-end',
-                      }}
-                    >
+                    <div className="flex flex-col gap-1.5 items-end">
                       {familyShepherds.map((s) => {
                         const sp = s.personId ? data.people.find((p) => p.id === s.personId) : null;
                         const inner = (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <div className="flex items-center gap-1.5">
                             <AvatarBadge name={s.name} photo={sp?.photo} size={24} />
                             <span
+                              className="text-13 font-medium"
                               style={{
-                                fontSize: 'var(--text-13)',
-                                fontWeight: 'var(--font-medium)',
                                 color: sp ? 'var(--blue)' : 'var(--text-primary)',
                               }}
                             >
@@ -852,7 +626,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
                           <Link
                             key={s.id}
                             href={`/person/${sp.id}?from=/family/${id}`}
-                            style={{ textDecoration: 'none' }}
+                            className="no-underline"
                           >
                             {inner}
                           </Link>
@@ -969,24 +743,11 @@ function LogSection({
 }) {
   const [open, setOpen] = React.useState(true);
   return (
-    <div style={{ marginBottom: 16 }}>
+    <div className="mb-4">
       <button
         onClick={() => setOpen(!open)}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6,
-          padding: '0.25rem 0',
-          marginBottom: open ? 8 : 0,
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          fontSize: 'var(--text-10)',
-          fontWeight: 'var(--font-semibold)',
-          color: 'var(--text-muted)',
-          textTransform: 'uppercase',
-          letterSpacing: 'var(--tracking-wide-6)',
-        }}
+        className="flex items-center gap-1.5 py-1 px-0 border-none cursor-pointer text-10 font-semibold text-text-muted uppercase tracking-wide-6 bg-none"
+        style={{ marginBottom: open ? 8 : 0 }}
       >
         {label} · {count}
         <CaretDown
@@ -1019,24 +780,11 @@ function TodoSection({
 }) {
   const [open, setOpen] = React.useState(defaultOpen);
   return (
-    <div style={{ marginBottom: 16 }}>
+    <div className="mb-4">
       <button
         onClick={() => setOpen(!open)}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6,
-          padding: '0.25rem 0',
-          marginBottom: open ? 8 : 0,
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          fontSize: 'var(--text-10)',
-          fontWeight: 'var(--font-semibold)',
-          color: 'var(--text-muted)',
-          textTransform: 'uppercase',
-          letterSpacing: 'var(--tracking-wide-6)',
-        }}
+        className="flex items-center gap-1.5 py-1 px-0 border-none cursor-pointer text-10 font-semibold text-text-muted uppercase tracking-wide-6 bg-none"
+        style={{ marginBottom: open ? 8 : 0 }}
       >
         {label} · {todos.length}
         <CaretDown
@@ -1049,13 +797,7 @@ function TodoSection({
       </button>
       {open && (
         <div
-          className="no-last-border"
-          style={{
-            background: 'var(--surface)',
-            borderRadius: 'var(--radius)',
-            overflow: 'hidden',
-            padding: 0,
-          }}
+          className="no-last-border bg-surface rounded overflow-hidden p-0"
         >
           {todos.map((t) => {
             const person = t.personId ? data.people.find((p) => p.id === t.personId) : null;
@@ -1065,85 +807,43 @@ function TodoSection({
             return (
               <div
                 key={t.id}
-                className="row-card-hover"
-                style={{
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: 10,
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  borderBottom: '1px solid var(--border-light)',
-                }}
+                className="row-card-hover flex items-start gap-2.5 pt-2.5 pb-2.5 border-b border-border-light"
               >
                 <button
                   onClick={() => onToggle(t.id)}
+                  className="w-5 h-5 rounded-full shrink-0 mt-[0.125rem] flex items-center justify-center cursor-pointer"
                   style={{
-                    width: 20,
-                    height: 20,
-                    borderRadius: '50%',
-                    flexShrink: 0,
-                    marginTop: 2,
                     border: t.completed ? 'none' : '0.125rem solid var(--border)',
                     background: t.completed ? 'var(--sage)' : 'transparent',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
                   }}
                 >
                   {t.completed && <Check size={11} color="var(--on-sage)" weight="bold" />}
                 </button>
                 <button
                   onClick={() => onEdit(t)}
-                  style={{
-                    flex: 1,
-                    minWidth: 0,
-                    background: 'none',
-                    border: 'none',
-                    textAlign: 'left',
-                    cursor: 'pointer',
-                    padding: 0,
-                  }}
+                  className="flex-1 min-w-0 bg-none border-none text-left cursor-pointer p-0"
                 >
                   <p
+                    className="text-14 leading-comfortable mb-1"
                     style={{
-                      fontSize: 'var(--text-14)',
                       color: t.completed ? 'var(--text-muted)' : 'var(--text-primary)',
-                      lineHeight: 'var(--leading-comfortable)',
-                      marginBottom: 4,
                       textDecoration: t.completed ? 'line-through' : 'none',
                     }}
                   >
                     {t.title}
                   </p>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div className="flex items-center gap-2.5">
                     {t.dueDate && (
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 4,
-                          color: 'var(--text-muted)',
-                        }}
-                      >
+                      <div className="flex items-center gap-1 text-text-muted">
                         <Clock size={12} />
-                        <span style={{ fontSize: 'var(--text-11)', color: 'var(--text-muted)' }}>
+                        <span className="text-11 text-text-muted">
                           {fmtDue(t.dueDate)}
                         </span>
                       </div>
                     )}
                     {hasRepeat && <ArrowsClockwise size={12} color="var(--text-muted)" />}
                     {tag && (
-                      <span
-                        style={{
-                          fontSize: 'var(--text-10)',
-                          color: 'var(--blue)',
-                          padding: '0.0625rem 0.375rem',
-                          borderRadius: 'var(--radius-pill)',
-                          background: 'var(--blue-light)',
-                          fontWeight: 'var(--font-medium)',
-                        }}
-                      >
+                      <span className="text-10 text-blue py-[0.0625rem] px-[0.375rem] rounded-pill bg-blue-light font-medium">
                         {tag}
                       </span>
                     )}
@@ -1161,27 +861,10 @@ function TodoSection({
 function InfoSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <p
-        style={{
-          fontSize: 'var(--text-10)',
-          fontWeight: 'var(--font-semibold)',
-          color: 'var(--text-muted)',
-          textTransform: 'uppercase',
-          letterSpacing: 'var(--tracking-wide-6)',
-          marginBottom: 8,
-        }}
-      >
+      <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 mb-2">
         {title}
       </p>
-      <div
-        className="no-last-border"
-        style={{
-          background: 'var(--surface)',
-          borderRadius: 'var(--radius)',
-          overflow: 'hidden',
-          padding: 0,
-        }}
-      >
+      <div className="no-last-border bg-surface rounded overflow-hidden p-0">
         {children}
       </div>
     </div>

@@ -17,11 +17,7 @@ export default function BottomNav() {
 
   return (
     <nav
-      className="fixed right-0 bottom-0 left-0 z-40 lg:hidden"
-      style={{
-        background: 'var(--surface)',
-        borderTop: '1px solid var(--border-light)',
-      }}
+      className="fixed right-0 bottom-0 left-0 z-40 lg:hidden bg-surface border-t border-border-light"
     >
       <div className="mx-auto flex h-14 max-w-[26.875rem] items-end justify-around px-2">
         {items.map((item) => {
@@ -33,38 +29,31 @@ export default function BottomNav() {
             <Link
               key={item.href}
               href={item.href}
-              className="nav-tab flex w-16 flex-col items-center justify-end gap-0.5 pb-1.5"
+              className="nav-tab flex w-16 flex-col items-center justify-end gap-0.5 pb-1.5 no-underline"
               style={{
                 color: active ? 'var(--sage)' : 'var(--text-muted)',
-                textDecoration: 'none',
               }}
             >
-              <span style={{ position: 'relative', lineHeight: 0 }}>
+              <span className="relative leading-none">
                 <Icon size={24} weight={active ? 'fill' : 'regular'} />
                 {showBadge && (
                   <span
                     aria-label={`${pendingVisitorCount} pending`}
+                    className="absolute text-center bg-sage text-on-sage text-10 font-bold rounded-pill"
                     style={{
-                      position: 'absolute',
                       top: -4,
                       right: -8,
                       minWidth: '1.125rem',
                       height: '1.125rem',
                       padding: '0 0.25rem',
-                      fontSize: 'var(--text-10)',
-                      fontWeight: 'var(--font-bold)',
                       lineHeight: '1.125rem',
-                      textAlign: 'center',
-                      borderRadius: 'var(--radius-pill)',
-                      background: 'var(--sage)',
-                      color: 'var(--on-sage)',
                     }}
                   >
                     {pendingVisitorCount}
                   </span>
                 )}
               </span>
-              <span style={{ fontSize: 'var(--text-10)', fontWeight: active ? 'var(--font-semibold)' : 'var(--font-normal)' }}>{item.label}</span>
+              <span className={`text-10 ${active ? 'font-semibold' : 'font-normal'}`}>{item.label}</span>
             </Link>
           );
         })}

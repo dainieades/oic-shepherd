@@ -194,22 +194,16 @@ export default function SignInPage() {
     const isResending = resendStatus.type === 'sending';
     const wasResent = resendStatus.type === 'sent';
     return (
-      <div style={outerStyle}>
-        <div style={cardStyle}>
-          <div style={{ textAlign: 'center' }}>
+      <div className="fixed inset-0 flex items-center justify-center bg-bg py-6 px-4 z-10 overflow-y-auto">
+        <div className="w-full max-w-[390px] bg-surface rounded-xl border border-border shadow-[var(--shadow-elevated)]" style={{ padding: '2.25rem 1.75rem 2rem' }}>
+          <div className="text-center">
             <h2
-              className="font-display"
-              style={{ fontSize: 'var(--text-22)', fontWeight: 'var(--font-bold)', marginBottom: 10 }}
+              className="font-display text-22 font-bold mb-2.5"
             >
               Check your inbox
             </h2>
             <p
-              style={{
-                fontSize: 'var(--text-15)',
-                color: 'var(--text-secondary)',
-                lineHeight: 'var(--leading-loose)',
-                marginBottom: 20,
-              }}
+              className="text-15 text-text-secondary leading-loose mb-5"
             >
               We sent a confirmation link to <strong>{step.email}</strong>.
               <br />
@@ -219,12 +213,7 @@ export default function SignInPage() {
             {resendStatus.type === 'error' && <ErrorBanner message={resendStatus.message} />}
             {wasResent && (
               <p
-                style={{
-                  fontSize: 'var(--text-13)',
-                  color: 'var(--sage)',
-                  marginBottom: 16,
-                  fontWeight: 'var(--font-medium)',
-                }}
+                className="text-13 text-sage font-medium mb-4"
               >
                 Confirmation email resent. Check your inbox.
               </p>
@@ -233,9 +222,8 @@ export default function SignInPage() {
             <button
               onClick={handleResendConfirmation}
               disabled={isResending || wasResent}
+              className="block w-full bg-transparent border-none text-sage text-14 text-center mb-1 py-1"
               style={{
-                ...ghostButtonStyle,
-                marginBottom: 4,
                 opacity: isResending || wasResent ? 0.5 : 1,
                 cursor: isResending || wasResent ? 'not-allowed' : 'pointer',
               }}
@@ -246,7 +234,7 @@ export default function SignInPage() {
                   ? 'Sent'
                   : "Didn't get it? Resend email"}
             </button>
-            <button onClick={resetToEmail} style={ghostButtonStyle}>
+            <button onClick={resetToEmail} className="block w-full bg-transparent border-none text-sage text-14 cursor-pointer text-center py-1">
               Use a different email
             </button>
           </div>
@@ -258,13 +246,13 @@ export default function SignInPage() {
   // ── Create password screen ──────────────────────────────────────────────
   if (step.type === 'create-password') {
     return (
-      <div style={outerStyle}>
-        <div style={cardStyle}>
-          <div style={{ textAlign: 'center', marginBottom: 24 }}>
-            <h1 className="font-display" style={headingStyle}>
+      <div className="fixed inset-0 flex items-center justify-center bg-bg py-6 px-4 z-10 overflow-y-auto">
+        <div className="w-full max-w-[390px] bg-surface rounded-xl border border-border shadow-[var(--shadow-elevated)]" style={{ padding: '2.25rem 1.75rem 2rem' }}>
+          <div className="text-center mb-6">
+            <h1 className="font-display text-30 font-bold text-text-primary mb-1.5">
               Create your password
             </h1>
-            <p style={{ fontSize: 'var(--text-15)', color: 'var(--text-secondary)' }}>{step.email}</p>
+            <p className="text-15 text-text-secondary">{step.email}</p>
           </div>
 
           {status.type === 'error' && <ErrorBanner message={status.message} />}
@@ -274,7 +262,7 @@ export default function SignInPage() {
               e.preventDefault();
               handleCreatePassword();
             }}
-            style={{ display: 'contents' }}
+            className="contents"
           >
             {/* Hidden email so password managers link the new password to this account */}
             <input
@@ -283,11 +271,11 @@ export default function SignInPage() {
               autoComplete="username"
               value={step.email}
               readOnly
-              style={{ display: 'none' }}
+              className="hidden"
             />
 
-            <div style={{ marginBottom: 12 }}>
-              <label style={labelStyle}>Password</label>
+            <div className="mb-3">
+              <label className="block text-13 font-semibold text-text-primary mb-1.5">Password</label>
               <input
                 type="password"
                 name="password"
@@ -297,12 +285,13 @@ export default function SignInPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isLoading}
                 autoFocus
-                style={inputStyle}
+                className="w-full rounded-md border border-border text-15 text-text-primary bg-surface outline-none"
+                style={{ padding: '0.75rem 0.875rem' }}
               />
             </div>
 
-            <div style={{ marginBottom: 20 }}>
-              <label style={labelStyle}>Confirm password</label>
+            <div className="mb-5">
+              <label className="block text-13 font-semibold text-text-primary mb-1.5">Confirm password</label>
               <input
                 type="password"
                 name="confirm-password"
@@ -311,25 +300,26 @@ export default function SignInPage() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 disabled={isLoading}
-                style={inputStyle}
+                className="w-full rounded-md border border-border text-15 text-text-primary bg-surface outline-none"
+                style={{ padding: '0.75rem 0.875rem' }}
               />
             </div>
 
             <button
               type="submit"
               disabled={isLoading}
+              className="w-full rounded-md border-none bg-sage text-15 font-semibold text-on-sage mb-3"
               style={{
-                ...primaryButtonStyle,
+                padding: '0.8125rem 1.25rem',
                 opacity: isLoading ? 0.6 : 1,
                 cursor: isLoading ? 'not-allowed' : 'pointer',
-                marginBottom: 12,
               }}
             >
               {isLoading ? 'Creating account…' : 'Create account'}
             </button>
           </form>
 
-          <button onClick={resetToEmail} style={ghostButtonStyle}>
+          <button onClick={resetToEmail} className="block w-full bg-transparent border-none text-sage text-14 cursor-pointer text-center py-1">
             Back
           </button>
         </div>
@@ -340,13 +330,13 @@ export default function SignInPage() {
   // ── Sign in with password screen ────────────────────────────────────────
   if (step.type === 'sign-in') {
     return (
-      <div style={outerStyle}>
-        <div style={cardStyle}>
-          <div style={{ textAlign: 'center', marginBottom: 24 }}>
-            <h1 className="font-display" style={headingStyle}>
+      <div className="fixed inset-0 flex items-center justify-center bg-bg py-6 px-4 z-10 overflow-y-auto">
+        <div className="w-full max-w-[390px] bg-surface rounded-xl border border-border shadow-[var(--shadow-elevated)]" style={{ padding: '2.25rem 1.75rem 2rem' }}>
+          <div className="text-center mb-6">
+            <h1 className="font-display text-30 font-bold text-text-primary mb-1.5">
               Welcome back
             </h1>
-            <p style={{ fontSize: 'var(--text-15)', color: 'var(--text-secondary)' }}>{step.email}</p>
+            <p className="text-15 text-text-secondary">{step.email}</p>
           </div>
 
           {status.type === 'error' && <ErrorBanner message={status.message} />}
@@ -356,7 +346,7 @@ export default function SignInPage() {
               e.preventDefault();
               handleSignIn();
             }}
-            style={{ display: 'contents' }}
+            className="contents"
           >
             {/* Hidden email so password managers know which account's password to fill */}
             <input
@@ -365,11 +355,11 @@ export default function SignInPage() {
               autoComplete="username"
               value={step.email}
               readOnly
-              style={{ display: 'none' }}
+              className="hidden"
             />
 
-            <div style={{ marginBottom: 20 }}>
-              <label style={labelStyle}>Password</label>
+            <div className="mb-5">
+              <label className="block text-13 font-semibold text-text-primary mb-1.5">Password</label>
               <input
                 type="password"
                 name="password"
@@ -379,18 +369,19 @@ export default function SignInPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isLoading}
                 autoFocus
-                style={inputStyle}
+                className="w-full rounded-md border border-border text-15 text-text-primary bg-surface outline-none"
+                style={{ padding: '0.75rem 0.875rem' }}
               />
             </div>
 
             <button
               type="submit"
               disabled={isLoading}
+              className="w-full rounded-md border-none bg-sage text-15 font-semibold text-on-sage mb-3"
               style={{
-                ...primaryButtonStyle,
+                padding: '0.8125rem 1.25rem',
                 opacity: isLoading ? 0.6 : 1,
                 cursor: isLoading ? 'not-allowed' : 'pointer',
-                marginBottom: 12,
               }}
             >
               {isLoading ? 'Signing in…' : 'Sign in'}
@@ -400,12 +391,12 @@ export default function SignInPage() {
           <button
             onClick={handleForgotPassword}
             disabled={isLoading}
-            style={{ ...ghostButtonStyle, marginBottom: 4 }}
+            className="block w-full bg-transparent border-none text-sage text-14 cursor-pointer text-center py-1 mb-1"
           >
             Forgot password?
           </button>
 
-          <button onClick={resetToEmail} style={ghostButtonStyle}>
+          <button onClick={resetToEmail} className="block w-full bg-transparent border-none text-sage text-14 cursor-pointer text-center py-1">
             Back
           </button>
         </div>
@@ -416,28 +407,22 @@ export default function SignInPage() {
   // ── Reset password sent screen ─────────────────────────────────────────
   if (step.type === 'reset-sent') {
     return (
-      <div style={outerStyle}>
-        <div style={cardStyle}>
-          <div style={{ textAlign: 'center' }}>
+      <div className="fixed inset-0 flex items-center justify-center bg-bg py-6 px-4 z-10 overflow-y-auto">
+        <div className="w-full max-w-[390px] bg-surface rounded-xl border border-border shadow-[var(--shadow-elevated)]" style={{ padding: '2.25rem 1.75rem 2rem' }}>
+          <div className="text-center">
             <h2
-              className="font-display"
-              style={{ fontSize: 'var(--text-22)', fontWeight: 'var(--font-bold)', marginBottom: 10 }}
+              className="font-display text-22 font-bold mb-2.5"
             >
               Check your inbox
             </h2>
             <p
-              style={{
-                fontSize: 'var(--text-15)',
-                color: 'var(--text-secondary)',
-                lineHeight: 'var(--leading-loose)',
-                marginBottom: 24,
-              }}
+              className="text-15 text-text-secondary leading-loose mb-6"
             >
               We sent a password reset link to <strong>{step.email}</strong>.
               <br />
               Click the link in the email to set a new password.
             </p>
-            <button onClick={resetToEmail} style={ghostButtonStyle}>
+            <button onClick={resetToEmail} className="block w-full bg-transparent border-none text-sage text-14 cursor-pointer text-center py-1">
               Back to sign in
             </button>
           </div>
@@ -448,12 +433,12 @@ export default function SignInPage() {
 
   // ── Main email entry screen ─────────────────────────────────────────────
   return (
-    <div style={outerStyle}>
-      <div style={cardStyle}>
+    <div className="fixed inset-0 flex items-center justify-center bg-bg py-6 px-4 z-10 overflow-y-auto">
+      <div className="w-full max-w-[390px] bg-surface rounded-xl border border-border shadow-[var(--shadow-elevated)]" style={{ padding: '2.25rem 1.75rem 2rem' }}>
         {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: 28 }}>
+        <div className="text-center mb-7">
           <Logo height={88} style={{ margin: '0 auto 16px' }} />
-          <h1 className="font-display" style={{ ...headingStyle, fontSize: 'var(--text-24)' }}>
+          <h1 className="font-display text-24 font-bold text-text-primary mb-1.5">
             Welcome to Shepherd App.
           </h1>
         </div>
@@ -462,22 +447,14 @@ export default function SignInPage() {
         {status.type === 'error' && <ErrorBanner message={status.message} />}
 
         {/* Google button */}
-        <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
+        <div className="relative inline-block w-full">
           <span
+            className="absolute bg-sage text-on-sage text-11 font-bold tracking-wide-3 rounded-xl pointer-events-none z-[1]"
             style={{
-              position: 'absolute',
               top: -10,
               left: '50%',
               transform: 'translateX(-50%)',
-              background: 'var(--sage)',
-              color: 'var(--on-sage)',
-              fontSize: 'var(--text-11)',
-              fontWeight: 'var(--font-bold)',
-              letterSpacing: 'var(--tracking-wide-3)',
               padding: '0.125rem 0.5rem',
-              borderRadius: 'var(--radius-xl)',
-              pointerEvents: 'none',
-              zIndex: 1,
             }}
           >
             Recommended
@@ -485,19 +462,10 @@ export default function SignInPage() {
           <button
             onClick={handleGoogle}
             disabled={isLoading}
+            className="w-full flex items-center justify-center gap-2.5 rounded-md bg-surface text-15 font-semibold text-text-primary"
             style={{
-              width: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 10,
               padding: '0.8125rem 1.25rem',
-              borderRadius: 'var(--radius-md)',
               border: '0.09375rem solid var(--sage)',
-              background: 'var(--surface)',
-              fontSize: 'var(--text-15)',
-              fontWeight: 'var(--font-semibold)',
-              color: 'var(--text-primary)',
               cursor: isLoading ? 'not-allowed' : 'pointer',
               opacity: isLoading ? 0.6 : 1,
             }}
@@ -525,10 +493,10 @@ export default function SignInPage() {
         </div>
 
         {/* Divider */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '1.25rem 0' }}>
-          <div style={{ flex: 1, height: 1, background: 'var(--border-light)' }} />
-          <span style={{ fontSize: 'var(--text-13)', color: 'var(--text-muted)' }}>or</span>
-          <div style={{ flex: 1, height: 1, background: 'var(--border-light)' }} />
+        <div className="flex items-center gap-3 my-5">
+          <div className="flex-1 bg-border-light h-px" />
+          <span className="text-13 text-text-muted">or</span>
+          <div className="flex-1 bg-border-light h-px" />
         </div>
 
         {/* Email field */}
@@ -537,10 +505,10 @@ export default function SignInPage() {
             e.preventDefault();
             handleContinue();
           }}
-          style={{ display: 'contents' }}
+          className="contents"
         >
-          <div style={{ marginBottom: 12 }}>
-            <label style={labelStyle}>Email address</label>
+          <div className="mb-3">
+            <label className="block text-13 font-semibold text-text-primary mb-1.5">Email address</label>
             <input
               type="email"
               name="username"
@@ -549,7 +517,8 @@ export default function SignInPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
-              style={inputStyle}
+              className="w-full rounded-md border border-border text-15 text-text-primary bg-surface outline-none"
+              style={{ padding: '0.75rem 0.875rem' }}
             />
           </div>
 
@@ -557,8 +526,9 @@ export default function SignInPage() {
           <button
             type="submit"
             disabled={isLoading || !isValidEmail(email)}
+            className="w-full rounded-md border-none bg-sage text-15 font-semibold text-on-sage"
             style={{
-              ...primaryButtonStyle,
+              padding: '0.8125rem 1.25rem',
               opacity: isLoading || !isValidEmail(email) ? 0.4 : 1,
               cursor: isLoading || !isValidEmail(email) ? 'not-allowed' : 'pointer',
             }}
@@ -569,14 +539,9 @@ export default function SignInPage() {
 
         {/* Footer */}
         <div
-          style={{
-            borderTop: '1px solid var(--border-light)',
-            marginTop: 24,
-            paddingTop: 20,
-            textAlign: 'center',
-          }}
+          className="border-t border-border-light text-center mt-6 pt-5"
         >
-          <p style={{ fontSize: 'var(--text-13)', color: 'var(--text-muted)', lineHeight: 'var(--leading-normal)' }}>
+          <p className="text-13 text-text-muted leading-normal">
             Access is by invitation only.
             <br />
             Contact your pastor to request access.
@@ -591,91 +556,11 @@ function isValidEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 }
 
-// ── Shared styles ─────────────────────────────────────────────────────────────
-
-const outerStyle: React.CSSProperties = {
-  position: 'fixed',
-  inset: 0,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  background: 'var(--bg)',
-  padding: '1.5rem 1rem',
-  zIndex: 10,
-  overflowY: 'auto',
-};
-
-const cardStyle: React.CSSProperties = {
-  width: '100%',
-  maxWidth: 390,
-  background: 'var(--surface)',
-  borderRadius: 'var(--radius-xl)',
-  border: '1px solid var(--border)',
-  padding: '2.25rem 1.75rem 2rem',
-  boxShadow: 'var(--shadow-elevated)',
-};
-
-const headingStyle: React.CSSProperties = {
-  fontSize: 'var(--text-30)',
-  fontWeight: 'var(--font-bold)',
-  color: 'var(--text-primary)',
-  marginBottom: 6,
-};
-
-const labelStyle: React.CSSProperties = {
-  display: 'block',
-  fontSize: 'var(--text-13)',
-  fontWeight: 'var(--font-semibold)',
-  color: 'var(--text-primary)',
-  marginBottom: 6,
-};
-
-const inputStyle: React.CSSProperties = {
-  width: '100%',
-  padding: '0.75rem 0.875rem',
-  borderRadius: 'var(--radius-md)',
-  border: '0.09375rem solid var(--border)',
-  fontSize: 'var(--text-15)',
-  color: 'var(--text-primary)',
-  background: 'var(--surface)',
-  outline: 'none',
-};
-
-const primaryButtonStyle: React.CSSProperties = {
-  width: '100%',
-  padding: '0.8125rem 1.25rem',
-  borderRadius: 'var(--radius-md)',
-  border: 'none',
-  background: 'var(--sage)',
-  fontSize: 'var(--text-15)',
-  fontWeight: 'var(--font-semibold)',
-  color: 'var(--on-sage)',
-};
-
-const ghostButtonStyle: React.CSSProperties = {
-  display: 'block',
-  width: '100%',
-  background: 'none',
-  border: 'none',
-  color: 'var(--sage)',
-  fontSize: 'var(--text-14)',
-  cursor: 'pointer',
-  textAlign: 'center',
-  padding: '0.25rem 0',
-};
-
 function ErrorBanner({ message }: { message: string }) {
   return (
     <div
-      style={{
-        background: 'var(--red-light)',
-        border: '1px solid var(--red-border)',
-        borderRadius: 'var(--radius-sm)',
-        padding: '0.625rem 0.875rem',
-        marginBottom: 16,
-        fontSize: 'var(--text-13)',
-        color: 'var(--red)',
-      }}
+      className="bg-red-light border border-red-border rounded-sm text-13 text-red mb-4"
+      style={{ padding: '0.625rem 0.875rem' }}
     >
       {message}
     </div>

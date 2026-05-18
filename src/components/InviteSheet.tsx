@@ -10,7 +10,7 @@ import {
 } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { X } from '@phosphor-icons/react';
-import { BACKDROP_COLOR, SHEET_MAX_WIDTH, Z_SHEET } from '@/lib/constants';
+import { SHEET_MAX_WIDTH } from '@/lib/constants';
 
 type InviteRole = 'shepherd' | 'admin';
 
@@ -115,71 +115,32 @@ export default function InviteSheet({
 
   return (
     <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        background: BACKDROP_COLOR,
-        zIndex: Z_SHEET,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '0 1.25rem',
-      }}
+      className="fixed inset-0 flex items-center justify-center px-5 z-sheet bg-backdrop"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div
-        className="animate-fade-in"
-        style={{
-          background: 'var(--surface)',
-          borderRadius: 'var(--radius-lg)',
-          width: '100%',
-          maxWidth: SHEET_MAX_WIDTH,
-        }}
+        className="animate-fade-in bg-surface rounded-lg w-full"
+        style={{ maxWidth: SHEET_MAX_WIDTH }}
       >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '0.875rem 1rem 0.75rem',
-            borderBottom: '1px solid var(--border-light)',
-          }}
+        <div className="flex items-center justify-between border-b border-border-light"
+          style={{ padding: '0.875rem 1rem 0.75rem' }}
         >
-          <div style={{ flex: 1, minWidth: 0 }}>
+          <div className="flex-1 min-w-0">
             <p
-              style={{
-                fontSize: 'var(--text-12)',
-                fontWeight: 'var(--font-semibold)',
-                color: 'var(--text-muted)',
-                textTransform: 'uppercase',
-                letterSpacing: 'var(--tracking-wide-6)',
-                margin: 0,
-                textAlign: personName ? 'left' : 'center',
-              }}
+              className="text-12 font-semibold text-text-muted uppercase tracking-wide-6 m-0"
+              style={{ textAlign: personName ? 'left' : 'center' }}
             >
               Invite to App
             </p>
             {personName && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
-                <p
-                  style={{ fontSize: 'var(--text-15)', fontWeight: 'var(--font-semibold)', color: 'var(--text-primary)', margin: 0 }}
-                >
-                  {personName}
-                </p>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <p className="text-15 font-semibold text-text-primary m-0">{personName}</p>
                 {onChangePerson && (
                   <button
                     onClick={onChangePerson}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      padding: 0,
-                      fontSize: 'var(--text-13)',
-                      color: 'var(--sage)',
-                      fontWeight: 'var(--font-medium)',
-                    }}
+                    className="bg-transparent border-none cursor-pointer p-0 text-13 text-sage font-medium"
                   >
                     Change
                   </button>
@@ -190,17 +151,7 @@ export default function InviteSheet({
           <button
             onClick={onClose}
             aria-label="Close"
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 4,
-              color: 'var(--text-muted)',
-              display: 'flex',
-              alignItems: 'center',
-              marginLeft: 8,
-              flexShrink: 0,
-            }}
+            className="bg-transparent border-none cursor-pointer p-1 text-text-muted flex items-center ml-2 shrink-0"
           >
             <X size={18} />
           </button>
@@ -208,47 +159,27 @@ export default function InviteSheet({
 
         {status === 'success' ? (
           /* ── Success state ── */
-          <div style={{ padding: '2rem 1.5rem 1rem', textAlign: 'center' }}>
+          <div className="text-center" style={{ padding: '2rem 1.5rem 1rem' }}>
             <CheckCircle
               size={48}
               color="var(--sage)"
               weight="fill"
               style={{ display: 'block', margin: '0 auto 1rem' }}
             />
-            <p
-              style={{
-                fontSize: 'var(--text-17)',
-                fontWeight: 'var(--font-bold)',
-                color: 'var(--text-primary)',
-                marginBottom: 6,
-              }}
-            >
+            <p className="text-17 font-bold text-text-primary" style={{ marginBottom: 6 }}>
               Invite sent!
             </p>
             <p
-              style={{
-                fontSize: 'var(--text-14)',
-                color: 'var(--text-secondary)',
-                lineHeight: 'var(--leading-open)',
-                marginBottom: 24,
-              }}
+              className="text-14 text-text-secondary leading-open"
+              style={{ marginBottom: 24 }}
             >
               <strong>{email.trim()}</strong> has been approved. They'll receive an email with a
               link to sign in — no password needed.
             </p>
             <button
               onClick={onClose}
-              style={{
-                width: '100%',
-                padding: '0.8125rem 1.25rem',
-                borderRadius: 'var(--radius-md)',
-                border: 'none',
-                background: 'var(--sage)',
-                color: 'var(--on-sage)',
-                fontSize: 'var(--text-15)',
-                fontWeight: 'var(--font-semibold)',
-                cursor: 'pointer',
-              }}
+              className="w-full rounded-md border-none bg-sage text-on-sage text-15 font-semibold cursor-pointer"
+              style={{ padding: '0.8125rem 1.25rem' }}
             >
               Done
             </button>
@@ -256,26 +187,12 @@ export default function InviteSheet({
         ) : (
           /* ── Form ── */
           <div
-            style={{
-              padding: '1rem 1rem 0.5rem',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 14,
-            }}
+            className="flex flex-col"
+            style={{ padding: '1rem 1rem 0.5rem', gap: 14 }}
           >
             {/* Email */}
             <div>
-              <label
-                style={{
-                  display: 'block',
-                  fontSize: 'var(--text-12)',
-                  fontWeight: 'var(--font-semibold)',
-                  color: 'var(--text-muted)',
-                  textTransform: 'uppercase',
-                  letterSpacing: 'var(--tracking-wide-6)',
-                  marginBottom: 6,
-                }}
-              >
+              <label className="block text-12 font-semibold text-text-muted uppercase tracking-wide-6 mb-1.5">
                 Email address
               </label>
               <input
@@ -288,91 +205,47 @@ export default function InviteSheet({
                 }}
                 onKeyDown={(e) => e.key === 'Enter' && handleInvite()}
                 autoFocus={!initialEmail}
+                className="w-full rounded-sm text-15 text-text-primary bg-bg outline-none box-border"
                 style={{
-                  width: '100%',
                   padding: '0.6875rem 0.875rem',
-                  borderRadius: 'var(--radius-sm)',
                   border: `0.09375rem solid ${errorMsg ? 'var(--red)' : 'var(--border)'}`,
-                  fontSize: 'var(--text-15)',
-                  color: 'var(--text-primary)',
-                  background: 'var(--bg)',
-                  outline: 'none',
-                  boxSizing: 'border-box',
                 }}
               />
               {errorMsg && (
-                <p role="alert" style={{ fontSize: 'var(--text-12)', color: 'var(--red)', marginTop: 4 }}>
-                  {errorMsg}
-                </p>
+                <p role="alert" className="text-12 text-red mt-1">{errorMsg}</p>
               )}
             </div>
 
             {availableRoles.length > 1 && <div>
-              <label
-                style={{
-                  display: 'block',
-                  fontSize: 'var(--text-12)',
-                  fontWeight: 'var(--font-semibold)',
-                  color: 'var(--text-muted)',
-                  textTransform: 'uppercase',
-                  letterSpacing: 'var(--tracking-wide-6)',
-                  marginBottom: 6,
-                }}
-              >
+              <label className="block text-12 font-semibold text-text-muted uppercase tracking-wide-6 mb-1.5">
                 Role
               </label>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div className="flex flex-col gap-2">
                 {availableRoles.map((r) => (
                   <button
                     key={r.value}
                     onClick={() => setRole(r.value)}
+                    className="flex items-center gap-3 rounded-sm text-left cursor-pointer"
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 12,
                       padding: '0.75rem 0.875rem',
-                      borderRadius: 'var(--radius-sm)',
-                      textAlign: 'left',
                       border: `0.09375rem solid ${role === r.value ? 'var(--sage)' : 'var(--border-light)'}`,
                       background: role === r.value ? 'var(--sage-light)' : 'var(--bg)',
-                      cursor: 'pointer',
                     }}
                   >
-                    <span style={{ flexShrink: 0 }}>{r.icon}</span>
+                    <span className="shrink-0">{r.icon}</span>
                     <div>
+                      <p className="text-14 font-semibold text-text-primary m-0">{r.label}</p>
                       <p
-                        style={{
-                          fontSize: 'var(--text-14)',
-                          fontWeight: 'var(--font-semibold)',
-                          color: 'var(--text-primary)',
-                          margin: 0,
-                        }}
-                      >
-                        {r.label}
-                      </p>
-                      <p
-                        style={{
-                          fontSize: 'var(--text-12)',
-                          color: 'var(--text-muted)',
-                          margin: '0.0625rem 0 0',
-                        }}
+                        className="text-12 text-text-muted m-0"
+                        style={{ marginTop: '0.0625rem' }}
                       >
                         {r.description}
                       </p>
                     </div>
                     {role === r.value && (
                       <div
-                        style={{
-                          marginLeft: 'auto',
-                          width: 18,
-                          height: 18,
-                          borderRadius: '50%',
-                          background: 'var(--sage)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          flexShrink: 0,
-                        }}
+                        className="ml-auto rounded-full bg-sage flex items-center justify-center shrink-0"
+                        style={{ width: 18, height: 18 }}
                       >
                         <Check size={10} color="white" weight="bold" />
                       </div>
@@ -386,23 +259,11 @@ export default function InviteSheet({
             <button
               onClick={handleInvite}
               disabled={status === 'loading'}
+              className="w-full rounded-md border-none bg-sage text-on-sage text-15 font-semibold flex items-center justify-center gap-2 mt-1 mb-2"
               style={{
-                width: '100%',
                 padding: '0.8125rem 1.25rem',
-                borderRadius: 'var(--radius-md)',
-                border: 'none',
-                background: 'var(--sage)',
-                color: 'var(--on-sage)',
-                fontSize: 'var(--text-15)',
-                fontWeight: 'var(--font-semibold)',
                 cursor: status === 'loading' ? 'not-allowed' : 'pointer',
                 opacity: status === 'loading' ? 0.6 : 1,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 8,
-                marginTop: 4,
-                marginBottom: 8,
               }}
             >
               <PaperPlaneTilt size={16} weight="fill" />

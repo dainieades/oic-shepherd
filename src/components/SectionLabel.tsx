@@ -8,14 +8,8 @@ interface SectionLabelProps {
 export function SectionLabel({ children, marginBottom = 10 }: SectionLabelProps) {
   return (
     <p
-      style={{
-        fontSize: 'var(--text-10)',
-        fontWeight: 'var(--font-semibold)',
-        color: 'var(--text-muted)',
-        textTransform: 'uppercase',
-        letterSpacing: 'var(--tracking-wide-6)',
-        marginBottom,
-      }}
+      className="text-10 font-semibold text-text-muted uppercase tracking-wide-6"
+      style={{ marginBottom }}
     >
       {children}
     </p>

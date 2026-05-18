@@ -117,32 +117,24 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
       />
 
       {/* Scrollable body */}
-      <div
-        style={{
-          flex: 1,
-          overflowY: 'auto',
-          padding: '1.25rem 1.25rem 3rem',
-          background: 'var(--bg)',
-        }}
-      >
+      <div className="flex-1 overflow-y-auto bg-bg" style={{ padding: '1.25rem 1.25rem 3rem' }}>
         {/* ── BASIC ── */}
         <DrawerSection label="Basic">
           <div
-            className="field-row-hover"
-            style={textRowStyle}
+            className="field-row-hover flex items-center gap-2.5 pt-3 pb-3 border-b border-border-light cursor-text"
             onClick={() => labelRef.current?.focus()}
           >
-            <span style={asteriskStyle}>*</span>
+            <span className="w-2.5 shrink-0 text-14 text-red leading-none">*</span>
             <House size={16} color="var(--text-muted)" />
-            <span style={labelStyle}>Last name</span>
+            <span className="text-12 text-text-muted w-[60px] shrink-0">Last name</span>
             <input
               ref={labelRef}
               value={label}
               onChange={(e) => setLabel(e.target.value)}
               placeholder="e.g. Chen"
-              style={inputInlineStyle}
+              className="flex-1 bg-transparent border-none outline-none text-14 text-text-primary"
             />
-            <span style={{ fontSize: 'var(--text-15)', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+            <span className="text-15 text-text-muted whitespace-nowrap">
               Family
             </span>
           </div>
@@ -161,52 +153,22 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
             return (
               <div
                 key={m.id}
-                className="field-row-hover"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 10,
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  borderBottom: '1px solid var(--border-light)',
-                }}
+                className="field-row-hover flex items-center gap-2.5 pt-2.5 pb-2.5 border-b border-border-light"
               >
                 <div
-                  style={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: '50%',
-                    background: palette.bg,
-                    color: palette.color,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: 'var(--text-11)',
-                    fontWeight: 'var(--font-bold)',
-                    flexShrink: 0,
-                  }}
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-11 font-bold shrink-0"
+                  style={{ background: palette.bg, color: palette.color }}
                 >
                   {inits}
                 </div>
-                <span style={{ flex: 1, fontSize: 'var(--text-14)', color: 'var(--text-primary)' }}>
+                <span className="flex-1 text-14 text-text-primary">
                   {fullName(m)}
                 </span>
                 <button
                   onClick={() => {
                     setMemberIds(memberIds.filter((x) => x !== m.id));
                   }}
-                  style={{
-                    width: 28,
-                    height: 28,
-                    borderRadius: '50%',
-                    background: 'var(--red-light)',
-                    border: 'none',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                  }}
+                  className="w-7 h-7 rounded-full bg-red-light border-none cursor-pointer flex items-center justify-center shrink-0"
                   aria-label={`Remove ${fullName(m)}`}
                 >
                   <X size={12} color="#EF4444" />
@@ -216,25 +178,12 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
           })}
           {/* Add / edit members row */}
           <button
-            className="field-row-hover"
+            className="field-row-hover flex items-center gap-2.5 pt-3 pb-3 border-none border-b border-border-light bg-transparent cursor-pointer w-full text-left"
             onClick={() => setShowMemberPicker(true)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 10,
-              paddingTop: 12,
-              paddingBottom: 12,
-              border: 'none',
-              borderBottom: '1px solid var(--border-light)',
-              background: 'none',
-              cursor: 'pointer',
-              width: '100%',
-              textAlign: 'left' as const,
-            }}
           >
-            <span style={spacerStyle} />
+            <span className="w-2.5 shrink-0" />
             <Plus size={16} color="var(--sage)" />
-            <span style={{ fontSize: 'var(--text-14)', color: 'var(--sage)', fontWeight: 'var(--font-medium)' }}>
+            <span className="text-14 text-sage font-medium">
               Add member
             </span>
           </button>
@@ -244,45 +193,25 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
         <DrawerSection label="Church">
           {/* Fellowship Groups */}
           <button
-            className="field-row-hover"
+            className="field-row-hover flex items-center gap-2.5 pt-3 pb-3 border-none border-b border-border-light bg-transparent cursor-pointer w-full text-left"
             onClick={() => setShowGroupPicker((v) => !v)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 10,
-              paddingTop: 12,
-              paddingBottom: 12,
-              border: 'none',
-              borderBottom: '1px solid var(--border-light)',
-              background: 'none',
-              cursor: 'pointer',
-              width: '100%',
-              textAlign: 'left' as const,
-            }}
           >
-            <span style={spacerStyle} />
+            <span className="w-2.5 shrink-0" />
             <UsersFour size={16} color="var(--text-muted)" />
-            <span style={labelStyle}>Groups</span>
-            <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+            <span className="text-12 text-text-muted w-[60px] shrink-0">Groups</span>
+            <div className="flex-1 flex flex-wrap gap-1">
               {selectedGroups.length > 0 ? (
                 selectedGroups.map((g) => (
                   <span
                     key={g.id}
-                    style={{
-                      fontSize: 'var(--text-11)',
-                      fontWeight: 'var(--font-medium)',
-                      padding: '0.125rem 0.5rem',
-                      borderRadius: 'var(--radius-pill)',
-                      background: 'var(--blue-light)',
-                      color: 'var(--blue)',
-                      flexShrink: 0,
-                    }}
+                    className="text-11 font-medium rounded-pill bg-blue-light text-blue shrink-0"
+                    style={{ padding: '0.125rem 0.5rem' }}
                   >
                     {g.name}
                   </span>
                 ))
               ) : (
-                <span style={{ fontSize: 'var(--text-14)', color: 'var(--text-muted)' }}>None</span>
+                <span className="text-14 text-text-muted">None</span>
               )}
             </div>
             <CaretRight size={14} color="var(--text-muted)" />
@@ -290,45 +219,25 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
 
           {/* Shepherds */}
           <button
-            className="field-row-hover"
+            className="field-row-hover flex items-center gap-2.5 pt-3 pb-3 border-none border-b border-border-light bg-transparent cursor-pointer w-full text-left"
             onClick={() => setShowShepherdPicker(true)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 10,
-              paddingTop: 12,
-              paddingBottom: 12,
-              border: 'none',
-              borderBottom: '1px solid var(--border-light)',
-              background: 'none',
-              cursor: 'pointer',
-              width: '100%',
-              textAlign: 'left' as const,
-            }}
           >
-            <span style={spacerStyle} />
+            <span className="w-2.5 shrink-0" />
             <HandHeart size={16} color="var(--text-muted)" />
-            <span style={labelStyle}>Shepherd</span>
-            <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+            <span className="text-12 text-text-muted w-[60px] shrink-0">Shepherd</span>
+            <div className="flex-1 flex flex-wrap gap-1">
               {selectedShepherds.length > 0 ? (
                 selectedShepherds.map((p) => (
                   <span
                     key={p.id}
-                    style={{
-                      fontSize: 'var(--text-11)',
-                      fontWeight: 'var(--font-medium)',
-                      padding: '0.125rem 0.5rem',
-                      borderRadius: 'var(--radius-pill)',
-                      background: 'var(--sage-light)',
-                      color: 'var(--sage)',
-                      flexShrink: 0,
-                    }}
+                    className="text-11 font-medium rounded-pill bg-sage-light text-sage shrink-0"
+                    style={{ padding: '0.125rem 0.5rem' }}
                   >
                     {p.name}
                   </span>
                 ))
               ) : (
-                <span style={{ fontSize: 'var(--text-14)', color: 'var(--text-muted)' }}>None</span>
+                <span className="text-14 text-text-muted">None</span>
               )}
             </div>
             <CaretRight size={14} color="var(--text-muted)" />
@@ -374,47 +283,6 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
   );
 }
 
-// ── Styles ────────────────────────────────────────────────────────────────────
-
-const textRowStyle: React.CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-  gap: 10,
-  paddingTop: 12,
-  paddingBottom: 12,
-  borderBottom: '1px solid var(--border-light)',
-  cursor: 'text',
-};
-
-const asteriskStyle: React.CSSProperties = {
-  width: 10,
-  fontSize: 'var(--text-14)',
-  color: 'var(--red)',
-  flexShrink: 0,
-  lineHeight: 'var(--leading-none)',
-};
-
-const spacerStyle: React.CSSProperties = {
-  width: 10,
-  flexShrink: 0,
-};
-
-const labelStyle: React.CSSProperties = {
-  fontSize: 'var(--text-12)',
-  color: 'var(--text-muted)',
-  width: 60,
-  flexShrink: 0,
-};
-
-const inputInlineStyle: React.CSSProperties = {
-  flex: 1,
-  background: 'none',
-  border: 'none',
-  outline: 'none',
-  fontSize: 'var(--text-14)',
-  color: 'var(--text-primary)',
-};
-
 // ── Sub-components ─────────────────────────────────────────────────────────────
 
 function MemberPickerSheet({
@@ -459,51 +327,20 @@ function MemberPickerSheet({
       />
 
         {/* Search */}
-        <div
-          style={{
-            padding: '0.75rem 1.25rem',
-            flexShrink: 0,
-            borderBottom: '1px solid var(--border-light)',
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              background: 'var(--bg)',
-              border: '1px solid var(--border)',
-              borderRadius: 'var(--radius-sm)',
-              padding: '0.5625rem 0.75rem',
-            }}
-          >
+        <div className="py-3 px-5 shrink-0 border-b border-border-light">
+          <div className="flex items-center gap-2 bg-bg border border-border rounded-sm" style={{ padding: '0.5625rem 0.75rem' }}>
             <MagnifyingGlass size={14} color="var(--text-muted)" />
             <input
               ref={searchRef}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search people…"
-              style={{
-                flex: 1,
-                fontSize: 'var(--text-14)',
-                color: 'var(--text-primary)',
-                background: 'none',
-                border: 'none',
-                outline: 'none',
-              }}
+              className="flex-1 text-14 text-text-primary bg-transparent border-none outline-none"
             />
             {search && (
               <button
                 onClick={() => setSearch('')}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: 'var(--text-muted)',
-                  fontSize: 'var(--text-18)',
-                  lineHeight: 'var(--leading-none)',
-                  padding: 0,
-                }}
+                className="bg-transparent border-none cursor-pointer text-text-muted text-18 leading-none p-0"
               >
                 ×
               </button>
@@ -512,7 +349,7 @@ function MemberPickerSheet({
         </div>
 
         {/* List */}
-        <div style={{ flex: 1, overflowY: 'auto' }}>
+        <div className="flex-1 overflow-y-auto">
           {filtered.map((p, i) => {
             const isSel = selectedIds.includes(p.id);
             const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
@@ -526,49 +363,23 @@ function MemberPickerSheet({
               <button
                 key={p.id}
                 onClick={() => toggle(p.id)}
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 12,
-                  padding: '0.75rem 1.25rem',
-                  background: isSel ? 'var(--sage-light)' : 'none',
-                  border: 'none',
-                  borderBottom: '1px solid var(--border-light)',
-                  cursor: 'pointer',
-                  textAlign: 'left' as const,
-                }}
+                className="w-full flex items-center gap-3 py-3 px-5 border-none border-b border-border-light cursor-pointer text-left"
+                style={{ background: isSel ? 'var(--sage-light)' : 'transparent' }}
               >
                 <div
-                  style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: '50%',
-                    flexShrink: 0,
-                    background: palette.bg,
-                    color: palette.color,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: 'var(--text-12)',
-                    fontWeight: 'var(--font-bold)',
-                  }}
+                  className="w-9 h-9 rounded-full shrink-0 flex items-center justify-center text-12 font-bold"
+                  style={{ background: palette.bg, color: palette.color }}
                 >
                   {inits}
                 </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
+                <div className="flex-1 min-w-0">
                   <p
-                    style={{
-                      fontSize: 'var(--text-14)',
-                      fontWeight: isSel ? 'var(--font-semibold)' : 'var(--font-normal)',
-                      color: 'var(--text-primary)',
-                      margin: 0,
-                    }}
+                    className={`text-14 text-text-primary m-0 ${isSel ? 'font-semibold' : 'font-normal'}`}
                   >
                     {fullName(p)}
                   </p>
                   {p.alternativeName && (
-                    <p style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)', margin: 0 }}>
+                    <p className="text-12 text-text-muted m-0">
                       {p.alternativeName}
                     </p>
                   )}
@@ -579,13 +390,7 @@ function MemberPickerSheet({
           })}
           {filtered.length === 0 && (
             <p
-              style={{
-                padding: '1.5rem 1.25rem',
-                fontSize: 'var(--text-13)',
-                color: 'var(--text-muted)',
-                textAlign: 'center',
-                fontStyle: 'italic',
-              }}
+              className="text-13 text-text-muted text-center italic py-6 px-5"
             >
               No people found.
             </p>
@@ -598,17 +403,11 @@ function MemberPickerSheet({
 function MemberCheckCircle({ selected }: { selected: boolean }) {
   return (
     <div
+      className="w-5 h-5 shrink-0 flex items-center justify-center [transition:background_0.15s]"
       style={{
-        width: 20,
-        height: 20,
         borderRadius: 5,
-        flexShrink: 0,
         border: selected ? 'none' : '0.09375rem solid var(--border)',
         background: selected ? 'var(--sage)' : 'transparent',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        transition: 'background 0.15s',
       }}
     >
       {selected && <Check size={11} color="var(--on-sage)" weight="bold" />}
@@ -650,101 +449,49 @@ function GroupPickerSheet({
         actionLabel={selectedIds.length > 0 ? `Done (${selectedIds.length})` : 'Done'}
         actionVariant="pill"
       />
-        <div
-          style={{
-            padding: '0.75rem 1.25rem',
-            flexShrink: 0,
-            borderBottom: '1px solid var(--border-light)',
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              background: 'var(--bg)',
-              border: '1px solid var(--border)',
-              borderRadius: 'var(--radius-sm)',
-              padding: '0.5625rem 0.75rem',
-            }}
-          >
+        <div className="py-3 px-5 shrink-0 border-b border-border-light">
+          <div className="flex items-center gap-2 bg-bg border border-border rounded-sm" style={{ padding: '0.5625rem 0.75rem' }}>
             <MagnifyingGlass size={14} color="var(--text-muted)" />
             <input
               ref={searchRef}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search groups…"
-              style={{
-                flex: 1,
-                fontSize: 'var(--text-14)',
-                color: 'var(--text-primary)',
-                background: 'none',
-                border: 'none',
-                outline: 'none',
-              }}
+              className="flex-1 text-14 text-text-primary bg-transparent border-none outline-none"
             />
             {search && (
               <button
                 onClick={() => setSearch('')}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: 'var(--text-muted)',
-                  fontSize: 'var(--text-18)',
-                  lineHeight: 'var(--leading-none)',
-                  padding: 0,
-                }}
+                className="bg-transparent border-none cursor-pointer text-text-muted text-18 leading-none p-0"
               >
                 ×
               </button>
             )}
           </div>
         </div>
-        <div style={{ flex: 1, overflowY: 'auto' }}>
+        <div className="flex-1 overflow-y-auto">
           {filtered.map((g) => {
             const isSel = selectedIds.includes(g.id);
             return (
               <button
                 key={g.id}
                 onClick={() => toggle(g.id)}
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 12,
-                  padding: '0.75rem 1.25rem',
-                  background: isSel ? 'var(--blue-light)' : 'none',
-                  border: 'none',
-                  borderBottom: '1px solid var(--border-light)',
-                  cursor: 'pointer',
-                  textAlign: 'left' as const,
-                }}
+                className="w-full flex items-center gap-3 py-3 px-5 border-none border-b border-border-light cursor-pointer text-left"
+                style={{ background: isSel ? 'var(--blue-light)' : 'transparent' }}
               >
-                <div style={{ flex: 1, minWidth: 0 }}>
+                <div className="flex-1 min-w-0">
                   <p
-                    style={{
-                      fontSize: 'var(--text-14)',
-                      fontWeight: isSel ? 'var(--font-semibold)' : 'var(--font-normal)',
-                      color: isSel ? 'var(--blue)' : 'var(--text-primary)',
-                      margin: 0,
-                    }}
+                    className={`text-14 m-0 ${isSel ? 'font-semibold text-blue' : 'font-normal text-text-primary'}`}
                   >
                     {g.name}
                   </p>
                 </div>
                 <div
+                  className="w-5 h-5 shrink-0 flex items-center justify-center [transition:background_0.15s]"
                   style={{
-                    width: 20,
-                    height: 20,
                     borderRadius: 5,
-                    flexShrink: 0,
                     border: isSel ? 'none' : '0.09375rem solid var(--border)',
                     background: isSel ? 'var(--blue)' : 'transparent',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transition: 'background 0.15s',
                   }}
                 >
                   {isSel && <Check size={11} color="var(--surface)" weight="bold" />}
@@ -754,13 +501,7 @@ function GroupPickerSheet({
           })}
           {filtered.length === 0 && (
             <p
-              style={{
-                padding: '1.5rem 1.25rem',
-                fontSize: 'var(--text-13)',
-                color: 'var(--text-muted)',
-                textAlign: 'center',
-                fontStyle: 'italic',
-              }}
+              className="text-13 text-text-muted text-center italic py-6 px-5"
             >
               No groups found.
             </p>

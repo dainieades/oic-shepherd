@@ -107,64 +107,26 @@ export default function PhotoAvatar({
     <>
       <button
         onClick={() => (photo ? setShowPreview(true) : fileInputRef.current?.click())}
-        style={{
-          position: 'relative',
-          width: 72,
-          height: 72,
-          borderRadius: '50%',
-          padding: 0,
-          border: 'none',
-          background: 'none',
-          cursor: 'pointer',
-          flexShrink: 0,
-        }}
+        className="relative w-18 h-18 rounded-full p-0 border-none bg-transparent cursor-pointer shrink-0"
       >
         {photo ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={photo}
             alt={name}
-            style={{
-              width: 72,
-              height: 72,
-              borderRadius: '50%',
-              objectFit: 'cover',
-              display: 'block',
-            }}
+            className="w-18 h-18 rounded-full object-cover block"
           />
         ) : (
           <div
-            style={{
-              width: 72,
-              height: 72,
-              borderRadius: '50%',
-              background: 'var(--sage-light)',
-              border: '0.125rem dashed var(--sage)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 'var(--text-22)',
-              fontWeight: 'var(--font-bold)',
-              color: 'var(--sage)',
-            }}
+            className="w-18 h-18 rounded-full bg-sage-light flex items-center justify-center text-22 font-bold text-sage"
+            style={{ border: '0.125rem dashed var(--sage)' }}
           >
             {placeholder ?? initials}
           </div>
         )}
         <div
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            right: 0,
-            width: 22,
-            height: 22,
-            borderRadius: '50%',
-            background: 'var(--sage)',
-            border: '0.125rem solid var(--bg)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
+          className="absolute bottom-0 right-0 w-[1.375rem] h-[1.375rem] rounded-full bg-sage flex items-center justify-center"
+          style={{ border: '0.125rem solid var(--bg)' }}
         >
           <Camera size={11} color="var(--on-sage)" weight="fill" />
         </div>
@@ -174,7 +136,7 @@ export default function PhotoAvatar({
         ref={fileInputRef}
         type="file"
         accept="image/*"
-        style={{ display: 'none' }}
+        className="hidden"
         onChange={handleFileChange}
       />
 
@@ -190,32 +152,15 @@ export default function PhotoAvatar({
         photo &&
         createPortal(
           <div
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'rgba(0,0,0,0.92)',
-              zIndex: Z_FLOAT,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
+            className="fixed inset-0 flex flex-col items-center justify-center"
+            style={{ background: 'rgba(0,0,0,0.92)', zIndex: Z_FLOAT }}
             onClick={() => !uploading && setShowPreview(false)}
           >
             <button
               onClick={() => !uploading && setShowPreview(false)}
+              className="absolute top-5 right-5 border-none rounded-full w-9 h-9 flex items-center justify-center"
               style={{
-                position: 'absolute',
-                top: '1.25rem',
-                right: '1.25rem',
                 background: 'rgba(255,255,255,0.15)',
-                border: 'none',
-                borderRadius: '50%',
-                width: 36,
-                height: 36,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
                 cursor: uploading ? 'default' : 'pointer',
                 opacity: uploading ? 0.4 : 1,
               }}
@@ -235,32 +180,19 @@ export default function PhotoAvatar({
                 <img
                   src={photo}
                   alt={name}
-                  style={{
-                    maxWidth: '90vw',
-                    maxHeight: '65vh',
-                    borderRadius: '0.75rem',
-                    objectFit: 'contain',
-                  }}
+                  className="max-w-[90vw] max-h-[65vh] rounded-md object-contain"
                   onClick={(e) => e.stopPropagation()}
                 />
                 <div
-                  style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem' }}
+                  className="flex gap-3 mt-6"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <button
                     onClick={handleEditPhoto}
+                    className="flex items-center gap-2 border-none rounded-[2rem] py-[0.625rem] px-5 cursor-pointer text-15 font-medium"
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem',
                       background: 'rgba(255,255,255,0.15)',
-                      border: 'none',
-                      borderRadius: '2rem',
-                      padding: '0.625rem 1.25rem',
-                      cursor: 'pointer',
                       color: '#fff',
-                      fontSize: 'var(--text-15)',
-                      fontWeight: 'var(--font-medium)',
                     }}
                   >
                     <PencilSimple size={16} color="#fff" weight="bold" />
@@ -268,18 +200,10 @@ export default function PhotoAvatar({
                   </button>
                   <button
                     onClick={handleRemove}
+                    className="flex items-center gap-2 border-none rounded-[2rem] py-[0.625rem] px-5 cursor-pointer text-15 font-medium"
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem',
                       background: 'rgba(220,53,69,0.25)',
-                      border: 'none',
-                      borderRadius: '2rem',
-                      padding: '0.625rem 1.25rem',
-                      cursor: 'pointer',
                       color: '#ff6b6b',
-                      fontSize: 'var(--text-15)',
-                      fontWeight: 'var(--font-medium)',
                     }}
                   >
                     <Trash size={16} color="#ff6b6b" weight="bold" />

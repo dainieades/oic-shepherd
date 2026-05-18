@@ -154,29 +154,22 @@ export default function AuditDemoPage() {
   }, [setFullPageModalOpen]);
 
   return (
-    <div style={{ minHeight: '100dvh', background: 'var(--bg)', paddingBottom: '5rem' }}>
-      <div style={{ maxWidth: SHEET_MAX_WIDTH, margin: '0 auto', padding: '0 1rem' }}>
-        <div style={navBarStyle}>
-          <button onClick={() => router.back()} style={backBtnStyle}>
+    <div className="min-h-[100dvh] bg-bg pb-20">
+      <div style={{ maxWidth: SHEET_MAX_WIDTH, margin: '0 auto' }} className="px-4">
+        <div className={navBarStyle}>
+          <button onClick={() => router.back()} className={backBtnStyle}>
             <CaretLeft size={16} weight="bold" />
             Timothy Chang
           </button>
-          <span style={navTitleStyle}>Audit Log</span>
-          <span style={{ width: 64 }} />
+          <span className={navTitleStyle}>Audit Log</span>
+          <span className="w-16" />
         </div>
 
-        <div style={{ paddingTop: '1.25rem', display: 'flex', flexDirection: 'column', gap: 32 }}>
+        <div className="pt-5 flex flex-col gap-8">
           {groups.map((group) => (
             <div key={group.date}>
-              <p style={dateLabelStyle}>{group.date}</p>
-              <div
-                style={{
-                  background: 'var(--surface)',
-                  borderRadius: 'var(--radius)',
-                  border: '1px solid var(--border-light)',
-                  overflow: 'hidden',
-                }}
-              >
+              <p className={dateLabelStyle}>{group.date}</p>
+              <div className="bg-surface rounded border border-border-light overflow-hidden">
                 {group.items.map((log, i) => (
                   <AuditEntry key={log.id} log={log} isLast={i === group.items.length - 1} />
                 ))}
@@ -193,33 +186,22 @@ function AuditEntry({ log, isLast }: { log: AuditLog; isLast: boolean }) {
   const isEmpty = (v: string | null) => v === null || v === '';
   return (
     <div
-      style={{
-        padding: '0.75rem 1rem',
-        borderBottom: isLast ? 'none' : '1px solid var(--border-light)',
-      }}
+      className={`py-3 px-4${isLast ? '' : ' border-b border-border-light'}`}
     >
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'flex-start',
-          gap: 8,
-          marginBottom: 6,
-        }}
-      >
-        <span style={{ fontSize: 'var(--text-13)', fontWeight: 'var(--font-semibold)', color: 'var(--text-primary)' }}>
+      <div className="flex justify-between items-start gap-2 mb-1.5">
+        <span className="text-13 font-semibold text-text-primary">
           {fieldLabel(log.fieldName)}
         </span>
-        <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+        <span className="text-12 text-text-muted whitespace-nowrap">
           {fmtTimestamp(log.createdAt)}
         </span>
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+      <div className="flex items-center gap-2 flex-wrap">
         <ValueChip value={log.oldValue} empty={isEmpty(log.oldValue)} />
-        <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>→</span>
+        <span className="text-12 text-text-muted">→</span>
         <ValueChip value={log.newValue} empty={isEmpty(log.newValue)} />
       </div>
-      <p style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)', marginTop: 6 }}>
+      <p className="text-12 text-text-muted mt-1.5">
         by {log.changedByName}
       </p>
     </div>
@@ -229,8 +211,8 @@ function AuditEntry({ log, isLast }: { log: AuditLog; isLast: boolean }) {
 function ValueChip({ value, empty }: { value: string | null; empty: boolean }) {
   return (
     <span
+      className="text-13"
       style={{
-        fontSize: 'var(--text-13)',
         color: empty ? 'var(--text-muted)' : 'var(--text-primary)',
         background: empty ? 'transparent' : 'var(--sage-light)',
         borderRadius: 'var(--radius-sm)',
@@ -243,42 +225,7 @@ function ValueChip({ value, empty }: { value: string | null; empty: boolean }) {
   );
 }
 
-const navBarStyle: React.CSSProperties = {
-  position: 'sticky',
-  top: 0,
-  zIndex: 50,
-  background: 'var(--bg)',
-  marginLeft: -16,
-  marginRight: -16,
-  paddingLeft: 16,
-  paddingRight: 16,
-  borderBottom: '1px solid var(--border-light)',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  height: 54,
-};
-const backBtnStyle: React.CSSProperties = {
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: 4,
-  fontSize: 'var(--text-13)',
-  color: 'var(--sage)',
-  background: 'none',
-  border: 'none',
-  cursor: 'pointer',
-  padding: 0,
-};
-const navTitleStyle: React.CSSProperties = {
-  fontSize: 'var(--text-15)',
-  fontWeight: 'var(--font-semibold)',
-  color: 'var(--text-primary)',
-};
-const dateLabelStyle: React.CSSProperties = {
-  fontSize: 'var(--text-11)',
-  fontWeight: 'var(--font-semibold)',
-  color: 'var(--text-muted)',
-  textTransform: 'uppercase',
-  letterSpacing: 'var(--tracking-wide-6)',
-  marginBottom: 8,
-};
+const navBarStyle = 'sticky top-0 z-50 bg-bg -mx-4 px-4 border-b border-border-light flex items-center justify-between h-[3.375rem]';
+const backBtnStyle = 'inline-flex items-center gap-1 text-13 text-sage bg-transparent border-none cursor-pointer p-0';
+const navTitleStyle = 'text-15 font-semibold text-text-primary';
+const dateLabelStyle = 'text-11 font-semibold text-text-muted uppercase tracking-wide-6 mb-2';

@@ -3,7 +3,6 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
 import { X, Check } from '@phosphor-icons/react';
-import { Z_FLOAT } from '@/lib/constants';
 
 interface Props {
   imageSrc: string;
@@ -160,53 +159,22 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
 
   return createPortal(
     <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: Z_FLOAT,
-        background: '#111',
-        display: 'flex',
-        flexDirection: 'column',
-        touchAction: 'none',
-      }}
+      className="fixed inset-0 bg-[#111] flex flex-col touch-none z-float"
     >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '0.875rem 1.25rem',
-          color: '#fff',
-          flexShrink: 0,
-        }}
-      >
+      <div className="flex items-center justify-between py-[0.875rem] px-5 text-white shrink-0">
         <button
           onClick={onCancel}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: '#fff',
-            padding: 8,
-            cursor: 'pointer',
-            lineHeight: 0,
-          }}
+          className="bg-transparent border-none text-white p-2 cursor-pointer leading-none"
           aria-label="Cancel"
         >
           <X size={24} />
         </button>
-        <span style={{ fontSize: 'var(--text-16)', fontWeight: 'var(--font-semibold)', letterSpacing: 'var(--tracking-tight-1)' }}>
+        <span className="text-16 font-semibold tracking-tight-1">
           Move and Scale
         </span>
         <button
           onClick={handleConfirm}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: '#fff',
-            padding: 8,
-            cursor: 'pointer',
-            lineHeight: 0,
-          }}
+          className="bg-transparent border-none text-white p-2 cursor-pointer leading-none"
           aria-label="Confirm crop"
         >
           <Check size={24} weight="bold" />
@@ -214,14 +182,7 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
       </div>
 
       <div
-        style={{
-          flex: 1,
-          position: 'relative',
-          overflow: 'hidden',
-          cursor: 'grab',
-          touchAction: 'none',
-          userSelect: 'none',
-        }}
+        className="flex-1 relative overflow-hidden cursor-grab touch-none select-none"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -234,14 +195,11 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
       >
         {naturalSize.w > 0 && (
           <div
+            className="absolute top-1/2 left-1/2 pointer-events-none"
             style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
               width: scaledW,
               height: scaledH,
               transform: `translate(calc(-50% + ${offset.x}px), calc(-50% + ${offset.y}px))`,
-              pointerEvents: 'none',
             }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -249,19 +207,13 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
               src={imageSrc}
               alt=""
               draggable={false}
-              style={{ width: '100%', height: '100%', display: 'block' }}
+              className="w-full h-full block"
             />
           </div>
         )}
 
         <svg
-          style={{
-            position: 'absolute',
-            inset: 0,
-            width: '100%',
-            height: '100%',
-            pointerEvents: 'none',
-          }}
+          className="absolute inset-0 w-full h-full pointer-events-none"
         >
           <defs>
             <mask id="imagecrop-overlay-mask">
@@ -286,18 +238,9 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
         </svg>
       </div>
 
-      <canvas ref={canvasRef} style={{ display: 'none' }} />
+      <canvas ref={canvasRef} className="hidden" />
 
-      <div
-        style={{
-          padding: '1rem 1.75rem 1.5rem',
-          flexShrink: 0,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: 10,
-        }}
-      >
+      <div className="pt-4 px-7 pb-6 shrink-0 flex flex-col items-center gap-2.5">
         <input
           type="range"
           min={0}
@@ -310,10 +253,11 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
             const t = Number(e.target.value) / 100;
             setScale(Math.exp(Math.log(minScale) + t * (Math.log(MAX_SCALE) - Math.log(minScale))));
           }}
-          style={{ width: '100%', accentColor: '#fff', cursor: 'pointer' }}
+          className="w-full cursor-pointer"
+          style={{ accentColor: '#fff' }}
           aria-label="Zoom"
         />
-        <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 'var(--text-11)' }}>
+        <span className="text-11 text-[rgba(255,255,255,0.4)]">
           Drag to reposition · Pinch or scroll to zoom
         </span>
       </div>

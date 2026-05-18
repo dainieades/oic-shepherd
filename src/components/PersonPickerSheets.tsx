@@ -43,84 +43,42 @@ export function GroupPickerSheet({
         actionLabel={selectedIds.length > 0 ? `Done (${selectedIds.length})` : 'Done'}
         actionVariant="pill"
       />
-      <div
-        style={{
-          padding: '0.75rem 1.25rem',
-          flexShrink: 0,
-          borderBottom: '1px solid var(--border-light)',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            background: 'var(--bg)',
-            border: '1px solid var(--border)',
-            borderRadius: 'var(--radius-sm)',
-            padding: '0.5625rem 0.75rem',
-          }}
-        >
+      <div className="py-3 px-5 shrink-0 border-b border-border-light">
+        <div className="flex items-center gap-2 bg-bg border border-border rounded-sm" style={{ padding: '0.5625rem 0.75rem' }}>
           <MagnifyingGlass size={14} color="var(--text-muted)" />
           <input
             ref={searchRef}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search groups…"
-            style={{
-              flex: 1,
-              fontSize: 'var(--text-14)',
-              color: 'var(--text-primary)',
-              background: 'none',
-              border: 'none',
-              outline: 'none',
-            }}
+            className="flex-1 text-14 text-text-primary bg-transparent border-none outline-none"
           />
           {search && (
             <button
               onClick={() => setSearch('')}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: 'var(--text-muted)',
-                fontSize: 'var(--text-18)',
-                lineHeight: 'var(--leading-none)',
-                padding: 0,
-              }}
+              className="bg-transparent border-none cursor-pointer text-text-muted text-18 leading-none p-0"
             >
               ×
             </button>
           )}
         </div>
       </div>
-      <div style={{ flex: 1, overflowY: 'auto' }}>
+      <div className="flex-1 overflow-y-auto">
         {filtered.map((g) => {
           const isSel = selectedIds.includes(g.id);
           return (
             <button
               key={g.id}
               onClick={() => toggle(g.id)}
-              style={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
-                padding: '0.75rem 1.25rem',
-                background: isSel ? 'var(--blue-light)' : 'none',
-                border: 'none',
-                borderBottom: '1px solid var(--border-light)',
-                cursor: 'pointer',
-                textAlign: 'left' as const,
-              }}
+              className="w-full flex items-center gap-3 py-3 px-5 border-none border-b border-border-light cursor-pointer text-left"
+              style={{ background: isSel ? 'var(--blue-light)' : 'none' }}
             >
-              <div style={{ flex: 1, minWidth: 0 }}>
+              <div className="flex-1 min-w-0">
                 <p
+                  className="text-14 m-0"
                   style={{
-                    fontSize: 'var(--text-14)',
                     fontWeight: isSel ? 'var(--font-semibold)' : 'var(--font-normal)',
                     color: isSel ? 'var(--blue)' : 'var(--text-primary)',
-                    margin: 0,
                   }}
                 >
                   {g.name}
@@ -131,15 +89,7 @@ export function GroupPickerSheet({
           );
         })}
         {filtered.length === 0 && (
-          <p
-            style={{
-              padding: '1.5rem 1.25rem',
-              fontSize: 'var(--text-13)',
-              color: 'var(--text-muted)',
-              textAlign: 'center',
-              fontStyle: 'italic',
-            }}
-          >
+          <p className="py-6 px-5 text-13 text-text-muted text-center italic">
             No groups found.
           </p>
         )}
@@ -196,68 +146,29 @@ export function SheepPickerSheet({
         actionLabel={selectedIds.length > 0 ? `Done (${selectedIds.length})` : 'Done'}
         actionVariant="pill"
       />
-      <div
-        style={{
-          padding: '0.75rem 1.25rem',
-          flexShrink: 0,
-          borderBottom: '1px solid var(--border-light)',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            background: 'var(--bg)',
-            border: '1px solid var(--border)',
-            borderRadius: 'var(--radius-sm)',
-            padding: '0.5625rem 0.75rem',
-          }}
-        >
+      <div className="py-3 px-5 shrink-0 border-b border-border-light">
+        <div className="flex items-center gap-2 bg-bg border border-border rounded-sm" style={{ padding: '0.5625rem 0.75rem' }}>
           <MagnifyingGlass size={14} color="var(--text-muted)" />
           <input
             ref={searchRef}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search people…"
-            style={{
-              flex: 1,
-              fontSize: 'var(--text-14)',
-              color: 'var(--text-primary)',
-              background: 'none',
-              border: 'none',
-              outline: 'none',
-            }}
+            className="flex-1 text-14 text-text-primary bg-transparent border-none outline-none"
           />
           {search && (
             <button
               onClick={() => setSearch('')}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: 'var(--text-muted)',
-                fontSize: 'var(--text-18)',
-                lineHeight: 'var(--leading-none)',
-                padding: 0,
-              }}
+              className="bg-transparent border-none cursor-pointer text-text-muted text-18 leading-none p-0"
             >
               ×
             </button>
           )}
         </div>
       </div>
-      <div style={{ flex: 1, overflowY: 'auto' }}>
+      <div className="flex-1 overflow-y-auto">
         {sorted.length === 0 && (
-          <p
-            style={{
-              fontSize: 'var(--text-13)',
-              color: 'var(--text-muted)',
-              fontStyle: 'italic',
-              paddingTop: 24,
-              textAlign: 'center',
-            }}
-          >
+          <p className="text-13 text-text-muted italic pt-6 text-center">
             No matching people.
           </p>
         )}
@@ -268,18 +179,8 @@ export function SheepPickerSheet({
             <button
               key={p.id}
               onClick={() => toggle(p.id)}
-              style={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
-                padding: '0.75rem 1.25rem',
-                background: isSel ? 'var(--sage-light)' : 'none',
-                border: 'none',
-                borderBottom: '1px solid var(--border-light)',
-                cursor: 'pointer',
-                textAlign: 'left' as const,
-              }}
+              className="w-full flex items-center gap-3 py-3 px-5 border-none border-b border-border-light cursor-pointer text-left"
+              style={{ background: isSel ? 'var(--sage-light)' : 'none' }}
             >
               <AvatarBadge
                 name={fullName(p)}
@@ -288,19 +189,18 @@ export function SheepPickerSheet({
                 bg={isSel ? 'var(--sage)' : palette.bg}
                 color={isSel ? 'var(--on-sage)' : palette.color}
               />
-              <div style={{ flex: 1, minWidth: 0 }}>
+              <div className="flex-1 min-w-0">
                 <p
+                  className="text-14 m-0"
                   style={{
-                    fontSize: 'var(--text-14)',
                     fontWeight: isSel ? 'var(--font-semibold)' : 'var(--font-normal)',
                     color: isSel ? 'var(--sage)' : 'var(--text-primary)',
-                    margin: 0,
                   }}
                 >
                   {fullName(p)}
                 </p>
                 {p.alternativeName && (
-                  <p style={{ fontSize: 11, color: 'var(--text-muted)', margin: 0 }}>
+                  <p className="text-11 text-text-muted m-0">
                     {p.alternativeName}
                   </p>
                 )}
@@ -348,58 +248,27 @@ export function ShepherdPickerSheet({
         actionLabel={selectedIds.length > 0 ? `Done (${selectedIds.length})` : 'Done'}
         actionVariant="pill"
       />
-      <div
-        style={{
-          padding: '0.75rem 1.25rem',
-          flexShrink: 0,
-          borderBottom: '1px solid var(--border-light)',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            background: 'var(--bg)',
-            border: '1px solid var(--border)',
-            borderRadius: 'var(--radius-sm)',
-            padding: '0.5625rem 0.75rem',
-          }}
-        >
+      <div className="py-3 px-5 shrink-0 border-b border-border-light">
+        <div className="flex items-center gap-2 bg-bg border border-border rounded-sm" style={{ padding: '0.5625rem 0.75rem' }}>
           <MagnifyingGlass size={14} color="var(--text-muted)" />
           <input
             ref={searchRef}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search shepherds…"
-            style={{
-              flex: 1,
-              fontSize: 'var(--text-14)',
-              color: 'var(--text-primary)',
-              background: 'none',
-              border: 'none',
-              outline: 'none',
-            }}
+            className="flex-1 text-14 text-text-primary bg-transparent border-none outline-none"
           />
           {search && (
             <button
               onClick={() => setSearch('')}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: 'var(--text-muted)',
-                fontSize: 'var(--text-18)',
-                lineHeight: 'var(--leading-none)',
-                padding: 0,
-              }}
+              className="bg-transparent border-none cursor-pointer text-text-muted text-18 leading-none p-0"
             >
               ×
             </button>
           )}
         </div>
       </div>
-      <div style={{ flex: 1, overflowY: 'auto' }}>
+      <div className="flex-1 overflow-y-auto">
         {filtered.map((entry, i) => {
           const isSel = selectedIds.includes(entry.id);
           const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
@@ -407,18 +276,8 @@ export function ShepherdPickerSheet({
             <button
               key={entry.id}
               onClick={() => toggle(entry.id)}
-              style={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
-                padding: '0.75rem 1.25rem',
-                background: isSel ? 'var(--sage-light)' : 'none',
-                border: 'none',
-                borderBottom: '1px solid var(--border-light)',
-                cursor: 'pointer',
-                textAlign: 'left' as const,
-              }}
+              className="w-full flex items-center gap-3 py-3 px-5 border-none border-b border-border-light cursor-pointer text-left"
+              style={{ background: isSel ? 'var(--sage-light)' : 'none' }}
             >
               <AvatarBadge
                 name={entry.name}
@@ -427,18 +286,17 @@ export function ShepherdPickerSheet({
                 bg={isSel ? 'var(--sage)' : palette.bg}
                 color={isSel ? 'var(--on-sage)' : palette.color}
               />
-              <div style={{ flex: 1, minWidth: 0 }}>
+              <div className="flex-1 min-w-0">
                 <p
+                  className="text-14 m-0"
                   style={{
-                    fontSize: 'var(--text-14)',
                     fontWeight: isSel ? 'var(--font-semibold)' : 'var(--font-normal)',
                     color: isSel ? 'var(--sage)' : 'var(--text-primary)',
-                    margin: 0,
                   }}
                 >
                   {entry.name}
                 </p>
-                <p style={{ fontSize: 11, color: 'var(--text-muted)', margin: 0 }}>
+                <p className="text-11 text-text-muted m-0">
                   {entry.subtitle}
                 </p>
               </div>
@@ -447,15 +305,7 @@ export function ShepherdPickerSheet({
           );
         })}
         {filtered.length === 0 && (
-          <p
-            style={{
-              padding: '1.5rem 1.25rem',
-              fontSize: 'var(--text-13)',
-              color: 'var(--text-muted)',
-              textAlign: 'center',
-              fontStyle: 'italic',
-            }}
-          >
+          <p className="py-6 px-5 text-13 text-text-muted text-center italic">
             No shepherds found.
           </p>
         )}
@@ -498,84 +348,42 @@ export function PositionPickerSheet({
         actionLabel={selectedPositions.length > 0 ? `Done (${selectedPositions.length})` : 'Done'}
         actionVariant="pill"
       />
-      <div
-        style={{
-          padding: '0.75rem 1.25rem',
-          flexShrink: 0,
-          borderBottom: '1px solid var(--border-light)',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            background: 'var(--bg)',
-            border: '1px solid var(--border)',
-            borderRadius: 'var(--radius-sm)',
-            padding: '0.5625rem 0.75rem',
-          }}
-        >
+      <div className="py-3 px-5 shrink-0 border-b border-border-light">
+        <div className="flex items-center gap-2 bg-bg border border-border rounded-sm" style={{ padding: '0.5625rem 0.75rem' }}>
           <MagnifyingGlass size={14} color="var(--text-muted)" />
           <input
             ref={searchRef}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search positions…"
-            style={{
-              flex: 1,
-              fontSize: 'var(--text-14)',
-              color: 'var(--text-primary)',
-              background: 'none',
-              border: 'none',
-              outline: 'none',
-            }}
+            className="flex-1 text-14 text-text-primary bg-transparent border-none outline-none"
           />
           {search && (
             <button
               onClick={() => setSearch('')}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: 'var(--text-muted)',
-                fontSize: 'var(--text-18)',
-                lineHeight: 'var(--leading-none)',
-                padding: 0,
-              }}
+              className="bg-transparent border-none cursor-pointer text-text-muted text-18 leading-none p-0"
             >
               ×
             </button>
           )}
         </div>
       </div>
-      <div style={{ flex: 1, overflowY: 'auto' }}>
+      <div className="flex-1 overflow-y-auto">
         {filtered.map((pos) => {
           const isSel = selectedPositions.includes(pos);
           return (
             <button
               key={pos}
               onClick={() => toggle(pos)}
-              style={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
-                padding: '0.75rem 1.25rem',
-                background: isSel ? 'var(--sage-light)' : 'none',
-                border: 'none',
-                borderBottom: '1px solid var(--border-light)',
-                cursor: 'pointer',
-                textAlign: 'left' as const,
-              }}
+              className="w-full flex items-center gap-3 py-3 px-5 border-none border-b border-border-light cursor-pointer text-left"
+              style={{ background: isSel ? 'var(--sage-light)' : 'none' }}
             >
-              <div style={{ flex: 1, minWidth: 0 }}>
+              <div className="flex-1 min-w-0">
                 <p
+                  className="text-14 m-0"
                   style={{
-                    fontSize: 'var(--text-14)',
                     fontWeight: isSel ? 'var(--font-semibold)' : 'var(--font-normal)',
                     color: isSel ? 'var(--sage)' : 'var(--text-primary)',
-                    margin: 0,
                   }}
                 >
                   {pos}
@@ -586,15 +394,7 @@ export function PositionPickerSheet({
           );
         })}
         {filtered.length === 0 && (
-          <p
-            style={{
-              padding: '1.5rem 1.25rem',
-              fontSize: 'var(--text-13)',
-              color: 'var(--text-muted)',
-              textAlign: 'center',
-              fontStyle: 'italic',
-            }}
-          >
+          <p className="py-6 px-5 text-13 text-text-muted text-center italic">
             No positions found.
           </p>
         )}
@@ -643,82 +443,39 @@ export function FamilyPickerSheet({
         actionLabel="Done"
         actionVariant="pill"
       />
-      <div
-        style={{
-          padding: '0.75rem 1.25rem',
-          flexShrink: 0,
-          borderBottom: '1px solid var(--border-light)',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            background: 'var(--bg)',
-            border: '1px solid var(--border)',
-            borderRadius: 'var(--radius-sm)',
-            padding: '0.5625rem 0.75rem',
-          }}
-        >
+      <div className="py-3 px-5 shrink-0 border-b border-border-light">
+        <div className="flex items-center gap-2 bg-bg border border-border rounded-sm" style={{ padding: '0.5625rem 0.75rem' }}>
           <MagnifyingGlass size={14} color="var(--text-muted)" />
           <input
             ref={searchRef}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search families…"
-            style={{
-              flex: 1,
-              fontSize: 'var(--text-14)',
-              color: 'var(--text-primary)',
-              background: 'none',
-              border: 'none',
-              outline: 'none',
-            }}
+            className="flex-1 text-14 text-text-primary bg-transparent border-none outline-none"
           />
           {search && (
             <button
               onClick={() => setSearch('')}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: 'var(--text-muted)',
-                fontSize: 'var(--text-18)',
-                lineHeight: 'var(--leading-none)',
-                padding: 0,
-              }}
+              className="bg-transparent border-none cursor-pointer text-text-muted text-18 leading-none p-0"
             >
               ×
             </button>
           )}
         </div>
       </div>
-      <div style={{ flex: 1, overflowY: 'auto' }}>
+      <div className="flex-1 overflow-y-auto">
         {!q && (
           <button
             onClick={() => setSelectedId(undefined)}
-            style={{
-              width: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 12,
-              padding: '0.75rem 1.25rem',
-              background: !selectedId ? 'var(--sage-light)' : 'none',
-              border: 'none',
-              borderBottom: '1px solid var(--border-light)',
-              cursor: 'pointer',
-              textAlign: 'left' as const,
-            }}
+            className="w-full flex items-center gap-3 py-3 px-5 border-none border-b border-border-light cursor-pointer text-left"
+            style={{ background: !selectedId ? 'var(--sage-light)' : 'none' }}
           >
-            <div style={{ flex: 1, minWidth: 0 }}>
+            <div className="flex-1 min-w-0">
               <p
+                className="text-14 m-0 italic"
                 style={{
-                  fontSize: 'var(--text-14)',
                   fontWeight: !selectedId ? 'var(--font-semibold)' : 'var(--font-normal)',
                   color: !selectedId ? 'var(--sage)' : 'var(--text-muted)',
-                  margin: 0,
-                  fontStyle: 'italic',
                 }}
               >
                 None
@@ -741,58 +498,32 @@ export function FamilyPickerSheet({
             <button
               key={f.id}
               onClick={() => setSelectedId(f.id)}
-              style={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
-                padding: '0.75rem 1.25rem',
-                background: isSel ? 'var(--sage-light)' : 'none',
-                border: 'none',
-                borderBottom: '1px solid var(--border-light)',
-                cursor: 'pointer',
-                textAlign: 'left' as const,
-              }}
+              className="w-full flex items-center gap-3 py-3 px-5 border-none border-b border-border-light cursor-pointer text-left"
+              style={{ background: isSel ? 'var(--sage-light)' : 'none' }}
             >
               <div
+                className="shrink-0 flex items-center justify-center text-12 font-bold rounded-full"
                 style={{
                   width: 36,
                   height: 36,
-                  borderRadius: '50%',
-                  flexShrink: 0,
                   background: isSel ? 'var(--sage)' : palette.bg,
                   color: isSel ? 'var(--on-sage)' : palette.color,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 'var(--text-12)',
-                  fontWeight: 'var(--font-bold)',
                 }}
               >
                 {initials}
               </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
+              <div className="flex-1 min-w-0">
                 <p
+                  className="text-14 m-0"
                   style={{
-                    fontSize: 'var(--text-14)',
                     fontWeight: isSel ? 'var(--font-semibold)' : 'var(--font-normal)',
                     color: isSel ? 'var(--sage)' : 'var(--text-primary)',
-                    margin: 0,
                   }}
                 >
                   {f.label}
                 </p>
                 {members.length > 0 && (
-                  <p
-                    style={{
-                      fontSize: 'var(--text-11)',
-                      color: 'var(--text-muted)',
-                      margin: 0,
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
+                  <p className="text-11 text-text-muted m-0 overflow-hidden text-ellipsis whitespace-nowrap">
                     {members.map((m) => m.preferredName).join(', ')}
                   </p>
                 )}
@@ -802,15 +533,7 @@ export function FamilyPickerSheet({
           );
         })}
         {filtered.length === 0 && (
-          <p
-            style={{
-              padding: '1.5rem 1.25rem',
-              fontSize: 'var(--text-13)',
-              color: 'var(--text-muted)',
-              textAlign: 'center',
-              fontStyle: 'italic',
-            }}
-          >
+          <p className="py-6 px-5 text-13 text-text-muted text-center italic">
             No families found.
           </p>
         )}
@@ -822,17 +545,12 @@ export function FamilyPickerSheet({
 function RadioDot({ selected }: { selected: boolean }) {
   return (
     <div
+      className="shrink-0 flex items-center justify-center rounded-full [transition:background_0.15s]"
       style={{
         width: 20,
         height: 20,
-        borderRadius: '50%',
-        flexShrink: 0,
         border: selected ? 'none' : '0.09375rem solid var(--border)',
         background: selected ? 'var(--sage)' : 'transparent',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        transition: 'background 0.15s',
       }}
     >
       {selected && <Check size={11} color="var(--on-sage)" weight="bold" />}
@@ -873,94 +591,38 @@ export function InvitePersonPickerSheet({
 
   return (
     <BottomSheet onClose={onBack} zIndex={Z_SHEET}>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          padding: '0.875rem 1.25rem 0.75rem',
-          flexShrink: 0,
-          borderBottom: '1px solid var(--border-light)',
-        }}
-      >
+      <div className="flex items-center pt-3.5 px-5 pb-3 shrink-0 border-b border-border-light">
         <button
           onClick={onBack}
-          style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            fontSize: 'var(--text-14)',
-            color: 'var(--text-secondary)',
-            padding: 0,
-            marginRight: 'auto',
-          }}
+          className="bg-transparent border-none cursor-pointer text-14 text-text-secondary p-0 mr-auto"
         >
           Cancel
         </button>
-        <span
-          style={{
-            position: 'absolute',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            fontSize: 'var(--text-15)',
-            fontWeight: 'var(--font-semibold)',
-            color: 'var(--text-primary)',
-          }}
-        >
+        <span className="absolute left-1/2 -translate-x-1/2 text-15 font-semibold text-text-primary">
           Who are you inviting?
         </span>
       </div>
-      <div
-        style={{
-          padding: '0.75rem 1.25rem',
-          flexShrink: 0,
-          borderBottom: '1px solid var(--border-light)',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            background: 'var(--bg)',
-            border: '1px solid var(--border)',
-            borderRadius: 'var(--radius-sm)',
-            padding: '0.5625rem 0.75rem',
-          }}
-        >
+      <div className="py-3 px-5 shrink-0 border-b border-border-light">
+        <div className="flex items-center gap-2 bg-bg border border-border rounded-sm" style={{ padding: '0.5625rem 0.75rem' }}>
           <MagnifyingGlass size={14} color="var(--text-muted)" />
           <input
             ref={searchRef}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search people…"
-            style={{
-              flex: 1,
-              fontSize: 'var(--text-14)',
-              color: 'var(--text-primary)',
-              background: 'none',
-              border: 'none',
-              outline: 'none',
-            }}
+            className="flex-1 text-14 text-text-primary bg-transparent border-none outline-none"
           />
           {search && (
             <button
               onClick={() => setSearch('')}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: 'var(--text-muted)',
-                fontSize: 'var(--text-18)',
-                lineHeight: 'var(--leading-none)',
-                padding: 0,
-              }}
+              className="bg-transparent border-none cursor-pointer text-text-muted text-18 leading-none p-0"
             >
               ×
             </button>
           )}
         </div>
       </div>
-      <div style={{ flex: 1, overflowY: 'auto' }}>
+      <div className="flex-1 overflow-y-auto">
         {filtered.map((p, i) => {
           const hasAccess = p.appRole && p.appRole !== 'no-access';
           const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
@@ -968,18 +630,7 @@ export function InvitePersonPickerSheet({
             <button
               key={p.id}
               onClick={() => onSelect(p)}
-              style={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
-                padding: '0.75rem 1.25rem',
-                background: 'none',
-                border: 'none',
-                borderBottom: '1px solid var(--border-light)',
-                cursor: 'pointer',
-                textAlign: 'left' as const,
-              }}
+              className="w-full flex items-center gap-3 py-3 px-5 bg-transparent border-none border-b border-border-light cursor-pointer text-left"
             >
               <AvatarBadge
                 name={fullName(p)}
@@ -988,36 +639,17 @@ export function InvitePersonPickerSheet({
                 bg={palette.bg}
                 color={palette.color}
               />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <p
-                  style={{
-                    fontSize: 'var(--text-14)',
-                    fontWeight: 'var(--font-medium)',
-                    color: 'var(--text-primary)',
-                    margin: 0,
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
+              <div className="flex-1 min-w-0">
+                <p className="text-14 font-medium text-text-primary m-0 overflow-hidden text-ellipsis whitespace-nowrap">
                   {fullName(p)}
                   {p.alternativeName && (
-                    <span style={{ color: 'var(--text-muted)', fontWeight: 'var(--font-normal)', marginLeft: 6 }}>
+                    <span className="text-text-muted font-normal ml-1.5">
                       {p.alternativeName}
                     </span>
                   )}
                 </p>
                 {hasAccess && (
-                  <p
-                    style={{
-                      fontSize: 'var(--text-12)',
-                      color: 'var(--text-muted)',
-                      margin: '0.125rem 0 0',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 4,
-                    }}
-                  >
+                  <p className="text-12 text-text-muted flex items-center gap-1" style={{ margin: '0.125rem 0 0' }}>
                     <IdentificationCard size={12} />
                     Already has access
                   </p>
@@ -1027,14 +659,7 @@ export function InvitePersonPickerSheet({
           );
         })}
         {filtered.length === 0 && (
-          <p
-            style={{
-              fontSize: 'var(--text-14)',
-              color: 'var(--text-muted)',
-              textAlign: 'center',
-              padding: '2rem 1.25rem',
-            }}
-          >
+          <p className="text-14 text-text-muted text-center py-8 px-5">
             No people found
           </p>
         )}

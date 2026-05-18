@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { createPortal } from 'react-dom';
-import { BACKDROP_COLOR } from '@/lib/constants';
 import { Button } from './Button';
 
 export type SheetVariant = 'sheet' | 'dialog' | 'side-panel' | 'confirm' | 'picker-dialog';
@@ -73,14 +72,8 @@ export function BottomSheet({
 
   const overlay = (
     <div
-      className={`sheet-outer ${OUTER_VARIANT_CLASS[variant]}`}
-      style={{
-        position: 'fixed',
-        inset: 0,
-        background: BACKDROP_COLOR,
-        zIndex,
-        display: 'flex',
-      }}
+      className={`sheet-outer ${OUTER_VARIANT_CLASS[variant]} fixed inset-0 flex bg-backdrop`}
+      style={{ zIndex }}
       onClick={(e) => {
         if (allowBackdropClose && e.target === e.currentTarget) onClose();
       }}
@@ -89,9 +82,8 @@ export function BottomSheet({
         role="dialog"
         aria-modal="true"
         aria-labelledby={ariaLabelledby}
-        className={`sheet-panel ${PANEL_VARIANT_CLASS[variant]}`}
+        className={`sheet-panel ${PANEL_VARIANT_CLASS[variant]} bg-surface relative`}
         style={{
-          background: 'var(--surface)',
           ...(compact
             ? { paddingBottom: 'env(safe-area-inset-bottom, 1.5rem)' }
             : {
@@ -100,7 +92,6 @@ export function BottomSheet({
                 flexDirection: 'column',
                 overflow: 'hidden',
               }),
-          position: 'relative',
           ...contentStyle,
         }}
       >
@@ -148,16 +139,8 @@ export function SubPanel({
 
   return (
     <div
-      style={{
-        position: 'absolute',
-        inset: 0,
-        zIndex: 10,
-        background: 'var(--surface)',
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-        borderRadius: 'inherit',
-      }}
+      className="absolute inset-0 z-10 bg-surface flex flex-col overflow-hidden"
+      style={{ borderRadius: 'inherit' }}
     >
       {React.Children.map(children, (child) => {
         if (React.isValidElement(child) && child.type === ModalHeader) {
@@ -192,19 +175,13 @@ export function ModalHeader({
 }: ModalHeaderProps) {
   return (
     <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '0.875rem 1.25rem 0.75rem',
-        flexShrink: 0,
-        borderBottom: '1px solid var(--border-light)',
-      }}
+      className="flex items-center justify-between shrink-0 border-b border-border-light"
+      style={{ padding: '0.875rem 1.25rem 0.75rem' }}
     >
       <Button variant="ghost" size="sm" onClick={onCancel}>
         {cancelLabel}
       </Button>
-      <span id={titleId} style={{ fontSize: 'var(--text-15)', fontWeight: 'var(--font-semibold)', color: 'var(--text-primary)' }}>
+      <span id={titleId} className="text-15 font-semibold text-text-primary">
         {title}
       </span>
       <Button

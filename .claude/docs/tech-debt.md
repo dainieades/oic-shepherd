@@ -12,8 +12,4 @@ _Last audited: 2026-04-22_
 
 - [ ] Split AppContext mutations into domain-scoped modules if the file grows beyond 1,500 lines again
 - [ ] Add server-side pagination if dataset grows beyond ~1K people
-- [ ] Desktop adaptation for detail pages (`/person/[id]`, `/family/[id]`, `/groups/[id]`) — two-column layout
-- [ ] Desktop adaptation for list pages (Logs, Todos, Groups)
-- [ ] PeopleTable polish: column visibility menu, density toggle, multi-select bulk actions
-- [ ] `cmd/ctrl+K` keyboard shortcut to focus dashboard search
-- [ ] Remove all inline styles: (1) extend Tailwind config to expose CSS custom properties as utilities, (2) sweep all `style={{ … }}` props and replace with Tailwind classes — see CLAUDE.md Design Tokens for the existing token reference
+- ✅ 2026-05-17 Remove all inline styles: extended Tailwind config with `@theme inline` to expose all design tokens as utilities; swept all 85 src files replacing `style={{ … }}` props with Tailwind classes (1,308 → ~381 remaining, all legitimately dynamic)

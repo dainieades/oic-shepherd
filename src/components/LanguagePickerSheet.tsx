@@ -96,51 +96,20 @@ export default function LanguagePickerSheet({ currentLanguages, onConfirm, onBac
         actionVariant="pill"
       />
 
-      <div
-        style={{
-          padding: '0.75rem 1.25rem',
-          flexShrink: 0,
-          borderBottom: '1px solid var(--border-light)',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            background: 'var(--bg)',
-            border: '1px solid var(--border)',
-            borderRadius: 'var(--radius-sm)',
-            padding: '0.5625rem 0.75rem',
-          }}
-        >
+      <div className="py-3 px-5 shrink-0 border-b border-border-light">
+        <div className="flex items-center gap-2 bg-bg border border-border rounded-sm py-[0.5625rem] px-3">
           <MagnifyingGlass size={14} color="var(--text-muted)" />
           <input
             ref={searchRef}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search languages…"
-            style={{
-              flex: 1,
-              fontSize: 'var(--text-14)',
-              color: 'var(--text-primary)',
-              background: 'none',
-              border: 'none',
-              outline: 'none',
-            }}
+            className="flex-1 text-14 text-text-primary bg-transparent border-none outline-none"
           />
           {search && (
             <button
               onClick={() => setSearch('')}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: 'var(--text-muted)',
-                fontSize: 'var(--text-18)',
-                lineHeight: 'var(--leading-none)',
-                padding: 0,
-              }}
+              className="bg-transparent border-none cursor-pointer text-text-muted text-18 leading-none p-0"
             >
               ×
             </button>
@@ -148,22 +117,12 @@ export default function LanguagePickerSheet({ currentLanguages, onConfirm, onBac
         </div>
       </div>
 
-      <div style={{ flex: 1, overflowY: 'auto' }}>
+      <div className="flex-1 overflow-y-auto">
         {/* Priority languages */}
         {filteredPriority.length > 0 && (
           <>
             {!q && (
-              <p
-                style={{
-                  fontSize: 'var(--text-10)',
-                  fontWeight: 'var(--font-semibold)',
-                  color: 'var(--text-muted)',
-                  textTransform: 'uppercase',
-                  letterSpacing: 'var(--tracking-wide-6)',
-                  padding: '0.75rem 1.25rem 0.375rem',
-                  margin: 0,
-                }}
-              >
+              <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 py-3 pb-[0.375rem] px-5 m-0">
                 Suggested
               </p>
             )}
@@ -177,18 +136,7 @@ export default function LanguagePickerSheet({ currentLanguages, onConfirm, onBac
         {filteredOther.length > 0 && (
           <>
             {!q && filteredPriority.length > 0 && (
-              <p
-                style={{
-                  fontSize: 'var(--text-10)',
-                  fontWeight: 'var(--font-semibold)',
-                  color: 'var(--text-muted)',
-                  textTransform: 'uppercase',
-                  letterSpacing: 'var(--tracking-wide-6)',
-                  padding: '0.75rem 1.25rem 0.375rem',
-                  margin: 0,
-                  borderTop: '1px solid var(--border-light)',
-                }}
-              >
+              <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 py-3 pb-[0.375rem] px-5 m-0 border-t border-border-light">
                 All Languages
               </p>
             )}
@@ -199,15 +147,7 @@ export default function LanguagePickerSheet({ currentLanguages, onConfirm, onBac
         )}
 
         {filteredPriority.length === 0 && filteredOther.length === 0 && (
-          <p
-            style={{
-              padding: '1.5rem 1.25rem',
-              fontSize: 'var(--text-13)',
-              color: 'var(--text-muted)',
-              textAlign: 'center',
-              fontStyle: 'italic',
-            }}
-          >
+          <p className="py-6 px-5 text-13 text-text-muted text-center italic">
             No languages found.
           </p>
         )}
@@ -229,23 +169,12 @@ function LanguageRow({
   return (
     <button
       onClick={() => onToggle(lang)}
-      style={{
-        width: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        gap: 12,
-        padding: '0.75rem 1.25rem',
-        background: isSel ? 'var(--sage-light)' : 'none',
-        border: 'none',
-        borderBottom: '1px solid var(--border-light)',
-        cursor: 'pointer',
-        textAlign: 'left' as const,
-      }}
+      className="w-full flex items-center gap-3 py-3 px-5 border-none border-b border-border-light cursor-pointer text-left"
+      style={{ background: isSel ? 'var(--sage-light)' : 'none' }}
     >
       <span
+        className="flex-1 text-14"
         style={{
-          flex: 1,
-          fontSize: 'var(--text-14)',
           fontWeight: isSel ? 'var(--font-semibold)' : 'var(--font-normal)',
           color: isSel ? 'var(--sage)' : 'var(--text-primary)',
         }}
@@ -253,17 +182,11 @@ function LanguageRow({
         {lang}
       </span>
       <div
+        className="w-5 h-5 shrink-0 flex items-center justify-center transition-[background] duration-150"
         style={{
-          width: 20,
-          height: 20,
           borderRadius: 5,
-          flexShrink: 0,
           border: isSel ? 'none' : '0.09375rem solid var(--border)',
           background: isSel ? 'var(--sage)' : 'transparent',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          transition: 'background 0.15s',
         }}
       >
         {isSel && <Check size={11} color="var(--on-sage)" weight="bold" />}

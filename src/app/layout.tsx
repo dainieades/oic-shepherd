@@ -35,7 +35,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           }}
         />
       </head>
-      <body style={{ background: 'var(--bg)', color: 'var(--text-primary)' }}>
+      <body className="bg-bg text-text-primary">
         <ToastProvider>
           <AppProvider>
             <AccessGate />

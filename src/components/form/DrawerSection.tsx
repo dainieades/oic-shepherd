@@ -10,28 +10,15 @@ export function DrawerSection({
   cardPadding?: string;
 }) {
   return (
-    <div style={{ marginBottom: 24 }}>
+    <div className="mb-6">
       <p
-        style={{
-          fontSize: 'var(--text-10)',
-          fontWeight: 'var(--font-semibold)',
-          color: 'var(--text-muted)',
-          textTransform: 'uppercase',
-          letterSpacing: 'var(--tracking-wide-6)',
-          marginBottom: 10,
-        }}
+        className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 mb-2.5"
       >
         {label}
       </p>
       <div
-        className="no-last-border"
-        style={{
-          background: 'var(--surface)',
-          borderRadius: 'var(--radius)',
-          border: '1px solid var(--border-light)',
-          overflow: 'hidden',
-          padding: cardPadding,
-        }}
+        className="no-last-border bg-surface rounded border border-border-light overflow-hidden"
+        style={{ padding: cardPadding }}
       >
         {children}
       </div>

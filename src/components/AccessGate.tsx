@@ -22,72 +22,27 @@ export default function AccessGate() {
 
   return (
     <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 'var(--z-toast)',
-        background: 'var(--bg)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '1.5rem 1rem',
-      }}
+      className="fixed inset-0 bg-bg flex items-center justify-center py-6 px-4 z-toast"
     >
       <div
-        style={{
-          width: '100%',
-          maxWidth: '22.5rem',
-          background: 'var(--surface)',
-          borderRadius: 'var(--radius-xl)',
-          border: '1px solid var(--border)',
-          padding: '2.5rem 1.75rem 2rem',
-          boxShadow: 'var(--shadow-elevated)',
-          textAlign: 'center',
-        }}
+        className="w-full bg-surface rounded-xl border border-border text-center shadow-elevated"
+        style={{ maxWidth: '22.5rem', padding: '2.5rem 1.75rem 2rem' }}
       >
-        <div
-          style={{
-            width: 64,
-            height: 64,
-            borderRadius: '50%',
-            background: 'var(--border-light)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            margin: '0 auto 1.25rem',
-          }}
-        >
+        <div className="w-16 h-16 rounded-full bg-border-light flex items-center justify-center mx-auto mb-5">
           <Lock size={28} color="var(--text-muted)" weight="bold" />
         </div>
         <h2
-          className="font-display"
-          style={{ fontSize: 'var(--text-22)', fontWeight: 'var(--font-bold)', marginBottom: 10, color: 'var(--text-primary)' }}
+          className="font-display text-22 font-bold text-text-primary mb-2.5"
         >
           Access Restricted
         </h2>
-        <p
-          style={{
-            fontSize: 'var(--text-15)',
-            color: 'var(--text-secondary)',
-            lineHeight: 'var(--leading-loose)',
-            marginBottom: 28,
-          }}
-        >
+        <p className="text-15 text-text-secondary leading-loose mb-7">
           This app is for OIC church members only. Contact your pastor to request access.
         </p>
         <button
           onClick={handleBack}
-          style={{
-            width: '100%',
-            padding: '0.8125rem 1.25rem',
-            borderRadius: 'var(--radius-md)',
-            border: 'none',
-            background: 'var(--sage)',
-            color: 'var(--on-sage)',
-            fontSize: 'var(--text-15)',
-            fontWeight: 'var(--font-semibold)',
-            cursor: 'pointer',
-          }}
+          className="w-full rounded-md border-none bg-sage text-on-sage text-15 font-semibold cursor-pointer"
+          style={{ padding: '0.8125rem 1.25rem' }}
         >
           Back to Sign In
         </button>

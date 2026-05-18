@@ -70,47 +70,26 @@ export default function CalendarSyncPage() {
   }
 
   return (
-    <div style={{ paddingBottom: 48 }}>
-      <div className="settings-subpage-navbar" style={navBarStyle}>
-        <button onClick={() => router.push('/settings')} style={backBtnStyle}>
+    <div className="pb-12">
+      <div className="settings-subpage-navbar sticky top-0 bg-bg -mx-4 px-4 border-b border-border-light flex items-center justify-between h-[54px] z-page">
+        <button onClick={() => router.push('/settings')} className="inline-flex items-center gap-1 text-13 text-sage bg-transparent border-none cursor-pointer p-0">
           <CaretLeft size={16} weight="bold" />
           Settings
         </button>
-        <span style={navTitleStyle}>Calendar Sync</span>
-        <span style={{ width: 72 }} />
+        <span className="text-15 font-semibold text-text-primary">Calendar Sync</span>
+        <span className="w-[72px]" />
       </div>
 
-      <p
-        style={{
-          fontSize: 'var(--text-13)',
-          color: 'var(--text-muted)',
-          margin: '1rem 0 0.75rem',
-          lineHeight: 'var(--leading-normal)',
-        }}
-      >
+      <p className="text-13 text-text-muted mt-4 mb-3 leading-normal">
         Add OIC to-dos to your calendar app. New items appear automatically; how often updates show
         up depends on your calendar app.
       </p>
 
-      <div
-        style={{
-          background: 'var(--surface)',
-          borderRadius: 'var(--radius)',
-          border: '1px solid var(--border-light)',
-          overflow: 'hidden',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 14,
-            padding: '0.875rem 1rem',
-          }}
-        >
-          <span style={{ flex: 1, minWidth: 0 }}>
-            <span style={labelStyle}>Calendar sync</span>
-            <span style={descStyle}>
+      <div className="bg-surface rounded border border-border-light overflow-hidden">
+        <div className="flex items-center gap-[14px] py-[0.875rem] px-4">
+          <span className="flex-1 min-w-0">
+            <span className="block text-15 font-medium text-text-primary tracking-tight-1">Calendar sync</span>
+            <span className="block text-13 text-text-muted mt-[0.125rem] leading-normal">
               {calendarSyncEnabled
                 ? 'On — feed is active'
                 : 'Off — to-dos will not appear in your calendar'}
@@ -126,7 +105,7 @@ export default function CalendarSyncPage() {
 
       {calendarSyncEnabled && (
         <>
-          <p style={sectionHeaderStyle}>Your calendar app</p>
+          <p className="text-12 font-semibold text-text-muted uppercase tracking-wide-4 mt-6 mb-2">Your calendar app</p>
           <CalendarSubscribeOptions
             feedUrl={feedUrl}
             onSubscribeApple={() => void handleSubscribeApple()}
@@ -134,12 +113,12 @@ export default function CalendarSyncPage() {
             onCopy={() => void handleCopy()}
           />
 
-          <p style={sectionHeaderStyle}>Manage</p>
-          <button onClick={() => setShowRegenConfirm(true)} style={resetBtnStyle}>
+          <p className="text-12 font-semibold text-text-muted uppercase tracking-wide-4 mt-6 mb-2">Manage</p>
+          <button onClick={() => setShowRegenConfirm(true)} className="flex items-center gap-[0.625rem] py-[0.625rem] px-[0.875rem] bg-surface border border-border-light rounded-sm cursor-pointer w-full text-14 text-red">
             <ArrowsClockwise size={16} color="var(--red)" />
-            <span style={{ flex: 1, textAlign: 'left' }}>Reset feed URL</span>
+            <span className="flex-1 text-left">Reset feed URL</span>
           </button>
-          <p style={{ ...descStyle, marginTop: '0.5rem' }}>
+          <p className="block text-13 text-text-muted mt-2 leading-normal">
             Resetting disconnects every calendar app currently subscribed. Use only if you think the
             URL has been shared by mistake — you will need to re-subscribe in each app.
           </p>
@@ -148,49 +127,24 @@ export default function CalendarSyncPage() {
 
       {showRegenConfirm && (
         <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'var(--backdrop)',
-            zIndex: 100,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '1rem',
-          }}
+          className="fixed inset-0 bg-[var(--backdrop)] flex items-center justify-center p-4 z-[100]"
           onClick={(e) => {
             if (e.target === e.currentTarget) setShowRegenConfirm(false);
           }}
         >
-          <div
-            style={{
-              background: 'var(--surface)',
-              borderRadius: 'var(--radius)',
-              padding: '1.25rem',
-              maxWidth: '20rem',
-              width: '100%',
-              border: '1px solid var(--border-light)',
-            }}
-          >
-            <p
-              style={{
-                fontSize: 'var(--text-15)',
-                fontWeight: 'var(--font-semibold)',
-                margin: '0 0 0.5rem',
-                color: 'var(--text-primary)',
-              }}
-            >
+          <div className="bg-surface rounded p-5 max-w-[20rem] w-full border border-border-light">
+            <p className="text-15 font-semibold text-text-primary m-0 mb-2">
               Reset feed URL?
             </p>
-            <p style={{ ...descStyle, marginBottom: '1rem' }}>
+            <p className="block text-13 text-text-muted mt-[0.125rem] leading-normal mb-4">
               Every calendar app currently subscribed will stop receiving updates. You will need to
               subscribe again with the new URL.
             </p>
-            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-              <button onClick={() => setShowRegenConfirm(false)} style={ghostBtnStyle}>
+            <div className="flex gap-2 justify-end">
+              <button onClick={() => setShowRegenConfirm(false)} className="py-2 px-[0.875rem] bg-transparent border border-border-light rounded-sm cursor-pointer text-13 text-text-primary">
                 Cancel
               </button>
-              <button onClick={() => void handleRegenerate()} style={dangerBtnStyle}>
+              <button onClick={() => void handleRegenerate()} className="py-2 px-[0.875rem] bg-[var(--red)] border-none rounded-sm cursor-pointer text-13 text-white font-medium">
                 Reset
               </button>
             </div>
@@ -201,96 +155,3 @@ export default function CalendarSyncPage() {
   );
 }
 
-const navBarStyle: React.CSSProperties = {
-  position: 'sticky',
-  top: 0,
-  zIndex: 'var(--z-page)',
-  background: 'var(--bg)',
-  marginLeft: -16,
-  marginRight: -16,
-  paddingLeft: 16,
-  paddingRight: 16,
-  borderBottom: '1px solid var(--border-light)',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  height: 54,
-};
-
-const backBtnStyle: React.CSSProperties = {
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: 4,
-  fontSize: 'var(--text-13)',
-  color: 'var(--sage)',
-  background: 'none',
-  border: 'none',
-  cursor: 'pointer',
-  padding: 0,
-};
-
-const navTitleStyle: React.CSSProperties = {
-  fontSize: 'var(--text-15)',
-  fontWeight: 'var(--font-semibold)',
-  color: 'var(--text-primary)',
-};
-
-const labelStyle: React.CSSProperties = {
-  display: 'block',
-  fontSize: 'var(--text-15)',
-  fontWeight: 'var(--font-medium)',
-  color: 'var(--text-primary)',
-  letterSpacing: 'var(--tracking-tight-1)',
-};
-
-const descStyle: React.CSSProperties = {
-  display: 'block',
-  fontSize: 'var(--text-13)',
-  color: 'var(--text-muted)',
-  marginTop: '0.125rem',
-  lineHeight: 'var(--leading-normal)',
-};
-
-const sectionHeaderStyle: React.CSSProperties = {
-  fontSize: 'var(--text-12)',
-  fontWeight: 'var(--font-semibold)',
-  color: 'var(--text-muted)',
-  textTransform: 'uppercase',
-  letterSpacing: 'var(--tracking-wide-4)',
-  margin: '1.5rem 0 0.5rem',
-};
-
-const resetBtnStyle: React.CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-  gap: '0.625rem',
-  padding: '0.625rem 0.875rem',
-  background: 'var(--surface)',
-  border: '1px solid var(--border-light)',
-  borderRadius: 'var(--radius-sm)',
-  cursor: 'pointer',
-  width: '100%',
-  fontSize: 'var(--text-14)',
-  color: 'var(--red)',
-};
-
-const ghostBtnStyle: React.CSSProperties = {
-  padding: '0.5rem 0.875rem',
-  background: 'none',
-  border: '1px solid var(--border-light)',
-  borderRadius: 'var(--radius-sm)',
-  cursor: 'pointer',
-  fontSize: 'var(--text-13)',
-  color: 'var(--text-primary)',
-};
-
-const dangerBtnStyle: React.CSSProperties = {
-  padding: '0.5rem 0.875rem',
-  background: 'var(--red)',
-  border: 'none',
-  borderRadius: 'var(--radius-sm)',
-  cursor: 'pointer',
-  fontSize: 'var(--text-13)',
-  color: 'white',
-  fontWeight: 'var(--font-medium)',
-};

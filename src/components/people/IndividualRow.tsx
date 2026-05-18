@@ -27,56 +27,22 @@ const IndividualRow = React.memo(function IndividualRow({
   return (
     <Link
       href={`/person/${person.id}`}
-      className="row-hover"
-      style={{ borderBottom: '1px solid var(--border-light)' }}
+      className="row-hover border-b border-border-light"
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '0.625rem 0' }}>
+      <div className="flex items-center gap-3 py-2.5">
         <AvatarBadge name={fullName(person)} photo={person.photo} size={44} />
 
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: 6,
-              marginBottom: 3,
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 5,
-                minWidth: 0,
-                overflow: 'hidden',
-              }}
-            >
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between gap-1.5 mb-[3px]">
+            <div className="flex items-center gap-[5px] min-w-0 overflow-hidden">
               {person.isShepherd && (
-                <HandHeart size={14} color="var(--sage)" style={{ flexShrink: 0 }} />
+                <HandHeart size={14} color="var(--sage)" className="shrink-0" />
               )}
-              <span
-                style={{
-                  fontSize: 'var(--text-15)',
-                  fontWeight: 'var(--font-semibold)',
-                  color: 'var(--text-primary)',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  flexShrink: 1,
-                }}
-              >
+              <span className="text-15 font-semibold text-text-primary whitespace-nowrap overflow-hidden text-ellipsis shrink">
                 {fullName(person)}
               </span>
               {person.alternativeName && (
-                <span
-                  style={{
-                    fontSize: 'var(--text-12)',
-                    color: 'var(--text-muted)',
-                    flexShrink: 0,
-                    whiteSpace: 'nowrap',
-                  }}
-                >
+                <span className="text-12 text-text-muted shrink-0 whitespace-nowrap">
                   {person.alternativeName}
                 </span>
               )}
@@ -84,7 +50,7 @@ const IndividualRow = React.memo(function IndividualRow({
             <LogStatusTag daysSince={daysSinceNote} lastNoteTs={lastNoteTs} />
           </div>
 
-          <div style={{ lineHeight: 'var(--leading-normal)' }}>
+          <div className="leading-normal">
             {person.assignedShepherdIds.length === 0 && (
               <>
                 <StatusBadge
@@ -95,7 +61,7 @@ const IndividualRow = React.memo(function IndividualRow({
                 />{' '}
               </>
             )}
-            <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>
+            <span className="text-12 text-text-muted">
               {person.assignedShepherdIds.length === 0 && '· '}
               {getMembershipLabel(person.membershipStatus)} ·{' '}
               {getChurchAttendanceLabel(person.churchAttendance)}
@@ -106,36 +72,14 @@ const IndividualRow = React.memo(function IndividualRow({
                 return (
                   <>
                     {' '}
-                    <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>·</span>{' '}
-                    <span
-                      style={{
-                        fontSize: 'var(--text-10)',
-                        padding: '0.125rem 0.4375rem',
-                        borderRadius: 'var(--radius-pill)',
-                        background: 'var(--blue-light)',
-                        color: 'var(--blue)',
-                        fontWeight: 'var(--font-semibold)',
-                        display: 'inline-block',
-                        verticalAlign: 'middle',
-                      }}
-                    >
+                    <span className="text-12 text-text-muted">·</span>{' '}
+                    <span className="text-10 rounded-pill bg-blue-light text-blue font-semibold inline-block align-middle py-[0.125rem] px-[0.4375rem]">
                       {group.name}
                     </span>
                     {extra > 0 && (
                       <>
                         {' '}
-                        <span
-                          style={{
-                            fontSize: 'var(--text-10)',
-                            padding: '0.125rem 0.375rem',
-                            borderRadius: 'var(--radius-pill)',
-                            background: 'var(--blue-light)',
-                            color: 'var(--blue)',
-                            fontWeight: 'var(--font-semibold)',
-                            display: 'inline-block',
-                            verticalAlign: 'middle',
-                          }}
-                        >
+                        <span className="text-10 rounded-pill bg-blue-light text-blue font-semibold inline-block align-middle py-[0.125rem] px-[0.375rem]">
                           +{extra}
                         </span>
                       </>

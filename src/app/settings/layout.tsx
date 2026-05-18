@@ -18,7 +18,6 @@ import { useApp } from '@/lib/context';
 import { createClient } from '@/utils/supabase/client';
 import type { User } from '@supabase/supabase-js';
 import { fullName } from '@/lib/utils';
-import { BACKDROP_COLOR, Z_NESTED } from '@/lib/constants';
 
 type NavItem = {
   href: string;
@@ -126,31 +125,18 @@ function DesktopSidebar() {
     <>
       <aside className="settings-sidebar-desktop">
         <h1
-          style={{
-            fontSize: 'var(--text-28)',
-            fontWeight: 'var(--font-extrabold)',
-            color: 'var(--text-primary)',
-            letterSpacing: 'var(--tracking-tight-3)',
-            margin: 0,
-            lineHeight: 'var(--leading-none)',
-          }}
+          className="text-28 font-extrabold text-text-primary tracking-tight-3 m-0 leading-none"
         >
           Settings
         </h1>
 
         <Link
           href="/settings/profile"
+          className="no-underline border rounded flex items-center gap-3 py-3.5 px-4"
           style={{
-            textDecoration: 'none',
             background: pathname === '/settings/profile' ? 'var(--sage-light)' : 'var(--surface)',
-            border: '1px solid',
             borderColor:
               pathname === '/settings/profile' ? 'var(--sage-mid)' : 'var(--border-light)',
-            borderRadius: 'var(--radius)',
-            padding: '0.875rem 1rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
           }}
         >
           {person?.photo ? (
@@ -158,68 +144,35 @@ function DesktopSidebar() {
             <img
               src={person.photo}
               alt={displayName}
-              style={{
-                width: 44,
-                height: 44,
-                borderRadius: '50%',
-                objectFit: 'cover',
-                flexShrink: 0,
-              }}
+              className="w-11 h-11 rounded-full object-cover shrink-0"
             />
           ) : avatarUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={avatarUrl}
               alt={displayName}
-              style={{
-                width: 44,
-                height: 44,
-                borderRadius: '50%',
-                objectFit: 'cover',
-                flexShrink: 0,
-              }}
+              className="w-11 h-11 rounded-full object-cover shrink-0"
             />
           ) : (
             <div
-              style={{
-                width: 44,
-                height: 44,
-                borderRadius: '50%',
-                background: 'var(--sage)',
-                color: 'var(--on-sage)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 'var(--text-15)',
-                fontWeight: 'var(--font-bold)',
-                flexShrink: 0,
-              }}
+              className="w-11 h-11 rounded-full bg-sage text-on-sage flex items-center justify-center text-15 font-bold shrink-0"
             >
               {initials}
             </div>
           )}
-          <div style={{ flex: 1, minWidth: 0 }}>
+          <div className="flex-1 min-w-0">
             <p
-              style={{
-                fontSize: 'var(--text-14)',
-                fontWeight: 'var(--font-bold)',
-                color: 'var(--text-primary)',
-                margin: 0,
-                letterSpacing: 'var(--tracking-tight-1)',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-              }}
+              className="text-14 font-bold text-text-primary m-0 tracking-tight-1 overflow-hidden text-ellipsis whitespace-nowrap"
             >
               {displayName}
             </p>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
+            <div className="flex items-center gap-1 mt-0.5">
               {currentPersona.role === 'admin' ? (
                 <ShieldStar size={11} color="var(--sage)" weight="fill" />
               ) : currentPersona.role === 'shepherd' ? (
                 <HandHeart size={11} color="var(--sage)" weight="fill" />
               ) : null}
-              <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>{roleLabel}</span>
+              <span className="text-12 text-text-muted">{roleLabel}</span>
             </div>
           </div>
         </Link>
@@ -234,93 +187,45 @@ function DesktopSidebar() {
 
         <button
           onClick={() => setShowSignOutConfirm(true)}
-          style={{
-            marginTop: 'auto',
-            background: 'var(--surface)',
-            border: '1px solid var(--border-light)',
-            borderRadius: 'var(--radius)',
-            padding: '0.75rem 1rem',
-            cursor: 'pointer',
-            textAlign: 'left',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-          }}
+          className="mt-auto bg-surface border border-border-light rounded py-3 px-4 cursor-pointer text-left flex items-center gap-2.5"
         >
           <SignOut size={16} color="var(--red)" />
-          <span style={{ fontSize: 'var(--text-14)', fontWeight: 'var(--font-medium)', color: 'var(--red)' }}>Sign Out</span>
+          <span className="text-14 font-medium text-red">Sign Out</span>
         </button>
       </aside>
 
       {showSignOutConfirm && (
         <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: Z_NESTED,
-            background: BACKDROP_COLOR,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '0 2rem',
-          }}
+          className="fixed inset-0 flex items-center justify-center px-8 z-nested bg-backdrop"
           onClick={(e) => {
             if (e.target === e.currentTarget) setShowSignOutConfirm(false);
           }}
         >
           <div
-            style={{
-              background: 'var(--surface)',
-              borderRadius: 16,
-              width: '100%',
-              maxWidth: 320,
-              overflow: 'hidden',
-            }}
+            className="bg-surface w-full max-w-xs overflow-hidden"
+            style={{ borderRadius: 16 }}
           >
-            <div style={{ padding: '1.5rem 1.25rem 1rem', textAlign: 'center' }}>
+            <div className="px-5 pt-6 pb-4 text-center">
               <p
-                style={{
-                  fontSize: 'var(--text-16)',
-                  fontWeight: 'var(--font-semibold)',
-                  color: 'var(--text-primary)',
-                  margin: '0 0 0.375rem',
-                }}
+                className="text-16 font-semibold text-text-primary"
+                style={{ margin: '0 0 0.375rem' }}
               >
                 Sign out?
               </p>
-              <p style={{ fontSize: 'var(--text-14)', color: 'var(--text-muted)', margin: 0 }}>
+              <p className="text-14 text-text-muted m-0">
                 You can always sign back in.
               </p>
             </div>
-            <div style={{ borderTop: '1px solid var(--border-light)', display: 'flex' }}>
+            <div className="border-t border-border-light flex">
               <button
                 onClick={() => setShowSignOutConfirm(false)}
-                style={{
-                  flex: 1,
-                  height: 50,
-                  background: 'none',
-                  border: 'none',
-                  borderRight: '1px solid var(--border-light)',
-                  fontSize: 'var(--text-15)',
-                  color: 'var(--text-secondary)',
-                  cursor: 'pointer',
-                  fontWeight: 'var(--font-medium)',
-                }}
+                className="flex-1 h-[50px] bg-transparent border-none border-r border-border-light text-15 text-text-secondary cursor-pointer font-medium"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSignOut}
-                style={{
-                  flex: 1,
-                  height: 50,
-                  background: 'none',
-                  border: 'none',
-                  fontSize: 'var(--text-15)',
-                  color: 'var(--sage)',
-                  cursor: 'pointer',
-                  fontWeight: 'var(--font-semibold)',
-                }}
+                className="flex-1 h-[50px] bg-transparent border-none text-15 text-sage cursor-pointer font-semibold"
               >
                 Sign Out
               </button>
@@ -343,46 +248,31 @@ function NavGroup({
 }) {
   return (
     <div
-      style={{
-        background: 'var(--surface)',
-        border: '1px solid var(--border-light)',
-        borderRadius: 'var(--radius)',
-        overflow: 'hidden',
-      }}
+      className="bg-surface border border-border-light rounded overflow-hidden"
     >
       <div
-        style={{
-          fontSize: 'var(--text-12)',
-          fontWeight: 'var(--font-semibold)',
-          color: 'var(--text-muted)',
-          textTransform: 'uppercase',
-          letterSpacing: 'var(--tracking-wide-4)',
-          padding: '0.75rem 1rem 0.5rem',
-        }}
+        className="text-12 font-semibold text-text-muted uppercase tracking-wide-4"
+        style={{ padding: '0.75rem 1rem 0.5rem' }}
       >
         {label}
       </div>
-      <nav style={{ display: 'flex', flexDirection: 'column' }}>
+      <nav className="flex flex-col">
         {items.map((item) => {
           const active = pathname === item.href;
           return (
             <Link
               key={item.href}
               href={item.href}
+              className="no-underline flex items-center gap-2.5 text-14"
               style={{
-                textDecoration: 'none',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 10,
                 padding: '0.625rem 1rem',
-                fontSize: 'var(--text-14)',
                 fontWeight: active ? 'var(--font-semibold)' : 'var(--font-medium)',
                 color: active ? 'var(--sage)' : 'var(--text-primary)',
                 background: active ? 'var(--sage-tint, rgba(0,0,0,0.04))' : 'transparent',
                 borderLeft: active ? '3px solid var(--sage)' : '3px solid transparent',
               }}
             >
-              <span style={{ flexShrink: 0, color: active ? 'var(--sage)' : 'var(--text-muted)' }}>
+              <span className="shrink-0" style={{ color: active ? 'var(--sage)' : 'var(--text-muted)' }}>
                 {item.icon}
               </span>
               <span>{item.label}</span>

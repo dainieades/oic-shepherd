@@ -43,57 +43,22 @@ export default function GroupSidePreview({ groupId, onClose }: Props) {
   return (
     <>
     <aside
-      className="group-side-preview"
+      className="group-side-preview fixed top-0 right-0 h-dvh w-[26rem] max-w-[90vw] bg-bg border-l border-border-light shadow-[var(--shadow-elevated)] flex flex-col z-page"
       aria-label={`${group.name} preview`}
       style={{
-        position: 'fixed',
-        top: 0,
-        right: 0,
-        height: '100dvh',
-        width: '26rem',
-        maxWidth: '90vw',
-        background: 'var(--bg)',
-        borderLeft: '1px solid var(--border-light)',
-        boxShadow: 'var(--shadow-elevated)',
-        zIndex: 'var(--z-page)',
-        display: 'flex',
-        flexDirection: 'column',
         animation: 'slide-in-right 0.22s cubic-bezier(0.34, 1.2, 0.64, 1)',
       }}
     >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '0.5rem 0.75rem',
-          borderBottom: '1px solid var(--border-light)',
-          background: 'var(--surface)',
-          flexShrink: 0,
-          gap: 8,
-        }}
-      >
+      <div className="flex items-center justify-between py-2 px-3 border-b border-border-light bg-surface shrink-0 gap-2">
         <button
           onClick={onClose}
           aria-label="Close preview"
-          style={{
-            width: 32,
-            height: 32,
-            borderRadius: 'var(--radius-xs)',
-            border: 'none',
-            background: 'transparent',
-            color: 'var(--text-secondary)',
-            cursor: 'pointer',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexShrink: 0,
-          }}
+          className="w-8 h-8 rounded-xs border-none bg-transparent text-text-secondary cursor-pointer inline-flex items-center justify-center shrink-0"
         >
           <X size={16} weight="bold" />
         </button>
 
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+        <div className="inline-flex items-center gap-1.5 shrink-0">
           <button
             onClick={() => {
               onClose();
@@ -101,21 +66,7 @@ export default function GroupSidePreview({ groupId, onClose }: Props) {
             }}
             aria-label="Open full page"
             title="Open full page"
-            style={{
-              height: 32,
-              padding: '0 0.75rem',
-              borderRadius: 'var(--radius-xs)',
-              background: 'var(--sage-light)',
-              color: 'var(--sage)',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 5,
-              fontSize: 'var(--text-13)',
-              fontWeight: 'var(--font-semibold)',
-              whiteSpace: 'nowrap',
-            }}
+            className="h-8 px-3 rounded-xs bg-sage-light text-sage border-none cursor-pointer inline-flex items-center gap-[5px] text-13 font-semibold whitespace-nowrap"
           >
             <ArrowsOutSimple size={15} weight="bold" />
             Expand
@@ -123,21 +74,7 @@ export default function GroupSidePreview({ groupId, onClose }: Props) {
           <button
             onClick={() => setShowEdit(true)}
             aria-label="Edit group"
-            style={{
-              height: 32,
-              padding: '0 0.75rem',
-              borderRadius: 'var(--radius-xs)',
-              background: 'var(--sage)',
-              color: 'var(--on-sage)',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 5,
-              fontSize: 'var(--text-13)',
-              fontWeight: 'var(--font-semibold)',
-              whiteSpace: 'nowrap',
-            }}
+            className="h-8 px-3 rounded-xs bg-sage text-on-sage border-none cursor-pointer inline-flex items-center gap-[5px] text-13 font-semibold whitespace-nowrap"
           >
             <PencilSimpleIcon size={13} weight="bold" />
             Edit
@@ -145,58 +82,21 @@ export default function GroupSidePreview({ groupId, onClose }: Props) {
         </div>
       </div>
 
-      <div
-        style={{
-          flex: 1,
-          overflowY: 'auto',
-          padding: '1rem 1rem 1.5rem',
-        }}
-      >
-        <div
-          style={{
-            background: 'var(--surface)',
-            borderRadius: 'var(--radius)',
-            border: '1px solid var(--border-light)',
-            padding: '0.875rem 1rem',
-            marginBottom: 14,
-          }}
-        >
-          <h2
-            style={{
-              fontSize: 'var(--text-18)',
-              fontWeight: 'var(--font-bold)',
-              color: 'var(--text-primary)',
-              letterSpacing: 'var(--tracking-tight-1)',
-              margin: '0 0 10px',
-            }}
-          >
+      <div className="flex-1 overflow-y-auto p-4 pb-6">
+        <div className="bg-surface rounded border border-border-light p-3.5 mb-3.5">
+          <h2 className="text-18 font-bold text-text-primary tracking-tight-1 m-0 mb-2.5">
             {group.name}
           </h2>
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <div className="flex gap-2 flex-wrap">
             <span
-              style={{
-                fontSize: 'var(--text-11)',
-                fontWeight: 'var(--font-medium)',
-                padding: '0.1875rem 0.625rem',
-                borderRadius: 'var(--radius-pill)',
-                background: 'var(--sage-light)',
-                color: 'var(--sage)',
-              }}
+              className="text-11 font-medium rounded-pill bg-sage-light text-sage"
+              style={{ padding: '0.1875rem 0.625rem' }}
             >
               {group.memberIds.length} {group.memberIds.length === 1 ? 'member' : 'members'}
             </span>
             <span
-              style={{
-                fontSize: 'var(--text-11)',
-                fontWeight: 'var(--font-medium)',
-                padding: '0.1875rem 0.625rem',
-                borderRadius: 'var(--radius-pill)',
-                background: 'var(--blue-light)',
-                color: 'var(--blue)',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 4,
-              }}
+              className="text-11 font-medium rounded-pill bg-blue-light text-blue inline-flex items-center gap-1"
+              style={{ padding: '0.1875rem 0.625rem' }}
             >
               <Crown size={11} />
               {leaders.length} {leaders.length === 1 ? 'leader' : 'leaders'}
@@ -204,14 +104,8 @@ export default function GroupSidePreview({ groupId, onClose }: Props) {
           </div>
           {group.description && (
             <p
-              style={{
-                fontSize: 'var(--text-13)',
-                color: 'var(--text-secondary)',
-                lineHeight: 'var(--leading-loose)',
-                paddingLeft: 12,
-                borderLeft: '0.125rem solid var(--sage-mid)',
-                margin: '12px 0 0',
-              }}
+              className="text-13 text-text-secondary leading-loose pl-3 mt-3"
+              style={{ borderLeft: '0.125rem solid var(--sage-mid)', margin: '12px 0 0' }}
             >
               {group.description}
             </p>
@@ -219,27 +113,12 @@ export default function GroupSidePreview({ groupId, onClose }: Props) {
         </div>
 
         {leaders.length > 0 && (
-          <div style={{ marginBottom: 14 }}>
-            <p
-              style={{
-                fontSize: 'var(--text-10)',
-                fontWeight: 'var(--font-semibold)',
-                color: 'var(--text-muted)',
-                textTransform: 'uppercase',
-                letterSpacing: 'var(--tracking-wide-6)',
-                margin: '0 0 8px',
-              }}
-            >
+          <div className="mb-3.5">
+            <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 m-0 mb-2">
               Leaders
             </p>
             <div
-              className="no-last-border"
-              style={{
-                background: 'var(--surface)',
-                borderRadius: 'var(--radius)',
-                border: '1px solid var(--border-light)',
-                overflow: 'hidden',
-              }}
+              className="no-last-border bg-surface rounded border border-border-light overflow-hidden"
             >
               {leaders.map((leader, i) => {
                 const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
@@ -247,15 +126,7 @@ export default function GroupSidePreview({ groupId, onClose }: Props) {
                   <Link
                     key={leader.id}
                     href={`/person/${leader.id}${personFrom}`}
-                    className="row-card-hover"
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 12,
-                      padding: '0.625rem 1rem',
-                      borderBottom: '1px solid var(--border-light)',
-                      textDecoration: 'none',
-                    }}
+                    className="row-card-hover flex items-center gap-3 py-2.5 px-4 border-b border-border-light no-underline"
                   >
                     <AvatarBadge
                       name={fullName(leader)}
@@ -264,18 +135,11 @@ export default function GroupSidePreview({ groupId, onClose }: Props) {
                       bg={palette.bg}
                       color={palette.color}
                     />
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <p
-                        style={{
-                          fontSize: 'var(--text-14)',
-                          fontWeight: 'var(--font-semibold)',
-                          color: 'var(--text-primary)',
-                          margin: 0,
-                        }}
-                      >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-14 font-semibold text-text-primary m-0">
                         {fullName(leader)}
                       </p>
-                      <p style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)', margin: 0 }}>
+                      <p className="text-12 text-text-muted m-0">
                         {getMembershipLabel(leader.membershipStatus)}
                       </p>
                     </div>
@@ -288,26 +152,11 @@ export default function GroupSidePreview({ groupId, onClose }: Props) {
 
         {members.length > 0 ? (
           <div>
-            <p
-              style={{
-                fontSize: 'var(--text-10)',
-                fontWeight: 'var(--font-semibold)',
-                color: 'var(--text-muted)',
-                textTransform: 'uppercase',
-                letterSpacing: 'var(--tracking-wide-6)',
-                margin: '0 0 8px',
-              }}
-            >
+            <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 m-0 mb-2">
               Members · {members.length}
             </p>
             <div
-              className="no-last-border"
-              style={{
-                background: 'var(--surface)',
-                borderRadius: 'var(--radius)',
-                border: '1px solid var(--border-light)',
-                overflow: 'hidden',
-              }}
+              className="no-last-border bg-surface rounded border border-border-light overflow-hidden"
             >
               {members.map((m, i) => {
                 const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
@@ -315,15 +164,7 @@ export default function GroupSidePreview({ groupId, onClose }: Props) {
                   <Link
                     key={m.id}
                     href={`/person/${m.id}${personFrom}`}
-                    className="row-card-hover"
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 12,
-                      padding: '0.625rem 1rem',
-                      borderBottom: '1px solid var(--border-light)',
-                      textDecoration: 'none',
-                    }}
+                    className="row-card-hover flex items-center gap-3 py-2.5 px-4 border-b border-border-light no-underline"
                   >
                     <AvatarBadge
                       name={fullName(m)}
@@ -332,19 +173,12 @@ export default function GroupSidePreview({ groupId, onClose }: Props) {
                       bg={palette.bg}
                       color={palette.color}
                     />
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <p
-                        style={{
-                          fontSize: 'var(--text-14)',
-                          fontWeight: 'var(--font-medium)',
-                          color: 'var(--text-primary)',
-                          margin: 0,
-                        }}
-                      >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-14 font-medium text-text-primary m-0">
                         {fullName(m)}
                       </p>
                       {m.alternativeName && (
-                        <p style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)', margin: 0 }}>
+                        <p className="text-12 text-text-muted m-0">
                           {m.alternativeName}
                         </p>
                       )}
@@ -355,7 +189,7 @@ export default function GroupSidePreview({ groupId, onClose }: Props) {
             </div>
           </div>
         ) : (
-          <p style={{ fontSize: 'var(--text-13)', color: 'var(--text-muted)', fontStyle: 'italic' }}>
+          <p className="text-13 text-text-muted italic">
             No members yet.
           </p>
         )}

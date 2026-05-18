@@ -213,7 +213,7 @@ export default function LogsPage() {
   const btnPad = scrolled ? '0 0.75rem' : '0 0.875rem';
 
   const actionButtons = (
-    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+    <div className="flex gap-2 items-center">
       {/* Search — hidden on desktop when expanded */}
       <div className={showSearch ? 'lg:hidden' : undefined}>
         <button
@@ -232,18 +232,13 @@ export default function LogsPage() {
               }, 50);
             }
           }}
+          className="rounded-xs flex items-center justify-center cursor-pointer shrink-0"
           style={{
             width: btnSize,
             height: btnSize,
-            borderRadius: 'var(--radius-xs)',
             background: showSearch || search ? 'var(--sage-light)' : 'transparent',
             border: showSearch || search ? '1px solid var(--sage-mid)' : '1px solid var(--border)',
             color: showSearch || search ? 'var(--sage)' : 'var(--text-secondary)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            flexShrink: 0,
           }}
         >
           <MagnifyingGlass size={14} />
@@ -261,43 +256,22 @@ export default function LogsPage() {
       />
 
       {/* Filter */}
-      <div style={{ position: 'relative', flexShrink: 0 }}>
+      <div className="relative shrink-0">
         <button
           onClick={() => setShowFilter(true)}
+          className="rounded-xs flex items-center justify-center cursor-pointer"
           style={{
             width: btnSize,
             height: btnSize,
-            borderRadius: 'var(--radius-xs)',
             background: filterActive ? 'var(--sage-light)' : 'transparent',
             border: filterActive ? '1px solid var(--sage-mid)' : '1px solid var(--border)',
             color: filterActive ? 'var(--sage)' : 'var(--text-secondary)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
           }}
         >
           <Funnel size={14} />
         </button>
         {filterActive && (
-          <span
-            style={{
-              position: 'absolute',
-              top: -5,
-              right: -5,
-              width: 15,
-              height: 15,
-              borderRadius: '50%',
-              background: 'var(--sage)',
-              color: 'var(--on-sage)',
-              fontSize: 'var(--text-9)',
-              fontWeight: 'var(--font-bold)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              pointerEvents: 'none',
-            }}
-          >
+          <span className="absolute top-[-5px] right-[-5px] w-[15px] h-[15px] rounded-full bg-sage text-on-sage text-9 font-bold flex items-center justify-center pointer-events-none">
             {activeFilterCount}
           </span>
         )}
@@ -306,19 +280,11 @@ export default function LogsPage() {
       {/* Add log */}
       <button
         onClick={() => setShowAddLog(true)}
+        className="rounded-xs bg-sage text-on-sage font-semibold border-none cursor-pointer flex items-center gap-1"
         style={{
           height: btnSize,
           padding: btnPad,
-          borderRadius: 'var(--radius-xs)',
-          background: 'var(--sage)',
-          color: 'var(--on-sage)',
           fontSize: btnFont,
-          fontWeight: 'var(--font-semibold)',
-          border: 'none',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 4,
         }}
       >
         <Plus size={15} weight="bold" />
@@ -329,58 +295,24 @@ export default function LogsPage() {
 
   return (
     <PageContainer>
-    <div style={{ paddingBottom: 32 }}>
+    <div className="pb-8">
       {/* Sticky collapsing header */}
       <div
-        className="-mx-4 px-4 lg:mx-0 lg:px-0"
+        className="-mx-4 px-4 lg:mx-0 lg:px-0 sticky top-0 bg-bg z-sticky"
         style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 'var(--z-sticky)',
-          background: 'var(--bg)',
           borderBottom: scrolled ? '1px solid var(--border-light)' : 'none',
         }}
       >
         {scrolled ? (
-          <div
-            style={{
-              height: 44,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-          >
-            <span
-              style={{
-                fontSize: 'var(--text-17)',
-                fontWeight: 'var(--font-semibold)',
-                color: 'var(--text-primary)',
-                letterSpacing: 'var(--tracking-tight-1)',
-              }}
-            >
+          <div className="h-11 flex items-center justify-between">
+            <span className="text-17 font-semibold text-text-primary tracking-tight-1">
               Logs
             </span>
             {actionButtons}
           </div>
         ) : (
-          <div
-            style={{
-              paddingTop: 20,
-              paddingBottom: 14,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-          >
-            <h1
-              style={{
-                fontSize: 'var(--text-32)',
-                fontWeight: 'var(--font-extrabold)',
-                color: 'var(--text-primary)',
-                letterSpacing: 'var(--tracking-tight-3)',
-                lineHeight: 'var(--leading-none)',
-              }}
-            >
+          <div className="pt-5 pb-3.5 flex items-center justify-between">
+            <h1 className="text-32 font-extrabold text-text-primary tracking-tight-3 leading-none">
               Logs
             </h1>
             {actionButtons}
@@ -390,20 +322,11 @@ export default function LogsPage() {
 
       {/* Search bar */}
       {(showSearch || search) && (
-        <div
-          className="lg:hidden"
-          style={{ position: 'relative', marginBottom: 10, marginTop: 8 }}
-        >
+        <div className="lg:hidden relative mb-2.5 mt-2">
           <MagnifyingGlass
             size={14}
             color="var(--text-muted)"
-            style={{
-              position: 'absolute',
-              left: 10,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              pointerEvents: 'none',
-            }}
+            className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none"
           />
           <input
             ref={searchInputRef}
@@ -411,26 +334,14 @@ export default function LogsPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search logs…"
-            style={{
-              width: '100%',
-              paddingLeft: 32,
-              paddingRight: 12,
-              paddingTop: 8,
-              paddingBottom: 8,
-              background: 'var(--surface)',
-              border: '1px solid var(--border)',
-              borderRadius: 'var(--radius-sm)',
-              fontSize: 'var(--text-14)',
-              color: 'var(--text-primary)',
-              outline: 'none',
-            }}
+            className="w-full bg-surface border border-border rounded-sm text-14 text-text-primary outline-none pl-8 pr-3 py-2"
           />
         </div>
       )}
 
       {/* Active filter chips */}
       {filterActive && (
-        <div style={{ display: 'flex', gap: 6, marginBottom: 10, flexWrap: 'wrap' }}>
+        <div className="flex gap-1.5 mb-2.5 flex-wrap">
           {filters.types.map((t) => (
             <FilterChip
               key={t}
@@ -508,14 +419,7 @@ export default function LogsPage() {
         });
         return (
           <LogSection key={group.label} label={group.label} count={group.items.length}>
-            <div
-              className="no-last-border"
-              style={{
-                background: 'var(--surface)',
-                borderRadius: 'var(--radius)',
-                overflow: 'hidden',
-              }}
-            >
+            <div className="no-last-border bg-surface rounded overflow-hidden">
               {rows}
             </div>
           </LogSection>
@@ -573,19 +477,8 @@ function FilterChip({ children, onRemove }: { children: React.ReactNode; onRemov
   return (
     <button
       onClick={onRemove}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 4,
-        padding: '0.1875rem 0.5625rem',
-        borderRadius: 'var(--radius-pill)',
-        background: 'var(--sage-light)',
-        border: '1px solid var(--sage-mid)',
-        color: 'var(--sage-dark)',
-        fontSize: 'var(--text-11)',
-        fontWeight: 'var(--font-medium)',
-        cursor: 'pointer',
-      }}
+      className="flex items-center gap-1 rounded-pill bg-sage-light border border-sage-mid text-sage-dark text-11 font-medium cursor-pointer"
+      style={{ padding: '0.1875rem 0.5625rem' }}
     >
       {children}
       <X size={9} />
@@ -604,24 +497,11 @@ function LogSection({
 }) {
   const [open, setOpen] = useState(true);
   return (
-    <div style={{ marginBottom: 16 }}>
+    <div className="mb-4">
       <button
         onClick={() => setOpen(!open)}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6,
-          padding: '0.25rem 0',
-          marginBottom: open ? 8 : 0,
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          fontSize: 'var(--text-10)',
-          fontWeight: 'var(--font-semibold)',
-          color: 'var(--text-muted)',
-          textTransform: 'uppercase',
-          letterSpacing: 'var(--tracking-wide-6)',
-        }}
+        className="flex items-center gap-1.5 py-1 bg-transparent border-none cursor-pointer text-10 font-semibold text-text-muted uppercase tracking-wide-6"
+        style={{ marginBottom: open ? 8 : 0 }}
       >
         {label} · {count}
         <CaretDown

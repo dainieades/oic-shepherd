@@ -20,39 +20,6 @@ const ROLE_LABEL: Record<AppRole, string> = {
   'no-access': 'No Access',
 };
 
-const navBarStyle: React.CSSProperties = {
-  position: 'sticky',
-  top: 0,
-  zIndex: 'var(--z-page)',
-  background: 'var(--bg)',
-  marginLeft: -16,
-  marginRight: -16,
-  paddingLeft: 16,
-  paddingRight: 16,
-  borderBottom: '1px solid var(--border-light)',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  height: 54,
-};
-
-const backBtnStyle: React.CSSProperties = {
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: 4,
-  fontSize: 'var(--text-13)',
-  color: 'var(--sage)',
-  background: 'none',
-  border: 'none',
-  cursor: 'pointer',
-  padding: 0,
-};
-
-const navTitleStyle: React.CSSProperties = {
-  fontSize: 'var(--text-15)',
-  fontWeight: 'var(--font-semibold)',
-  color: 'var(--text-primary)',
-};
 
 export default function AccessManagementPage() {
   const { data, currentPersona, updatePerson } = useApp();
@@ -110,22 +77,23 @@ export default function AccessManagementPage() {
 
   if (!isAdmin) {
     return (
-      <div style={{ padding: '2.5rem 0', textAlign: 'center' }}>
-        <p style={{ color: 'var(--text-muted)', fontSize: 'var(--text-15)' }}>Admin access required.</p>
+      <div className="py-10 text-center">
+        <p className="text-text-muted text-15">Admin access required.</p>
       </div>
     );
   }
 
   return (
-    <div style={{ paddingBottom: 48 }}>
+    <div className="pb-12">
       {/* Nav bar */}
-      <div className="settings-subpage-navbar" style={navBarStyle}>
-        <button onClick={() => router.push('/settings')} style={backBtnStyle}>
+      <div className="settings-subpage-navbar sticky top-0 bg-bg -mx-4 px-4 border-b border-border-light flex items-center justify-between h-[3.375rem] z-page">
+        <button onClick={() => router.push('/settings')} className="inline-flex items-center gap-1 text-13 text-sage bg-transparent border-0 cursor-pointer p-0">
           <CaretLeft size={16} weight="bold" />
           Settings
         </button>
         <span
-          style={{ ...navTitleStyle, opacity: titleVisible ? 0 : 1, transition: 'opacity 0.15s' }}
+          className="text-15 font-semibold text-text-primary"
+          style={{ opacity: titleVisible ? 0 : 1, transition: 'opacity 0.15s' }}
         >
           Access Management
         </span>
@@ -137,77 +105,33 @@ export default function AccessManagementPage() {
 
       <h1
         ref={titleRef}
-        style={{
-          fontSize: 'var(--text-28)',
-          fontWeight: 'var(--font-bold)',
-          color: 'var(--text-primary)',
-          letterSpacing: 'var(--tracking-tight-2)',
-          margin: '1.5rem 0 0.5rem',
-        }}
+        className="text-28 font-bold text-text-primary tracking-tight-2 mt-6 mb-2"
       >
         Access Management
       </h1>
 
-      <p
-        style={{
-          fontSize: 'var(--text-13)',
-          color: 'var(--text-muted)',
-          marginTop: 0,
-          marginBottom: 20,
-          lineHeight: 'var(--leading-normal)',
-        }}
-      >
+      <p className="text-13 text-text-muted mt-0 mb-5 leading-normal">
         Only people on this list can sign in. Add someone&apos;s email before they try to log in.
       </p>
 
       {/* Email list */}
-      <p
-        style={{
-          fontSize: 'var(--text-12)',
-          fontWeight: 'var(--font-semibold)',
-          color: 'var(--text-muted)',
-          textTransform: 'uppercase',
-          letterSpacing: 'var(--tracking-wide-6)',
-          marginBottom: 8,
-        }}
-      >
+      <p className="text-12 font-semibold text-text-muted uppercase tracking-wide-6 mb-2">
         Approved ({emails.length})
       </p>
 
       {loading ? (
-        <p
-          style={{
-            fontSize: 'var(--text-14)',
-            color: 'var(--text-muted)',
-            textAlign: 'center',
-            padding: '1.5rem 0',
-          }}
-        >
+        <p className="text-14 text-text-muted text-center py-6">
           Loading…
         </p>
       ) : emails.length === 0 ? (
-        <div
-          style={{
-            background: 'var(--surface)',
-            borderRadius: 'var(--radius)',
-            border: '1px solid var(--border-light)',
-          }}
-        >
+        <div className="bg-surface rounded border border-border-light">
           <EmptyState
             title="No approved emails yet."
             icon={<EnvelopeSimple size={28} color="var(--text-muted)" />}
           />
         </div>
       ) : (
-        <div
-          className="no-last-border"
-          style={{
-            background: 'var(--surface)',
-            borderRadius: 'var(--radius)',
-            border: '1px solid var(--border-light)',
-            overflow: 'hidden',
-          }}
-        >
+        <div className="no-last-border bg-surface rounded border border-border-light overflow-hidden">
           {emails.map((e) => {
             const linkedPerson = personByEmail.get(e.email.toLowerCase());
             const role: AppRole =
@@ -218,59 +142,26 @@ export default function AccessManagementPage() {
               <button
                 key={e.email}
                 onClick={() => setRoleEditEmail(e.email)}
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 12,
-                  padding: '0.875rem 1rem',
-                  background: 'none',
-                  border: 'none',
-                  borderBottom: '1px solid var(--border-light)',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                }}
+                className="w-full flex items-center gap-3 py-3.5 px-4 bg-transparent border-0 border-b border-border-light cursor-pointer text-left"
               >
-                <EnvelopeSimple size={16} color="var(--text-muted)" style={{ flexShrink: 0 }} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p
-                    style={{
-                      fontSize: 'var(--text-14)',
-                      fontWeight: 'var(--font-medium)',
-                      color: 'var(--text-primary)',
-                      margin: 0,
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
+                <EnvelopeSimple size={16} color="var(--text-muted)" className="shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-14 font-medium text-text-primary m-0 overflow-hidden text-ellipsis whitespace-nowrap">
                     {e.label ?? e.email}
                   </p>
                   {e.label && (
-                    <p
-                      style={{
-                        fontSize: 'var(--text-12)',
-                        color: 'var(--text-muted)',
-                        margin: 0,
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
+                    <p className="text-12 text-text-muted m-0 overflow-hidden text-ellipsis whitespace-nowrap">
                       {e.email}
                     </p>
                   )}
                 </div>
                 <span
-                  style={{
-                    fontSize: 'var(--text-13)',
-                    color: linkedPerson ? 'var(--text-secondary)' : 'var(--text-muted)',
-                    flexShrink: 0,
-                  }}
+                  className="text-13 shrink-0"
+                  style={{ color: linkedPerson ? 'var(--text-secondary)' : 'var(--text-muted)' }}
                 >
                   {linkedPerson ? ROLE_LABEL[role] : 'Not linked'}
                 </span>
-                <CaretRight size={14} color="var(--text-muted)" style={{ flexShrink: 0 }} />
+                <CaretRight size={14} color="var(--text-muted)" className="shrink-0" />
               </button>
             );
           })}

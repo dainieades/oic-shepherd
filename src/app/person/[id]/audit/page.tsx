@@ -79,65 +79,40 @@ export default function AuditLogPage({ params }: { params: Promise<{ id: string 
   const groups = groupByDate(logs);
 
   return (
-    <div
-      style={{
-        minHeight: '100dvh',
-        background: 'var(--bg)',
-        paddingBottom: '5rem',
-      }}
-    >
+    <div className="min-h-dvh bg-bg pb-20">
       <div
-        style={{
-          maxWidth: SHEET_MAX_WIDTH,
-          margin: '0 auto',
-          padding: '0 1rem',
-        }}
+        className="mx-auto px-4"
+        style={{ maxWidth: SHEET_MAX_WIDTH }}
       >
         {/* Header */}
-        <div style={navBarStyle}>
-          <button onClick={() => router.back()} style={backBtnStyle}>
+        <div className="sticky top-0 z-50 bg-bg -mx-4 px-4 border-b border-border-light flex items-center justify-between h-[3.375rem]">
+          <button onClick={() => router.back()} className="inline-flex items-center gap-1 text-13 text-sage bg-transparent border-0 cursor-pointer p-0">
             <CaretLeft size={16} weight="bold" />
             {personName}
           </button>
-          <span style={navTitleStyle}>Audit Log</span>
-          <span style={{ width: 64 }} />
+          <span className="text-15 font-semibold text-text-primary">Audit Log</span>
+          <span className="w-16" />
         </div>
 
         {/* Content */}
         {loading ? (
-          <div
-            style={{
-              paddingTop: '4rem',
-              textAlign: 'center',
-              color: 'var(--text-muted)',
-              fontSize: 'var(--text-14)',
-            }}
-          >
+          <div className="pt-16 text-center text-text-muted text-14">
             Loading…
           </div>
         ) : logs.length === 0 ? (
-          <div
-            style={{
-              paddingTop: '4rem',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: 12,
-              color: 'var(--text-muted)',
-            }}
-          >
+          <div className="pt-16 flex flex-col items-center gap-3 text-text-muted">
             <ClockCounterClockwise size={40} weight="light" />
-            <p style={{ fontSize: 'var(--text-14)' }}>No edits recorded yet.</p>
-            <p style={{ fontSize: 'var(--text-13)', textAlign: 'center', maxWidth: '18rem' }}>
+            <p className="text-14">No edits recorded yet.</p>
+            <p className="text-13 text-center max-w-[18rem]">
               Changes made through the app will appear here going forward.
             </p>
           </div>
         ) : (
-          <div style={{ paddingTop: '1.25rem', display: 'flex', flexDirection: 'column', gap: 32 }}>
+          <div className="pt-5 flex flex-col gap-8">
             {groups.map((group) => (
               <div key={group.date}>
-                <p style={dateLabelStyle}>{group.date}</p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <p className="text-11 font-semibold text-text-muted uppercase tracking-wide-6 mb-2">{group.date}</p>
+                <div className="flex flex-col gap-px">
                   {group.items.map((log, i) => (
                     <AuditEntry key={log.id} log={log} isLast={i === group.items.length - 1} />
                   ))}
@@ -156,38 +131,28 @@ function AuditEntry({ log, isLast }: { log: AuditLog; isLast: boolean }) {
 
   return (
     <div
+      className="bg-surface py-3 px-4"
       style={{
-        background: 'var(--surface)',
         borderRadius: isLast ? '0 0 var(--radius) var(--radius)' : undefined,
-        padding: '0.75rem 1rem',
         borderBottom: isLast ? 'none' : '1px solid var(--border-light)',
-        ...(log === log && !isLast ? {} : {}),
       }}
     >
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'flex-start',
-          gap: 8,
-          marginBottom: 6,
-        }}
-      >
-        <span style={{ fontSize: 'var(--text-13)', fontWeight: 'var(--font-semibold)', color: 'var(--text-primary)' }}>
+      <div className="flex justify-between items-start gap-2 mb-1.5">
+        <span className="text-13 font-semibold text-text-primary">
           {fieldLabel(log.fieldName)}
         </span>
-        <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+        <span className="text-12 text-text-muted whitespace-nowrap">
           {fmtTimestamp(log.createdAt)}
         </span>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+      <div className="flex items-center gap-2 flex-wrap">
         <ValueChip value={log.oldValue} empty={isEmpty(log.oldValue)} label="before" />
-        <span style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)' }}>→</span>
+        <span className="text-12 text-text-muted">→</span>
         <ValueChip value={log.newValue} empty={isEmpty(log.newValue)} label="after" />
       </div>
 
-      <p style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)', marginTop: 6 }}>
+      <p className="text-12 text-text-muted mt-1.5">
         by {log.changedByName}
       </p>
     </div>
@@ -205,11 +170,10 @@ function ValueChip({
 }) {
   return (
     <span
+      className="text-13 rounded-sm"
       style={{
-        fontSize: 'var(--text-13)',
         color: empty ? 'var(--text-muted)' : 'var(--text-primary)',
         background: empty ? 'transparent' : 'var(--sage-light)',
-        borderRadius: 'var(--radius-sm)',
         padding: empty ? 0 : '0.125rem 0.375rem',
         fontStyle: empty ? 'italic' : 'normal',
       }}
@@ -219,45 +183,3 @@ function ValueChip({
   );
 }
 
-const navBarStyle: React.CSSProperties = {
-  position: 'sticky',
-  top: 0,
-  zIndex: 50,
-  background: 'var(--bg)',
-  marginLeft: -16,
-  marginRight: -16,
-  paddingLeft: 16,
-  paddingRight: 16,
-  borderBottom: '1px solid var(--border-light)',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  height: 54,
-};
-
-const backBtnStyle: React.CSSProperties = {
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: 4,
-  fontSize: 'var(--text-13)',
-  color: 'var(--sage)',
-  background: 'none',
-  border: 'none',
-  cursor: 'pointer',
-  padding: 0,
-};
-
-const navTitleStyle: React.CSSProperties = {
-  fontSize: 'var(--text-15)',
-  fontWeight: 'var(--font-semibold)',
-  color: 'var(--text-primary)',
-};
-
-const dateLabelStyle: React.CSSProperties = {
-  fontSize: 'var(--text-11)',
-  fontWeight: 'var(--font-semibold)',
-  color: 'var(--text-muted)',
-  textTransform: 'uppercase',
-  letterSpacing: 'var(--tracking-wide-6)',
-  marginBottom: 8,
-};
