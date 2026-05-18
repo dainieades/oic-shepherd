@@ -50,23 +50,6 @@ export default function CalendarSyncSheet({ onClose, singleEvent }: Props) {
     onClose();
   }
 
-  async function handleSubscribeGoogle() {
-    const win = window.open('about:blank', '_blank');
-    // Await DB save so the token exists before Google fetches the feed.
-    const feedUrl = await enableCalendarSync();
-    // Open the "Add calendar from URL" settings page — this is the only Google Calendar
-    // path confirmed to work for external iCal feeds. Also copy URL to clipboard as fallback.
-    void navigator.clipboard.writeText(feedUrl).catch(() => {});
-    const gcalUrl = `https://calendar.google.com/calendar/r/settings/addbyurl?url=${encodeURIComponent(feedUrl)}`;
-    if (win) {
-      win.location.href = gcalUrl;
-    } else {
-      window.open(gcalUrl, '_blank');
-    }
-    showToast('Feed URL copied — paste it in the field if not pre-filled, then tap Add Calendar');
-    onClose();
-  }
-
   async function handleCopy() {
     const url = feedUrl || (await enableCalendarSync());
     try {
@@ -154,7 +137,6 @@ export default function CalendarSyncSheet({ onClose, singleEvent }: Props) {
             <CalendarSubscribeOptions
               feedUrl={feedUrl}
               onSubscribeApple={() => void handleSubscribeApple()}
-              onSubscribeGoogle={() => void handleSubscribeGoogle()}
               onCopy={() => void handleCopy()}
             />
           </>
@@ -163,14 +145,14 @@ export default function CalendarSyncSheet({ onClose, singleEvent }: Props) {
         {singleEvent && (
           <>
             <Divider />
-            <p className="text-13 font-semibold text-text-muted uppercase tracking-wide-4 mb-1.5">Just this one</p>
+            <p className="text-13 font-semibold text-text-muted uppercase tracking-wide-4 mb-1.5">Add just this to-do</p>
             <p className="text-13 text-text-muted mb-3.5 leading-normal">
-              Add only this to-do to your calendar without setting up sync.
+              Add this single to-do to your calendar without setting up sync.
             </p>
             <div className="flex flex-col gap-2">
               <SmallActionButton
                 icon={<GoogleLogo size={16} color="var(--text-muted)" />}
-                label="Add to Google Calendar"
+                label="Open in Google Calendar"
                 onClick={handleOneOffGoogle}
               />
               <SmallActionButton

@@ -934,22 +934,20 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
         />
       )}
       {openPicker === 'appRole' && (
-        <MaybeSheet sheetVariant={sheetVariant} onClose={() => setOpenPicker(null)}>
-          <AppRolePickerSheet
-            currentRole={appRole}
-            onSelect={(role) => {
-              setAppRole(role);
-              if (role !== 'shepherd') setOpenPicker(null);
-            }}
-            onRemove={() => {
-              setAppRole('no-access');
-              setOpenPicker(null);
-            }}
-            onClose={() => setOpenPicker(null)}
-            isAdmin={currentPersona.role === 'admin'}
-            personName={person?.preferredName ?? firstName.trim()}
-          />
-        </MaybeSheet>
+        <AppRolePickerSheet
+          currentRole={appRole}
+          onSelect={(role) => {
+            setAppRole(role);
+            if (role !== 'shepherd') setOpenPicker(null);
+          }}
+          onRemove={() => {
+            setAppRole('no-access');
+            setOpenPicker(null);
+          }}
+          onClose={() => setOpenPicker(null)}
+          isAdmin={currentPersona.role === 'admin'}
+          personName={person?.preferredName ?? firstName.trim()}
+        />
       )}
       {showLanguagePicker && (
         <MaybeSheet sheetVariant={sheetVariant} onClose={() => setShowLanguagePicker(false)}>

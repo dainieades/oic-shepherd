@@ -85,7 +85,7 @@ export function BottomSheet({
         className={`sheet-panel ${PANEL_VARIANT_CLASS[variant]} bg-surface relative`}
         style={{
           ...(compact
-            ? { paddingBottom: 'env(safe-area-inset-bottom, 1.5rem)' }
+            ? { paddingBottom: variant === 'sheet' ? 'env(safe-area-inset-bottom, 1.5rem)' : undefined }
             : {
                 height: 'calc(100dvh - 3rem)',
                 display: 'flex',
