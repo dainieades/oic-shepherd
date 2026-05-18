@@ -127,7 +127,9 @@ style={{ fontSize: 14, fontWeight: 600, letterSpacing: '0.06em' }}
 
 ## Dropdowns & Popovers
 
-**Always use `useFloating` (`strategy: 'fixed'`) + `createPortal`** for any dropdown or popover. Never use `position: absolute` — sticky headers create stacking contexts that trap absolute children. See `src/components/SortControls.tsx` for the canonical pattern. Click-outside handlers must check both `refs.reference.current` and `refs.floating.current`.
+Dropdowns inside **sticky headers** must use `useFloating` (`strategy: 'fixed'`) + `createPortal` — sticky elements create stacking contexts that trap `position: absolute` children, causing other sticky layers to bleed through. See `src/app/page.tsx` (add menu) or `src/app/person/[id]/page.tsx` (kebab menu) for the pattern. Click-outside handlers must check both `refs.reference.current` and `refs.floating.current`.
+
+Dropdowns **outside** sticky headers can use `position: absolute` as before.
 
 ---
 

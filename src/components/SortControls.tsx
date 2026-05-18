@@ -35,7 +35,7 @@ export default function SortControls(): React.ReactNode {
           className="animate-pop-in absolute right-0 bg-surface border border-border rounded-sm py-1 z-page shadow-elevated"
           style={{
             top: 'calc(100% + 0.25rem)',
-            minWidth: 160,
+            minWidth: '10rem',
           }}
         >
           {SORT_OPTIONS.map((opt) => (
