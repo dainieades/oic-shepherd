@@ -16,6 +16,8 @@ After completing any item, update `.claude/docs/tech-debt.md`: mark done with âœ
 
 Self-contained local Supabase stack via Docker; `.env.local` points at `http://127.0.0.1:54321`. Cloud creds backed up in `.env.local.cloud`. Full reference: `.claude/docs/local-dev.md`. After every `supabase db reset` run `./scripts/local-bootstrap.sh` to restore the three hidden test auth users + persona links.
 
+**DB changes:** Always deliver schema changes as plain SQL to paste into the Supabase SQL editor. Never instruct CLI migration steps (`supabase db push`, `supabase migration new`, etc.).
+
 ---
 
 ## Email

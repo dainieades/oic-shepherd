@@ -60,6 +60,10 @@ export default function CalendarSyncSheet({ onClose, singleEvent }: Props) {
     // encodeURIComponent() turns :// into %3A%2F%2F which Google doesn't recognise.
     const webcalUrl = feedUrl.replace(/^https?:\/\//, 'webcal://');
     const googleUrl = `https://calendar.google.com/calendar/r?cid=${webcalUrl}`;
+    console.log('[CalendarSync] feedUrl:', feedUrl);
+    console.log('[CalendarSync] webcalUrl:', webcalUrl);
+    console.log('[CalendarSync] googleUrl:', googleUrl);
+    console.log('[CalendarSync] win is null (popup blocked)?', win === null);
     if (win) {
       win.location.href = googleUrl;
     } else {

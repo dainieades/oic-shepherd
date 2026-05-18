@@ -304,6 +304,88 @@
   }
 }
 
+/* ── Tailwind v4 utility mappings ───────────────── */
+@theme inline {
+  /* Surface / background colors */
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-border-light: var(--border-light);
+
+  /* Text colors */
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+
+  /* Brand */
+  --color-sage: var(--sage);
+  --color-sage-light: var(--sage-light);
+  --color-sage-mid: var(--sage-mid);
+  --color-sage-dark: var(--sage-dark);
+  --color-on-sage: var(--on-sage);
+
+  /* Status */
+  --color-blue: var(--blue);
+  --color-blue-light: var(--blue-light);
+  --color-amber: var(--amber);
+  --color-amber-light: var(--amber-light);
+  --color-amber-border: var(--amber-border);
+  --color-red: var(--red);
+  --color-red-light: var(--red-light);
+  --color-red-border: var(--red-border);
+  --color-on-red: var(--on-red);
+  --color-teal: var(--teal);
+  --color-teal-light: var(--teal-light);
+
+  /* Font sizes */
+  --font-size-9: var(--text-9);
+  --font-size-10: var(--text-10);
+  --font-size-11: var(--text-11);
+  --font-size-12: var(--text-12);
+  --font-size-13: var(--text-13);
+  --font-size-14: var(--text-14);
+  --font-size-15: var(--text-15);
+  --font-size-16: var(--text-16);
+  --font-size-17: var(--text-17);
+  --font-size-18: var(--text-18);
+  --font-size-20: var(--text-20);
+  --font-size-22: var(--text-22);
+  --font-size-24: var(--text-24);
+  --font-size-26: var(--text-26);
+  --font-size-28: var(--text-28);
+  --font-size-30: var(--text-30);
+  --font-size-32: var(--text-32);
+
+  /* Border radius — overrides Tailwind defaults with our design system values */
+  --radius-xs: var(--radius-xs);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius: var(--radius);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-pill: var(--radius-pill);
+
+  /* Letter spacing */
+  --tracking-tight-3: var(--tracking-tight-3);
+  --tracking-tight-2: var(--tracking-tight-2);
+  --tracking-tight-1: var(--tracking-tight-1);
+  --tracking-wide-2: var(--tracking-wide-2);
+  --tracking-wide-3: var(--tracking-wide-3);
+  --tracking-wide-4: var(--tracking-wide-4);
+  --tracking-wide-5: var(--tracking-wide-5);
+  --tracking-wide-6: var(--tracking-wide-6);
+
+  /* Line heights — overrides Tailwind defaults with our design system values */
+  --leading-none: var(--leading-none);
+  --leading-tight: var(--leading-tight);
+  --leading-snug: var(--leading-snug);
+  --leading-comfortable: var(--leading-comfortable);
+  --leading-semi: var(--leading-semi);
+  --leading-normal: var(--leading-normal);
+  --leading-open: var(--leading-open);
+  --leading-loose: var(--leading-loose);
+}
+
 /* ── Base ──────────────────────────────────────── */
 *,
 *::before,
