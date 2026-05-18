@@ -20,11 +20,9 @@ const ROLE_OPTIONS: { value: AppRole; label: string; description: string }[] = [
 
 interface Props {
   currentRole: AppRole | undefined;
-  canTriageVisitors?: boolean;
   noPersonLinked?: boolean;
   currentEmail?: string;
   onSelect: (role: AppRole) => void;
-  onToggleTriage?: (next: boolean) => Promise<void> | void;
   onRemove: () => Promise<void> | void;
   onUpdateEmail?: (newEmail: string) => Promise<{ error?: string } | void>;
   onClose: () => void;
@@ -34,11 +32,9 @@ interface Props {
 
 export default function AppRolePickerSheet({
   currentRole,
-  canTriageVisitors = false,
   noPersonLinked,
   currentEmail,
   onSelect,
-  onToggleTriage,
   onRemove,
   onUpdateEmail,
   onClose,
@@ -52,17 +48,11 @@ export default function AppRolePickerSheet({
   const [emailError, setEmailError] = React.useState('');
   const [saving, setSaving] = React.useState(false);
   const [selectedRole, setSelectedRole] = React.useState<AppRole | undefined>(currentRole);
-  const [triageOn, setTriageOn] = React.useState(canTriageVisitors);
-  const [triageSaving, setTriageSaving] = React.useState(false);
   const emailInputRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
     setSelectedRole(currentRole);
   }, [currentRole]);
-
-  React.useEffect(() => {
-    setTriageOn(canTriageVisitors);
-  }, [canTriageVisitors]);
 
   React.useEffect(() => {
     if (editingEmail) {
@@ -469,80 +459,6 @@ export default function AppRolePickerSheet({
               </button>
             );
           })}
-
-          {isAdmin && selectedRole === 'shepherd' && onToggleTriage && (
-            <button
-              onClick={async () => {
-                if (triageSaving) return;
-                const next = !triageOn;
-                setTriageOn(next);
-                setTriageSaving(true);
-                try {
-                  await onToggleTriage(next);
-                } catch {
-                  setTriageOn(!next);
-                } finally {
-                  setTriageSaving(false);
-                }
-              }}
-              disabled={triageSaving}
-              style={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
-                padding: '0.875rem 1.25rem',
-                background: 'none',
-                border: 'none',
-                borderBottom: '1px solid var(--border-light)',
-                cursor: triageSaving ? 'not-allowed' : 'pointer',
-                textAlign: 'left',
-              }}
-            >
-              <div style={{ flex: 1 }}>
-                <p
-                  style={{
-                    fontSize: 'var(--text-15)',
-                    fontWeight: 'var(--font-medium)',
-                    color: 'var(--text-primary)',
-                    marginBottom: 2,
-                  }}
-                >
-                  Review newcomers
-                </p>
-                <p style={{ fontSize: 'var(--text-12)', color: 'var(--text-muted)', lineHeight: 'var(--leading-comfortable)' }}>
-                  Lets this user review and welcome new sign-ups.
-                </p>
-              </div>
-              <span
-                aria-hidden
-                style={{
-                  flexShrink: 0,
-                  width: 36,
-                  height: 22,
-                  borderRadius: 'var(--radius-pill)',
-                  background: triageOn ? 'var(--sage)' : 'var(--border)',
-                  position: 'relative',
-                  transition: 'background 0.15s',
-                  opacity: triageSaving ? 0.6 : 1,
-                }}
-              >
-                <span
-                  style={{
-                    position: 'absolute',
-                    top: 2,
-                    left: triageOn ? 16 : 2,
-                    width: 18,
-                    height: 18,
-                    borderRadius: '50%',
-                    background: 'var(--surface)',
-                    transition: 'left 0.15s',
-                    boxShadow: '0 1px 2px rgba(0,0,0,0.15)',
-                  }}
-                />
-              </span>
-            </button>
-          )}
 
           {isAdmin && (
             <>

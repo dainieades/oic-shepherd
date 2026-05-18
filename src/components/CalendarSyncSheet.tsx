@@ -50,21 +50,20 @@ export default function CalendarSyncSheet({ onClose, singleEvent }: Props) {
     onClose();
   }
 
-  function handleSubscribeGoogle() {
-    // Compute URL and open window synchronously so popup blockers don't fire.
-    // window.open after an await is treated as an untrusted open and blocked.
-    const token =
-      calendarFeedToken ??
-      (typeof crypto !== 'undefined' && crypto.randomUUID
-        ? crypto.randomUUID()
-        : Math.random().toString(36).slice(2) + Date.now().toString(36));
-    const url = `${origin}/api/calendar-feed/${token}.ics`;
-    window.open(
-      `https://calendar.google.com/calendar/r/settings/addbyurl?url=${encodeURIComponent(url)}`,
-      '_blank',
-      'noopener,noreferrer'
-    );
-    void enableCalendarSync(token);
+  async function handleSubscribeGoogle() {
+    // Open a blank window synchronously to preserve the user-gesture context
+    // (popup blockers kill window.open called after any await).
+    const win = window.open('', '_blank', 'noopener,noreferrer');
+    // Await the DB save so the token exists before Google Calendar fetches the feed.
+    const feedUrl = await enableCalendarSync();
+    const webcalUrl = feedUrl.replace(/^https?:\/\//, 'webcal://');
+    const googleUrl = `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(webcalUrl)}`;
+    if (win) {
+      win.location.href = googleUrl;
+    } else {
+      // Fallback if popup was blocked despite the synchronous open
+      window.location.href = googleUrl;
+    }
     showToast('Approve the calendar in Google Calendar to finish');
     onClose();
   }

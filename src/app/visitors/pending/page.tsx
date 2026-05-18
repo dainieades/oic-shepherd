@@ -148,7 +148,7 @@ function buildMockSubmissions(): VisitorSubmission[] {
 }
 
 export default function PendingVisitorsPage() {
-  const { currentPersona, promoteVisitorSubmission, discardVisitorSubmission } = useApp();
+  const { promoteVisitorSubmission, discardVisitorSubmission } = useApp();
   const { showToast } = useToast();
   const router = useRouter();
 
@@ -158,9 +158,6 @@ export default function PendingVisitorsPage() {
   const [confirmDiscard, setConfirmDiscard] = React.useState<VisitorSubmission | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const inFlightRef = React.useRef<Set<string>>(new Set());
-
-  const canAccess =
-    currentPersona.role === 'admin' || currentPersona.canTriageVisitors === true;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -186,18 +183,8 @@ export default function PendingVisitorsPage() {
   }, []);
 
   React.useEffect(() => {
-    if (canAccess) void load();
-  }, [canAccess, load]);
-
-  if (!canAccess) {
-    return (
-      <PageContainer width="2xl">
-        <div style={{ paddingTop: 64, textAlign: 'center', color: 'var(--text-muted)' }}>
-          You don't have access to this page.
-        </div>
-      </PageContainer>
-    );
-  }
+    void load();
+  }, [load]);
 
   const handlePromote = async (sub: VisitorSubmission) => {
     if (inFlightRef.current.has(sub.id)) return;
@@ -309,7 +296,7 @@ export default function PendingVisitorsPage() {
           >
             Newcomers
           </span>
-          {actionButtons}
+          {submissions !== null && submissions.length > 0 && actionButtons}
         </div>
       </header>
 
@@ -333,7 +320,7 @@ export default function PendingVisitorsPage() {
             fontSize: 'var(--text-14)',
           }}
         >
-          <HandWaving size={32} color="var(--text-muted)" style={{ marginBottom: 12 }} />
+          <HandWaving size={32} color="var(--text-muted)" style={{ display: 'block', margin: '0 auto 12px' }} />
           <p style={{ marginBottom: 4 }}>No newcomer cards pending.</p>
           <p style={{ fontSize: 'var(--text-12)' }}>
             New self-submissions from <code>/welcome</code> will appear here for review.

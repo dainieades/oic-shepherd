@@ -11,7 +11,6 @@ import {
 import { useApp } from '@/lib/context';
 import { X } from '@phosphor-icons/react';
 import { BACKDROP_COLOR, SHEET_MAX_WIDTH, Z_SHEET } from '@/lib/constants';
-import { ToggleSwitch } from './ToggleSwitch';
 
 type InviteRole = 'shepherd' | 'admin';
 
@@ -54,14 +53,10 @@ export default function InviteSheet({
   const { data: appData, currentPersona, updatePerson } = useApp();
   const [email, setEmail] = React.useState(initialEmail);
   const [role, setRole] = React.useState<InviteRole>(initialRole);
-  const initialTriage =
-    personId ? (appData.people.find((p) => p.id === personId)?.canTriageVisitors ?? false) : false;
-  const [canTriageVisitors, setCanTriageVisitors] = React.useState(initialTriage);
   const [status, setStatus] = React.useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = React.useState('');
 
   const isAdmin = currentPersona.role === 'admin';
-  const showTriageToggle = isAdmin && role === 'shepherd';
 
   // Non-admins can invite shepherds; only admins can invite admins.
   const availableRoles = isAdmin ? ROLES : ROLES.filter((r) => r.value === 'shepherd');
@@ -105,17 +100,12 @@ export default function InviteSheet({
       return;
     }
 
-    const triagePatch = role === 'shepherd' ? canTriageVisitors : false;
     if (personId) {
-      await updatePerson(personId, {
-        appRole: role,
-        email: trimmed,
-        canTriageVisitors: triagePatch,
-      });
+      await updatePerson(personId, { appRole: role, email: trimmed });
     } else {
       const matched = appData.people.find((p) => p.email?.toLowerCase() === trimmed);
       if (matched) {
-        await updatePerson(matched.id, { appRole: role, canTriageVisitors: triagePatch });
+        await updatePerson(matched.id, { appRole: role });
       }
     }
 
@@ -392,49 +382,6 @@ export default function InviteSheet({
                 ))}
               </div>
             </div>
-
-            {/* Newcomer review toggle — admin only, shepherds only */}
-            {showTriageToggle && (
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 12,
-                  padding: '0.75rem 0.875rem',
-                  borderRadius: 'var(--radius-sm)',
-                  border: '0.09375rem solid var(--border-light)',
-                  background: 'var(--bg)',
-                }}
-              >
-                <div style={{ flex: 1 }}>
-                  <p
-                    style={{
-                      fontSize: 'var(--text-14)',
-                      fontWeight: 'var(--font-semibold)',
-                      color: 'var(--text-primary)',
-                      margin: 0,
-                    }}
-                  >
-                    Review newcomers
-                  </p>
-                  <p
-                    style={{
-                      fontSize: 'var(--text-12)',
-                      color: 'var(--text-muted)',
-                      margin: '0.0625rem 0 0',
-                      lineHeight: 'var(--leading-comfortable)',
-                    }}
-                  >
-                    Lets this user review and welcome new sign-ups.
-                  </p>
-                </div>
-                <ToggleSwitch
-                  checked={canTriageVisitors}
-                  onChange={setCanTriageVisitors}
-                  label="Review newcomers"
-                />
-              </div>
-            )}
 
             {/* Submit */}
             <button

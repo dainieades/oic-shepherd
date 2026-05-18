@@ -151,9 +151,6 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
   const [isBeingDiscipled, setIsBeingDiscipled] = React.useState(person?.isBeingDiscipled ?? false);
   const [isStudent, setIsStudent] = React.useState(person?.isStudent ?? false);
   const [appRole, setAppRole] = React.useState<AppRole>(person?.appRole ?? 'no-access');
-  const [canTriageVisitors, setCanTriageVisitors] = React.useState<boolean>(
-    person?.canTriageVisitors ?? false
-  );
   const [churchPositions, setChurchPositions] = React.useState<string[]>(
     person?.churchPositions ?? []
   );
@@ -300,7 +297,6 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
       isBeingDiscipled !== (person.isBeingDiscipled ?? false) ||
       isStudent !== (person.isStudent ?? false) ||
       appRole !== (person.appRole ?? 'no-access') ||
-      canTriageVisitors !== (person.canTriageVisitors ?? false) ||
       sorted(churchPositions) !== sorted(person.churchPositions ?? []) ||
       phone !== (person.phone ? formatPhone(person.phone) : '') ||
       homePhone !== (person.homePhone ? formatPhone(person.homePhone) : '') ||
@@ -311,7 +307,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [person, firstName, lastName, chineseName, photo, language, gender, birthday, maritalStatus,
       anniversary, groupIds, shepherdIds, sheepIds, status, attendance, membershipDate, baptized,
-      baptismDate, isShepherd, isBeingDiscipled, isStudent, appRole, canTriageVisitors,
+      baptismDate, isShepherd, isBeingDiscipled, isStudent, appRole,
       churchPositions, phone, homePhone, email, homeAddress, familyId]);
 
   React.useEffect(() => {
@@ -345,7 +341,6 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
           isBeingDiscipled: isBeingDiscipled || undefined,
           isStudent: isStudent || undefined,
           appRole,
-          canTriageVisitors: appRole === 'shepherd' && canTriageVisitors ? true : undefined,
           churchPositions: churchPositions.length > 0 ? churchPositions : undefined,
           phone: phone.trim() || undefined,
           homePhone: homePhone.trim() || undefined,
@@ -453,7 +448,6 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
           isBeingDiscipled: isBeingDiscipled || undefined,
           isStudent,
           appRole,
-          canTriageVisitors: appRole === 'shepherd' ? canTriageVisitors : false,
           churchPositions: churchPositions.length > 0 ? churchPositions : undefined,
           phone: phone.trim() || undefined,
           homePhone: homePhone.trim() || undefined,
@@ -537,13 +531,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
                       textAlign: 'right',
                     }}
                   >
-                    {appRole === 'shepherd' && canTriageVisitors
-                      ? 'User · Reviews newcomers'
-                      : {
-                          admin: 'Admin',
-                          shepherd: 'User',
-                          'no-access': 'No Access',
-                        }[appRole]}
+                    {{ admin: 'Admin', shepherd: 'User', 'no-access': 'No Access' }[appRole]}
                   </span>
                   {currentPersona.role === 'admin' && (
                     <CaretRight size={14} color="var(--text-muted)" />
@@ -1016,18 +1004,12 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
         <MaybeSheet sheetVariant={sheetVariant} onClose={() => setOpenPicker(null)}>
           <AppRolePickerSheet
             currentRole={appRole}
-            canTriageVisitors={canTriageVisitors}
             onSelect={(role) => {
               setAppRole(role);
-              if (role !== 'shepherd') setCanTriageVisitors(false);
               if (role !== 'shepherd') setOpenPicker(null);
-            }}
-            onToggleTriage={(next) => {
-              setCanTriageVisitors(next);
             }}
             onRemove={() => {
               setAppRole('no-access');
-              setCanTriageVisitors(false);
               setOpenPicker(null);
             }}
             onClose={() => setOpenPicker(null)}

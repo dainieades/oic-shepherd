@@ -268,11 +268,7 @@ export default function AccessManagementPage() {
                     flexShrink: 0,
                   }}
                 >
-                  {linkedPerson
-                    ? role === 'shepherd' && linkedPerson.canTriageVisitors
-                      ? 'User · Reviews newcomers'
-                      : ROLE_LABEL[role]
-                    : 'Not linked'}
+                  {linkedPerson ? ROLE_LABEL[role] : 'Not linked'}
                 </span>
                 <CaretRight size={14} color="var(--text-muted)" style={{ flexShrink: 0 }} />
               </button>
@@ -294,23 +290,12 @@ export default function AccessManagementPage() {
           return (
             <AppRolePickerSheet
               currentRole={linkedPerson ? role : undefined}
-              canTriageVisitors={linkedPerson?.canTriageVisitors ?? false}
               noPersonLinked={!linkedPerson}
               currentEmail={roleEditEmail}
               onSelect={async (newRole) => {
                 if (!linkedPerson) return;
-                const patch: { appRole: AppRole; canTriageVisitors?: boolean } = {
-                  appRole: newRole,
-                };
-                if (newRole !== 'shepherd' && linkedPerson.canTriageVisitors) {
-                  patch.canTriageVisitors = false;
-                }
-                await updatePerson(linkedPerson.id, patch);
+                await updatePerson(linkedPerson.id, { appRole: newRole });
                 if (newRole !== 'shepherd') setRoleEditEmail(null);
-              }}
-              onToggleTriage={async (next) => {
-                if (!linkedPerson) return;
-                await updatePerson(linkedPerson.id, { canTriageVisitors: next });
               }}
               onRemove={async () => {
                 await deleteApprovedEmail(roleEditEmail);

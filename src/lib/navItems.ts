@@ -31,7 +31,6 @@ export const NAV_ITEMS: readonly NavItem[] = [
     label: 'Newcomers',
     icon: HandWaving,
     matches: (p) => p.startsWith('/visitors'),
-    visibleTo: (persona) => persona.role === 'admin' || persona.canTriageVisitors === true,
   },
   {
     href: '/logs',
