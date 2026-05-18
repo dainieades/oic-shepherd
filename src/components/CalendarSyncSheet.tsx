@@ -36,19 +36,35 @@ export default function CalendarSyncSheet({ onClose, singleEvent }: Props) {
   const feedUrl =
     calendarFeedToken && origin ? `${origin}/api/calendar-feed/${calendarFeedToken}.ics` : '';
 
-  async function handleSubscribeApple() {
-    const url = await enableCalendarSync();
+  function handleSubscribeApple() {
+    // Compute URL synchronously so window.location.href runs within the user-gesture context.
+    // iOS Safari blocks webcal:// redirects that happen after an await.
+    const token =
+      calendarFeedToken ??
+      (typeof crypto !== 'undefined' && crypto.randomUUID
+        ? crypto.randomUUID()
+        : Math.random().toString(36).slice(2) + Date.now().toString(36));
+    const url = `${origin}/api/calendar-feed/${token}.ics`;
     window.location.href = url.replace(/^https?:\/\//, 'webcal://');
+    void enableCalendarSync(token);
     onClose();
   }
 
-  async function handleSubscribeGoogle() {
-    const url = await enableCalendarSync();
+  function handleSubscribeGoogle() {
+    // Compute URL and open window synchronously so popup blockers don't fire.
+    // window.open after an await is treated as an untrusted open and blocked.
+    const token =
+      calendarFeedToken ??
+      (typeof crypto !== 'undefined' && crypto.randomUUID
+        ? crypto.randomUUID()
+        : Math.random().toString(36).slice(2) + Date.now().toString(36));
+    const url = `${origin}/api/calendar-feed/${token}.ics`;
     window.open(
       `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(url)}`,
       '_blank',
       'noopener,noreferrer'
     );
+    void enableCalendarSync(token);
     showToast('Approve the calendar in Google Calendar to finish');
     onClose();
   }

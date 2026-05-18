@@ -223,7 +223,7 @@ interface AppContextType {
   ) => Promise<void>;
   calendarSyncEnabled: boolean;
   calendarFeedToken: string | null;
-  enableCalendarSync: () => Promise<string>;
+  enableCalendarSync: (pregenToken?: string) => Promise<string>;
   disableCalendarSync: () => Promise<void>;
   regenerateCalendarFeedToken: () => Promise<string>;
   fullPageModalOpen: boolean;
@@ -361,8 +361,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [currentPersona.id]
   );
 
-  const enableCalendarSync = useCallback(async (): Promise<string> => {
+  const enableCalendarSync = useCallback(async (pregenToken?: string): Promise<string> => {
     const token =
+      pregenToken ??
       calendarFeedToken ??
       (typeof crypto !== 'undefined' && crypto.randomUUID
         ? crypto.randomUUID()
