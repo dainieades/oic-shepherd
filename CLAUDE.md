@@ -125,6 +125,12 @@ style={{ fontSize: 14, fontWeight: 600, letterSpacing: '0.06em' }}
 
 ---
 
+## Dropdowns & Popovers
+
+**Always use `useFloating` (`strategy: 'fixed'`) + `createPortal`** for any dropdown or popover. Never use `position: absolute` — sticky headers create stacking contexts that trap absolute children. See `src/components/SortControls.tsx` for the canonical pattern. Click-outside handlers must check both `refs.reference.current` and `refs.floating.current`.
+
+---
+
 ## Coding Rules
 
 - **TypeScript strict** — no `any`, no `as` casts without justification; `tsc --noEmit` runs automatically after every file edit via hook

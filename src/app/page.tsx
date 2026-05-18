@@ -1,6 +1,8 @@
 'use client';
 
 import React from 'react';
+import { createPortal } from 'react-dom';
+import { useFloating, autoUpdate, offset, flip } from '@floating-ui/react';
 import { useApp, type HomeFilters } from '@/lib/context';
 import { getMembershipLabel, fullName } from '@/lib/utils';
 import { type Person, type AppRole } from '@/lib/types';
@@ -50,8 +52,15 @@ export default function PeoplePage() {
   const [showFilter, setShowFilter] = React.useState(false);
   const searchInputRef = React.useRef<HTMLInputElement>(null);
   const desktopSearchInputRef = React.useRef<HTMLInputElement>(null);
-  const addBtnRef = React.useRef<HTMLDivElement>(null);
   const [showAddChoice, setShowAddChoice] = React.useState(false);
+  const { refs: addMenuRefs, floatingStyles: addMenuStyles } = useFloating({
+    placement: 'bottom-end',
+    strategy: 'fixed',
+    middleware: [offset(6), flip({ padding: 8 })],
+    whileElementsMounted: autoUpdate,
+  });
+  const [addMenuMounted, setAddMenuMounted] = React.useState(false);
+  React.useEffect(() => { setAddMenuMounted(true); }, []);
   const [showAddPerson, setShowAddPerson] = React.useState(false);
   const [showAddFamily, setShowAddFamily] = React.useState(false);
   const [showInvitePicker, setShowInvitePicker] = React.useState(false);
@@ -70,13 +79,15 @@ export default function PeoplePage() {
   React.useEffect(() => {
     if (!showAddChoice) return;
     const handler = (e: MouseEvent) => {
-      if (addBtnRef.current && !addBtnRef.current.contains(e.target as Node)) {
+      const anchor = addMenuRefs.reference.current as Element | null;
+      const floating = addMenuRefs.floating.current;
+      if (!anchor?.contains(e.target as Node) && !floating?.contains(e.target as Node)) {
         setShowAddChoice(false);
       }
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
-  }, [showAddChoice]);
+  }, [showAddChoice, addMenuRefs.reference, addMenuRefs.floating]);
 
   React.useEffect(() => {
     const preload = () => {
@@ -280,7 +291,7 @@ export default function PeoplePage() {
         )}
       </div>
       {/* Add button + dropdown */}
-      <div ref={addBtnRef} className="relative">
+      <div ref={addMenuRefs.setReference}>
         <Button
           variant="primary"
           onClick={() => setShowAddChoice((v) => !v)}
@@ -289,13 +300,11 @@ export default function PeoplePage() {
           <Plus size={16} weight="bold" />
           People
         </Button>
-        {showAddChoice && (
+        {showAddChoice && addMenuMounted && createPortal(
           <div
-            className="absolute right-0 bg-surface rounded-md border border-border-light overflow-hidden z-dropdown shadow-elevated"
-            style={{
-              top: 'calc(100% + 0.375rem)',
-              width: 220,
-            }}
+            ref={addMenuRefs.setFloating}
+            className="bg-surface rounded-md border border-border-light overflow-hidden z-dropdown shadow-elevated"
+            style={{ ...addMenuStyles, width: '13.75rem' }}
           >
             {(() => {
               const individualBtn = (
@@ -362,7 +371,7 @@ export default function PeoplePage() {
               );
             })()}
           </div>
-        )}
+        , document.body)}
       </div>
     </div>
   );

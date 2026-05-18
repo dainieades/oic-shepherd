@@ -2,6 +2,8 @@
 
 import { format, parseISO } from 'date-fns';
 import React from 'react';
+import { createPortal } from 'react-dom';
+import { useFloating, autoUpdate, offset, flip } from '@floating-ui/react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useApp } from '@/lib/context';
@@ -129,7 +131,14 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
   const [showKebab, setShowKebab] = React.useState(false);
   const [confirmAction, setConfirmAction] = React.useState<'archive' | 'delete' | null>(null);
   const [scrolled, setScrolled] = React.useState(false);
-  const kebabRef = React.useRef<HTMLDivElement>(null);
+  const { refs: kebabRefs, floatingStyles: kebabStyles } = useFloating({
+    placement: 'bottom-end',
+    strategy: 'fixed',
+    middleware: [offset(6), flip({ padding: 8 })],
+    whileElementsMounted: autoUpdate,
+  });
+  const [kebabMounted, setKebabMounted] = React.useState(false);
+  React.useEffect(() => { setKebabMounted(true); }, []);
 
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -140,12 +149,21 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
   React.useEffect(() => {
     if (!showKebab) return;
     const handler = (e: MouseEvent) => {
-      if (kebabRef.current && !kebabRef.current.contains(e.target as Node)) {
+      const anchor = kebabRefs.reference.current as Element | null;
+      const floating = kebabRefs.floating.current;
+      if (!anchor?.contains(e.target as Node) && !floating?.contains(e.target as Node)) {
         setShowKebab(false);
       }
     };
     document.addEventListener('click', handler);
     return () => document.removeEventListener('click', handler);
+  }, [showKebab, kebabRefs.reference, kebabRefs.floating]);
+
+  React.useEffect(() => {
+    if (!showKebab) return;
+    const close = () => setShowKebab(false);
+    window.addEventListener('scroll', close, { passive: true, capture: true });
+    return () => window.removeEventListener('scroll', close, { capture: true });
   }, [showKebab]);
 
   const person = data.people.find((p) => p.id === id);
@@ -310,7 +328,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
           )}
 
           {canEdit && (
-            <div ref={kebabRef} className="relative">
+            <div ref={kebabRefs.setReference}>
               <button
                 aria-label="More options"
                 onClick={() => setShowKebab((v) => !v)}
@@ -322,12 +340,11 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
               >
                 <DotsThreeVertical size={16} />
               </button>
-              {showKebab && (
+              {showKebab && kebabMounted && createPortal(
                 <div
-                  className="absolute right-0 bg-surface border border-border rounded-md overflow-hidden min-w-[11.25rem] z-dropdown shadow-elevated"
-                  style={{
-                    top: 'calc(100% + 0.375rem)',
-                  }}
+                  ref={kebabRefs.setFloating}
+                  className="bg-surface border border-border rounded-md overflow-hidden z-dropdown shadow-elevated"
+                  style={{ ...kebabStyles, minWidth: '11.25rem' }}
                 >
                   {activeTab !== 'info' && (
                     <button
@@ -362,7 +379,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                     Delete
                   </button>
                 </div>
-              )}
+              , document.body)}
             </div>
           )}
         </div>

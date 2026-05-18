@@ -82,6 +82,7 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
   const [showEditFamily, setShowEditFamily] = React.useState(false);
   const [previewGroupId, setPreviewGroupId] = React.useState<string | null>(null);
   const [showKebab, setShowKebab] = React.useState(false);
+  const [kebabDropdownPos, setKebabDropdownPos] = React.useState<{ top: number; right: number } | null>(null);
   const [scrolled, setScrolled] = React.useState(false);
   const kebabRef = React.useRef<HTMLDivElement>(null);
 
@@ -98,6 +99,13 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
     document.addEventListener('mousedown', outside);
     return () => document.removeEventListener('mousedown', outside);
   }, []);
+
+  React.useEffect(() => {
+    if (!showKebab) return;
+    const close = () => setShowKebab(false);
+    window.addEventListener('scroll', close, { passive: true, capture: true });
+    return () => window.removeEventListener('scroll', close, { capture: true });
+  }, [showKebab]);
 
   const family = data.families.find((f) => f.id === id);
   if (!family) {
@@ -206,7 +214,13 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
           <div ref={kebabRef} className="relative">
             <button
               aria-label="More options"
-              onClick={() => setShowKebab(!showKebab)}
+              onClick={() => {
+                if (!showKebab && kebabRef.current) {
+                  const rect = kebabRef.current.getBoundingClientRect();
+                  setKebabDropdownPos({ top: rect.bottom + 6, right: window.innerWidth - rect.right });
+                }
+                setShowKebab((v) => !v);
+              }}
               className="rounded-full bg-surface border border-border text-text-muted flex items-center justify-center cursor-pointer"
               style={{
                 width: scrolled ? 30 : 36,
@@ -216,11 +230,13 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
             >
               <DotsThreeVertical size={16} />
             </button>
-            {showKebab && (
+            {showKebab && kebabDropdownPos && (
               <div
-                className="absolute right-0 bg-surface border border-border rounded-md overflow-hidden min-w-[11.25rem] z-dropdown shadow-elevated"
+                className="bg-surface border border-border rounded-md overflow-hidden min-w-[11.25rem] z-dropdown shadow-elevated"
                 style={{
-                  top: 'calc(100% + 0.375rem)',
+                  position: 'fixed',
+                  top: kebabDropdownPos.top,
+                  right: kebabDropdownPos.right,
                 }}
               >
                 <button
