@@ -38,8 +38,8 @@ export function usePreferencesHook({ setData, currentPersonaId }: PreferencesHoo
   const [themePreference, setThemePreferenceState] = React.useState<ThemePreference>('system');
   const [mapProvider, setMapProviderState] = React.useState<MapProvider>('google');
   const [notificationPrefs, setNotificationPrefsState] = React.useState<NotificationPreferences>({
-    personAdded: true,
-    noticeAdded: true,
+    personAdded: false,
+    noticeAdded: false,
     shepherdAssigned: true,
     personUpdated: false,
     todoCreated: true,

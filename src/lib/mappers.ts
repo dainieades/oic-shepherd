@@ -122,8 +122,8 @@ export function mapPersona(row: Record<string, unknown>, assignedPeopleIds: stri
     themePreference: r.theme_preference ?? undefined,
     mapProvider: r.map_provider ?? undefined,
     notificationPrefs: {
-      personAdded: r.notify_person_added ?? true,
-      noticeAdded: r.notify_notice_added ?? true,
+      personAdded: r.notify_person_added ?? false,
+      noticeAdded: r.notify_notice_added ?? false,
       shepherdAssigned: r.notify_shepherd_assigned ?? true,
       personUpdated: r.notify_person_updated ?? false,
       todoCreated: r.notify_todo_created ?? true,

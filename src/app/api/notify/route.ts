@@ -143,7 +143,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     if (body.type === 'person.added') {
       const emails = await getEmailsByRole(
         supabase,
-        ['admin'],
+        ['admin', 'shepherd'],
         body.actorUserId,
         body.actorEmail,
         'notify_person_added'

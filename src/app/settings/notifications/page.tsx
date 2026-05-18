@@ -20,8 +20,8 @@ const NOTIFICATION_OPTIONS: NotifOption[] = [
   {
     key: 'personAdded',
     label: 'New person added',
-    description: 'When someone is added to the directory',
-    roles: ['admin'],
+    description: "When a person is added to the people's list or a newcomer is accepted into the directory",
+    roles: ['admin', 'shepherd'],
   },
   {
     key: 'noticeAdded',
