@@ -30,7 +30,7 @@ export function CalendarSubscribeOptions({
         <AppRow
           icon={<GoogleLogo size={20} color="var(--text-primary)" />}
           label="Google Calendar"
-          hint="Google refreshes the subscription roughly once a day."
+          hint="Opens Google Calendar settings. Feed URL is copied — paste it if not pre-filled."
           onOpen={onSubscribeGoogle}
         />
       </div>
