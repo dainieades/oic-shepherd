@@ -23,6 +23,7 @@ import PickerMenu from './PickerMenu';
 import DatePickerSheet from './DatePickerSheet';
 import { BottomSheet, ModalHeader } from './BottomSheet';
 import { fmtDateTime, truncateWhoLabel, fullName } from '@/lib/utils';
+import { Z_NESTED } from '@/lib/constants';
 
 interface AddLogModalProps {
   onClose: () => void;
@@ -393,6 +394,7 @@ export function DeleteConfirmDialog({
   const overlay = (
     <div
       className="fixed inset-0 flex items-center justify-center px-8 z-nested bg-backdrop"
+      style={{ zIndex: Z_NESTED }}
       onClick={(e) => {
         if (e.target === e.currentTarget) onCancel();
       }}
