@@ -434,7 +434,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // ── Load all data from Supabase on mount ─────────────────────────────
   useEffect(() => {
     async function load() {
-      console.log('[AppContext.load] start');
       const supabase = createClient();
 
       const [
@@ -593,7 +592,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       if (session?.user) {
         const sessionPersona = personas.find((p) => p.userId === session.user.id);
-        console.log('[AppContext.load] session present, sessionPersonaFound:', !!sessionPersona, 'personasCount:', personas.length);
         if (sessionPersona) {
           setCurrentPersona(sessionPersona);
           applyPersonaSettings(sessionPersona);
@@ -604,7 +602,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         // call loginWithSupabaseUser, which verifies approval, sets the
         // correct persona, and calls setLoaded(true) in its finally block.
       } else {
-        console.log('[AppContext.load] no session → setLoaded(true)');
         setLoaded(true);
       }
     }
@@ -623,7 +620,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // ── Supabase auth → persona sync ─────────────────────────────────────
   const loginWithSupabaseUser = useCallback(
     async (userId: string, name: string, email?: string, avatarUrl?: string) => {
-      console.log('[loginWithSupabaseUser] start', { userId, email });
       const supabase = createClient();
 
       // Wrap the whole body so the UI always unsticks from the "Loading…" state
@@ -826,8 +822,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }
       } catch (err) {
         console.error('[loginWithSupabaseUser] threw:', err);
+        showToast('Sign-in failed. Please try again.', 'error');
       } finally {
-        console.log('[loginWithSupabaseUser] finally → setLoaded(true)');
         setLoaded(true);
       }
     },
@@ -845,7 +841,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('[AuthSync] event:', event, 'hasUser:', !!session?.user, 'email:', session?.user?.email);
       if (!session?.user) return;
       const user = session.user;
       const name = user.user_metadata?.full_name || user.email?.split('@')[0] || 'User';
@@ -853,13 +848,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const avatarUrl = user.user_metadata?.avatar_url as string | undefined;
 
       if (event === 'SIGNED_IN') {
-        console.log('[AuthSync] → loginWithSupabaseUser (SIGNED_IN)');
         loginWithSupabaseUser(user.id, name, email, avatarUrl);
       } else if (event === 'INITIAL_SESSION') {
         const stored = localStorage.getItem('shepherd-app-persona');
-        console.log('[AuthSync] INITIAL_SESSION, storedPersona:', stored);
         if (!stored) {
-          console.log('[AuthSync] → loginWithSupabaseUser (INITIAL_SESSION)');
           loginWithSupabaseUser(user.id, name, email, avatarUrl);
         }
       }
@@ -1260,6 +1252,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         .eq('id', submissionId);
       if (error) {
         console.error('updateVisitorSubmission failed:', error);
+        showToast(SAVE_ERROR_MSG, 'error');
         throw error;
       }
     },
