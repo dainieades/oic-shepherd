@@ -59,8 +59,9 @@ export default function CalendarSyncSheet({ onClose, singleEvent }: Props) {
         ? crypto.randomUUID()
         : Math.random().toString(36).slice(2) + Date.now().toString(36));
     const url = `${origin}/api/calendar-feed/${token}.ics`;
+    const webcalUrl = url.replace(/^https?:\/\//, 'webcal://');
     window.open(
-      `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(url)}`,
+      `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(webcalUrl)}`,
       '_blank',
       'noopener,noreferrer'
     );
