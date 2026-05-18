@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { type AppRole } from '@/lib/types';
-import { Warning, Check, PencilSimple } from '@phosphor-icons/react';
-import { SubPanel } from '@/components/BottomSheet';
+import { Warning, Check, PencilSimple, X } from '@phosphor-icons/react';
+import { BottomSheet } from '@/components/BottomSheet';
 
 const ROLE_OPTIONS: { value: AppRole; label: string; description: string }[] = [
   {
@@ -96,22 +96,49 @@ export default function AppRolePickerSheet({
   }
 
   return (
-    <SubPanel onBack={onClose}>
-      {/* Title */}
-      <p
+    <BottomSheet onClose={onClose} variant="confirm" allowBackdropClose compact>
+      {/* Header */}
+      <div
         style={{
-          fontSize: 'var(--text-12)',
-          fontWeight: 'var(--font-semibold)',
-          color: 'var(--text-muted)',
-          textAlign: 'center',
-          textTransform: 'uppercase',
-          letterSpacing: 'var(--tracking-wide-6)',
-          padding: '0.75rem 1.25rem 0.625rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '0.75rem 1rem 0.625rem 1.25rem',
           borderBottom: '1px solid var(--border-light)',
         }}
       >
-        App Role
-      </p>
+        <p
+          style={{
+            fontSize: 'var(--text-12)',
+            fontWeight: 'var(--font-semibold)',
+            color: 'var(--text-muted)',
+            textTransform: 'uppercase',
+            letterSpacing: 'var(--tracking-wide-6)',
+            margin: 0,
+          }}
+        >
+          App Role
+        </p>
+        <button
+          onClick={onClose}
+          aria-label="Close"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 28,
+            height: 28,
+            borderRadius: '50%',
+            background: 'var(--border-light)',
+            border: 'none',
+            cursor: 'pointer',
+            color: 'var(--text-muted)',
+            flexShrink: 0,
+          }}
+        >
+          <X size={14} weight="bold" />
+        </button>
+      </div>
 
       {editingEmail ? (
         /* ── Edit email address ── */
@@ -563,6 +590,6 @@ export default function AppRolePickerSheet({
           )}
         </>
       )}
-    </SubPanel>
+    </BottomSheet>
   );
 }
