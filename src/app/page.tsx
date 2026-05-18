@@ -78,6 +78,24 @@ export default function PeoplePage() {
     return () => document.removeEventListener('mousedown', handler);
   }, [showAddChoice]);
 
+  React.useEffect(() => {
+    const preload = () => {
+      import('@/components/AddPersonModal');
+      import('@/components/AddFamilyModal');
+      import('@/components/InviteSheet');
+      import('@/components/FilterPanel');
+      import('@/components/SortControls');
+      import('@/components/SearchBar');
+      import('@/components/PersonPickerSheets');
+    };
+    if (typeof requestIdleCallback !== 'undefined') {
+      const id = requestIdleCallback(preload);
+      return () => cancelIdleCallback(id);
+    }
+    const id = setTimeout(preload, 200);
+    return () => clearTimeout(id);
+  }, []);
+
   const entries = usePeopleRows(deferredSearch);
 
   const activeFilterCount =
@@ -384,7 +402,7 @@ export default function PeoplePage() {
         <main>
           {/* ── Search (expandable) ─────────────── */}
           <div className="lg:hidden">
-            <React.Suspense fallback={null}>
+            <React.Suspense fallback={showSearch ? <div className="relative mb-2.5 mt-2" style={{ height: '2.375rem' }} /> : null}>
               <SearchBar
                 search={search}
                 setSearch={setSearch}
@@ -426,7 +444,7 @@ export default function PeoplePage() {
             </span>
 
             <div className="lg:hidden">
-              <React.Suspense fallback={null}>
+              <React.Suspense fallback={<div style={{ height: '1.75rem', width: '3.5rem' }} />}>
                 <SortControls />
               </React.Suspense>
             </div>

@@ -4,9 +4,6 @@ import { format, parseISO } from 'date-fns';
 import React from 'react';
 import {
   Baby,
-  Notepad,
-  CheckCircle,
-  Info,
   UsersFour,
   User,
   HandHeart,
@@ -14,13 +11,8 @@ import {
   CaretLeft,
   CaretRight,
   DotsThreeVertical,
-  Check,
-  Clock,
-  ArrowsClockwise,
-  CaretDown,
   House,
   Plus,
-  Bell,
 } from '@phosphor-icons/react';
 import Link from 'next/link';
 import { useApp } from '@/lib/context';
@@ -47,6 +39,11 @@ import PhotoAvatar from '@/components/PhotoAvatar';
 import { SHEPHERD_AVATAR_PALETTE, Z_SUBHEADER } from '@/lib/constants';
 import { InfoRow } from '@/components/InfoRow';
 import { AvatarBadge } from '@/components/AvatarBadge';
+import { TabIcon } from '@/components/TabIcon';
+import { LogSection } from '@/components/LogSection';
+import { InfoSection } from '@/components/InfoSection';
+import { TodoSection } from '@/components/TodoSection';
+import { RecordInfoSection } from '@/components/RecordInfoSection';
 
 type Tab = 'logs' | 'todos' | 'notices' | 'info';
 
@@ -56,18 +53,6 @@ const TAB_LABELS: Record<Tab, string> = {
   notices: 'Notices',
   info: 'Family Info',
 };
-
-function TabIcon({ tab, active }: { tab: Tab; active: boolean }) {
-  const weight = active ? 'fill' : 'regular';
-  if (tab === 'logs') return <Notepad size={16} weight={weight} />;
-  if (tab === 'todos') return <CheckCircle size={16} weight={weight} />;
-  if (tab === 'notices') return <Bell size={16} weight={weight} />;
-  return <Info size={16} weight={weight} />;
-}
-
-function fmtDue(iso: string) {
-  return format(parseISO(iso), 'M/d/yyyy h:mm a');
-}
 
 export default function FamilyDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = React.use(params);
@@ -732,173 +717,3 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
   );
 }
 
-function LogSection({
-  label,
-  count,
-  children,
-}: {
-  label: string;
-  count: number;
-  children: React.ReactNode;
-}) {
-  const [open, setOpen] = React.useState(true);
-  return (
-    <div className="mb-4">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 py-1 px-0 border-none cursor-pointer text-10 font-semibold text-text-muted uppercase tracking-wide-6 bg-none"
-        style={{ marginBottom: open ? 8 : 0 }}
-      >
-        {label} · {count}
-        <CaretDown
-          size={10}
-          style={{
-            transition: 'transform 0.2s',
-            transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
-          }}
-        />
-      </button>
-      {open && children}
-    </div>
-  );
-}
-
-function TodoSection({
-  label,
-  todos,
-  onToggle,
-  onEdit,
-  data,
-  defaultOpen = true,
-}: {
-  label: string;
-  todos: Todo[];
-  onToggle: (id: string) => void;
-  onEdit: (todo: Todo) => void;
-  data: AppData;
-  defaultOpen?: boolean;
-}) {
-  const [open, setOpen] = React.useState(defaultOpen);
-  return (
-    <div className="mb-4">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 py-1 px-0 border-none cursor-pointer text-10 font-semibold text-text-muted uppercase tracking-wide-6 bg-none"
-        style={{ marginBottom: open ? 8 : 0 }}
-      >
-        {label} · {todos.length}
-        <CaretDown
-          size={10}
-          style={{
-            transition: 'transform 0.2s',
-            transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
-          }}
-        />
-      </button>
-      {open && (
-        <div
-          className="no-last-border bg-surface rounded overflow-hidden p-0"
-        >
-          {todos.map((t) => {
-            const person = t.personId ? data.people.find((p) => p.id === t.personId) : null;
-            const family = t.familyId ? data.families.find((f) => f.id === t.familyId) : null;
-            const tag = (person ? fullName(person) : '') || family?.label || '';
-            const hasRepeat = t.repeat && t.repeat !== 'none';
-            return (
-              <div
-                key={t.id}
-                className="row-card-hover flex items-start gap-2.5 pt-2.5 pb-2.5 border-b border-border-light"
-              >
-                <button
-                  onClick={() => onToggle(t.id)}
-                  className="w-5 h-5 rounded-full shrink-0 mt-[0.125rem] flex items-center justify-center cursor-pointer"
-                  style={{
-                    border: t.completed ? 'none' : '0.125rem solid var(--border)',
-                    background: t.completed ? 'var(--sage)' : 'transparent',
-                  }}
-                >
-                  {t.completed && <Check size={11} color="var(--on-sage)" weight="bold" />}
-                </button>
-                <button
-                  onClick={() => onEdit(t)}
-                  className="flex-1 min-w-0 bg-none border-none text-left cursor-pointer p-0"
-                >
-                  <p
-                    className="text-14 leading-comfortable mb-1"
-                    style={{
-                      color: t.completed ? 'var(--text-muted)' : 'var(--text-primary)',
-                      textDecoration: t.completed ? 'line-through' : 'none',
-                    }}
-                  >
-                    {t.title}
-                  </p>
-                  <div className="flex items-center gap-2.5">
-                    {t.dueDate && (
-                      <div className="flex items-center gap-1 text-text-muted">
-                        <Clock size={12} />
-                        <span className="text-11 text-text-muted">
-                          {fmtDue(t.dueDate)}
-                        </span>
-                      </div>
-                    )}
-                    {hasRepeat && <ArrowsClockwise size={12} color="var(--text-muted)" />}
-                    {tag && (
-                      <span className="text-10 text-blue py-[0.0625rem] px-[0.375rem] rounded-pill bg-blue-light font-medium">
-                        {tag}
-                      </span>
-                    )}
-                  </div>
-                </button>
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function InfoSection({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 mb-2">
-        {title}
-      </p>
-      <div className="no-last-border bg-surface rounded overflow-hidden p-0">
-        {children}
-      </div>
-    </div>
-  );
-}
-
-function RecordInfoSection({
-  family,
-  notes,
-}: {
-  family: import('@/lib/types').Family;
-  notes: import('@/lib/types').Note[];
-}) {
-  const lastLoggedNote = notes.sort((a, b) => (b.createdAt > a.createdAt ? 1 : -1))[0];
-
-  return (
-    <InfoSection title="Record info">
-      <InfoRow
-        label="Last logged"
-        value={
-          lastLoggedNote ? format(parseISO(lastLoggedNote.createdAt), 'MMM d, yyyy') : 'Never'
-        }
-        muted
-      />
-      <InfoRow
-        label="Added"
-        value={family.createdAt ? format(parseISO(family.createdAt), 'MMM d, yyyy') : '—'}
-        muted
-      />
-      <InfoRow
-        label="Last edited"
-        value={family.lastEditedAt ? format(parseISO(family.lastEditedAt), 'MMM d, yyyy') : '—'}
-        muted
-      />
-    </InfoSection>
-  );
-}

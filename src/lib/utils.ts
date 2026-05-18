@@ -606,3 +606,13 @@ export function visibleTo<T extends { isTest?: boolean }>(
   if (viewerIsTest) return rows;
   return rows.filter((r) => !r.isTest);
 }
+
+export function fmtDue(iso: string): string {
+  return format(parseISO(iso), 'M/d/yyyy h:mm a');
+}
+
+export function fmtShortDate(iso: string): string {
+  const dateStr = iso.includes('T') ? iso.split('T')[0] : iso;
+  const [year, month, day] = dateStr.split('-').map(Number);
+  return format(new Date(year, month - 1, day), 'MMM d, yyyy');
+}

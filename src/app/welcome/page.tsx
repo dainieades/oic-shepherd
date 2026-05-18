@@ -2,14 +2,13 @@
 
 import React from 'react';
 import { CheckCircle } from '@phosphor-icons/react';
-import { createClient } from '@/utils/supabase/client';
 import { Logo } from '@/components/Logo';
-import VisitorIntakeForm, {
-  type VisitorIntakeFormHandle,
-  type VisitorIntakeValues,
-} from '@/components/VisitorIntakeForm';
+import VisitorIntakeForm, { type VisitorIntakeFormHandle } from '@/components/VisitorIntakeForm';
+import type { VisitorIntakeValues } from '@/lib/types';
+import { useApp } from '@/lib/context';
 
 export default function WelcomePage() {
+  const { submitVisitorCard } = useApp();
   const formRef = React.useRef<VisitorIntakeFormHandle>(null);
   const [canSubmit, setCanSubmit] = React.useState(false);
   const [submitting, setSubmitting] = React.useState(false);
@@ -33,32 +32,16 @@ export default function WelcomePage() {
     }
     setSubmitting(true);
     setError(null);
-    const supabase = createClient();
-    const { error: insertError } = await supabase.from('visitor_submissions').insert({
-      source: 'qr',
-      status: 'pending',
-      person_id: null,
-      submitted_by: null,
-      preferred_name: values.preferredName,
-      last_name: values.lastName ?? null,
-      alternative_name: values.alternativeName ?? null,
-      phone: values.phone ?? null,
-      email: values.email ?? null,
-      life_stage: values.lifeStage,
-      languages: values.languages,
-      referral_source: values.referralSource ?? null,
-      referral_detail: values.referralDetail ?? null,
-      interests: values.interests,
-      prayer_request: values.prayerRequest ?? null,
-    });
-    setSubmitting(false);
-    if (insertError) {
+    try {
+      await submitVisitorCard(values);
+      setDone(true);
+    } catch {
       setError(
         "Sorry, we couldn't submit your card. Please try again or talk to a Welcome Team member."
       );
-      return;
+    } finally {
+      setSubmitting(false);
     }
-    setDone(true);
   };
 
   if (done) {
@@ -89,7 +72,7 @@ export default function WelcomePage() {
   return (
     <div className="pt-6 pb-12">
       <header className="text-center mb-6">
-        <Logo height={96} style={{ margin: '0 auto 16px' }} />
+        <Logo height={96} style={{ margin: '0 auto var(--spacing-lg)' }} />
         <h1 className="font-display text-24 font-bold text-text-primary mb-[6px]">
           Welcome!
         </h1>
@@ -125,12 +108,7 @@ export default function WelcomePage() {
       <button
         onClick={() => formRef.current?.save()}
         disabled={!canSubmit || submitting}
-        className="w-full py-[0.875rem] px-5 rounded-md border-none text-16 font-semibold"
-        style={{
-          background: canSubmit && !submitting ? 'var(--sage)' : 'var(--border)',
-          color: canSubmit && !submitting ? 'var(--on-sage)' : 'var(--text-muted)',
-          cursor: canSubmit && !submitting ? 'pointer' : 'not-allowed',
-        }}
+        className="w-full py-[0.875rem] px-5 rounded-md border-none text-16 font-semibold bg-sage text-on-sage cursor-pointer disabled:bg-border disabled:text-text-muted disabled:cursor-not-allowed"
       >
         {submitting ? 'Submitting…' : 'Submit'}
       </button>

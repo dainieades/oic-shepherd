@@ -260,6 +260,20 @@ export interface VisitorSubmission {
   prayerRequest?: string;
 }
 
+export interface VisitorIntakeValues {
+  preferredName: string;
+  lastName?: string;
+  alternativeName?: string;
+  phone?: string;
+  email?: string;
+  lifeStage: string[];
+  languages: string[];
+  referralSource?: ReferralSource;
+  referralDetail?: string;
+  interests: Interest[];
+  prayerRequest?: string;
+}
+
 export interface AppData {
   people: Person[];
   families: Family[];

@@ -20,17 +20,14 @@ import {
 } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { useToast } from '@/components/Toast';
-import { createClient } from '@/utils/supabase/client';
-import type { User } from '@supabase/supabase-js';
 import { MAP_PROVIDER_LABELS, fullName } from '@/lib/utils';
 
 export default function SettingsPage() {
-  const { data, currentPersona, themePreference, mapProvider, calendarSyncEnabled } = useApp();
+  const { data, currentPersona, themePreference, mapProvider, calendarSyncEnabled, supabaseUser, signOut, linkGoogle } = useApp();
   const { showToast } = useToast();
   const router = useRouter();
   const [scrolled, setScrolled] = React.useState(false);
   const [showSignOutConfirm, setShowSignOutConfirm] = React.useState(false);
-  const [supabaseUser, setSupabaseUser] = React.useState<User | null>(null);
   const [linkingGoogle, setLinkingGoogle] = React.useState(false);
 
   React.useEffect(() => {
@@ -45,11 +42,6 @@ export default function SettingsPage() {
       router.replace('/settings/profile');
     }
   }, [router]);
-
-  React.useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => setSupabaseUser(data.user));
-  }, []);
 
   const person = currentPersona.personId
     ? data.people.find((p) => p.id === currentPersona.personId)
@@ -87,25 +79,20 @@ export default function SettingsPage() {
   const hasGoogle = supabaseUser?.identities?.some((i) => i.provider === 'google') ?? false;
 
   const handleSignOut = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    localStorage.removeItem('shepherd-app-persona');
+    await signOut();
     router.push('/signin');
   };
 
   const handleLinkGoogle = async () => {
     setLinkingGoogle(true);
-    const supabase = createClient();
     const redirectTo =
       typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : '/auth/callback';
-    const { error } = await supabase.auth.linkIdentity({
-      provider: 'google',
-      options: { redirectTo },
-    });
-    if (error) {
+    try {
+      await linkGoogle(redirectTo);
+    } catch (err) {
       setLinkingGoogle(false);
       showToast('Could not link Google account. Try again.', 'error');
-      console.error('Link Google error:', error.message);
+      console.error('Link Google error:', err);
     }
   };
 

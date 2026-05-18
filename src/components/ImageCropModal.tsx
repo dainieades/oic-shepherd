@@ -254,7 +254,7 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
             setScale(Math.exp(Math.log(minScale) + t * (Math.log(MAX_SCALE) - Math.log(minScale))));
           }}
           className="w-full cursor-pointer"
-          style={{ accentColor: '#fff' }}
+          style={{ accentColor: 'var(--on-sage)' }}
           aria-label="Zoom"
         />
         <span className="text-11 text-[rgba(255,255,255,0.4)]">

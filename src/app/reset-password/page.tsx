@@ -3,7 +3,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { useRouter } from 'next/navigation';
-import { createClient } from '@/utils/supabase/client';
+import { authSetNewPassword } from '@/lib/auth';
 
 type Status =
   | { type: 'idle' }
@@ -17,7 +17,6 @@ export default function ResetPasswordPage() {
   const [confirmPassword, setConfirmPassword] = React.useState('');
   const [status, setStatus] = React.useState<Status>({ type: 'idle' });
   const [mounted, setMounted] = React.useState(false);
-  const supabase = createClient();
 
   React.useEffect(() => {
     setMounted(true);
@@ -39,9 +38,9 @@ export default function ResetPasswordPage() {
       return;
     }
     setStatus({ type: 'loading' });
-    const { error } = await supabase.auth.updateUser({ password });
+    const { error } = await authSetNewPassword(password);
     if (error) {
-      setStatus({ type: 'error', message: error.message });
+      setStatus({ type: 'error', message: error });
     } else {
       setStatus({ type: 'success' });
     }

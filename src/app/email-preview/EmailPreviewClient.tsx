@@ -18,33 +18,26 @@ export default function EmailPreviewClient({ emails }: { emails: EmailEntry[] })
   };
 
   return (
-    <div className="min-h-screen p-8" style={{ background: '#e8e8e8', fontFamily: 'system-ui, sans-serif' }}>
-      <h1 className="text-18 font-bold mb-8" style={{ color: '#111' }}>
+    <div className="min-h-screen p-8 font-sans bg-[#e8e8e8]">
+      <h1 className="text-18 font-bold mb-8 text-text-primary">
         Email Previews
       </h1>
-      <div className="flex flex-col" style={{ gap: '3rem' }}>
+      <div className="flex flex-col gap-12">
         {emails.map(({ label, subject, html }) => (
           <div key={label}>
             <div className="flex items-baseline gap-4 mb-2">
               <span
-                className="text-11 font-bold uppercase tracking-wide-6"
-                style={{ color: '#888' }}
+                className="text-11 font-bold uppercase tracking-wide-6 text-text-muted"
               >
                 {label}
               </span>
-              <span className="text-13 flex-1" style={{ color: '#444' }}>
+              <span className="text-13 flex-1 text-text-secondary">
                 Subject: <strong>{subject}</strong>
               </span>
               <button
                 type="button"
                 onClick={() => handleCopy(label, html)}
-                className="text-12 font-semibold py-1.5 px-3 border cursor-pointer"
-                style={{
-                  border: '1px solid #ccc',
-                  borderRadius: '0.375rem',
-                  background: copiedLabel === label ? '#705a8c' : '#fff',
-                  color: copiedLabel === label ? '#fff' : '#333',
-                }}
+                className={`text-12 font-semibold py-1.5 px-3 border border-border rounded-[0.375rem] cursor-pointer ${copiedLabel === label ? 'bg-sage text-on-sage' : 'bg-surface text-text-primary'}`}
               >
                 {copiedLabel === label ? 'Copied' : 'Copy HTML'}
               </button>

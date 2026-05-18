@@ -50,11 +50,11 @@ export function CalendarSubscribeOptions({
 
       {showAdvanced && (
         <div className="mt-2">
-          <p className="text-13 text-text-muted leading-normal mb-2" style={{ marginTop: '0.125rem' }}>
+          <p className="text-13 text-text-muted leading-normal mb-2 mt-0.5">
             Copy this URL and add it as a subscribed calendar inside your app (Outlook, Fantastical,
             etc.).
           </p>
-          <div className="bg-surface border border-border-light rounded p-3 font-mono text-12 text-text-secondary mb-2" style={{ wordBreak: 'break-all' }}>{feedUrl || 'Generating…'}</div>
+          <div className="bg-surface border border-border-light rounded p-3 font-mono text-12 text-text-secondary mb-2 break-all">{feedUrl || 'Generating…'}</div>
           <button onClick={onCopy} className="flex items-center gap-2.5 py-2.5 px-3.5 bg-surface border border-border-light rounded-sm cursor-pointer w-full text-14 text-text-primary">
             <Copy size={16} color="var(--text-muted)" />
             <span className="flex-1 text-left">Copy feed URL</span>
@@ -88,7 +88,7 @@ function AppRow({
         </span>
         <CaretRight size={16} weight="bold" color="var(--text-muted)" />
       </div>
-      <p className="text-13 text-text-muted leading-normal mt-1.5" style={{ paddingLeft: 'calc(20px + 0.875rem)' }}>{hint}</p>
+      <p className="text-13 text-text-muted leading-normal mt-1.5 pl-[2.125rem]">{hint}</p>
     </button>
   );
 }

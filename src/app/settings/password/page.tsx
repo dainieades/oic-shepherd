@@ -3,27 +3,22 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { CaretLeft, Check } from '@phosphor-icons/react';
-import { createClient } from '@/utils/supabase/client';
-import type { User } from '@supabase/supabase-js';
+import { useApp } from '@/lib/context';
+import { authUpdatePassword, authResetPasswordForEmail } from '@/lib/auth';
 
 type Status = { type: 'idle' } | { type: 'loading' } | { type: 'error'; message: string };
 
 type Step = { type: 'form' } | { type: 'reset-sent'; email: string } | { type: 'success' };
 
 export default function ChangePasswordPage() {
+  const { supabaseUser: user } = useApp();
   const router = useRouter();
-  const [user, setUser] = React.useState<User | null>(null);
   const [currentPassword, setCurrentPassword] = React.useState('');
   const [newPassword, setNewPassword] = React.useState('');
   const [confirmPassword, setConfirmPassword] = React.useState('');
   const [step, setStep] = React.useState<Step>({ type: 'form' });
   const [status, setStatus] = React.useState<Status>({ type: 'idle' });
   const [currentPasswordError, setCurrentPasswordError] = React.useState<string | null>(null);
-
-  React.useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => setUser(data.user));
-  }, []);
 
   const isLoading = status.type === 'loading';
 
@@ -56,17 +51,10 @@ export default function ChangePasswordPage() {
     }
 
     setStatus({ type: 'loading' });
-    const supabase = createClient();
-
-    // Supabase verifies current_password server-side when
-    // "Require current password when updating" is enabled.
-    const { error } = await supabase.auth.updateUser({
-      current_password: currentPassword,
-      password: newPassword,
-    });
+    const { error } = await authUpdatePassword(currentPassword, newPassword);
 
     if (error) {
-      const msg = error.message.toLowerCase();
+      const msg = error.toLowerCase();
       const wrongCurrent =
         msg.includes('current password') ||
         msg.includes('incorrect password') ||
@@ -77,7 +65,7 @@ export default function ChangePasswordPage() {
         setCurrentPasswordError('Current password is incorrect.');
         return;
       }
-      setStatus({ type: 'error', message: error.message });
+      setStatus({ type: 'error', message: error });
       return;
     }
 
@@ -91,14 +79,13 @@ export default function ChangePasswordPage() {
       return;
     }
     setStatus({ type: 'loading' });
-    const supabase = createClient();
     const redirectTo =
       typeof window !== 'undefined'
         ? `${window.location.origin}/auth/callback?next=/reset-password`
         : '/auth/callback?next=/reset-password';
-    const { error } = await supabase.auth.resetPasswordForEmail(user.email, { redirectTo });
+    const { error } = await authResetPasswordForEmail(user.email, redirectTo);
     if (error) {
-      setStatus({ type: 'error', message: error.message });
+      setStatus({ type: 'error', message: error });
       return;
     }
     setStatus({ type: 'idle' });

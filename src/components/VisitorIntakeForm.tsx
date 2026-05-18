@@ -19,6 +19,7 @@ import {
   LIFE_STAGE_OPTIONS,
   type ReferralSource,
   type Interest,
+  type VisitorIntakeValues,
 } from '@/lib/types';
 import { TextInputRow, TextareaRow, PickerRow } from '@/components/form';
 import { rowBtnStyle, spacerStyle, labelStyle } from '@/components/form/formStyles';
@@ -30,19 +31,7 @@ export interface VisitorIntakeFormHandle {
   save: () => Promise<void>;
 }
 
-export interface VisitorIntakeValues {
-  preferredName: string;
-  lastName?: string;
-  alternativeName?: string;
-  phone?: string;
-  email?: string;
-  lifeStage: string[];
-  languages: string[];
-  referralSource?: ReferralSource;
-  referralDetail?: string;
-  interests: Interest[];
-  prayerRequest?: string;
-}
+export type { VisitorIntakeValues };
 
 interface Props {
   onSubmit: (values: VisitorIntakeValues) => Promise<void>;

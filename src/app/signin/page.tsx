@@ -2,7 +2,13 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { createClient } from '@/utils/supabase/client';
+import {
+  authSignInWithGoogle,
+  authSignUp,
+  authSignInWithPassword,
+  authResendConfirmation,
+  authResetPasswordForEmail,
+} from '@/lib/auth';
 import { Logo } from '@/components/Logo';
 
 type Step =
@@ -35,7 +41,6 @@ export default function SignInPage() {
   const [status, setStatus] = React.useState<Status>({ type: 'idle' });
   const [resendStatus, setResendStatus] = React.useState<ResendStatus>({ type: 'idle' });
   const router = useRouter();
-  const supabase = createClient();
 
   const redirectTo =
     typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : '/auth/callback';
@@ -44,11 +49,8 @@ export default function SignInPage() {
 
   async function handleGoogle() {
     setStatus({ type: 'loading' });
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo },
-    });
-    if (error) setStatus({ type: 'error', message: error.message });
+    const { error } = await authSignInWithGoogle(redirectTo);
+    if (error) setStatus({ type: 'error', message: error });
   }
 
   async function handleContinue() {
@@ -114,13 +116,9 @@ export default function SignInPage() {
       return;
     }
     setStatus({ type: 'loading' });
-    const { error } = await supabase.auth.signUp({
-      email: step.email,
-      password,
-      options: { emailRedirectTo: redirectTo },
-    });
+    const { error } = await authSignUp(step.email, password, redirectTo);
     if (error) {
-      setStatus({ type: 'error', message: error.message });
+      setStatus({ type: 'error', message: error });
     } else {
       setStatus({ type: 'idle' });
       setResendStatus({ type: 'idle' });
@@ -135,18 +133,15 @@ export default function SignInPage() {
       return;
     }
     setStatus({ type: 'loading' });
-    const { error } = await supabase.auth.signInWithPassword({
-      email: step.email,
-      password,
-    });
+    const { error, code } = await authSignInWithPassword(step.email, password);
     if (error) {
-      if (isEmailNotConfirmedError(error)) {
+      if (isEmailNotConfirmedError({ message: error, code: code ?? undefined })) {
         setStatus({ type: 'idle' });
         setResendStatus({ type: 'idle' });
         setStep({ type: 'signup-confirm', email: step.email });
         return;
       }
-      setStatus({ type: 'error', message: error.message });
+      setStatus({ type: 'error', message: error });
     } else {
       router.push('/');
     }
@@ -155,13 +150,9 @@ export default function SignInPage() {
   async function handleResendConfirmation() {
     if (step.type !== 'signup-confirm') return;
     setResendStatus({ type: 'sending' });
-    const { error } = await supabase.auth.resend({
-      type: 'signup',
-      email: step.email,
-      options: { emailRedirectTo: redirectTo },
-    });
+    const { error } = await authResendConfirmation(step.email, redirectTo);
     if (error) {
-      setResendStatus({ type: 'error', message: error.message });
+      setResendStatus({ type: 'error', message: error });
     } else {
       setResendStatus({ type: 'sent' });
     }
@@ -170,11 +161,10 @@ export default function SignInPage() {
   async function handleForgotPassword() {
     if (step.type !== 'sign-in') return;
     setStatus({ type: 'loading' });
-    const { error } = await supabase.auth.resetPasswordForEmail(step.email, {
-      redirectTo: `${redirectTo.replace('/auth/callback', '')}/auth/callback?next=/reset-password`,
-    });
+    const resetRedirectTo = `${redirectTo.replace('/auth/callback', '')}/auth/callback?next=/reset-password`;
+    const { error } = await authResetPasswordForEmail(step.email, resetRedirectTo);
     if (error) {
-      setStatus({ type: 'error', message: error.message });
+      setStatus({ type: 'error', message: error });
     } else {
       setStatus({ type: 'idle' });
       setStep({ type: 'reset-sent', email: step.email });
@@ -195,7 +185,7 @@ export default function SignInPage() {
     const wasResent = resendStatus.type === 'sent';
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-bg py-6 px-4 z-10 overflow-y-auto">
-        <div className="w-full max-w-[390px] bg-surface rounded-xl border border-border shadow-[var(--shadow-elevated)]" style={{ padding: '2.25rem 1.75rem 2rem' }}>
+        <div className="w-full max-w-[390px] bg-surface rounded-xl border border-border shadow-[var(--shadow-elevated)] pt-9 px-7 pb-8">
           <div className="text-center">
             <h2
               className="font-display text-22 font-bold mb-2.5"
@@ -222,11 +212,7 @@ export default function SignInPage() {
             <button
               onClick={handleResendConfirmation}
               disabled={isResending || wasResent}
-              className="block w-full bg-transparent border-none text-sage text-14 text-center mb-1 py-1"
-              style={{
-                opacity: isResending || wasResent ? 0.5 : 1,
-                cursor: isResending || wasResent ? 'not-allowed' : 'pointer',
-              }}
+              className="block w-full bg-transparent border-none text-sage text-14 text-center mb-1 py-1 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isResending
                 ? 'Sending…'
@@ -247,7 +233,7 @@ export default function SignInPage() {
   if (step.type === 'create-password') {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-bg py-6 px-4 z-10 overflow-y-auto">
-        <div className="w-full max-w-[390px] bg-surface rounded-xl border border-border shadow-[var(--shadow-elevated)]" style={{ padding: '2.25rem 1.75rem 2rem' }}>
+        <div className="w-full max-w-[390px] bg-surface rounded-xl border border-border shadow-[var(--shadow-elevated)] pt-9 px-7 pb-8">
           <div className="text-center mb-6">
             <h1 className="font-display text-30 font-bold text-text-primary mb-1.5">
               Create your password
@@ -285,8 +271,7 @@ export default function SignInPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isLoading}
                 autoFocus
-                className="w-full rounded-md border border-border text-15 text-text-primary bg-surface outline-none"
-                style={{ padding: '0.75rem 0.875rem' }}
+                className="w-full rounded-md border border-border text-15 text-text-primary bg-surface outline-none py-3 px-3.5"
               />
             </div>
 
@@ -300,20 +285,14 @@ export default function SignInPage() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 disabled={isLoading}
-                className="w-full rounded-md border border-border text-15 text-text-primary bg-surface outline-none"
-                style={{ padding: '0.75rem 0.875rem' }}
+                className="w-full rounded-md border border-border text-15 text-text-primary bg-surface outline-none py-3 px-3.5"
               />
             </div>
 
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full rounded-md border-none bg-sage text-15 font-semibold text-on-sage mb-3"
-              style={{
-                padding: '0.8125rem 1.25rem',
-                opacity: isLoading ? 0.6 : 1,
-                cursor: isLoading ? 'not-allowed' : 'pointer',
-              }}
+              className="w-full rounded-md border-none bg-sage text-15 font-semibold text-on-sage mb-3 py-[0.8125rem] px-5 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Creating account…' : 'Create account'}
             </button>
@@ -331,7 +310,7 @@ export default function SignInPage() {
   if (step.type === 'sign-in') {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-bg py-6 px-4 z-10 overflow-y-auto">
-        <div className="w-full max-w-[390px] bg-surface rounded-xl border border-border shadow-[var(--shadow-elevated)]" style={{ padding: '2.25rem 1.75rem 2rem' }}>
+        <div className="w-full max-w-[390px] bg-surface rounded-xl border border-border shadow-[var(--shadow-elevated)] pt-9 px-7 pb-8">
           <div className="text-center mb-6">
             <h1 className="font-display text-30 font-bold text-text-primary mb-1.5">
               Welcome back
@@ -369,20 +348,14 @@ export default function SignInPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isLoading}
                 autoFocus
-                className="w-full rounded-md border border-border text-15 text-text-primary bg-surface outline-none"
-                style={{ padding: '0.75rem 0.875rem' }}
+                className="w-full rounded-md border border-border text-15 text-text-primary bg-surface outline-none py-3 px-3.5"
               />
             </div>
 
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full rounded-md border-none bg-sage text-15 font-semibold text-on-sage mb-3"
-              style={{
-                padding: '0.8125rem 1.25rem',
-                opacity: isLoading ? 0.6 : 1,
-                cursor: isLoading ? 'not-allowed' : 'pointer',
-              }}
+              className="w-full rounded-md border-none bg-sage text-15 font-semibold text-on-sage mb-3 py-[0.8125rem] px-5 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Signing in…' : 'Sign in'}
             </button>
@@ -408,7 +381,7 @@ export default function SignInPage() {
   if (step.type === 'reset-sent') {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-bg py-6 px-4 z-10 overflow-y-auto">
-        <div className="w-full max-w-[390px] bg-surface rounded-xl border border-border shadow-[var(--shadow-elevated)]" style={{ padding: '2.25rem 1.75rem 2rem' }}>
+        <div className="w-full max-w-[390px] bg-surface rounded-xl border border-border shadow-[var(--shadow-elevated)] pt-9 px-7 pb-8">
           <div className="text-center">
             <h2
               className="font-display text-22 font-bold mb-2.5"
@@ -434,10 +407,10 @@ export default function SignInPage() {
   // ── Main email entry screen ─────────────────────────────────────────────
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-bg py-6 px-4 z-10 overflow-y-auto">
-      <div className="w-full max-w-[390px] bg-surface rounded-xl border border-border shadow-[var(--shadow-elevated)]" style={{ padding: '2.25rem 1.75rem 2rem' }}>
+      <div className="w-full max-w-[390px] bg-surface rounded-xl border border-border shadow-[var(--shadow-elevated)] pt-9 px-7 pb-8">
         {/* Header */}
         <div className="text-center mb-7">
-          <Logo height={88} style={{ margin: '0 auto 16px' }} />
+          <Logo height={88} style={{ margin: '0 auto var(--spacing-lg)' }} />
           <h1 className="font-display text-24 font-bold text-text-primary mb-1.5">
             Welcome to Shepherd App.
           </h1>
@@ -449,26 +422,14 @@ export default function SignInPage() {
         {/* Google button */}
         <div className="relative inline-block w-full">
           <span
-            className="absolute bg-sage text-on-sage text-11 font-bold tracking-wide-3 rounded-xl pointer-events-none z-[1]"
-            style={{
-              top: -10,
-              left: '50%',
-              transform: 'translateX(-50%)',
-              padding: '0.125rem 0.5rem',
-            }}
+            className="absolute bg-sage text-on-sage text-11 font-bold tracking-wide-3 rounded-xl pointer-events-none z-[1] -top-2.5 left-1/2 -translate-x-1/2 py-0.5 px-2"
           >
             Recommended
           </span>
           <button
             onClick={handleGoogle}
             disabled={isLoading}
-            className="w-full flex items-center justify-center gap-2.5 rounded-md bg-surface text-15 font-semibold text-text-primary"
-            style={{
-              padding: '0.8125rem 1.25rem',
-              border: '0.09375rem solid var(--sage)',
-              cursor: isLoading ? 'not-allowed' : 'pointer',
-              opacity: isLoading ? 0.6 : 1,
-            }}
+            className="w-full flex items-center justify-center gap-2.5 rounded-md bg-surface text-15 font-semibold text-text-primary py-[0.8125rem] px-5 border border-sage cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
           >
             <svg width="20" height="20" viewBox="0 0 48 48" fill="none">
               <path
@@ -517,8 +478,7 @@ export default function SignInPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
-              className="w-full rounded-md border border-border text-15 text-text-primary bg-surface outline-none"
-              style={{ padding: '0.75rem 0.875rem' }}
+              className="w-full rounded-md border border-border text-15 text-text-primary bg-surface outline-none py-3 px-3.5"
             />
           </div>
 
@@ -526,12 +486,7 @@ export default function SignInPage() {
           <button
             type="submit"
             disabled={isLoading || !isValidEmail(email)}
-            className="w-full rounded-md border-none bg-sage text-15 font-semibold text-on-sage"
-            style={{
-              padding: '0.8125rem 1.25rem',
-              opacity: isLoading || !isValidEmail(email) ? 0.4 : 1,
-              cursor: isLoading || !isValidEmail(email) ? 'not-allowed' : 'pointer',
-            }}
+            className="w-full rounded-md border-none bg-sage text-15 font-semibold text-on-sage py-[0.8125rem] px-5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {isLoading ? 'Checking…' : 'Continue'}
           </button>
@@ -559,8 +514,7 @@ function isValidEmail(value: string): boolean {
 function ErrorBanner({ message }: { message: string }) {
   return (
     <div
-      className="bg-red-light border border-red-border rounded-sm text-13 text-red mb-4"
-      style={{ padding: '0.625rem 0.875rem' }}
+      className="bg-red-light border border-red-border rounded-sm text-13 text-red mb-4 py-2.5 px-3.5"
     >
       {message}
     </div>

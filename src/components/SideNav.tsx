@@ -27,8 +27,7 @@ export default function SideNav() {
     >
       <Link
         href="/"
-        className="flex items-center gap-3 px-5 py-5 no-underline"
-        style={{ color: 'var(--logo-color)' }}
+        className="flex items-center gap-3 px-5 py-5 no-underline text-[var(--logo-color)]"
       >
         <Logo height={32} />
         <span className="font-display text-17 font-semibold tracking-tight-1">
@@ -44,28 +43,20 @@ export default function SideNav() {
             <Link
               key={item.href}
               href={item.href}
-              className="side-nav-item relative flex items-center gap-3 py-2.5 pr-3 no-underline rounded-md text-15"
+              className={`side-nav-item relative flex items-center gap-3 py-2.5 pr-3 no-underline rounded-md text-15 pl-[calc(0.75rem+3px)] ${active ? 'bg-sage-light text-sage-dark font-semibold' : 'bg-transparent text-text-secondary font-medium'}`}
               aria-current={active ? 'page' : undefined}
-              style={{
-                paddingLeft: 'calc(0.75rem + 3px)',
-                background: active ? 'var(--sage-light)' : 'transparent',
-                color: active ? 'var(--sage-dark)' : 'var(--text-secondary)',
-                fontWeight: active ? 'var(--font-semibold)' : 'var(--font-medium)',
-              }}
             >
               {active && (
                 <span
                   aria-hidden
-                  className="absolute left-0 rounded-pill bg-sage-dark"
-                  style={{ top: '0.375rem', bottom: '0.375rem', width: '3px' }}
+                  className="absolute left-0 top-1.5 bottom-1.5 w-[0.1875rem] rounded-pill bg-sage-dark"
                 />
               )}
               <Icon size={20} weight={active ? 'fill' : 'regular'} />
               <span>{item.label}</span>
               {item.href === '/visitors/pending' && pendingVisitorCount > 0 && (
                 <span
-                  className="ml-auto text-11 font-bold rounded-pill bg-sage text-on-sage leading-comfortable"
-                  style={{ padding: '0.0625rem 0.4375rem' }}
+                  className="ml-auto text-11 font-bold rounded-pill bg-sage text-on-sage leading-comfortable py-px px-[0.4375rem]"
                 >
                   {pendingVisitorCount}
                 </span>

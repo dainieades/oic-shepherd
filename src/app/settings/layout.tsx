@@ -15,8 +15,6 @@ import {
   CalendarBlank,
 } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
-import { createClient } from '@/utils/supabase/client';
-import type { User } from '@supabase/supabase-js';
 import { fullName } from '@/lib/utils';
 
 type NavItem = {
@@ -37,14 +35,8 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
 function DesktopSidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { data, currentPersona } = useApp();
-  const [supabaseUser, setSupabaseUser] = React.useState<User | null>(null);
+  const { data, currentPersona, supabaseUser, signOut } = useApp();
   const [showSignOutConfirm, setShowSignOutConfirm] = React.useState(false);
-
-  React.useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => setSupabaseUser(data.user));
-  }, []);
 
   const person = currentPersona.personId
     ? data.people.find((p) => p.id === currentPersona.personId)
@@ -115,9 +107,7 @@ function DesktopSidebar() {
       : [];
 
   const handleSignOut = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    localStorage.removeItem('shepherd-app-persona');
+    await signOut();
     router.push('/signin');
   };
 
