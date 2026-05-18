@@ -51,20 +51,21 @@ export default function CalendarSyncSheet({ onClose, singleEvent }: Props) {
   }
 
   async function handleSubscribeGoogle() {
-    // Open the GCal settings page synchronously to preserve user-gesture context.
+    // Open a blank window synchronously to preserve the user-gesture context —
+    // popup blockers fire when window.open is called after any await.
     const win = window.open('about:blank', '_blank');
-    // Await DB save so the token exists before Google fetches the feed.
+    // Await DB save so the token row exists before Google fetches the feed.
     const feedUrl = await enableCalendarSync();
-    // ?url= pre-fills the "From URL" field in Google Calendar (when supported).
-    const gcalUrl = `https://calendar.google.com/calendar/r/settings/addbyurl?url=${encodeURIComponent(feedUrl)}`;
+    // Google Calendar's ?cid= param requires the literal unencoded webcal:// prefix.
+    // encodeURIComponent() turns :// into %3A%2F%2F which Google doesn't recognise.
+    const webcalUrl = feedUrl.replace(/^https?:\/\//, 'webcal://');
+    const googleUrl = `https://calendar.google.com/calendar/r?cid=${webcalUrl}`;
     if (win) {
-      win.location.href = gcalUrl;
+      win.location.href = googleUrl;
     } else {
-      window.open(gcalUrl, '_blank');
+      window.open(googleUrl, '_blank');
     }
-    // Also copy to clipboard so the user can paste if the field isn't pre-filled.
-    void navigator.clipboard.writeText(feedUrl).catch(() => {});
-    showToast('Feed URL copied — paste it in the "From URL" field if not pre-filled, then click Add Calendar');
+    showToast('Click "Add" in Google Calendar to finish');
     onClose();
   }
 

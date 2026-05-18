@@ -307,8 +307,7 @@ export default function InviteSheet({
               )}
             </div>
 
-            {/* Role */}
-            <div>
+            {availableRoles.length > 1 && <div>
               <label
                 style={{
                   display: 'block',
@@ -381,7 +380,7 @@ export default function InviteSheet({
                   </button>
                 ))}
               </div>
-            </div>
+            </div>}
 
             {/* Submit */}
             <button

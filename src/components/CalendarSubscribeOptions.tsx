@@ -24,13 +24,13 @@ export function CalendarSubscribeOptions({
         <AppRow
           icon={<AppleLogo size={20} color="var(--text-primary)" weight="fill" />}
           label="Apple Calendar"
-          hint="Pick refresh frequency in Apple Calendar settings."
+          hint="Subscribes automatically. Refresh frequency set in Apple Calendar (as often as every 5 min on Mac)."
           onOpen={onSubscribeApple}
         />
         <AppRow
           icon={<GoogleLogo size={20} color="var(--text-primary)" />}
           label="Google Calendar"
-          hint="Opens Google Calendar settings. Feed URL is copied — paste it if not pre-filled."
+          hint="Subscribes automatically. Google refreshes roughly once a day — new to-dos may take up to 24 h to appear."
           onOpen={onSubscribeGoogle}
         />
       </div>
