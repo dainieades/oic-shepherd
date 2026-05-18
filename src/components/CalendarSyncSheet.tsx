@@ -51,20 +51,19 @@ export default function CalendarSyncSheet({ onClose, singleEvent }: Props) {
   }
 
   async function handleSubscribeGoogle() {
-    console.log('[CalendarSync] button clicked — origin:', origin, 'calendarFeedToken:', calendarFeedToken);
     const win = window.open('about:blank', '_blank');
-    console.log('[CalendarSync] win is null (popup blocked)?', win === null);
+    // Await DB save so the token exists before Google fetches the feed.
     const feedUrl = await enableCalendarSync();
-    const webcalUrl = feedUrl.replace(/^https?:\/\//, 'webcal://');
-    const googleUrl = `https://calendar.google.com/calendar/r?cid=${webcalUrl}`;
-    console.log('[CalendarSync] feedUrl:', feedUrl);
-    console.log('[CalendarSync] googleUrl:', googleUrl);
+    // Open the "Add calendar from URL" settings page — this is the only Google Calendar
+    // path confirmed to work for external iCal feeds. Also copy URL to clipboard as fallback.
+    void navigator.clipboard.writeText(feedUrl).catch(() => {});
+    const gcalUrl = `https://calendar.google.com/calendar/r/settings/addbyurl?url=${encodeURIComponent(feedUrl)}`;
     if (win) {
-      win.location.href = googleUrl;
+      win.location.href = gcalUrl;
     } else {
-      window.open(googleUrl, '_blank');
+      window.open(gcalUrl, '_blank');
     }
-    showToast('Click "Add" in Google Calendar to finish');
+    showToast('Feed URL copied — paste it in the field if not pre-filled, then tap Add Calendar');
     onClose();
   }
 
