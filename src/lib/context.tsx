@@ -48,6 +48,8 @@ interface AppContextType {
   personaByPersonId: ReadonlyMap<string, Persona>;
   currentPersona: Persona;
   accessDenied: boolean;
+  authError: boolean;
+  retryLogin: () => void;
   loginWithSupabaseUser: (userId: string, name: string, email?: string, avatarUrl?: string) => void;
   addNote: (note: Omit<Note, 'id' | 'createdBy'> & { createdAt?: string }) => void;
   updateNote: (
@@ -148,6 +150,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [supabaseUser, setSupabaseUser] = useState<User | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [accessDenied, setAccessDenied] = useState(false);
+  const [authError, setAuthError] = useState(false);
   const [fullPageModalOpen, setFullPageModalOpen] = useState(false);
 
   // ── Domain hooks ──────────────────────────────────────────────────────
@@ -312,6 +315,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
           prefs.applyPersonaSettings(sessionPersona);
           localStorage.setItem('shepherd-app-persona', sessionPersona.id);
           setLoaded(true);
+        } else {
+          // No persona linked yet for this signed-in user — resolve/create one
+          // rather than leaving `loaded` unset (which would otherwise let the
+          // stale/default persona render once some other path flips it true).
+          const user = session.user;
+          const name = user.user_metadata?.full_name || user.email?.split('@')[0] || 'User';
+          const avatarUrl = user.user_metadata?.avatar_url as string | undefined;
+          loginWithSupabaseUser(user.id, name, user.email, avatarUrl);
         }
       } else {
         setLoaded(true);
@@ -337,6 +348,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           await supabase.auth.signOut();
           localStorage.removeItem('shepherd-app-persona');
           setAccessDenied(true);
+          setLoaded(true);
           return;
         }
         const { data: approved } = await supabase
@@ -348,6 +360,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           await supabase.auth.signOut();
           localStorage.removeItem('shepherd-app-persona');
           setAccessDenied(true);
+          setLoaded(true);
           return;
         }
 
@@ -377,6 +390,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           if (avatarUrl && persona.personId) {
             syncGoogleAvatar(supabase, persona.personId, avatarUrl, setData);
           }
+          setLoaded(true);
           return;
         }
 
@@ -454,6 +468,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
                 if (avatarUrl && persona.personId) {
                   syncGoogleAvatar(supabase, persona.personId, avatarUrl, setData);
                 }
+                setLoaded(true);
                 return;
               }
             } else {
@@ -482,6 +497,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
                 if (avatarUrl) {
                   syncGoogleAvatar(supabase, resolvedPersonId, avatarUrl, setData);
                 }
+                setLoaded(true);
                 return;
               }
             }
@@ -502,11 +518,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
           setCurrentUserEmail(email);
           localStorage.setItem('shepherd-app-persona', persona.id);
           setData((prev) => ({ ...prev, personas: [...prev.personas, persona] }));
+          setLoaded(true);
+          return;
         }
+
+        // Persona resolution failed without throwing (e.g. insert error) — never fall
+        // through to render with the stale/default persona still in state.
+        await supabase.auth.signOut();
+        localStorage.removeItem('shepherd-app-persona');
+        setAuthError(true);
+        setLoaded(true);
       } catch (err) {
         console.error('[loginWithSupabaseUser] threw:', err);
         showToast('Sign-in failed. Please try again.', 'error');
-      } finally {
+        await supabase.auth.signOut();
+        localStorage.removeItem('shepherd-app-persona');
+        setAuthError(true);
         setLoaded(true);
       }
     },
@@ -531,13 +558,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const email = user.email;
       const avatarUrl = user.user_metadata?.avatar_url as string | undefined;
 
-      if (event === 'SIGNED_IN') {
+      if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+        // Always resolve against the DB by user_id rather than trusting a cached
+        // `shepherd-app-persona` value — a leftover/mismatched cache entry must
+        // never cause the wrong persona to be shown.
         loginWithSupabaseUser(user.id, name, email, avatarUrl);
-      } else if (event === 'INITIAL_SESSION') {
-        const stored = localStorage.getItem('shepherd-app-persona');
-        if (!stored) {
-          loginWithSupabaseUser(user.id, name, email, avatarUrl);
-        }
       }
     });
 
@@ -548,6 +573,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const supabase = createClient();
     await supabase.auth.signOut();
     localStorage.removeItem('shepherd-app-persona');
+  }, []);
+
+  const retryLogin = useCallback((): void => {
+    setAuthError(false);
   }, []);
 
   const linkGoogle = useCallback(async (redirectTo: string): Promise<void> => {
@@ -621,6 +650,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         personaByPersonId,
         currentPersona,
         accessDenied,
+        authError,
+        retryLogin,
         loginWithSupabaseUser,
         // Notes & notices
         addNote: notes.addNote,

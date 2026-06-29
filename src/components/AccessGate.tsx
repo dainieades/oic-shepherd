@@ -6,17 +6,18 @@ import { usePathname, useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 
 export default function AccessGate() {
-  const { accessDenied } = useApp();
+  const { accessDenied, authError, retryLogin } = useApp();
   const router = useRouter();
   const pathname = usePathname();
 
   if (pathname === '/welcome') return null;
-  if (!accessDenied) return null;
+  if (!accessDenied && !authError) return null;
 
   async function handleBack() {
     const supabase = createClient();
     await supabase.auth.signOut();
     localStorage.removeItem('shepherd-app-persona');
+    retryLogin();
     router.push('/signin');
   }
 
@@ -34,10 +35,12 @@ export default function AccessGate() {
         <h2
           className="font-display text-22 font-bold text-text-primary mb-2.5"
         >
-          Access Restricted
+          {accessDenied ? 'Access Restricted' : 'Sign-In Failed'}
         </h2>
         <p className="text-15 text-text-secondary leading-loose mb-7">
-          This app is for OIC church members only. Contact your pastor to request access.
+          {accessDenied
+            ? 'This app is for OIC church members only. Contact your pastor to request access.'
+            : "Something went wrong while signing you in. Please try again — if it keeps happening, contact your pastor."}
         </p>
         <button
           onClick={handleBack}
