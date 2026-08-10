@@ -19,6 +19,90 @@ export function fullName(p: Pick<Person, 'preferredName' | 'lastName'>): string 
   return [p.preferredName, p.lastName].filter(Boolean).join(' ').trim();
 }
 
+export interface PersonNameCandidate {
+  preferredName: string;
+  lastName?: string;
+  alternativeName?: string;
+}
+
+export interface DuplicateMatch {
+  person: Person;
+  confidence: 'exact' | 'likely';
+}
+
+function normalizeNameForMatch(s: string): string {
+  return s
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+}
+
+function levenshteinDistance(a: string, b: string): number {
+  if (a === b) return 0;
+  const dp = Array.from({ length: b.length + 1 }, (_, i) => i);
+  for (let i = 1; i <= a.length; i++) {
+    let prev = dp[0];
+    dp[0] = i;
+    for (let j = 1; j <= b.length; j++) {
+      const temp = dp[j];
+      dp[j] = a[i - 1] === b[j - 1] ? prev : 1 + Math.min(prev, dp[j], dp[j - 1]);
+      prev = temp;
+    }
+  }
+  return dp[b.length];
+}
+
+/** Fuzzy-equal, allowing more typo tolerance for longer names. */
+function namesAreSimilar(a: string, b: string): boolean {
+  if (!a || !b) return false;
+  if (a === b) return true;
+  const maxLen = Math.max(a.length, b.length);
+  const threshold = maxLen <= 4 ? 0 : maxLen <= 8 ? 1 : 2;
+  return levenshteinDistance(a, b) <= threshold;
+}
+
+/**
+ * Flags existing directory people whose name plausibly matches a new-person
+ * candidate — same/similar first name (or nickname) AND compatible last name
+ * (required to agree only when both sides have one on file).
+ */
+export function findPossibleDuplicates(
+  candidate: PersonNameCandidate,
+  people: Person[]
+): DuplicateMatch[] {
+  const candidateFirst = normalizeNameForMatch(candidate.preferredName);
+  const candidateLast = candidate.lastName ? normalizeNameForMatch(candidate.lastName) : '';
+  const candidateNick = candidate.alternativeName
+    ? normalizeNameForMatch(candidate.alternativeName)
+    : '';
+  const candidateGivenNames = [candidateFirst, candidateNick].filter(Boolean);
+
+  const matches: DuplicateMatch[] = [];
+
+  for (const person of people) {
+    const personFirst = normalizeNameForMatch(person.preferredName);
+    const personLast = person.lastName ? normalizeNameForMatch(person.lastName) : '';
+    const personNick = person.alternativeName ? normalizeNameForMatch(person.alternativeName) : '';
+    const personGivenNames = [personFirst, personNick].filter(Boolean);
+
+    const givenNameMatch = candidateGivenNames.some((c) =>
+      personGivenNames.some((p) => namesAreSimilar(c, p))
+    );
+    if (!givenNameMatch) continue;
+
+    const bothHaveLastName = Boolean(candidateLast && personLast);
+    const lastNameMatch = bothHaveLastName ? namesAreSimilar(candidateLast, personLast) : true;
+    if (!lastNameMatch) continue;
+
+    const exact = candidateFirst === personFirst && candidateLast === personLast;
+    matches.push({ person, confidence: exact ? 'exact' : 'likely' });
+  }
+
+  return matches;
+}
+
 /** Format a YYYY-MM-DD ISO string to "MMM d, yyyy" */
 export function fmtDate(iso: string): string {
   if (!iso) return '';

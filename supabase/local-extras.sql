@@ -16,3 +16,14 @@ INSERT INTO "public"."notices" ("id", "person_id", "family_id", "urgency", "cont
 	('local-extra-notice-10', 'william-zhang',   NULL, 'urgent',   'Mentioned feeling spiritually adrift — not fully connected to either English or Mandarin congregation. Needs intentional care.',  'mock-shepherd-2', '2026-05-14 22:00:00+00', 'pastor-and-shepherds', '{spiritual-need}'),
 	('local-extra-notice-11', 'thomas-brown',    NULL, 'ongoing',  'Chronic knee pain limits standing during worship. He appreciates being remembered even when absent.',                             'mock-admin',      '2026-05-08 10:00:00+00', 'everyone',             '{physical-need}')
 ON CONFLICT ("id") DO NOTHING;
+
+-- Pending newcomer submissions for exercising the /visitors/pending "Add to directory" flow,
+-- including duplicate-name scenarios (an exact match and a typo'd fuzzy match against existing
+-- people) plus one clean, non-duplicate card.
+INSERT INTO "public"."visitor_submissions"
+	("id", "submitted_at", "source", "status", "preferred_name", "last_name", "phone", "email", "is_student", "life_stage", "languages", "referral_source", "referral_detail", "interests", "prayer_request")
+VALUES
+	('00000000-0000-0000-0000-00000000d001', now() - interval '2 hours',  'app', 'pending', 'James',   'Wilson',  '555-201-0001', 'james.newcomer@example.com', false, '{Young Professional}', '{English}', 'friend', 'Invited by a coworker',     '{salvation,small-groups}', 'Would love prayer for a new job.'),
+	('00000000-0000-0000-0000-00000000d002', now() - interval '1 day',    'qr',  'pending', 'Jenifer', 'Lee',     '555-201-0002', NULL,                          false, '{Family}',              '{English}', 'flyer',  NULL,                         '{growth}',                  NULL),
+	('00000000-0000-0000-0000-00000000d003', now() - interval '5 hours',  'app', 'pending', 'Marcus',  'Bennett', '555-201-0003', 'marcus.bennett@example.com',  false, '{Student}',             '{English}', 'online', NULL,                         '{serving,small-groups}',   'Praying for direction after moving to the area.')
+ON CONFLICT ("id") DO NOTHING;

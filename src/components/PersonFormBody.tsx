@@ -4,7 +4,8 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 import { useFloating, autoUpdate, offset, flip } from '@floating-ui/react';
 import { useApp } from '@/lib/context';
-import { formatPhone, fmtDate, fullName } from '@/lib/utils';
+import { formatPhone, fmtDate, fullName, findPossibleDuplicates, type DuplicateMatch } from '@/lib/utils';
+import DuplicatePersonSheet from './DuplicatePersonSheet';
 import {
   type Person,
   type MembershipStatus,
@@ -126,6 +127,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
   const [firstName, setFirstName] = React.useState(person?.preferredName ?? '');
   const [lastName, setLastName] = React.useState(person?.lastName ?? '');
   const [chineseName, setChineseName] = React.useState(person?.alternativeName ?? '');
+  const [duplicateMatches, setDuplicateMatches] = React.useState<DuplicateMatch[] | null>(null);
   const [photo, setPhoto] = React.useState(person?.photo ?? '');
 
   const [language, setLanguage] = React.useState<string[]>(person?.language ?? ['English']);
@@ -346,47 +348,68 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
     if (status === 'member') setBaptized(true);
   }, [status]);
 
+  const saveNewPerson = async () => {
+    const newId = await addPerson({
+      preferredName: firstName.trim(),
+      lastName: lastName.trim() || undefined,
+      alternativeName: chineseName.trim() || undefined,
+      language: language.length > 0 ? language : ['English'],
+      gender: gender || undefined,
+      birthday: birthday || undefined,
+      maritalStatus: maritalStatus || undefined,
+      anniversary: maritalStatus === 'married' && anniversary ? anniversary : undefined,
+      membershipStatus: status,
+      churchAttendance: attendance,
+      membershipDate: status === 'member' && membershipDate ? membershipDate : undefined,
+      baptized: baptized || undefined,
+      baptismDate: baptized && baptismDate ? baptismDate : undefined,
+      isShepherd: isShepherd || undefined,
+      isBeingDiscipled: isBeingDiscipled || undefined,
+      appRole,
+      churchPositions: churchPositions.length > 0 ? churchPositions : undefined,
+      phone: phone.trim() || undefined,
+      homePhone: homePhone.trim() || undefined,
+      email: email.trim() || undefined,
+      homeAddress: homeAddress.trim() || undefined,
+    });
+    if (familyId) {
+      const fam = data.families.find((f) => f.id === familyId);
+      if (fam) await updateFamilyMembers(familyId, [...fam.memberIds, newId]);
+    }
+    await assignGroupsToPerson(newId, groupIds);
+    await assignShepherds(newId, shepherdIds);
+    if (isShepherd && sheepIds.length > 0) {
+      for (const sheepId of sheepIds) {
+        const sheep = data.people.find((p) => p.id === sheepId);
+        if (sheep) await assignShepherds(sheepId, [...sheep.assignedShepherdIds, newId]);
+      }
+    }
+    onSaved(newId);
+  };
+
+  const handleAddAnyway = async () => {
+    setDuplicateMatches(null);
+    await saveNewPerson();
+  };
+
   React.useImperativeHandle(ref, () => ({
     save: async () => {
       if (!firstName.trim()) return;
 
       if (!person) {
-        const newId = await addPerson({
-          preferredName: firstName.trim(),
-          lastName: lastName.trim() || undefined,
-          alternativeName: chineseName.trim() || undefined,
-          language: language.length > 0 ? language : ['English'],
-          gender: gender || undefined,
-          birthday: birthday || undefined,
-          maritalStatus: maritalStatus || undefined,
-          anniversary: maritalStatus === 'married' && anniversary ? anniversary : undefined,
-          membershipStatus: status,
-          churchAttendance: attendance,
-          membershipDate: status === 'member' && membershipDate ? membershipDate : undefined,
-          baptized: baptized || undefined,
-          baptismDate: baptized && baptismDate ? baptismDate : undefined,
-          isShepherd: isShepherd || undefined,
-          isBeingDiscipled: isBeingDiscipled || undefined,
-          appRole,
-          churchPositions: churchPositions.length > 0 ? churchPositions : undefined,
-          phone: phone.trim() || undefined,
-          homePhone: homePhone.trim() || undefined,
-          email: email.trim() || undefined,
-          homeAddress: homeAddress.trim() || undefined,
-        });
-        if (familyId) {
-          const fam = data.families.find((f) => f.id === familyId);
-          if (fam) await updateFamilyMembers(familyId, [...fam.memberIds, newId]);
+        const matches = findPossibleDuplicates(
+          {
+            preferredName: firstName.trim(),
+            lastName: lastName.trim() || undefined,
+            alternativeName: chineseName.trim() || undefined,
+          },
+          data.people
+        );
+        if (matches.length > 0) {
+          setDuplicateMatches(matches);
+          return;
         }
-        await assignGroupsToPerson(newId, groupIds);
-        await assignShepherds(newId, shepherdIds);
-        if (isShepherd && sheepIds.length > 0) {
-          for (const sheepId of sheepIds) {
-            const sheep = data.people.find((p) => p.id === sheepId);
-            if (sheep) await assignShepherds(sheepId, [...sheep.assignedShepherdIds, newId]);
-          }
-        }
-        onSaved(newId);
+        await saveNewPerson();
         return;
       }
 
@@ -1080,6 +1103,13 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
             onBack={() => setShowFamilyPicker(false)}
           />
         </MaybeSheet>
+      )}
+      {duplicateMatches && (
+        <DuplicatePersonSheet
+          matches={duplicateMatches}
+          onAddAnyway={handleAddAnyway}
+          onCancel={() => setDuplicateMatches(null)}
+        />
       )}
     </>
   );

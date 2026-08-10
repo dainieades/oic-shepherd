@@ -21,8 +21,10 @@ import { useToast } from '@/components/Toast';
 import { createClient } from '@/utils/supabase/client';
 import { mapVisitorSubmission } from '@/lib/mappers';
 import { type VisitorSubmission, type Interest, type ReferralSource } from '@/lib/types';
+import { findPossibleDuplicates, type DuplicateMatch } from '@/lib/utils';
 import PageContainer from '@/components/PageContainer';
 import ConfirmActionSheet from '@/components/ConfirmActionSheet';
+import DuplicatePersonSheet from '@/components/DuplicatePersonSheet';
 
 const REFERRAL_LABELS: Record<ReferralSource, string> = {
   flyer: 'Flyer',
@@ -148,7 +150,7 @@ function buildMockSubmissions(): VisitorSubmission[] {
 }
 
 export default function PendingVisitorsPage() {
-  const { promoteVisitorSubmission, discardVisitorSubmission } = useApp();
+  const { promoteVisitorSubmission, discardVisitorSubmission, data } = useApp();
   const { showToast } = useToast();
   const router = useRouter();
 
@@ -156,6 +158,10 @@ export default function PendingVisitorsPage() {
   const [busyId, setBusyId] = React.useState<string | null>(null);
   const [confirmPromote, setConfirmPromote] = React.useState<VisitorSubmission | null>(null);
   const [confirmDiscard, setConfirmDiscard] = React.useState<VisitorSubmission | null>(null);
+  const [duplicateCandidate, setDuplicateCandidate] = React.useState<{
+    sub: VisitorSubmission;
+    matches: DuplicateMatch[];
+  } | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const inFlightRef = React.useRef<Set<string>>(new Set());
 
@@ -185,6 +191,22 @@ export default function PendingVisitorsPage() {
   React.useEffect(() => {
     void load();
   }, [load]);
+
+  const handleRequestPromote = (sub: VisitorSubmission) => {
+    const matches = findPossibleDuplicates(
+      {
+        preferredName: sub.preferredName,
+        lastName: sub.lastName,
+        alternativeName: sub.alternativeName,
+      },
+      data.people
+    );
+    if (matches.length > 0) {
+      setDuplicateCandidate({ sub, matches });
+    } else {
+      setConfirmPromote(sub);
+    }
+  };
 
   const handlePromote = async (sub: VisitorSubmission) => {
     if (inFlightRef.current.has(sub.id)) return;
@@ -317,7 +339,7 @@ export default function PendingVisitorsPage() {
               key={sub.id}
               submission={sub}
               busy={busyId === sub.id}
-              onPromote={() => setConfirmPromote(sub)}
+              onPromote={() => handleRequestPromote(sub)}
               onDiscard={() => setConfirmDiscard(sub)}
             />
           ))}
@@ -354,6 +376,17 @@ export default function PendingVisitorsPage() {
             void handleDiscard(sub);
           }}
           onCancel={() => setConfirmDiscard(null)}
+        />
+      )}
+      {duplicateCandidate && (
+        <DuplicatePersonSheet
+          matches={duplicateCandidate.matches}
+          onAddAnyway={() => {
+            const sub = duplicateCandidate.sub;
+            setDuplicateCandidate(null);
+            void handlePromote(sub);
+          }}
+          onCancel={() => setDuplicateCandidate(null)}
         />
       )}
     </PageContainer>
