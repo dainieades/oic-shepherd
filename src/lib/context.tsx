@@ -489,11 +489,53 @@ export function AppProvider({ children }: { children: ReactNode }) {
                 console.error('personas insert (link path) failed:', JSON.stringify(insertError, null, 2));
               }
               if (inserted) {
-                const persona = mapPersona(inserted as Record<string, unknown>, []);
+                // Shepherd assignments made before this person had a login are stored
+                // under their raw people.id (person_shepherds.shepherd_id). Now that
+                // they have a persona with its own id, migrate those rows so shepherd
+                // pickers/filters (which only match persona ids) can still find them.
+                const { data: staleAssignments } = await supabase
+                  .from('person_shepherds')
+                  .select('person_id')
+                  .eq('shepherd_id', resolvedPersonId);
+                const staleSheepIds = (staleAssignments ?? []).map(
+                  (r: { person_id: string }) => r.person_id
+                );
+                if (staleSheepIds.length > 0) {
+                  await supabase
+                    .from('person_shepherds')
+                    .upsert(
+                      staleSheepIds.map((sid) => ({ person_id: sid, shepherd_id: userId })),
+                      { onConflict: 'person_id,shepherd_id', ignoreDuplicates: true }
+                    );
+                  await supabase.from('person_shepherds').delete().eq('shepherd_id', resolvedPersonId);
+                  await supabase
+                    .from('persona_people')
+                    .upsert(
+                      staleSheepIds.map((sid) => ({ persona_id: userId, person_id: sid })),
+                      { onConflict: 'persona_id,person_id', ignoreDuplicates: true }
+                    );
+                }
+                const persona = mapPersona(inserted as Record<string, unknown>, staleSheepIds);
                 setCurrentPersona(persona);
                 setCurrentUserEmail(email);
                 localStorage.setItem('shepherd-app-persona', persona.id);
-                setData((prev) => ({ ...prev, personas: [...prev.personas, persona] }));
+                setData((prev) => ({
+                  ...prev,
+                  personas: [...prev.personas, persona],
+                  people:
+                    staleSheepIds.length > 0
+                      ? prev.people.map((p) =>
+                          staleSheepIds.includes(p.id)
+                            ? {
+                                ...p,
+                                assignedShepherdIds: p.assignedShepherdIds.map((id) =>
+                                  id === resolvedPersonId ? persona.id : id
+                                ),
+                              }
+                            : p
+                        )
+                      : prev.people,
+                }));
                 if (avatarUrl) {
                   syncGoogleAvatar(supabase, resolvedPersonId, avatarUrl, setData);
                 }
