@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useApp, type HomeFilters, type HomeSortKey, HOME_DEFAULT_FILTERS } from '@/lib/context';
-import { getMembershipLabel, fullName } from '@/lib/utils';
+import { getMembershipLabel, getShepherdEntries } from '@/lib/utils';
 import {
   type MembershipStatus,
   type ChurchAttendance,
@@ -185,25 +185,9 @@ export default function FilterPanel({
             </CheckRow>
           )}
           {(() => {
-            const personaPersonIds = new Set(
-              data.personas.map((p) => p.personId).filter(Boolean)
+            const shepherdEntries = getShepherdEntries(data).filter(
+              (e) => e.id !== currentPersona.id && e.id !== currentPersona.personId
             );
-            const shepherdEntries: Array<{ id: string; name: string }> = [
-              ...data.personas
-                .filter(
-                  (p) =>
-                    (p.role === 'shepherd' || p.role === 'admin') && p.id !== currentPersona.id
-                )
-                .map((p) => ({ id: p.id, name: p.name })),
-              ...data.people
-                .filter(
-                  (p) =>
-                    p.isShepherd &&
-                    !personaPersonIds.has(p.id) &&
-                    p.id !== currentPersona.personId
-                )
-                .map((p) => ({ id: p.id, name: fullName(p) })),
-            ];
             return shepherdEntries
               .filter(
                 (e) =>

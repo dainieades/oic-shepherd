@@ -11,12 +11,15 @@ import { StatusBadge } from '@/components/StatusBadge';
 import { EmptyState } from '@/components/EmptyState';
 import LogStatusTag from '@/components/people/LogStatusTag';
 import RowActionsCell from '@/components/people/RowActionsCell';
+import ShepherdQuickAssign from '@/components/people/ShepherdQuickAssign';
 import {
   fullName,
   getMembershipLabel,
   getChurchAttendanceLabel,
   aggregateMembership,
   aggregateAttendance,
+  getShepherdEntries,
+  type ShepherdEntry,
 } from '@/lib/utils';
 import type { PeopleEntry } from '@/lib/usePeopleRows';
 import type { Family, Group } from '@/lib/types';
@@ -56,7 +59,7 @@ function useRowNavigate() {
 }
 
 export default function PeopleTable({ entries }: PeopleTableProps) {
-  const { data, homeSortKey, setHomeSortKey } = useApp();
+  const { data, homeSortKey, setHomeSortKey, assignShepherds, assignShepherdsToFamily } = useApp();
   const onRowClick = useRowNavigate();
 
   const familiesById = React.useMemo(() => {
@@ -70,6 +73,12 @@ export default function PeopleTable({ entries }: PeopleTableProps) {
     for (const group of data.groups) map.set(group.id, group);
     return map;
   }, [data.groups]);
+
+  const shepherdsById = React.useMemo(() => {
+    const map = new Map<string, ShepherdEntry>();
+    for (const shepherd of getShepherdEntries(data)) map.set(shepherd.id, shepherd);
+    return map;
+  }, [data]);
 
   const openTodosByPerson = React.useMemo(() => {
     const map = new Map<string, number>();
@@ -149,6 +158,9 @@ export default function PeopleTable({ entries }: PeopleTableProps) {
               direction={getSortDirection(homeSortKey, 'status', 'status-desc')}
               onSort={() => setHomeSortKey((k) => toggleSort(k, 'status', 'status-desc'))}
             />
+            <th className={headerCellClass} style={headerCellPadding}>
+              Shepherd
+            </th>
             <SortableHeader
               label="Attendance"
               direction={getSortDirection(homeSortKey, 'attendance', 'attendance-desc')}
@@ -214,7 +226,11 @@ export default function PeopleTable({ entries }: PeopleTableProps) {
                   entry={entry}
                   counts={counts}
                   groupsById={groupsById}
+                  shepherdsById={shepherdsById}
                   onRowClick={onRowClick}
+                  onAssignShepherd={(shepherdIds) =>
+                    assignShepherdsToFamily(entry.family.id, shepherdIds)
+                  }
                 />
               );
             }
@@ -229,8 +245,12 @@ export default function PeopleTable({ entries }: PeopleTableProps) {
                 entry={entry}
                 familiesById={familiesById}
                 groupsById={groupsById}
+                shepherdsById={shepherdsById}
                 counts={counts}
                 onRowClick={onRowClick}
+                onAssignShepherd={(shepherdIds) =>
+                  assignShepherds(entry.person.id, shepherdIds)
+                }
               />
             );
           })}
@@ -274,12 +294,16 @@ function FamilyTableRow({
   entry,
   counts,
   groupsById,
+  shepherdsById,
   onRowClick,
+  onAssignShepherd,
 }: {
   entry: Extract<PeopleEntry, { type: 'family' }>;
   counts: Counts;
   groupsById: Map<string, Group>;
+  shepherdsById: Map<string, ShepherdEntry>;
   onRowClick: (href: string) => (e: React.MouseEvent<HTMLTableRowElement>) => void;
+  onAssignShepherd: (shepherdIds: string[]) => void;
 }) {
   const { family, members, lastNoteTs } = entry;
   const allGroupIds = [...new Set(members.flatMap((m) => m.groupIds))];
@@ -317,19 +341,25 @@ function FamilyTableRow({
         </Link>
       </td>
       <td className={cellClass} style={cellPadding}>
-        {shepherdIds.length === 0 ? (
-          <span className="inline-flex items-center gap-1.5 flex-wrap">
+        <span className="text-12 text-text-muted">{aggregateMembership(members)}</span>
+      </td>
+      <td className={cellClass} style={cellPadding}>
+        <ShepherdQuickAssign currentIds={shepherdIds} targetName={family.label} onAssign={onAssignShepherd}>
+          {shepherdIds.length === 0 ? (
             <StatusBadge
               label="No shepherd"
               bg="var(--amber-light)"
               color="var(--amber)"
               border="1px solid var(--amber-border)"
             />
-            <span className="text-12 text-text-muted">{aggregateMembership(members)}</span>
-          </span>
-        ) : (
-          <span className="text-12 text-text-muted">{aggregateMembership(members)}</span>
-        )}
+          ) : (
+            <ShepherdCells
+              shepherds={shepherdIds
+                .map((id) => shepherdsById.get(id))
+                .filter((s): s is ShepherdEntry => s !== undefined)}
+            />
+          )}
+        </ShepherdQuickAssign>
       </td>
       <td className={cellClass} style={cellPadding}>
         <span className="text-12 text-text-muted">{aggregateAttendance(members)}</span>
@@ -358,14 +388,18 @@ function IndividualTableRow({
   entry,
   familiesById,
   groupsById,
+  shepherdsById,
   counts,
   onRowClick,
+  onAssignShepherd,
 }: {
   entry: Extract<PeopleEntry, { type: 'individual' }>;
   familiesById: Map<string, Family>;
   groupsById: Map<string, Group>;
+  shepherdsById: Map<string, ShepherdEntry>;
   counts: Counts;
   onRowClick: (href: string) => (e: React.MouseEvent<HTMLTableRowElement>) => void;
+  onAssignShepherd: (shepherdIds: string[]) => void;
 }) {
   const { person, lastNoteTs } = entry;
   const personGroups = person.groupIds
@@ -406,23 +440,31 @@ function IndividualTableRow({
         </Link>
       </td>
       <td className={cellClass} style={cellPadding}>
-        {person.assignedShepherdIds.length === 0 ? (
-          <span className="inline-flex items-center gap-1.5 flex-wrap">
+        <span className="text-12 text-text-muted">
+          {getMembershipLabel(person.membershipStatus)}
+        </span>
+      </td>
+      <td className={cellClass} style={cellPadding}>
+        <ShepherdQuickAssign
+          currentIds={person.assignedShepherdIds}
+          targetName={fullName(person)}
+          onAssign={onAssignShepherd}
+        >
+          {person.assignedShepherdIds.length === 0 ? (
             <StatusBadge
               label="No shepherd"
               bg="var(--amber-light)"
               color="var(--amber)"
               border="1px solid var(--amber-border)"
             />
-            <span className="text-12 text-text-muted">
-              {getMembershipLabel(person.membershipStatus)}
-            </span>
-          </span>
-        ) : (
-          <span className="text-12 text-text-muted">
-            {getMembershipLabel(person.membershipStatus)}
-          </span>
-        )}
+          ) : (
+            <ShepherdCells
+              shepherds={person.assignedShepherdIds
+                .map((id) => shepherdsById.get(id))
+                .filter((s): s is ShepherdEntry => s !== undefined)}
+            />
+          )}
+        </ShepherdQuickAssign>
       </td>
       <td className={cellClass} style={cellPadding}>
         <span className="text-12 text-text-muted">
@@ -512,6 +554,22 @@ function GroupCells({ groups }: { groups: Group[] }) {
           +{hidden}
         </span>
       )}
+    </div>
+  );
+}
+
+const shepherdChipClass =
+  'text-10 rounded-pill bg-sage-light text-sage font-semibold whitespace-nowrap shrink-0';
+const shepherdChipPadding = { padding: '0.125rem 0.4375rem' };
+
+function ShepherdCells({ shepherds }: { shepherds: ShepherdEntry[] }) {
+  return (
+    <div className="flex flex-wrap items-center gap-1">
+      {shepherds.map((s) => (
+        <span key={s.id} className={shepherdChipClass} style={shepherdChipPadding}>
+          {s.name}
+        </span>
+      ))}
     </div>
   );
 }

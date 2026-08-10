@@ -4,7 +4,14 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 import { useFloating, autoUpdate, offset, flip } from '@floating-ui/react';
 import { useApp } from '@/lib/context';
-import { formatPhone, fmtDate, fullName, findPossibleDuplicates, type DuplicateMatch } from '@/lib/utils';
+import {
+  formatPhone,
+  fmtDate,
+  fullName,
+  findPossibleDuplicates,
+  getShepherdEntries,
+  type DuplicateMatch,
+} from '@/lib/utils';
 import DuplicatePersonSheet from './DuplicatePersonSheet';
 import {
   type Person,
@@ -273,23 +280,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
         )));
   const isPendingInvite = !!person && appRole !== 'no-access' && !!email && !personaSignedIn;
 
-  const personaPersonIds = new Set(data.personas.map((p) => p.personId).filter(Boolean));
-  type ShepherdEntry = { id: string; name: string; subtitle: string; photo?: string };
-  const shepherdEntries: ShepherdEntry[] = [
-    ...data.personas
-      .filter((p) => p.role === 'shepherd' || p.role === 'admin')
-      .map((p) => ({
-        id: p.id,
-        name: p.name,
-        subtitle: p.role === 'admin' ? 'Pastor' : 'User',
-        photo: p.personId
-          ? data.people.find((person) => person.id === p.personId)?.photo
-          : undefined,
-      })),
-    ...data.people
-      .filter((p) => p.isShepherd && !personaPersonIds.has(p.id))
-      .map((p) => ({ id: p.id, name: fullName(p), subtitle: 'User', photo: p.photo })),
-  ];
+  const shepherdEntries = getShepherdEntries(data);
 
   const statusLabel = MEMBERSHIP_OPTIONS.find((o) => o.value === status)?.label ?? '';
   const attendanceLabel =
@@ -673,6 +664,29 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
         </FormSection>
 
         <FormSection label="Church">
+          <button
+            className="field-row-hover"
+            onClick={() => setShowShepherdPicker(true)}
+            style={rowBtnStyle}
+          >
+            <span style={spacerStyle} />
+            <HandHeart size={16} color="var(--text-muted)" />
+            <span style={labelStyle}>Shepherd by</span>
+            <div className="flex-1 flex flex-wrap gap-1">
+              {shepherdIds.length > 0 ? (
+                shepherdEntries
+                  .filter((e) => shepherdIds.includes(e.id))
+                  .map((e) => (
+                    <span key={e.id} className={sageChipClass}>
+                      {e.name}
+                    </span>
+                  ))
+              ) : (
+                <span className="text-14 text-text-muted">None</span>
+              )}
+            </div>
+            <CaretRight size={14} color="var(--text-muted)" />
+          </button>
           <PickerRow
             ref={statusBtnRef}
             icon={<IdentificationCard size={16} color="var(--text-muted)" />}
@@ -710,29 +724,6 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
                     {g.name}
                   </span>
                 ))
-              ) : (
-                <span className="text-14 text-text-muted">None</span>
-              )}
-            </div>
-            <CaretRight size={14} color="var(--text-muted)" />
-          </button>
-          <button
-            className="field-row-hover"
-            onClick={() => setShowShepherdPicker(true)}
-            style={rowBtnStyle}
-          >
-            <span style={spacerStyle} />
-            <HandHeart size={16} color="var(--text-muted)" />
-            <span style={labelStyle}>Shepherd by</span>
-            <div className="flex-1 flex flex-wrap gap-1">
-              {shepherdIds.length > 0 ? (
-                shepherdEntries
-                  .filter((e) => shepherdIds.includes(e.id))
-                  .map((e) => (
-                    <span key={e.id} className={sageChipClass}>
-                      {e.name}
-                    </span>
-                  ))
               ) : (
                 <span className="text-14 text-text-muted">None</span>
               )}
@@ -1060,6 +1051,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
           <ShepherdPickerSheet
             entries={shepherdEntries}
             currentIds={shepherdIds}
+            title={`Shepherd of ${fullDisplayName || 'this person'}`}
             onConfirm={(ids) => {
               setShepherdIds(ids);
               setShowShepherdPicker(false);

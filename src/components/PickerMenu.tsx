@@ -42,7 +42,7 @@ export default function PickerMenu({
       flip({ padding: 8 }),
       size({
         apply({ rects, elements }) {
-          elements.floating.style.width = `${rects.reference.width}px`;
+          elements.floating.style.width = `${Math.max(rects.reference.width, 220)}px`;
         },
         padding: 8,
       }),

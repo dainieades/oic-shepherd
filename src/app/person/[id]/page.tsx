@@ -17,6 +17,7 @@ import {
   fullName,
   fmtDue,
   fmtShortDate,
+  getShepherdEntries,
 } from '@/lib/utils';
 import { type Todo, type Note, type AppData, type AppRole, type Notice } from '@/lib/types';
 import AddLogModal from '@/components/AddLogModal';
@@ -58,6 +59,7 @@ import {
   CaretDown,
   Plus,
   Users,
+  Warning,
 } from '@phosphor-icons/react';
 import {
   SHEPHERD_AVATAR_PALETTE,
@@ -66,8 +68,10 @@ import {
   deletePersonConfirmCopy,
 } from '@/lib/constants';
 import { InfoRow } from '@/components/InfoRow';
+import { StatusBadge } from '@/components/StatusBadge';
 import { VisitorCardPanel } from '@/components/VisitorCardPanel';
 import { AvatarBadge } from '@/components/AvatarBadge';
+import ShepherdQuickAssign from '@/components/people/ShepherdQuickAssign';
 import { TabIcon } from '@/components/TabIcon';
 import { LogSection } from '@/components/LogSection';
 import { InfoSection } from '@/components/InfoSection';
@@ -187,13 +191,9 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
 
   const family = person.familyId ? data.families.find((f) => f.id === person.familyId) : null;
   const groups = data.groups.filter((g) => person.groupIds.includes(g.id));
-  const personaPersonIds = new Set(data.personas.map((p) => p.personId).filter(Boolean));
-  const shepherds: { id: string; name: string; personId?: string }[] = [
-    ...data.personas.filter((p) => person.assignedShepherdIds.includes(p.id)),
-    ...data.people
-      .filter((p) => !personaPersonIds.has(p.id) && person.assignedShepherdIds.includes(p.id))
-      .map((p) => ({ id: p.id, name: fullName(p), personId: p.id })),
-  ];
+  const shepherds = getShepherdEntries(data).filter((e) =>
+    person.assignedShepherdIds.includes(e.id)
+  );
   const notes = getPersonNotes(person.id, data.notes).filter((n) => canViewNote(n));
   const todos = data.todos.filter((t) => t.personId === person.id);
   const notices = (data.notices ?? []).filter((n) => n.personId === person.id);
@@ -439,6 +439,40 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
           </div>
         </div>
       </div>
+
+      {shepherds.length === 0 && canEdit && (
+        <ShepherdQuickAssign
+          currentIds={[]}
+          targetName={fullName(person)}
+          onAssign={(ids) => assignShepherds(person.id, ids)}
+        >
+          <div
+            className="flex items-center justify-between gap-2 rounded-md mb-4"
+            style={{
+              background: 'var(--amber-light)',
+              border: '1px solid var(--amber-border)',
+              padding: '0.625rem 0.75rem',
+            }}
+          >
+            <div className="flex items-center gap-2 min-w-0">
+              <Warning size={16} color="var(--amber)" weight="fill" />
+              <span
+                className="text-13 font-medium text-left"
+                style={{ color: 'var(--amber)' }}
+              >
+                No shepherd assigned
+              </span>
+            </div>
+            <span
+              className="text-12 font-semibold shrink-0 inline-flex items-center gap-[0.1875rem]"
+              style={{ color: 'var(--amber)' }}
+            >
+              Assign
+              <CaretRight size={12} />
+            </span>
+          </div>
+        </ShepherdQuickAssign>
+      )}
 
       {/* ── Tabs (desktop sidebar variant) ── */}
       {visibleTabs.length > 1 && (
@@ -776,11 +810,11 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                 value={fmtShortDate(person.baptismDate)}
               />
             )}
-            {shepherds.length > 0 && (
-              <InfoRow
-                icon={<HandHeart size={15} />}
-                label="Shepherd by"
-                value={
+            <InfoRow
+              icon={<HandHeart size={15} />}
+              label="Shepherd by"
+              value={
+                shepherds.length > 0 ? (
                   <div className="flex flex-col gap-1.5 items-end">
                     {shepherds.map((s) => {
                       const sp = s.personId ? data.people.find((p) => p.id === s.personId) : null;
@@ -809,9 +843,17 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                       );
                     })}
                   </div>
-                }
-              />
-            )}
+                ) : (
+                  <StatusBadge
+                    label="No shepherd"
+                    bg="var(--amber-light)"
+                    color="var(--amber)"
+                    border="1px solid var(--amber-border)"
+                  />
+                )
+              }
+            />
+
             {person.isShepherd && (
               <>
                 {/* Sheep row — visible to all; edit only for admin/shepherd */}

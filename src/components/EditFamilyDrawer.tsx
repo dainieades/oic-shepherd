@@ -272,6 +272,7 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
         <ShepherdPickerSheet
           entries={shepherdEntries}
           currentIds={shepherdIds}
+          title={`Shepherd of ${family.label}`}
           onConfirm={(ids) => {
             setShepherdIds(ids);
             setShowShepherdPicker(false);

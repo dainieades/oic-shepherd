@@ -217,11 +217,18 @@ export function SheepPickerSheet({
 export function ShepherdPickerSheet({
   entries,
   currentIds,
+  title,
+  cancelLabel = 'Back',
+  confirmLabel = 'Done',
   onConfirm,
   onBack,
 }: {
   entries: { id: string; name: string; subtitle: string; photo?: string }[];
   currentIds: string[];
+  title: string;
+  /** Use 'Cancel'/'Save' where selecting persists immediately (no outer form to save); defaults suit a picker staged inside a larger form. */
+  cancelLabel?: string;
+  confirmLabel?: string;
   onConfirm: (ids: string[]) => void;
   onBack: () => void;
 }) {
@@ -241,11 +248,11 @@ export function ShepherdPickerSheet({
   return (
     <SubPanel onBack={onBack}>
       <ModalHeader
-        title="Shepherd"
+        title={title}
         onCancel={onBack}
-        cancelLabel="Back"
+        cancelLabel={cancelLabel}
         onAction={() => onConfirm(selectedIds)}
-        actionLabel={selectedIds.length > 0 ? `Done (${selectedIds.length})` : 'Done'}
+        actionLabel={selectedIds.length > 0 ? `${confirmLabel} (${selectedIds.length})` : confirmLabel}
         actionVariant="pill"
       />
       <div className="py-3 px-5 shrink-0 border-b border-border-light">

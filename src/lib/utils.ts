@@ -148,7 +148,38 @@ import {
   type Notice,
   type TodoRepeat,
   type TodoReminder,
+  type Persona,
 } from './types';
+
+export interface ShepherdEntry {
+  id: string;
+  name: string;
+  subtitle: string;
+  photo?: string;
+  personId?: string;
+}
+
+/** Shepherds selectable for assignment: personas with role shepherd/admin, plus isShepherd people who haven't signed up for a persona yet. */
+export function getShepherdEntries(data: {
+  personas: Persona[];
+  people: Person[];
+}): ShepherdEntry[] {
+  const personaPersonIds = new Set(data.personas.map((p) => p.personId).filter(Boolean));
+  return [
+    ...data.personas
+      .filter((p) => p.role === 'shepherd' || p.role === 'admin')
+      .map((p) => ({
+        id: p.id,
+        name: p.name,
+        subtitle: p.role === 'admin' ? 'Pastor' : 'User',
+        photo: p.personId ? data.people.find((person) => person.id === p.personId)?.photo : undefined,
+        personId: p.personId,
+      })),
+    ...data.people
+      .filter((p) => p.isShepherd && !personaPersonIds.has(p.id))
+      .map((p) => ({ id: p.id, name: fullName(p), subtitle: 'User', photo: p.photo, personId: p.id })),
+  ];
+}
 
 export function getTimeAgo(dateStr: string): string {
   const date = parseISO(dateStr);
