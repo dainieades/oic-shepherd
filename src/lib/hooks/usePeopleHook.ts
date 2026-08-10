@@ -12,10 +12,84 @@ import {
   type Interest,
 } from '../types';
 import { type PersonRow, type FamilyRow, type GroupRow } from '../schemas';
-import { mapAuditLog } from '../mappers';
+import { mapAuditLog, mapPersona } from '../mappers';
 import { generateId, fullName } from '../utils';
 import { createClient } from '@/utils/supabase/client';
 import { SAVE_ERROR_MSG } from '../constants';
+
+/**
+ * Shepherd pickers can surface a person who has no login yet, identified by
+ * their raw people.id. Writing that raw id into person_shepherds.shepherd_id
+ * is what caused assignments to go invisible once that person later got a
+ * persona with its own distinct id (see the jessica-wang/shepherd-2 incidents).
+ * This resolves every id to a real persona id up front — creating a login-less
+ * placeholder persona if one doesn't exist yet — so shepherd_id is always a
+ * personas.id, never a people.id.
+ */
+async function resolveShepherdPersonaIds(
+  supabase: ReturnType<typeof createClient>,
+  ids: string[]
+): Promise<{ resolvedIds: string[]; newPersonas: Persona[] }> {
+  if (ids.length === 0) return { resolvedIds: [], newPersonas: [] };
+
+  const { data: byId } = await supabase.from('personas').select('id').in('id', ids);
+  const knownPersonaIds = new Set((byId ?? []).map((r: { id: string }) => r.id));
+  const unresolved = ids.filter((id) => !knownPersonaIds.has(id));
+
+  const personIdToPersonaId = new Map<string, string>();
+  if (unresolved.length > 0) {
+    const { data: byPersonId } = await supabase
+      .from('personas')
+      .select('id, person_id')
+      .in('person_id', unresolved);
+    for (const r of (byPersonId ?? []) as { id: string; person_id: string }[]) {
+      personIdToPersonaId.set(r.person_id, r.id);
+    }
+  }
+
+  const trulyUnresolved = unresolved.filter((id) => !personIdToPersonaId.has(id));
+  const newPersonas: Persona[] = [];
+  if (trulyUnresolved.length > 0) {
+    const { data: peopleRows } = await supabase
+      .from('people')
+      .select('id, preferred_name, last_name, email')
+      .in('id', trulyUnresolved);
+    const candidates = (peopleRows ?? []) as {
+      id: string;
+      preferred_name: string;
+      last_name: string | null;
+      email: string | null;
+    }[];
+    if (candidates.length > 0) {
+      await supabase.from('personas').upsert(
+        candidates.map((p) => ({
+          id: generateId(),
+          person_id: p.id,
+          name: p.last_name ? `${p.preferred_name} ${p.last_name}` : p.preferred_name,
+          role: 'shepherd',
+          email: p.email,
+        })),
+        { onConflict: 'person_id', ignoreDuplicates: true }
+      );
+      const { data: settled } = await supabase
+        .from('personas')
+        .select('id, person_id, user_id, name, role, email')
+        .in(
+          'person_id',
+          candidates.map((p) => p.id)
+        );
+      for (const r of (settled ?? []) as Record<string, unknown>[]) {
+        personIdToPersonaId.set(r.person_id as string, r.id as string);
+        newPersonas.push(mapPersona(r, []));
+      }
+    }
+  }
+
+  const resolvedIds = ids.map((id) =>
+    knownPersonaIds.has(id) ? id : personIdToPersonaId.get(id) ?? id
+  );
+  return { resolvedIds, newPersonas };
+}
 
 const AUDIT_FIELD_KEYS = [
   'preferredName',
@@ -426,32 +500,42 @@ export function usePeopleHook({
 
   const assignShepherds = React.useCallback(
     async (personId: string, shepherdIds: string[]): Promise<void> => {
+      const supabase = createClient();
+      const { resolvedIds: shepherdPersonaIds, newPersonas } = await resolveShepherdPersonaIds(
+        supabase,
+        shepherdIds
+      );
+
       let snapshot: AppData | undefined;
       let personName = '';
       let unchanged = false;
       let newlyAddedShepherdIds: string[] = [];
       setData((prev) => {
         snapshot = prev;
+        const personas = newPersonas.length > 0 ? [...prev.personas, ...newPersonas] : prev.personas;
         const p = prev.people.find((p) => p.id === personId);
         personName = p ? fullName(p) : '';
         if (p) {
           const current = p.assignedShepherdIds;
-          if (current.length === shepherdIds.length && current.every((id) => shepherdIds.includes(id))) {
+          if (
+            current.length === shepherdPersonaIds.length &&
+            current.every((id) => shepherdPersonaIds.includes(id))
+          ) {
             unchanged = true;
             return prev;
           }
-          newlyAddedShepherdIds = shepherdIds.filter((id) => !current.includes(id));
+          newlyAddedShepherdIds = shepherdPersonaIds.filter((id) => !current.includes(id));
         } else {
-          newlyAddedShepherdIds = shepherdIds;
+          newlyAddedShepherdIds = shepherdPersonaIds;
         }
-        const personaIdSet = new Set(prev.personas.map((pp) => pp.id));
-        const shepherdPersonaIdSet = new Set(shepherdIds.filter((sid) => personaIdSet.has(sid)));
+        const personaIdSet = new Set(personas.map((pp) => pp.id));
+        const shepherdPersonaIdSet = new Set(shepherdPersonaIds.filter((sid) => personaIdSet.has(sid)));
         return {
           ...prev,
           people: prev.people.map((p) =>
-            p.id === personId ? { ...p, assignedShepherdIds: shepherdIds } : p
+            p.id === personId ? { ...p, assignedShepherdIds: shepherdPersonaIds } : p
           ),
-          personas: prev.personas.map((persona) => {
+          personas: personas.map((persona) => {
             const shouldHave = shepherdPersonaIdSet.has(persona.id);
             const has = persona.assignedPeopleIds.includes(personId);
             if (shouldHave === has) return persona;
@@ -466,7 +550,7 @@ export function usePeopleHook({
       });
       if (unchanged) return;
       setCurrentPersona((prev) => {
-        const isNowMine = shepherdIds.includes(prev.id);
+        const isNowMine = shepherdPersonaIds.includes(prev.id);
         const wasMine = prev.assignedPeopleIds.includes(personId);
         if (isNowMine === wasMine) return prev;
         return {
@@ -476,7 +560,6 @@ export function usePeopleHook({
             : prev.assignedPeopleIds.filter((id) => id !== personId),
         };
       });
-      const supabase = createClient();
       const { error: deleteError } = await supabase
         .from('person_shepherds')
         .delete()
@@ -497,37 +580,24 @@ export function usePeopleHook({
         showToast(SAVE_ERROR_MSG, 'error');
         return;
       }
-      if (shepherdIds.length > 0) {
+      if (shepherdPersonaIds.length > 0) {
         const { error: insertError } = await supabase
           .from('person_shepherds')
-          .insert(shepherdIds.map((sid) => ({ person_id: personId, shepherd_id: sid })));
+          .insert(shepherdPersonaIds.map((sid) => ({ person_id: personId, shepherd_id: sid })));
         if (insertError) {
           console.error('person_shepherds insert failed:', JSON.stringify(insertError, null, 2));
           if (snapshot) setData(snapshot);
           showToast(SAVE_ERROR_MSG, 'error');
           return;
         }
-        const { data: personaMatches, error: personaLookupError } = await supabase
-          .from('personas')
-          .select('id')
-          .in('id', shepherdIds);
-        if (personaLookupError) {
-          console.error('personas lookup failed:', JSON.stringify(personaLookupError, null, 2));
+        const { error: ppInsertError } = await supabase
+          .from('persona_people')
+          .insert(shepherdPersonaIds.map((pid) => ({ persona_id: pid, person_id: personId })));
+        if (ppInsertError) {
+          console.error('persona_people insert failed:', JSON.stringify(ppInsertError, null, 2));
           if (snapshot) setData(snapshot);
           showToast(SAVE_ERROR_MSG, 'error');
           return;
-        }
-        const personaShepherdIds = (personaMatches ?? []).map((r: { id: string }) => r.id);
-        if (personaShepherdIds.length > 0) {
-          const { error: ppInsertError } = await supabase
-            .from('persona_people')
-            .insert(personaShepherdIds.map((pid) => ({ persona_id: pid, person_id: personId })));
-          if (ppInsertError) {
-            console.error('persona_people insert failed:', JSON.stringify(ppInsertError, null, 2));
-            if (snapshot) setData(snapshot);
-            showToast(SAVE_ERROR_MSG, 'error');
-            return;
-          }
         }
       }
       if (newlyAddedShepherdIds.length > 0 && personName) {
@@ -694,6 +764,12 @@ export function usePeopleHook({
 
   const assignShepherdsToFamily = React.useCallback(
     async (familyId: string, shepherdIds: string[]): Promise<void> => {
+      const supabase = createClient();
+      const { resolvedIds: shepherdPersonaIds, newPersonas } = await resolveShepherdPersonaIds(
+        supabase,
+        shepherdIds
+      );
+
       let snapshot: AppData | undefined;
       setData((prev) => {
         snapshot = prev;
@@ -701,12 +777,15 @@ export function usePeopleHook({
         if (!family) return prev;
         const memberIds = family.memberIds;
         const memberIdSet = new Set(memberIds);
-        const personaIdSet = new Set(prev.personas.map((pp) => pp.id));
-        const shepherdPersonaIdSet = new Set(shepherdIds.filter((sid) => personaIdSet.has(sid)));
-        const newPeople = prev.people.map((p) =>
-          memberIdSet.has(p.id) ? { ...p, assignedShepherdIds: shepherdIds } : p
+        const personas = newPersonas.length > 0 ? [...prev.personas, ...newPersonas] : prev.personas;
+        const personaIdSet = new Set(personas.map((pp) => pp.id));
+        const shepherdPersonaIdSet = new Set(
+          shepherdPersonaIds.filter((sid) => personaIdSet.has(sid))
         );
-        const newPersonas = prev.personas.map((persona) => {
+        const newPeople = prev.people.map((p) =>
+          memberIdSet.has(p.id) ? { ...p, assignedShepherdIds: shepherdPersonaIds } : p
+        );
+        const newPersonasResult = personas.map((persona) => {
           const shouldHave = shepherdPersonaIdSet.has(persona.id);
           const withoutMembers = persona.assignedPeopleIds.filter((id) => !memberIdSet.has(id));
           const next = shouldHave ? [...withoutMembers, ...memberIds] : withoutMembers;
@@ -718,10 +797,10 @@ export function usePeopleHook({
           }
           return { ...persona, assignedPeopleIds: next };
         });
-        return { ...prev, people: newPeople, personas: newPersonas };
+        return { ...prev, people: newPeople, personas: newPersonasResult };
       });
       setCurrentPersona((prev) => {
-        const isNowMine = shepherdIds.includes(prev.id);
+        const isNowMine = shepherdPersonaIds.includes(prev.id);
         const family = snapshot?.families.find((f) => f.id === familyId);
         const memberIds = family?.memberIds ?? [];
         const withoutMembers = prev.assignedPeopleIds.filter((id) => !memberIds.includes(id));
@@ -734,7 +813,6 @@ export function usePeopleHook({
         }
         return { ...prev, assignedPeopleIds: next };
       });
-      const supabase = createClient();
       const { data: fmRows, error: selectError } = await supabase
         .from('family_members')
         .select('person_id')
@@ -746,20 +824,6 @@ export function usePeopleHook({
         return;
       }
       const memberIds = (fmRows ?? []).map((r: { person_id: string }) => r.person_id);
-      let personaShepherdIds: string[] = [];
-      if (shepherdIds.length > 0) {
-        const { data: personaMatches, error: personaLookupError } = await supabase
-          .from('personas')
-          .select('id')
-          .in('id', shepherdIds);
-        if (personaLookupError) {
-          console.error('personas lookup failed:', JSON.stringify(personaLookupError, null, 2));
-          if (snapshot) setData(snapshot);
-          showToast(SAVE_ERROR_MSG, 'error');
-          return;
-        }
-        personaShepherdIds = (personaMatches ?? []).map((r: { id: string }) => r.id);
-      }
       for (const pid of memberIds) {
         const { error: deleteError } = await supabase
           .from('person_shepherds')
@@ -781,26 +845,24 @@ export function usePeopleHook({
           showToast(SAVE_ERROR_MSG, 'error');
           return;
         }
-        if (shepherdIds.length > 0) {
+        if (shepherdPersonaIds.length > 0) {
           const { error: insertError } = await supabase
             .from('person_shepherds')
-            .insert(shepherdIds.map((sid) => ({ person_id: pid, shepherd_id: sid })));
+            .insert(shepherdPersonaIds.map((sid) => ({ person_id: pid, shepherd_id: sid })));
           if (insertError) {
             console.error('person_shepherds insert failed:', JSON.stringify(insertError, null, 2));
             if (snapshot) setData(snapshot);
             showToast(SAVE_ERROR_MSG, 'error');
             return;
           }
-          if (personaShepherdIds.length > 0) {
-            const { error: ppInsertError } = await supabase
-              .from('persona_people')
-              .insert(personaShepherdIds.map((sid) => ({ persona_id: sid, person_id: pid })));
-            if (ppInsertError) {
-              console.error('persona_people insert failed:', JSON.stringify(ppInsertError, null, 2));
-              if (snapshot) setData(snapshot);
-              showToast(SAVE_ERROR_MSG, 'error');
-              return;
-            }
+          const { error: ppInsertError } = await supabase
+            .from('persona_people')
+            .insert(shepherdPersonaIds.map((sid) => ({ persona_id: sid, person_id: pid })));
+          if (ppInsertError) {
+            console.error('persona_people insert failed:', JSON.stringify(ppInsertError, null, 2));
+            if (snapshot) setData(snapshot);
+            showToast(SAVE_ERROR_MSG, 'error');
+            return;
           }
         }
       }
