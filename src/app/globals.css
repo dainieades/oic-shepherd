@@ -129,17 +129,17 @@
   --spacing-2xl: 1.5rem;
   --spacing-3xl: 2rem;
 
-  /* ── Z-index scale ── */
-  --z-sticky: 20;
-  --z-page: 30;
-  --z-subheader: 39;
-  --z-header: 40;
-  --z-dropdown: 50;
-  --z-modal: 60;
-  --z-sheet: 70;
-  --z-nested: 80;
-  --z-float: 90;
-  --z-toast: 200;
+  /* ── Z-index scale — must use --z-index-* naming for Tailwind v4 to generate z-* utilities ── */
+  --z-index-sticky: 20;
+  --z-index-page: 30;
+  --z-index-subheader: 39;
+  --z-index-header: 40;
+  --z-index-dropdown: 50;
+  --z-index-modal: 60;
+  --z-index-sheet: 70;
+  --z-index-nested: 80;
+  --z-index-float: 90;
+  --z-index-toast: 200;
 
   /* ── Sheet / Modal ── */
   --backdrop: rgba(30, 26, 24, 0.45);
@@ -386,16 +386,16 @@
   --leading-loose: var(--leading-loose);
 
   /* Z-index scale */
-  --z-sticky: var(--z-sticky);
-  --z-page: var(--z-page);
-  --z-subheader: var(--z-subheader);
-  --z-header: var(--z-header);
-  --z-dropdown: var(--z-dropdown);
-  --z-modal: var(--z-modal);
-  --z-sheet: var(--z-sheet);
-  --z-nested: var(--z-nested);
-  --z-float: var(--z-float);
-  --z-toast: var(--z-toast);
+  --z-index-sticky: var(--z-index-sticky);
+  --z-index-page: var(--z-index-page);
+  --z-index-subheader: var(--z-index-subheader);
+  --z-index-header: var(--z-index-header);
+  --z-index-dropdown: var(--z-index-dropdown);
+  --z-index-modal: var(--z-index-modal);
+  --z-index-sheet: var(--z-index-sheet);
+  --z-index-nested: var(--z-index-nested);
+  --z-index-float: var(--z-index-float);
+  --z-index-toast: var(--z-index-toast);
 
   /* Shadows */
   --shadow-card: var(--shadow-card);
