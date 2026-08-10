@@ -191,10 +191,7 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
   const shepherds: { id: string; name: string; personId?: string }[] = [
     ...data.personas.filter((p) => person.assignedShepherdIds.includes(p.id)),
     ...data.people
-      .filter(
-        (p) =>
-          p.isShepherd && !personaPersonIds.has(p.id) && person.assignedShepherdIds.includes(p.id)
-      )
+      .filter((p) => !personaPersonIds.has(p.id) && person.assignedShepherdIds.includes(p.id))
       .map((p) => ({ id: p.id, name: fullName(p), personId: p.id })),
   ];
   const notes = getPersonNotes(person.id, data.notes).filter((n) => canViewNote(n));
