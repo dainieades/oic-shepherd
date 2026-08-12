@@ -183,9 +183,7 @@ export default function AddNoticeModal({
 
   const [categories, setCategories] = React.useState<NoticeCategory[]>(notice?.categories ?? []);
   const [urgency, setUrgency] = React.useState<NoticeUrgency>(notice?.urgency ?? 'moderate');
-  const [privacy, setPrivacy] = React.useState<NoticePrivacy>(
-    notice?.privacy ?? 'pastor-and-shepherds'
-  );
+  const [privacy, setPrivacy] = React.useState<NoticePrivacy>(notice?.privacy ?? 'pastor-only');
   const [content, setContent] = React.useState(notice?.content ?? '');
   const [familyIds, setFamilyIds] = React.useState<string[]>(
     notice?.familyId ? [notice.familyId] : prefillFamilyId ? [prefillFamilyId] : []
