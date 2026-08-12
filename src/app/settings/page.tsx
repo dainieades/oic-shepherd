@@ -23,7 +23,16 @@ import { useToast } from '@/components/Toast';
 import { MAP_PROVIDER_LABELS, fullName } from '@/lib/utils';
 
 export default function SettingsPage() {
-  const { data, currentPersona, themePreference, mapProvider, calendarSyncEnabled, supabaseUser, signOut, linkGoogle } = useApp();
+  const {
+    data,
+    currentPersona,
+    themePreference,
+    mapProvider,
+    calendarSyncEnabled,
+    supabaseUser,
+    signOut,
+    linkGoogle,
+  } = useApp();
   const { showToast } = useToast();
   const router = useRouter();
   const [scrolled, setScrolled] = React.useState(false);
@@ -70,7 +79,7 @@ export default function SettingsPage() {
 
   const roleLabel =
     currentPersona.role === 'admin'
-      ? 'Pastor / Admin'
+      ? 'Admin'
       : currentPersona.role === 'shepherd'
         ? 'User'
         : 'Welcome Team';
@@ -100,7 +109,7 @@ export default function SettingsPage() {
     <div className="settings-index-mobile pb-12">
       {/* Sticky header */}
       <div
-        className="sticky top-0 bg-bg -mx-4 px-4 z-sticky"
+        className="bg-bg z-sticky sticky top-0 -mx-4 px-4"
         style={{
           borderBottom: scrolled ? '1px solid var(--border-light)' : 'none',
         }}
@@ -127,33 +136,30 @@ export default function SettingsPage() {
       </div>
 
       {/* ── Profile row ── */}
-      <Link
-        href="/settings/profile"
-        className="no-underline block mb-7 mt-2"
-      >
-        <div className="bg-surface rounded border border-border-light py-[0.875rem] px-4 flex items-center gap-3.5">
+      <Link href="/settings/profile" className="mt-2 mb-7 block no-underline">
+        <div className="bg-surface border-border-light flex items-center gap-3.5 rounded border px-4 py-[0.875rem]">
           {person?.photo ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={person.photo}
               alt={displayName}
-              className="w-[52px] h-[52px] rounded-full object-cover shrink-0"
+              className="h-[52px] w-[52px] shrink-0 rounded-full object-cover"
             />
           ) : avatarUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={avatarUrl}
               alt={displayName}
-              className="w-[52px] h-[52px] rounded-full object-cover shrink-0"
+              className="h-[52px] w-[52px] shrink-0 rounded-full object-cover"
             />
           ) : (
-            <div className="w-[52px] h-[52px] rounded-full bg-sage text-on-sage flex items-center justify-center text-17 font-bold shrink-0">
+            <div className="bg-sage text-on-sage text-17 flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full font-bold">
               {initials}
             </div>
           )}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <p className="text-16 font-bold text-text-primary m-0 tracking-tight-1">
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <p className="text-16 text-text-primary tracking-tight-1 m-0 font-bold">
                 {displayName}
               </p>
               {person?.alternativeName && (
@@ -162,7 +168,7 @@ export default function SettingsPage() {
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-[5px] mt-[3px]">
+            <div className="mt-[3px] flex items-center gap-[5px]">
               {currentPersona.role === 'admin' ? (
                 <ShieldStar size={13} color="var(--sage)" weight="fill" />
               ) : currentPersona.role === 'shepherd' ? (
@@ -183,7 +189,7 @@ export default function SettingsPage() {
           value={displayEmail}
         />
         {hasPassword && (
-          <Link href="/settings/password" className="no-underline block">
+          <Link href="/settings/password" className="block no-underline">
             <SettingsRow
               icon={<Lock size={18} color="var(--text-muted)" />}
               label="Change Password"
@@ -195,7 +201,7 @@ export default function SettingsPage() {
           <button
             onClick={handleLinkGoogle}
             disabled={linkingGoogle}
-            className={`w-full bg-transparent border-none p-0 text-left block${linkingGoogle ? ' cursor-not-allowed opacity-60' : ' cursor-pointer'}`}
+            className={`w-full border-none bg-transparent p-0 text-left block${linkingGoogle ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}
           >
             <SettingsRow
               icon={<GoogleLogo size={18} color="var(--text-muted)" />}
@@ -208,7 +214,7 @@ export default function SettingsPage() {
 
       {/* ── Preferences ── */}
       <DrawerSection label="Preferences" cardPadding="0">
-        <Link href="/settings/appearance" className="no-underline block">
+        <Link href="/settings/appearance" className="block no-underline">
           <SettingsRow
             icon={<CircleHalf size={18} color="var(--text-muted)" />}
             label="Appearance"
@@ -218,7 +224,7 @@ export default function SettingsPage() {
             chevron
           />
         </Link>
-        <Link href="/settings/maps" className="no-underline block">
+        <Link href="/settings/maps" className="block no-underline">
           <SettingsRow
             icon={<MapPin size={18} color="var(--text-muted)" />}
             label="Maps App"
@@ -226,14 +232,14 @@ export default function SettingsPage() {
             chevron
           />
         </Link>
-        <Link href="/settings/notifications" className="no-underline block">
+        <Link href="/settings/notifications" className="block no-underline">
           <SettingsRow
             icon={<Bell size={18} color="var(--text-muted)" />}
             label="Notifications"
             chevron
           />
         </Link>
-        <Link href="/settings/calendar-sync" className="no-underline block">
+        <Link href="/settings/calendar-sync" className="block no-underline">
           <SettingsRow
             icon={<CalendarBlank size={18} color="var(--text-muted)" />}
             label="Calendar Sync"
@@ -247,7 +253,7 @@ export default function SettingsPage() {
       {currentPersona.role === 'admin' && (
         <>
           <DrawerSection label="Admin" cardPadding="0">
-            <Link href="/settings/access" className="no-underline block">
+            <Link href="/settings/access" className="block no-underline">
               <SettingsRow
                 icon={<Users size={18} color="var(--text-muted)" />}
                 label="Access Management"
@@ -261,38 +267,36 @@ export default function SettingsPage() {
       {/* ── Sign Out ── */}
       <button
         onClick={() => setShowSignOutConfirm(true)}
-        className="w-full mt-2 bg-surface border border-border-light rounded p-4 cursor-pointer text-left flex items-center gap-3"
+        className="bg-surface border-border-light mt-2 flex w-full cursor-pointer items-center gap-3 rounded border p-4 text-left"
       >
         <SignOut size={18} color="var(--red)" />
-        <span className="text-15 font-medium text-red">Sign Out</span>
+        <span className="text-15 text-red font-medium">Sign Out</span>
       </button>
 
       {showSignOutConfirm && (
         <div
-          className="fixed inset-0 flex items-center justify-center px-8 z-nested bg-backdrop"
+          className="z-nested bg-backdrop fixed inset-0 flex items-center justify-center px-8"
           onClick={(e) => {
             if (e.target === e.currentTarget) setShowSignOutConfirm(false);
           }}
         >
-          <div className="bg-surface rounded-[16px] w-full max-w-[320px] overflow-hidden">
+          <div className="bg-surface w-full max-w-[320px] overflow-hidden rounded-[16px]">
             <div className="px-5 pt-6 pb-4 text-center">
-              <p className="text-16 font-semibold text-text-primary mt-0 mb-[0.375rem]">
+              <p className="text-16 text-text-primary mt-0 mb-[0.375rem] font-semibold">
                 Sign out?
               </p>
-              <p className="text-14 text-text-muted m-0">
-                You can always sign back in.
-              </p>
+              <p className="text-14 text-text-muted m-0">You can always sign back in.</p>
             </div>
-            <div className="border-t border-border-light flex">
+            <div className="border-border-light flex border-t">
               <button
                 onClick={() => setShowSignOutConfirm(false)}
-                className="flex-1 h-[50px] bg-transparent border-none border-r border-border-light text-15 text-text-secondary cursor-pointer font-medium"
+                className="border-border-light text-15 text-text-secondary h-[50px] flex-1 cursor-pointer border-r border-none bg-transparent font-medium"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSignOut}
-                className="flex-1 h-[50px] bg-transparent border-none text-15 text-sage cursor-pointer font-semibold"
+                className="text-15 text-sage h-[50px] flex-1 cursor-pointer border-none bg-transparent font-semibold"
               >
                 Sign Out
               </button>
@@ -316,13 +320,9 @@ function SettingsRow({
   chevron?: boolean;
 }) {
   return (
-    <div
-      className="no-last-border flex items-center gap-3.5 py-[0.875rem] px-4 border-b border-border-light"
-    >
+    <div className="no-last-border border-border-light flex items-center gap-3.5 border-b px-4 py-[0.875rem]">
       <span className="shrink-0">{icon}</span>
-      <span className="flex-1 text-15 font-medium text-text-primary">
-        {label}
-      </span>
+      <span className="text-15 text-text-primary flex-1 font-medium">{label}</span>
       {value && <span className="text-14 text-text-muted">{value}</span>}
       {chevron && <CaretRight size={15} color="var(--text-muted)" />}
     </div>

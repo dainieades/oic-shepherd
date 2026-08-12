@@ -42,8 +42,8 @@ const URGENCY_LABEL: Record<NoticeUrgency, string> = {
 };
 
 const PRIVACY_LABEL: Record<NoticePrivacy, string> = {
-  'pastor-only': 'Pastor only',
-  'pastor-and-shepherds': 'Pastors & shepherds',
+  'pastor-only': 'Admin only',
+  'pastor-and-shepherds': 'Admins & shepherds',
   everyone: 'Everyone',
 };
 

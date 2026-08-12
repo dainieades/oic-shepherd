@@ -36,8 +36,8 @@ export const CATEGORY_ICON: Record<string, React.ReactNode> = {
 };
 
 export const PRIVACY_LABEL: Record<string, string> = {
-  'pastor-only': 'Pastor and You',
-  'pastor-and-shepherds': 'Pastor and You',
+  'pastor-only': 'Admin and You',
+  'pastor-and-shepherds': 'Admin and Shepherds',
   everyone: 'Everyone',
 };
 
@@ -46,12 +46,12 @@ export function NoticeCard({ notice, onClick }: { notice: Notice; onClick: () =>
   return (
     <button
       onClick={onClick}
-      className="row-card-hover text-left cursor-pointer border border-border-light rounded-md py-3 px-3.5 w-full flex flex-col gap-1.5"
+      className="row-card-hover border-border-light flex w-full cursor-pointer flex-col gap-1.5 rounded-md border px-3.5 py-3 text-left"
       style={{ background: style.bg }}
     >
-      <div className="flex items-center gap-1.5 flex-wrap">
+      <div className="flex flex-wrap items-center gap-1.5">
         <span
-          className="text-11 font-bold py-0.5 px-2 rounded-pill tracking-wide-3"
+          className="text-11 rounded-pill tracking-wide-3 px-2 py-0.5 font-bold"
           style={{ background: style.pillBg, color: style.color }}
         >
           {URGENCY_LABEL[notice.urgency]}
@@ -59,7 +59,7 @@ export function NoticeCard({ notice, onClick }: { notice: Notice; onClick: () =>
         {notice.categories.map((cat) => (
           <span
             key={cat}
-            className="flex items-center gap-0.75 text-11 font-medium py-0.5 px-2 rounded-pill"
+            className="text-11 rounded-pill flex items-center gap-0.75 px-2 py-0.5 font-medium"
             style={{
               background: CATEGORY_STYLE[cat]?.bg,
               color: CATEGORY_STYLE[cat]?.color,
@@ -71,7 +71,7 @@ export function NoticeCard({ notice, onClick }: { notice: Notice; onClick: () =>
         ))}
       </div>
       <p
-        className="text-14 text-text-primary leading-normal m-0 overflow-hidden"
+        className="text-14 text-text-primary m-0 overflow-hidden leading-normal"
         style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' }}
       >
         {notice.content}

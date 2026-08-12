@@ -60,7 +60,7 @@ function DesktopSidebar() {
 
   const roleLabel =
     currentPersona.role === 'admin'
-      ? 'Pastor / Admin'
+      ? 'Admin'
       : currentPersona.role === 'shepherd'
         ? 'User'
         : 'Welcome Team';
@@ -114,15 +114,13 @@ function DesktopSidebar() {
   return (
     <>
       <aside className="settings-sidebar-desktop">
-        <h1
-          className="text-28 font-extrabold text-text-primary tracking-tight-3 m-0 leading-none"
-        >
+        <h1 className="text-28 text-text-primary tracking-tight-3 m-0 leading-none font-extrabold">
           Settings
         </h1>
 
         <Link
           href="/settings/profile"
-          className="no-underline border rounded flex items-center gap-3 py-3.5 px-4"
+          className="flex items-center gap-3 rounded border px-4 py-3.5 no-underline"
           style={{
             background: pathname === '/settings/profile' ? 'var(--sage-light)' : 'var(--surface)',
             borderColor:
@@ -134,29 +132,25 @@ function DesktopSidebar() {
             <img
               src={person.photo}
               alt={displayName}
-              className="w-11 h-11 rounded-full object-cover shrink-0"
+              className="h-11 w-11 shrink-0 rounded-full object-cover"
             />
           ) : avatarUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={avatarUrl}
               alt={displayName}
-              className="w-11 h-11 rounded-full object-cover shrink-0"
+              className="h-11 w-11 shrink-0 rounded-full object-cover"
             />
           ) : (
-            <div
-              className="w-11 h-11 rounded-full bg-sage text-on-sage flex items-center justify-center text-15 font-bold shrink-0"
-            >
+            <div className="bg-sage text-on-sage text-15 flex h-11 w-11 shrink-0 items-center justify-center rounded-full font-bold">
               {initials}
             </div>
           )}
-          <div className="flex-1 min-w-0">
-            <p
-              className="text-14 font-bold text-text-primary m-0 tracking-tight-1 overflow-hidden text-ellipsis whitespace-nowrap"
-            >
+          <div className="min-w-0 flex-1">
+            <p className="text-14 text-text-primary tracking-tight-1 m-0 overflow-hidden font-bold text-ellipsis whitespace-nowrap">
               {displayName}
             </p>
-            <div className="flex items-center gap-1 mt-0.5">
+            <div className="mt-0.5 flex items-center gap-1">
               {currentPersona.role === 'admin' ? (
                 <ShieldStar size={11} color="var(--sage)" weight="fill" />
               ) : currentPersona.role === 'shepherd' ? (
@@ -171,51 +165,44 @@ function DesktopSidebar() {
           <NavGroup label="Account" items={accountItems} pathname={pathname} />
         )}
         <NavGroup label="Preferences" items={preferenceItems} pathname={pathname} />
-        {adminItems.length > 0 && (
-          <NavGroup label="Admin" items={adminItems} pathname={pathname} />
-        )}
+        {adminItems.length > 0 && <NavGroup label="Admin" items={adminItems} pathname={pathname} />}
 
         <button
           onClick={() => setShowSignOutConfirm(true)}
-          className="mt-auto bg-surface border border-border-light rounded py-3 px-4 cursor-pointer text-left flex items-center gap-2.5"
+          className="bg-surface border-border-light mt-auto flex cursor-pointer items-center gap-2.5 rounded border px-4 py-3 text-left"
         >
           <SignOut size={16} color="var(--red)" />
-          <span className="text-14 font-medium text-red">Sign Out</span>
+          <span className="text-14 text-red font-medium">Sign Out</span>
         </button>
       </aside>
 
       {showSignOutConfirm && (
         <div
-          className="fixed inset-0 flex items-center justify-center px-8 z-nested bg-backdrop"
+          className="z-nested bg-backdrop fixed inset-0 flex items-center justify-center px-8"
           onClick={(e) => {
             if (e.target === e.currentTarget) setShowSignOutConfirm(false);
           }}
         >
-          <div
-            className="bg-surface w-full max-w-xs overflow-hidden"
-            style={{ borderRadius: 16 }}
-          >
+          <div className="bg-surface w-full max-w-xs overflow-hidden" style={{ borderRadius: 16 }}>
             <div className="px-5 pt-6 pb-4 text-center">
               <p
-                className="text-16 font-semibold text-text-primary"
+                className="text-16 text-text-primary font-semibold"
                 style={{ margin: '0 0 0.375rem' }}
               >
                 Sign out?
               </p>
-              <p className="text-14 text-text-muted m-0">
-                You can always sign back in.
-              </p>
+              <p className="text-14 text-text-muted m-0">You can always sign back in.</p>
             </div>
-            <div className="border-t border-border-light flex">
+            <div className="border-border-light flex border-t">
               <button
                 onClick={() => setShowSignOutConfirm(false)}
-                className="flex-1 h-[50px] bg-transparent border-none border-r border-border-light text-15 text-text-secondary cursor-pointer font-medium"
+                className="border-border-light text-15 text-text-secondary h-[50px] flex-1 cursor-pointer border-r border-none bg-transparent font-medium"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSignOut}
-                className="flex-1 h-[50px] bg-transparent border-none text-15 text-sage cursor-pointer font-semibold"
+                className="text-15 text-sage h-[50px] flex-1 cursor-pointer border-none bg-transparent font-semibold"
               >
                 Sign Out
               </button>
@@ -237,11 +224,9 @@ function NavGroup({
   pathname: string | null;
 }) {
   return (
-    <div
-      className="bg-surface border border-border-light rounded overflow-hidden"
-    >
+    <div className="bg-surface border-border-light overflow-hidden rounded border">
       <div
-        className="text-12 font-semibold text-text-muted uppercase tracking-wide-4"
+        className="text-12 text-text-muted tracking-wide-4 font-semibold uppercase"
         style={{ padding: '0.75rem 1rem 0.5rem' }}
       >
         {label}
@@ -253,7 +238,7 @@ function NavGroup({
             <Link
               key={item.href}
               href={item.href}
-              className="no-underline flex items-center gap-2.5 text-14"
+              className="text-14 flex items-center gap-2.5 no-underline"
               style={{
                 padding: '0.625rem 1rem',
                 fontWeight: active ? 'var(--font-semibold)' : 'var(--font-medium)',
@@ -262,7 +247,10 @@ function NavGroup({
                 borderLeft: active ? '3px solid var(--sage)' : '3px solid transparent',
               }}
             >
-              <span className="shrink-0" style={{ color: active ? 'var(--sage)' : 'var(--text-muted)' }}>
+              <span
+                className="shrink-0"
+                style={{ color: active ? 'var(--sage)' : 'var(--text-muted)' }}
+              >
                 {item.icon}
               </span>
               <span>{item.label}</span>

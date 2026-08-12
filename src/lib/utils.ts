@@ -171,13 +171,21 @@ export function getShepherdEntries(data: {
       .map((p) => ({
         id: p.id,
         name: p.name,
-        subtitle: p.role === 'admin' ? 'Pastor' : 'User',
-        photo: p.personId ? data.people.find((person) => person.id === p.personId)?.photo : undefined,
+        subtitle: p.role === 'admin' ? 'Admin' : 'User',
+        photo: p.personId
+          ? data.people.find((person) => person.id === p.personId)?.photo
+          : undefined,
         personId: p.personId,
       })),
     ...data.people
       .filter((p) => p.isShepherd && !personaPersonIds.has(p.id))
-      .map((p) => ({ id: p.id, name: fullName(p), subtitle: 'User', photo: p.photo, personId: p.id })),
+      .map((p) => ({
+        id: p.id,
+        name: fullName(p),
+        subtitle: 'User',
+        photo: p.photo,
+        personId: p.id,
+      })),
   ];
 }
 
@@ -339,11 +347,7 @@ const MEMBERSHIP_AGGREGATE_LABEL: Record<MembershipStatus, [string, string]> = {
   'membership-track': ['On Track', 'On Track'],
 };
 
-const MEMBERSHIP_AGGREGATE_ORDER: MembershipStatus[] = [
-  'member',
-  'membership-track',
-  'non-member',
-];
+const MEMBERSHIP_AGGREGATE_ORDER: MembershipStatus[] = ['member', 'membership-track', 'non-member'];
 
 export function aggregateMembership(people: Person[]): string {
   if (people.length === 0) return '';
@@ -714,10 +718,7 @@ export function calcReminderDueAt(
  * Hide rows flagged `isTest` from non-test viewers. A test persona sees
  * everything (so they can verify test rows show up in pickers/lists).
  */
-export function visibleTo<T extends { isTest?: boolean }>(
-  rows: T[],
-  viewerIsTest: boolean
-): T[] {
+export function visibleTo<T extends { isTest?: boolean }>(rows: T[], viewerIsTest: boolean): T[] {
   if (viewerIsTest) return rows;
   return rows.filter((r) => !r.isTest);
 }

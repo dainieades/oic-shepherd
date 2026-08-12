@@ -213,7 +213,7 @@ export default function LogsPage() {
   const btnPad = scrolled ? '0 0.75rem' : '0 0.875rem';
 
   const actionButtons = (
-    <div className="flex gap-2 items-center">
+    <div className="flex items-center gap-2">
       {/* Search — hidden on desktop when expanded */}
       <div className={showSearch ? 'lg:hidden' : undefined}>
         <button
@@ -232,7 +232,7 @@ export default function LogsPage() {
               }, 50);
             }
           }}
-          className="rounded-xs flex items-center justify-center cursor-pointer shrink-0"
+          className="flex shrink-0 cursor-pointer items-center justify-center rounded-xs"
           style={{
             width: btnSize,
             height: btnSize,
@@ -259,7 +259,7 @@ export default function LogsPage() {
       <div className="relative shrink-0">
         <button
           onClick={() => setShowFilter(true)}
-          className="rounded-xs flex items-center justify-center cursor-pointer"
+          className="flex cursor-pointer items-center justify-center rounded-xs"
           style={{
             width: btnSize,
             height: btnSize,
@@ -271,7 +271,7 @@ export default function LogsPage() {
           <Funnel size={14} />
         </button>
         {filterActive && (
-          <span className="absolute top-[-5px] right-[-5px] w-[15px] h-[15px] rounded-full bg-sage text-on-sage text-9 font-bold flex items-center justify-center pointer-events-none">
+          <span className="bg-sage text-on-sage text-9 pointer-events-none absolute top-[-5px] right-[-5px] flex h-[15px] w-[15px] items-center justify-center rounded-full font-bold">
             {activeFilterCount}
           </span>
         )}
@@ -280,7 +280,7 @@ export default function LogsPage() {
       {/* Add log */}
       <button
         onClick={() => setShowAddLog(true)}
-        className="rounded-xs bg-sage text-on-sage font-semibold border-none cursor-pointer flex items-center gap-1"
+        className="bg-sage text-on-sage flex cursor-pointer items-center gap-1 rounded-xs border-none font-semibold"
         style={{
           height: btnSize,
           padding: btnPad,
@@ -295,180 +295,176 @@ export default function LogsPage() {
 
   return (
     <PageContainer>
-    <div className="pb-8">
-      {/* Sticky collapsing header */}
-      <div
-        className="-mx-4 px-4 lg:mx-0 lg:px-0 sticky top-0 bg-bg z-sticky"
-        style={{
-          borderBottom: scrolled ? '1px solid var(--border-light)' : 'none',
-        }}
-      >
-        {scrolled ? (
-          <div className="h-11 flex items-center justify-between">
-            <span className="text-17 font-semibold text-text-primary tracking-tight-1">
-              Logs
-            </span>
-            {actionButtons}
-          </div>
-        ) : (
-          <div className="pt-5 pb-3.5 flex items-center justify-between">
-            <h1 className="text-32 font-extrabold text-text-primary tracking-tight-3 leading-none">
-              Logs
-            </h1>
-            {actionButtons}
+      <div className="pb-8">
+        {/* Sticky collapsing header */}
+        <div
+          className="bg-bg z-sticky sticky top-0 -mx-4 px-4 lg:mx-0 lg:px-0"
+          style={{
+            borderBottom: scrolled ? '1px solid var(--border-light)' : 'none',
+          }}
+        >
+          {scrolled ? (
+            <div className="flex h-11 items-center justify-between">
+              <span className="text-17 text-text-primary tracking-tight-1 font-semibold">Logs</span>
+              {actionButtons}
+            </div>
+          ) : (
+            <div className="flex items-center justify-between pt-5 pb-3.5">
+              <h1 className="text-32 text-text-primary tracking-tight-3 leading-none font-extrabold">
+                Logs
+              </h1>
+              {actionButtons}
+            </div>
+          )}
+        </div>
+
+        {/* Search bar */}
+        {(showSearch || search) && (
+          <div className="relative mt-2 mb-2.5 lg:hidden">
+            <MagnifyingGlass
+              size={14}
+              color="var(--text-muted)"
+              className="pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2"
+            />
+            <input
+              ref={searchInputRef}
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search logs…"
+              className="bg-surface border-border text-14 text-text-primary w-full rounded-sm border py-2 pr-3 pl-8 outline-none"
+            />
           </div>
         )}
-      </div>
 
-      {/* Search bar */}
-      {(showSearch || search) && (
-        <div className="lg:hidden relative mb-2.5 mt-2">
-          <MagnifyingGlass
-            size={14}
-            color="var(--text-muted)"
-            className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none"
+        {/* Active filter chips */}
+        {filterActive && (
+          <div className="mb-2.5 flex flex-wrap gap-1.5">
+            {filters.types.map((t) => (
+              <FilterChip
+                key={t}
+                onRemove={() => removeChip({ types: filters.types.filter((x) => x !== t) })}
+              >
+                {getNoteTypeLabel(t)}
+              </FilterChip>
+            ))}
+            {filters.datePreset && (
+              <FilterChip onRemove={() => removeChip({ datePreset: '', dateFrom: '', dateTo: '' })}>
+                {filters.datePreset === 'custom'
+                  ? [filters.dateFrom, filters.dateTo].filter(Boolean).join(' – ') || 'Custom'
+                  : ((
+                      {
+                        today: 'Today',
+                        'this-week': 'This week',
+                        'this-month': 'This month',
+                        'last-30': 'Last 30 days',
+                        'last-3-months': 'Last 3 months',
+                        'this-year': 'This year',
+                      } as Record<string, string>
+                    )[filters.datePreset] ?? filters.datePreset)}
+              </FilterChip>
+            )}
+            {isAdmin &&
+              filters.shepherds.map((sid) => {
+                const label =
+                  sid === 'mine'
+                    ? 'My Sheep'
+                    : (data.personas.find((p) => p.id === sid)?.name ?? sid);
+                return (
+                  <FilterChip
+                    key={sid}
+                    onRemove={() =>
+                      removeChip({ shepherds: filters.shepherds.filter((s) => s !== sid) })
+                    }
+                  >
+                    {label}
+                  </FilterChip>
+                );
+              })}
+          </div>
+        )}
+
+        {visibleNotes.length === 0 && (
+          <EmptyState
+            title="No logs yet"
+            description="Logs capture past interactions — a conversation, a check-in, a prayer request, or a moment you shared together."
+            subtext="Only assigned shepherds and admins can see these."
+            padding="4rem 2rem 2rem"
           />
-          <input
-            ref={searchInputRef}
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search logs…"
-            className="w-full bg-surface border border-border rounded-sm text-14 text-text-primary outline-none pl-8 pr-3 py-2"
-          />
-        </div>
-      )}
+        )}
 
-      {/* Active filter chips */}
-      {filterActive && (
-        <div className="flex gap-1.5 mb-2.5 flex-wrap">
-          {filters.types.map((t) => (
-            <FilterChip
-              key={t}
-              onRemove={() => removeChip({ types: filters.types.filter((x) => x !== t) })}
-            >
-              {getNoteTypeLabel(t)}
-            </FilterChip>
-          ))}
-          {filters.datePreset && (
-            <FilterChip onRemove={() => removeChip({ datePreset: '', dateFrom: '', dateTo: '' })}>
-              {filters.datePreset === 'custom'
-                ? [filters.dateFrom, filters.dateTo].filter(Boolean).join(' – ') || 'Custom'
-                : ((
-                    {
-                      today: 'Today',
-                      'this-week': 'This week',
-                      'this-month': 'This month',
-                      'last-30': 'Last 30 days',
-                      'last-3-months': 'Last 3 months',
-                      'this-year': 'This year',
-                    } as Record<string, string>
-                  )[filters.datePreset] ?? filters.datePreset)}
-            </FilterChip>
-          )}
-          {isAdmin &&
-            filters.shepherds.map((sid) => {
-              const label =
-                sid === 'mine'
-                  ? 'My Sheep'
-                  : (data.personas.find((p) => p.id === sid)?.name ?? sid);
-              return (
-                <FilterChip
-                  key={sid}
-                  onRemove={() =>
-                    removeChip({ shepherds: filters.shepherds.filter((s) => s !== sid) })
-                  }
-                >
-                  {label}
-                </FilterChip>
-              );
-            })}
-        </div>
-      )}
-
-      {visibleNotes.length === 0 && (
-        <EmptyState
-          title="No logs yet"
-          description="Logs capture past interactions — a conversation, a check-in, a prayer request, or a moment you shared together."
-          subtext="Only assigned shepherds and pastors can see these."
-          padding="4rem 2rem 2rem"
-        />
-      )}
-
-      {grouped.map((group) => {
-        const rows = group.items.map((note) => {
-          const creator = data.personas.find((p) => p.id === note.createdBy);
-          const person = note.personId ? data.people.find((p) => p.id === note.personId) : null;
-          const family = note.familyId ? data.families.find((f) => f.id === note.familyId) : null;
-          const targetChips: { label: string; isFamily: boolean }[] = [
-            ...(family ? [{ label: family.label, isFamily: true }] : []),
-            ...(person ? [{ label: fullName(person), isFamily: false }] : []),
-          ];
+        {grouped.map((group) => {
+          const rows = group.items.map((note) => {
+            const creator = data.personas.find((p) => p.id === note.createdBy);
+            const person = note.personId ? data.people.find((p) => p.id === note.personId) : null;
+            const family = note.familyId ? data.families.find((f) => f.id === note.familyId) : null;
+            const targetChips: { label: string; isFamily: boolean }[] = [
+              ...(family ? [{ label: family.label, isFamily: true }] : []),
+              ...(person ? [{ label: fullName(person), isFamily: false }] : []),
+            ];
+            return (
+              <LogItem
+                key={note.id}
+                note={note}
+                onClick={() => setEditingNote(note)}
+                creatorName={creator?.name}
+                targetChips={targetChips}
+                linkedTodoTitle={
+                  note.todoId ? data.todos.find((t) => t.id === note.todoId)?.title : undefined
+                }
+              />
+            );
+          });
           return (
-            <LogItem
-              key={note.id}
-              note={note}
-              onClick={() => setEditingNote(note)}
-              creatorName={creator?.name}
-              targetChips={targetChips}
-              linkedTodoTitle={
-                note.todoId ? data.todos.find((t) => t.id === note.todoId)?.title : undefined
-              }
-            />
+            <LogSection key={group.label} label={group.label} count={group.items.length}>
+              <div className="no-last-border bg-surface overflow-hidden rounded">{rows}</div>
+            </LogSection>
           );
-        });
-        return (
-          <LogSection key={group.label} label={group.label} count={group.items.length}>
-            <div className="no-last-border bg-surface rounded overflow-hidden">
-              {rows}
-            </div>
-          </LogSection>
-        );
-      })}
+        })}
 
-      {showAddLog && <AddLogModal onClose={() => setShowAddLog(false)} />}
-      {editingNote && !viewingLinkedTodo && (
-        <AddLogModal
-          note={editingNote}
-          onClose={() => setEditingNote(null)}
-          onOpenTodo={(todoId) => {
-            const t = data.todos.find((x) => x.id === todoId);
-            if (t) {
-              setLinkedTodoReturnNote(editingNote);
-              setViewingLinkedTodo(t);
-            }
-          }}
-        />
-      )}
-      {viewingLinkedTodo && (
-        <AddTodoModal
-          todo={viewingLinkedTodo}
-          onClose={() => {
-            setViewingLinkedTodo(null);
-            setLinkedTodoReturnNote(null);
-            setEditingNote(null);
-          }}
-          onBack={() => {
-            setViewingLinkedTodo(null);
-            if (linkedTodoReturnNote) {
-              setEditingNote(linkedTodoReturnNote);
+        {showAddLog && <AddLogModal onClose={() => setShowAddLog(false)} />}
+        {editingNote && !viewingLinkedTodo && (
+          <AddLogModal
+            note={editingNote}
+            onClose={() => setEditingNote(null)}
+            onOpenTodo={(todoId) => {
+              const t = data.todos.find((x) => x.id === todoId);
+              if (t) {
+                setLinkedTodoReturnNote(editingNote);
+                setViewingLinkedTodo(t);
+              }
+            }}
+          />
+        )}
+        {viewingLinkedTodo && (
+          <AddTodoModal
+            todo={viewingLinkedTodo}
+            onClose={() => {
+              setViewingLinkedTodo(null);
               setLinkedTodoReturnNote(null);
-            }
-          }}
-        />
-      )}
+              setEditingNote(null);
+            }}
+            onBack={() => {
+              setViewingLinkedTodo(null);
+              if (linkedTodoReturnNote) {
+                setEditingNote(linkedTodoReturnNote);
+                setLinkedTodoReturnNote(null);
+              }
+            }}
+          />
+        )}
 
-      <LogsFilterPanel
-        show={showFilter}
-        onClose={() => setShowFilter(false)}
-        filters={filters}
-        onApply={handleApplyFilters}
-        isAdmin={isAdmin}
-        shepherdEntries={shepherdEntries}
-        currentPersonaId={currentPersona.id}
-        currentPersonaName={currentPersona.name}
-      />
-    </div>
+        <LogsFilterPanel
+          show={showFilter}
+          onClose={() => setShowFilter(false)}
+          filters={filters}
+          onApply={handleApplyFilters}
+          isAdmin={isAdmin}
+          shepherdEntries={shepherdEntries}
+          currentPersonaId={currentPersona.id}
+          currentPersonaName={currentPersona.name}
+        />
+      </div>
     </PageContainer>
   );
 }
@@ -477,7 +473,7 @@ function FilterChip({ children, onRemove }: { children: React.ReactNode; onRemov
   return (
     <button
       onClick={onRemove}
-      className="flex items-center gap-1 rounded-pill bg-sage-light border border-sage-mid text-sage-dark text-11 font-medium cursor-pointer"
+      className="rounded-pill bg-sage-light border-sage-mid text-sage-dark text-11 flex cursor-pointer items-center gap-1 border font-medium"
       style={{ padding: '0.1875rem 0.5625rem' }}
     >
       {children}
@@ -500,7 +496,7 @@ function LogSection({
     <div className="mb-4">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 py-1 bg-transparent border-none cursor-pointer text-10 font-semibold text-text-muted uppercase tracking-wide-6"
+        className="text-10 text-text-muted tracking-wide-6 flex cursor-pointer items-center gap-1.5 border-none bg-transparent py-1 font-semibold uppercase"
         style={{ marginBottom: open ? 8 : 0 }}
       >
         {label} · {count}

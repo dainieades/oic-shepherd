@@ -35,9 +35,7 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
     label: family.label.replace(/ Family$/i, ''),
     memberIds: [...family.memberIds],
     groupIds: Array.from(
-      new Set(
-        data.people.filter((p) => family.memberIds.includes(p.id)).flatMap((m) => m.groupIds)
-      )
+      new Set(data.people.filter((p) => family.memberIds.includes(p.id)).flatMap((m) => m.groupIds))
     ),
     shepherdIds: Array.from(
       new Set(
@@ -52,7 +50,9 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
   const [label, setLabel] = React.useState(family.label.replace(/ Family$/i, ''));
   const [memberIds, setMemberIds] = React.useState<string[]>(family.memberIds);
   const [groupIds, setGroupIds] = React.useState<string[]>(initialStateRef.current.groupIds);
-  const [shepherdIds, setShepherdIds] = React.useState<string[]>(initialStateRef.current.shepherdIds);
+  const [shepherdIds, setShepherdIds] = React.useState<string[]>(
+    initialStateRef.current.shepherdIds
+  );
 
   // Picker open state
   const [showMemberPicker, setShowMemberPicker] = React.useState(false);
@@ -95,7 +95,7 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
     .map((p) => ({
       id: p.id,
       name: p.name,
-      subtitle: p.role === 'admin' ? 'Pastor' : 'User',
+      subtitle: p.role === 'admin' ? 'Admin' : 'User',
       photo: p.personId ? data.people.find((person) => person.id === p.personId)?.photo : undefined,
     }));
   const selectedShepherds = shepherdEntries.filter((e) => shepherdIds.includes(e.id));
@@ -117,14 +117,14 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
       />
 
       {/* Scrollable body */}
-      <div className="flex-1 overflow-y-auto bg-bg" style={{ padding: '1.25rem 1.25rem 3rem' }}>
+      <div className="bg-bg flex-1 overflow-y-auto" style={{ padding: '1.25rem 1.25rem 3rem' }}>
         {/* ── BASIC ── */}
         <DrawerSection label="Basic">
           <div
-            className="field-row-hover flex items-center gap-2.5 pt-3 pb-3 border-b border-border-light cursor-text"
+            className="field-row-hover border-border-light flex cursor-text items-center gap-2.5 border-b pt-3 pb-3"
             onClick={() => labelRef.current?.focus()}
           >
-            <span className="w-2.5 shrink-0 text-14 text-red leading-none">*</span>
+            <span className="text-14 text-red w-2.5 shrink-0 leading-none">*</span>
             <House size={16} color="var(--text-muted)" />
             <span className="text-12 text-text-muted w-[60px] shrink-0">Last name</span>
             <input
@@ -132,11 +132,9 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
               value={label}
               onChange={(e) => setLabel(e.target.value)}
               placeholder="e.g. Chen"
-              className="flex-1 bg-transparent border-none outline-none text-14 text-text-primary"
+              className="text-14 text-text-primary flex-1 border-none bg-transparent outline-none"
             />
-            <span className="text-15 text-text-muted whitespace-nowrap">
-              Family
-            </span>
+            <span className="text-15 text-text-muted whitespace-nowrap">Family</span>
           </div>
         </DrawerSection>
 
@@ -153,22 +151,20 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
             return (
               <div
                 key={m.id}
-                className="field-row-hover flex items-center gap-2.5 pt-2.5 pb-2.5 border-b border-border-light"
+                className="field-row-hover border-border-light flex items-center gap-2.5 border-b pt-2.5 pb-2.5"
               >
                 <div
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-11 font-bold shrink-0"
+                  className="text-11 flex h-8 w-8 shrink-0 items-center justify-center rounded-full font-bold"
                   style={{ background: palette.bg, color: palette.color }}
                 >
                   {inits}
                 </div>
-                <span className="flex-1 text-14 text-text-primary">
-                  {fullName(m)}
-                </span>
+                <span className="text-14 text-text-primary flex-1">{fullName(m)}</span>
                 <button
                   onClick={() => {
                     setMemberIds(memberIds.filter((x) => x !== m.id));
                   }}
-                  className="w-7 h-7 rounded-full bg-red-light border-none cursor-pointer flex items-center justify-center shrink-0"
+                  className="bg-red-light flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-full border-none"
                   aria-label={`Remove ${fullName(m)}`}
                 >
                   <X size={12} color="#EF4444" />
@@ -178,14 +174,12 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
           })}
           {/* Add / edit members row */}
           <button
-            className="field-row-hover flex items-center gap-2.5 pt-3 pb-3 border-none border-b border-border-light bg-transparent cursor-pointer w-full text-left"
+            className="field-row-hover border-border-light flex w-full cursor-pointer items-center gap-2.5 border-b border-none bg-transparent pt-3 pb-3 text-left"
             onClick={() => setShowMemberPicker(true)}
           >
             <span className="w-2.5 shrink-0" />
             <Plus size={16} color="var(--sage)" />
-            <span className="text-14 text-sage font-medium">
-              Add member
-            </span>
+            <span className="text-14 text-sage font-medium">Add member</span>
           </button>
         </DrawerSection>
 
@@ -193,18 +187,18 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
         <DrawerSection label="Church">
           {/* Fellowship Groups */}
           <button
-            className="field-row-hover flex items-center gap-2.5 pt-3 pb-3 border-none border-b border-border-light bg-transparent cursor-pointer w-full text-left"
+            className="field-row-hover border-border-light flex w-full cursor-pointer items-center gap-2.5 border-b border-none bg-transparent pt-3 pb-3 text-left"
             onClick={() => setShowGroupPicker((v) => !v)}
           >
             <span className="w-2.5 shrink-0" />
             <UsersFour size={16} color="var(--text-muted)" />
             <span className="text-12 text-text-muted w-[60px] shrink-0">Groups</span>
-            <div className="flex-1 flex flex-wrap gap-1">
+            <div className="flex flex-1 flex-wrap gap-1">
               {selectedGroups.length > 0 ? (
                 selectedGroups.map((g) => (
                   <span
                     key={g.id}
-                    className="text-11 font-medium rounded-pill bg-blue-light text-blue shrink-0"
+                    className="text-11 rounded-pill bg-blue-light text-blue shrink-0 font-medium"
                     style={{ padding: '0.125rem 0.5rem' }}
                   >
                     {g.name}
@@ -219,18 +213,18 @@ export default function EditFamilyDrawer({ family, onClose }: Props) {
 
           {/* Shepherds */}
           <button
-            className="field-row-hover flex items-center gap-2.5 pt-3 pb-3 border-none border-b border-border-light bg-transparent cursor-pointer w-full text-left"
+            className="field-row-hover border-border-light flex w-full cursor-pointer items-center gap-2.5 border-b border-none bg-transparent pt-3 pb-3 text-left"
             onClick={() => setShowShepherdPicker(true)}
           >
             <span className="w-2.5 shrink-0" />
             <HandHeart size={16} color="var(--text-muted)" />
             <span className="text-12 text-text-muted w-[60px] shrink-0">Shepherd</span>
-            <div className="flex-1 flex flex-wrap gap-1">
+            <div className="flex flex-1 flex-wrap gap-1">
               {selectedShepherds.length > 0 ? (
                 selectedShepherds.map((p) => (
                   <span
                     key={p.id}
-                    className="text-11 font-medium rounded-pill bg-sage-light text-sage shrink-0"
+                    className="text-11 rounded-pill bg-sage-light text-sage shrink-0 font-medium"
                     style={{ padding: '0.125rem 0.5rem' }}
                   >
                     {p.name}
@@ -327,76 +321,73 @@ function MemberPickerSheet({
         actionVariant="pill"
       />
 
-        {/* Search */}
-        <div className="py-3 px-5 shrink-0 border-b border-border-light">
-          <div className="flex items-center gap-2 bg-bg border border-border rounded-sm" style={{ padding: '0.5625rem 0.75rem' }}>
-            <MagnifyingGlass size={14} color="var(--text-muted)" />
-            <input
-              ref={searchRef}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search people…"
-              className="flex-1 text-14 text-text-primary bg-transparent border-none outline-none"
-            />
-            {search && (
-              <button
-                onClick={() => setSearch('')}
-                className="bg-transparent border-none cursor-pointer text-text-muted text-18 leading-none p-0"
-              >
-                ×
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* List */}
-        <div className="flex-1 overflow-y-auto">
-          {filtered.map((p, i) => {
-            const isSel = selectedIds.includes(p.id);
-            const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
-            const inits = fullName(p)
-              .split(' ')
-              .map((n) => n[0])
-              .join('')
-              .toUpperCase()
-              .slice(0, 2);
-            return (
-              <button
-                key={p.id}
-                onClick={() => toggle(p.id)}
-                className="w-full flex items-center gap-3 py-3 px-5 border-none border-b border-border-light cursor-pointer text-left"
-                style={{ background: isSel ? 'var(--sage-light)' : 'transparent' }}
-              >
-                <div
-                  className="w-9 h-9 rounded-full shrink-0 flex items-center justify-center text-12 font-bold"
-                  style={{ background: palette.bg, color: palette.color }}
-                >
-                  {inits}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p
-                    className={`text-14 text-text-primary m-0 ${isSel ? 'font-semibold' : 'font-normal'}`}
-                  >
-                    {fullName(p)}
-                  </p>
-                  {p.alternativeName && (
-                    <p className="text-12 text-text-muted m-0">
-                      {p.alternativeName}
-                    </p>
-                  )}
-                </div>
-                <MemberCheckCircle selected={isSel} />
-              </button>
-            );
-          })}
-          {filtered.length === 0 && (
-            <p
-              className="text-13 text-text-muted text-center italic py-6 px-5"
+      {/* Search */}
+      <div className="border-border-light shrink-0 border-b px-5 py-3">
+        <div
+          className="bg-bg border-border flex items-center gap-2 rounded-sm border"
+          style={{ padding: '0.5625rem 0.75rem' }}
+        >
+          <MagnifyingGlass size={14} color="var(--text-muted)" />
+          <input
+            ref={searchRef}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search people…"
+            className="text-14 text-text-primary flex-1 border-none bg-transparent outline-none"
+          />
+          {search && (
+            <button
+              onClick={() => setSearch('')}
+              className="text-text-muted text-18 cursor-pointer border-none bg-transparent p-0 leading-none"
             >
-              No people found.
-            </p>
+              ×
+            </button>
           )}
         </div>
+      </div>
+
+      {/* List */}
+      <div className="flex-1 overflow-y-auto">
+        {filtered.map((p, i) => {
+          const isSel = selectedIds.includes(p.id);
+          const palette = SHEPHERD_AVATAR_PALETTE[i % SHEPHERD_AVATAR_PALETTE.length];
+          const inits = fullName(p)
+            .split(' ')
+            .map((n) => n[0])
+            .join('')
+            .toUpperCase()
+            .slice(0, 2);
+          return (
+            <button
+              key={p.id}
+              onClick={() => toggle(p.id)}
+              className="border-border-light flex w-full cursor-pointer items-center gap-3 border-b border-none px-5 py-3 text-left"
+              style={{ background: isSel ? 'var(--sage-light)' : 'transparent' }}
+            >
+              <div
+                className="text-12 flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-bold"
+                style={{ background: palette.bg, color: palette.color }}
+              >
+                {inits}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p
+                  className={`text-14 text-text-primary m-0 ${isSel ? 'font-semibold' : 'font-normal'}`}
+                >
+                  {fullName(p)}
+                </p>
+                {p.alternativeName && (
+                  <p className="text-12 text-text-muted m-0">{p.alternativeName}</p>
+                )}
+              </div>
+              <MemberCheckCircle selected={isSel} />
+            </button>
+          );
+        })}
+        {filtered.length === 0 && (
+          <p className="text-13 text-text-muted px-5 py-6 text-center italic">No people found.</p>
+        )}
+      </div>
     </SubPanel>
   );
 }
@@ -404,7 +395,7 @@ function MemberPickerSheet({
 function MemberCheckCircle({ selected }: { selected: boolean }) {
   return (
     <div
-      className="w-5 h-5 shrink-0 flex items-center justify-center [transition:background_0.15s]"
+      className="flex h-5 w-5 shrink-0 items-center justify-center [transition:background_0.15s]"
       style={{
         borderRadius: 5,
         border: selected ? 'none' : '0.09375rem solid var(--border)',
@@ -450,64 +441,63 @@ function GroupPickerSheet({
         actionLabel={selectedIds.length > 0 ? `Done (${selectedIds.length})` : 'Done'}
         actionVariant="pill"
       />
-        <div className="py-3 px-5 shrink-0 border-b border-border-light">
-          <div className="flex items-center gap-2 bg-bg border border-border rounded-sm" style={{ padding: '0.5625rem 0.75rem' }}>
-            <MagnifyingGlass size={14} color="var(--text-muted)" />
-            <input
-              ref={searchRef}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search groups…"
-              className="flex-1 text-14 text-text-primary bg-transparent border-none outline-none"
-            />
-            {search && (
-              <button
-                onClick={() => setSearch('')}
-                className="bg-transparent border-none cursor-pointer text-text-muted text-18 leading-none p-0"
-              >
-                ×
-              </button>
-            )}
-          </div>
-        </div>
-        <div className="flex-1 overflow-y-auto">
-          {filtered.map((g) => {
-            const isSel = selectedIds.includes(g.id);
-            return (
-              <button
-                key={g.id}
-                onClick={() => toggle(g.id)}
-                className="w-full flex items-center gap-3 py-3 px-5 border-none border-b border-border-light cursor-pointer text-left"
-                style={{ background: isSel ? 'var(--blue-light)' : 'transparent' }}
-              >
-                <div className="flex-1 min-w-0">
-                  <p
-                    className={`text-14 m-0 ${isSel ? 'font-semibold text-blue' : 'font-normal text-text-primary'}`}
-                  >
-                    {g.name}
-                  </p>
-                </div>
-                <div
-                  className="w-5 h-5 shrink-0 flex items-center justify-center [transition:background_0.15s]"
-                  style={{
-                    borderRadius: 5,
-                    border: isSel ? 'none' : '0.09375rem solid var(--border)',
-                    background: isSel ? 'var(--blue)' : 'transparent',
-                  }}
-                >
-                  {isSel && <Check size={11} color="var(--surface)" weight="bold" />}
-                </div>
-              </button>
-            );
-          })}
-          {filtered.length === 0 && (
-            <p
-              className="text-13 text-text-muted text-center italic py-6 px-5"
+      <div className="border-border-light shrink-0 border-b px-5 py-3">
+        <div
+          className="bg-bg border-border flex items-center gap-2 rounded-sm border"
+          style={{ padding: '0.5625rem 0.75rem' }}
+        >
+          <MagnifyingGlass size={14} color="var(--text-muted)" />
+          <input
+            ref={searchRef}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search groups…"
+            className="text-14 text-text-primary flex-1 border-none bg-transparent outline-none"
+          />
+          {search && (
+            <button
+              onClick={() => setSearch('')}
+              className="text-text-muted text-18 cursor-pointer border-none bg-transparent p-0 leading-none"
             >
-              No groups found.
-            </p>
+              ×
+            </button>
           )}
         </div>
+      </div>
+      <div className="flex-1 overflow-y-auto">
+        {filtered.map((g) => {
+          const isSel = selectedIds.includes(g.id);
+          return (
+            <button
+              key={g.id}
+              onClick={() => toggle(g.id)}
+              className="border-border-light flex w-full cursor-pointer items-center gap-3 border-b border-none px-5 py-3 text-left"
+              style={{ background: isSel ? 'var(--blue-light)' : 'transparent' }}
+            >
+              <div className="min-w-0 flex-1">
+                <p
+                  className={`text-14 m-0 ${isSel ? 'text-blue font-semibold' : 'text-text-primary font-normal'}`}
+                >
+                  {g.name}
+                </p>
+              </div>
+              <div
+                className="flex h-5 w-5 shrink-0 items-center justify-center [transition:background_0.15s]"
+                style={{
+                  borderRadius: 5,
+                  border: isSel ? 'none' : '0.09375rem solid var(--border)',
+                  background: isSel ? 'var(--blue)' : 'transparent',
+                }}
+              >
+                {isSel && <Check size={11} color="var(--surface)" weight="bold" />}
+              </div>
+            </button>
+          );
+        })}
+        {filtered.length === 0 && (
+          <p className="text-13 text-text-muted px-5 py-6 text-center italic">No groups found.</p>
+        )}
+      </div>
     </SubPanel>
   );
 }
