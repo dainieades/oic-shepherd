@@ -86,7 +86,7 @@ async function resolveShepherdPersonaIds(
   }
 
   const resolvedIds = ids.map((id) =>
-    knownPersonaIds.has(id) ? id : personIdToPersonaId.get(id) ?? id
+    knownPersonaIds.has(id) ? id : (personIdToPersonaId.get(id) ?? id)
   );
   return { resolvedIds, newPersonas };
 }
@@ -130,34 +130,67 @@ interface PeopleHookDeps {
   setCurrentPersona: Dispatch<SetStateAction<Persona>>;
   currentUserEmail: string;
   showToast: (message: string, type?: 'success' | 'error') => void;
-  addTodo: (todo: Omit<import('../types').Todo, 'id' | 'createdAt' | 'createdBy' | 'completed'>) => Promise<void>;
+  addTodo: (
+    todo: Omit<import('../types').Todo, 'id' | 'createdAt' | 'createdBy' | 'completed'>
+  ) => Promise<void>;
 }
 
 export interface PeopleHookResult {
-  addPerson: (person: Omit<Person, 'id' | 'createdAt' | 'assignedShepherdIds' | 'groupIds'>) => Promise<string>;
+  addPerson: (
+    person: Omit<Person, 'id' | 'createdAt' | 'assignedShepherdIds' | 'groupIds'>
+  ) => Promise<string>;
   updatePerson: (
     personId: string,
-    updates: Partial<Pick<Person,
-      | 'preferredName' | 'lastName' | 'alternativeName' | 'photo' | 'originalPhoto'
-      | 'phone' | 'homePhone' | 'email' | 'homeAddress' | 'membershipStatus'
-      | 'churchAttendance' | 'membershipDate' | 'language' | 'gender' | 'maritalStatus'
-      | 'birthday' | 'baptized' | 'baptismDate' | 'anniversary' | 'isShepherd'
-      | 'isBeingDiscipled' | 'churchPositions' | 'appRole' | 'canTriageVisitors'
-    >>
+    updates: Partial<
+      Pick<
+        Person,
+        | 'preferredName'
+        | 'lastName'
+        | 'alternativeName'
+        | 'photo'
+        | 'originalPhoto'
+        | 'phone'
+        | 'homePhone'
+        | 'email'
+        | 'homeAddress'
+        | 'membershipStatus'
+        | 'churchAttendance'
+        | 'membershipDate'
+        | 'language'
+        | 'gender'
+        | 'maritalStatus'
+        | 'birthday'
+        | 'baptized'
+        | 'baptismDate'
+        | 'anniversary'
+        | 'isShepherd'
+        | 'isBeingDiscipled'
+        | 'churchPositions'
+        | 'appRole'
+        | 'canTriageVisitors'
+      >
+    >
   ) => Promise<void>;
   deletePerson: (personId: string) => Promise<void>;
   promoteVisitorSubmission: (submissionId: string) => Promise<string>;
   discardVisitorSubmission: (submissionId: string) => Promise<void>;
   updateVisitorSubmission: (
     submissionId: string,
-    patch: { referralSource?: ReferralSource | null; referralDetail?: string | null; interests?: Interest[]; prayerRequest?: string | null }
+    patch: {
+      referralSource?: ReferralSource | null;
+      referralDetail?: string | null;
+      interests?: Interest[];
+      prayerRequest?: string | null;
+    }
   ) => Promise<void>;
   fetchAuditLogs: (personId: string) => Promise<AuditLog[]>;
   assignShepherds: (personId: string, shepherdIds: string[]) => Promise<void>;
   addFamily: (label: string, memberIds: string[]) => Promise<string>;
   updateFamily: (
     familyId: string,
-    updates: Partial<Pick<Family, 'label' | 'photo' | 'originalPhoto' | 'primaryContactId' | 'childCount'>>
+    updates: Partial<
+      Pick<Family, 'label' | 'photo' | 'originalPhoto' | 'primaryContactId' | 'childCount'>
+    >
   ) => Promise<void>;
   updateFamilyMembers: (familyId: string, memberIds: string[]) => Promise<void>;
   assignShepherdsToFamily: (familyId: string, shepherdIds: string[]) => Promise<void>;
@@ -180,7 +213,9 @@ export function usePeopleHook({
   addTodo,
 }: PeopleHookDeps): PeopleHookResult {
   const addPerson = React.useCallback(
-    async (personData: Omit<Person, 'id' | 'createdAt' | 'assignedShepherdIds' | 'groupIds'>): Promise<string> => {
+    async (
+      personData: Omit<Person, 'id' | 'createdAt' | 'assignedShepherdIds' | 'groupIds'>
+    ): Promise<string> => {
       const person: Person = {
         ...personData,
         id: generateId(),
@@ -243,7 +278,14 @@ export function usePeopleHook({
       });
       return person.id;
     },
-    [currentPersona.id, currentPersona.name, currentPersona.userId, currentUserEmail, setData, showToast]
+    [
+      currentPersona.id,
+      currentPersona.name,
+      currentPersona.userId,
+      currentUserEmail,
+      setData,
+      showToast,
+    ]
   );
 
   const promoteVisitorSubmission = React.useCallback(
@@ -291,13 +333,16 @@ export function usePeopleHook({
     [addPerson, addTodo]
   );
 
-  const discardVisitorSubmission = React.useCallback(async (submissionId: string): Promise<void> => {
-    const supabase = createClient();
-    await supabase
-      .from('visitor_submissions')
-      .update({ status: 'discarded' })
-      .eq('id', submissionId);
-  }, []);
+  const discardVisitorSubmission = React.useCallback(
+    async (submissionId: string): Promise<void> => {
+      const supabase = createClient();
+      await supabase
+        .from('visitor_submissions')
+        .update({ status: 'discarded' })
+        .eq('id', submissionId);
+    },
+    []
+  );
 
   const updateVisitorSubmission = React.useCallback(
     async (
@@ -332,13 +377,35 @@ export function usePeopleHook({
   const updatePerson = React.useCallback(
     async (
       personId: string,
-      updates: Partial<Pick<Person,
-        | 'preferredName' | 'lastName' | 'alternativeName' | 'photo' | 'originalPhoto'
-        | 'phone' | 'homePhone' | 'email' | 'homeAddress' | 'membershipStatus'
-        | 'churchAttendance' | 'membershipDate' | 'language' | 'gender' | 'maritalStatus'
-        | 'birthday' | 'baptized' | 'baptismDate' | 'anniversary' | 'isShepherd'
-        | 'isBeingDiscipled' | 'churchPositions' | 'appRole' | 'canTriageVisitors'
-      >>
+      updates: Partial<
+        Pick<
+          Person,
+          | 'preferredName'
+          | 'lastName'
+          | 'alternativeName'
+          | 'photo'
+          | 'originalPhoto'
+          | 'phone'
+          | 'homePhone'
+          | 'email'
+          | 'homeAddress'
+          | 'membershipStatus'
+          | 'churchAttendance'
+          | 'membershipDate'
+          | 'language'
+          | 'gender'
+          | 'maritalStatus'
+          | 'birthday'
+          | 'baptized'
+          | 'baptismDate'
+          | 'anniversary'
+          | 'isShepherd'
+          | 'isBeingDiscipled'
+          | 'churchPositions'
+          | 'appRole'
+          | 'canTriageVisitors'
+        >
+      >
     ): Promise<void> => {
       let snapshot: AppData | undefined;
       let currentPerson: Person | undefined;
@@ -371,15 +438,18 @@ export function usePeopleHook({
       const dbUpdates: Partial<PersonRow> = {};
       if (updates.preferredName !== undefined) dbUpdates.preferred_name = updates.preferredName;
       if (updates.lastName !== undefined) dbUpdates.last_name = updates.lastName;
-      if (updates.alternativeName !== undefined) dbUpdates.alternative_name = updates.alternativeName;
+      if (updates.alternativeName !== undefined)
+        dbUpdates.alternative_name = updates.alternativeName;
       if ('photo' in updates) dbUpdates.photo = updates.photo ?? null;
       if ('originalPhoto' in updates) dbUpdates.original_photo = updates.originalPhoto ?? null;
       if (updates.phone !== undefined) dbUpdates.phone = updates.phone;
       if (updates.homePhone !== undefined) dbUpdates.home_phone = updates.homePhone;
       if (updates.email !== undefined) dbUpdates.email = updates.email;
       if (updates.homeAddress !== undefined) dbUpdates.home_address = updates.homeAddress;
-      if (updates.membershipStatus !== undefined) dbUpdates.membership_status = updates.membershipStatus;
-      if (updates.churchAttendance !== undefined) dbUpdates.church_attendance = updates.churchAttendance;
+      if (updates.membershipStatus !== undefined)
+        dbUpdates.membership_status = updates.membershipStatus;
+      if (updates.churchAttendance !== undefined)
+        dbUpdates.church_attendance = updates.churchAttendance;
       if (updates.membershipDate !== undefined) dbUpdates.membership_date = updates.membershipDate;
       if (updates.language !== undefined) dbUpdates.language = JSON.stringify(updates.language);
       if (updates.gender !== undefined) dbUpdates.gender = updates.gender;
@@ -389,10 +459,13 @@ export function usePeopleHook({
       if (updates.baptismDate !== undefined) dbUpdates.baptism_date = updates.baptismDate;
       if (updates.anniversary !== undefined) dbUpdates.anniversary = updates.anniversary;
       if (updates.isShepherd !== undefined) dbUpdates.is_shepherd = updates.isShepherd;
-      if (updates.isBeingDiscipled !== undefined) dbUpdates.is_being_discipled = updates.isBeingDiscipled;
-      if (updates.churchPositions !== undefined) dbUpdates.church_positions = updates.churchPositions;
+      if (updates.isBeingDiscipled !== undefined)
+        dbUpdates.is_being_discipled = updates.isBeingDiscipled;
+      if (updates.churchPositions !== undefined)
+        dbUpdates.church_positions = updates.churchPositions;
       if (updates.appRole !== undefined) dbUpdates.app_role = updates.appRole;
-      if (updates.canTriageVisitors !== undefined) dbUpdates.can_triage_visitors = updates.canTriageVisitors;
+      if (updates.canTriageVisitors !== undefined)
+        dbUpdates.can_triage_visitors = updates.canTriageVisitors;
       const now = new Date().toISOString();
       dbUpdates.last_edited_at = now;
       dbUpdates.last_edited_by_name = currentPersona.name;
@@ -424,7 +497,10 @@ export function usePeopleHook({
       ]);
       const auditError = auditResult.error;
       if (personUpdateError || auditError) {
-        console.error('updatePerson failed:', JSON.stringify(personUpdateError ?? auditError, null, 2));
+        console.error(
+          'updatePerson failed:',
+          JSON.stringify(personUpdateError ?? auditError, null, 2)
+        );
         if (snapshot) setData(snapshot);
         showToast(SAVE_ERROR_MSG, 'error');
         return;
@@ -433,7 +509,9 @@ export function usePeopleHook({
         setData((prev) => ({
           ...prev,
           people: prev.people.map((p) =>
-            p.id === personId ? { ...p, lastEditedAt: now, lastEditedByName: currentPersona.name } : p
+            p.id === personId
+              ? { ...p, lastEditedAt: now, lastEditedByName: currentPersona.name }
+              : p
           ),
         }));
       }
@@ -458,7 +536,15 @@ export function usePeopleHook({
         });
       }
     },
-    [currentPersona.id, currentPersona.name, currentPersona.userId, currentUserEmail, setData, setCurrentPersona, showToast]
+    [
+      currentPersona.id,
+      currentPersona.name,
+      currentPersona.userId,
+      currentUserEmail,
+      setData,
+      setCurrentPersona,
+      showToast,
+    ]
   );
 
   const fetchAuditLogs = React.useCallback(async (personId: string): Promise<AuditLog[]> => {
@@ -512,7 +598,8 @@ export function usePeopleHook({
       let newlyAddedShepherdIds: string[] = [];
       setData((prev) => {
         snapshot = prev;
-        const personas = newPersonas.length > 0 ? [...prev.personas, ...newPersonas] : prev.personas;
+        const personas =
+          newPersonas.length > 0 ? [...prev.personas, ...newPersonas] : prev.personas;
         const p = prev.people.find((p) => p.id === personId);
         personName = p ? fullName(p) : '';
         if (p) {
@@ -529,7 +616,9 @@ export function usePeopleHook({
           newlyAddedShepherdIds = shepherdPersonaIds;
         }
         const personaIdSet = new Set(personas.map((pp) => pp.id));
-        const shepherdPersonaIdSet = new Set(shepherdPersonaIds.filter((sid) => personaIdSet.has(sid)));
+        const shepherdPersonaIdSet = new Set(
+          shepherdPersonaIds.filter((sid) => personaIdSet.has(sid))
+        );
         return {
           ...prev,
           people: prev.people.map((p) =>
@@ -615,7 +704,14 @@ export function usePeopleHook({
         });
       }
     },
-    [currentPersona.name, currentPersona.userId, currentUserEmail, setData, setCurrentPersona, showToast]
+    [
+      currentPersona.name,
+      currentPersona.userId,
+      currentUserEmail,
+      setData,
+      setCurrentPersona,
+      showToast,
+    ]
   );
 
   const addFamily = React.useCallback(
@@ -647,7 +743,10 @@ export function usePeopleHook({
           .from('family_members')
           .insert(memberIds.map((pid) => ({ family_id: familyId, person_id: pid })));
         if (membersInsertError) {
-          console.error('family_members insert failed:', JSON.stringify(membersInsertError, null, 2));
+          console.error(
+            'family_members insert failed:',
+            JSON.stringify(membersInsertError, null, 2)
+          );
           if (snapshot) setData(snapshot);
           showToast(SAVE_ERROR_MSG, 'error');
           return familyId;
@@ -672,7 +771,9 @@ export function usePeopleHook({
   const updateFamily = React.useCallback(
     async (
       familyId: string,
-      updates: Partial<Pick<Family, 'label' | 'photo' | 'originalPhoto' | 'primaryContactId' | 'childCount'>>
+      updates: Partial<
+        Pick<Family, 'label' | 'photo' | 'originalPhoto' | 'primaryContactId' | 'childCount'>
+      >
     ): Promise<void> => {
       let snapshot: AppData | undefined;
       const now = new Date().toISOString();
@@ -690,7 +791,8 @@ export function usePeopleHook({
       if (updates.label !== undefined) dbUpdates.label = updates.label;
       if ('photo' in updates) dbUpdates.photo = updates.photo ?? null;
       if ('originalPhoto' in updates) dbUpdates.original_photo = updates.originalPhoto ?? null;
-      if (updates.primaryContactId !== undefined) dbUpdates.primary_contact_id = updates.primaryContactId;
+      if (updates.primaryContactId !== undefined)
+        dbUpdates.primary_contact_id = updates.primaryContactId;
       if (updates.childCount !== undefined) dbUpdates.child_count = updates.childCount;
       dbUpdates.last_edited_at = new Date().toISOString();
       const { error } = await supabase.from('families').update(dbUpdates).eq('id', familyId);
@@ -777,7 +879,8 @@ export function usePeopleHook({
         if (!family) return prev;
         const memberIds = family.memberIds;
         const memberIdSet = new Set(memberIds);
-        const personas = newPersonas.length > 0 ? [...prev.personas, ...newPersonas] : prev.personas;
+        const personas =
+          newPersonas.length > 0 ? [...prev.personas, ...newPersonas] : prev.personas;
         const personaIdSet = new Set(personas.map((pp) => pp.id));
         const shepherdPersonaIdSet = new Set(
           shepherdPersonaIds.filter((sid) => personaIdSet.has(sid))
@@ -908,7 +1011,10 @@ export function usePeopleHook({
       let snapshot: AppData | undefined;
       setData((prev) => {
         snapshot = prev;
-        return { ...prev, groups: prev.groups.map((g) => (g.id === groupId ? { ...g, ...updates } : g)) };
+        return {
+          ...prev,
+          groups: prev.groups.map((g) => (g.id === groupId ? { ...g, ...updates } : g)),
+        };
       });
       const supabase = createClient();
       const dbUpdates: Partial<GroupRow> = {};
@@ -935,7 +1041,8 @@ export function usePeopleHook({
           const inGroup = memberIds.includes(p.id);
           const hadGroup = p.groupIds.includes(groupId);
           if (inGroup && !hadGroup) return { ...p, groupIds: [...p.groupIds, groupId] };
-          if (!inGroup && hadGroup) return { ...p, groupIds: p.groupIds.filter((id) => id !== groupId) };
+          if (!inGroup && hadGroup)
+            return { ...p, groupIds: p.groupIds.filter((id) => id !== groupId) };
           return p;
         });
         return { ...prev, groups: newGroups, people: newPeople };
@@ -973,7 +1080,9 @@ export function usePeopleHook({
         const newPeople = prev.people.map((p) => (p.id === personId ? { ...p, groupIds } : p));
         const newGroups = prev.groups.map((g) => {
           if (groupIds.includes(g.id)) {
-            return g.memberIds.includes(personId) ? g : { ...g, memberIds: [...g.memberIds, personId] };
+            return g.memberIds.includes(personId)
+              ? g
+              : { ...g, memberIds: [...g.memberIds, personId] };
           } else {
             return { ...g, memberIds: g.memberIds.filter((id) => id !== personId) };
           }

@@ -105,6 +105,7 @@ Key mutations: `addPerson` · `updatePerson` · `deletePerson` · `addFamily` ·
 **Letter spacing** — `--tracking-tight-3` (-0.03em) · `--tracking-tight-2` · `--tracking-tight-1` (-0.01em) · `--tracking-normal` (0) · `--tracking-wide-2` through `--tracking-wide-6` (0.06em — uppercase labels)
 
 **Usage in inline styles:**
+
 ```tsx
 // ✅ correct
 style={{ fontSize: 'var(--text-14)', fontWeight: 'var(--font-semibold)', letterSpacing: 'var(--tracking-wide-6)' }}

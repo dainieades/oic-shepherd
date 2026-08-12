@@ -79,39 +79,39 @@ export default function AuditLogPage({ params }: { params: Promise<{ id: string 
   const groups = groupByDate(logs);
 
   return (
-    <div className="min-h-dvh bg-bg pb-20">
-      <div
-        className="mx-auto px-4"
-        style={{ maxWidth: SHEET_MAX_WIDTH }}
-      >
+    <div className="bg-bg min-h-dvh pb-20">
+      <div className="mx-auto px-4" style={{ maxWidth: SHEET_MAX_WIDTH }}>
         {/* Header */}
-        <div className="sticky top-0 z-50 bg-bg -mx-4 px-4 border-b border-border-light flex items-center justify-between h-[3.375rem]">
-          <button onClick={() => router.back()} className="inline-flex items-center gap-1 text-13 text-sage bg-transparent border-0 cursor-pointer p-0">
+        <div className="bg-bg border-border-light sticky top-0 z-50 -mx-4 flex h-[3.375rem] items-center justify-between border-b px-4">
+          <button
+            onClick={() => router.back()}
+            className="text-13 text-sage inline-flex cursor-pointer items-center gap-1 border-0 bg-transparent p-0"
+          >
             <CaretLeft size={16} weight="bold" />
             {personName}
           </button>
-          <span className="text-15 font-semibold text-text-primary">Audit Log</span>
+          <span className="text-15 text-text-primary font-semibold">Audit Log</span>
           <span className="w-16" />
         </div>
 
         {/* Content */}
         {loading ? (
-          <div className="pt-16 text-center text-text-muted text-14">
-            Loading…
-          </div>
+          <div className="text-text-muted text-14 pt-16 text-center">Loading…</div>
         ) : logs.length === 0 ? (
-          <div className="pt-16 flex flex-col items-center gap-3 text-text-muted">
+          <div className="text-text-muted flex flex-col items-center gap-3 pt-16">
             <ClockCounterClockwise size={40} weight="light" />
             <p className="text-14">No edits recorded yet.</p>
-            <p className="text-13 text-center max-w-[18rem]">
+            <p className="text-13 max-w-[18rem] text-center">
               Changes made through the app will appear here going forward.
             </p>
           </div>
         ) : (
-          <div className="pt-5 flex flex-col gap-8">
+          <div className="flex flex-col gap-8 pt-5">
             {groups.map((group) => (
               <div key={group.date}>
-                <p className="text-11 font-semibold text-text-muted uppercase tracking-wide-6 mb-2">{group.date}</p>
+                <p className="text-11 text-text-muted tracking-wide-6 mb-2 font-semibold uppercase">
+                  {group.date}
+                </p>
                 <div className="flex flex-col gap-px">
                   {group.items.map((log, i) => (
                     <AuditEntry key={log.id} log={log} isLast={i === group.items.length - 1} />
@@ -131,30 +131,26 @@ function AuditEntry({ log, isLast }: { log: AuditLog; isLast: boolean }) {
 
   return (
     <div
-      className="bg-surface py-3 px-4"
+      className="bg-surface px-4 py-3"
       style={{
         borderRadius: isLast ? '0 0 var(--radius) var(--radius)' : undefined,
         borderBottom: isLast ? 'none' : '1px solid var(--border-light)',
       }}
     >
-      <div className="flex justify-between items-start gap-2 mb-1.5">
-        <span className="text-13 font-semibold text-text-primary">
-          {fieldLabel(log.fieldName)}
-        </span>
+      <div className="mb-1.5 flex items-start justify-between gap-2">
+        <span className="text-13 text-text-primary font-semibold">{fieldLabel(log.fieldName)}</span>
         <span className="text-12 text-text-muted whitespace-nowrap">
           {fmtTimestamp(log.createdAt)}
         </span>
       </div>
 
-      <div className="flex items-center gap-2 flex-wrap">
+      <div className="flex flex-wrap items-center gap-2">
         <ValueChip value={log.oldValue} empty={isEmpty(log.oldValue)} label="before" />
         <span className="text-12 text-text-muted">→</span>
         <ValueChip value={log.newValue} empty={isEmpty(log.newValue)} label="after" />
       </div>
 
-      <p className="text-12 text-text-muted mt-1.5">
-        by {log.changedByName}
-      </p>
+      <p className="text-12 text-text-muted mt-1.5">by {log.changedByName}</p>
     </div>
   );
 }
@@ -182,4 +178,3 @@ function ValueChip({
     </span>
   );
 }
-

@@ -12,7 +12,7 @@ interface CheckRowProps {
 export function CheckboxMark({ checked }: { checked: boolean }) {
   return (
     <div
-      className={`shrink-0 flex items-center justify-center transition-[background] duration-150 ${checked ? 'bg-sage border-0' : 'bg-transparent'}`}
+      className={`flex shrink-0 items-center justify-center transition-[background] duration-150 ${checked ? 'bg-sage border-0' : 'bg-transparent'}`}
       style={{
         width: 20,
         height: 20,
@@ -29,11 +29,11 @@ export function CheckRow({ checked, onToggle, children }: CheckRowProps) {
   return (
     <button
       onClick={onToggle}
-      className="w-full flex items-center gap-2.5 bg-transparent border-0 cursor-pointer text-left"
+      className="flex w-full cursor-pointer items-center gap-2.5 border-0 bg-transparent text-left"
       style={{ padding: '0.4375rem 0.125rem' }}
     >
       <div
-        className={`shrink-0 flex items-center justify-center ${checked ? 'bg-sage border-0' : 'bg-transparent'}`}
+        className={`flex shrink-0 items-center justify-center ${checked ? 'bg-sage border-0' : 'bg-transparent'}`}
         style={{
           width: 18,
           height: 18,

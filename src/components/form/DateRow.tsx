@@ -28,7 +28,7 @@ export function DateRow({
       {icon}
       <span style={labelStyle}>{label}</span>
       <span
-        className="flex-1 text-14 text-left"
+        className="text-14 flex-1 text-left"
         style={{ color: value ? 'var(--text-primary)' : 'var(--text-muted)' }}
       >
         {value ? fmtDate(value) : 'Not set'}
@@ -39,7 +39,7 @@ export function DateRow({
         type="date"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="absolute left-0 top-1/2 w-full opacity-0 pointer-events-none"
+        className="pointer-events-none absolute top-1/2 left-0 w-full opacity-0"
         style={{ height: 1 }}
       />
     </button>

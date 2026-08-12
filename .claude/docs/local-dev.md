@@ -4,25 +4,25 @@ Your laptop runs a full Postgres + Supabase stack via Docker. The Next.js dev se
 
 ## Daily commands
 
-| What | Command |
-|---|---|
-| Start the stack | `supabase start` |
-| Stop the stack (keeps data) | `supabase stop` |
-| Stop + wipe Docker volumes | `supabase stop --no-backup` |
-| Run the app | `npm run dev` |
-| Reset DB to seed | `supabase db reset && ./scripts/local-bootstrap.sh` |
-| Studio (DB GUI) | http://127.0.0.1:54323 |
-| Mailpit (captured emails) | http://127.0.0.1:54324 |
+| What                        | Command                                             |
+| --------------------------- | --------------------------------------------------- |
+| Start the stack             | `supabase start`                                    |
+| Stop the stack (keeps data) | `supabase stop`                                     |
+| Stop + wipe Docker volumes  | `supabase stop --no-backup`                         |
+| Run the app                 | `npm run dev`                                       |
+| Reset DB to seed            | `supabase db reset && ./scripts/local-bootstrap.sh` |
+| Studio (DB GUI)             | http://127.0.0.1:54323                              |
+| Mailpit (captured emails)   | http://127.0.0.1:54324                              |
 
 ## Test accounts
 
 After every `supabase db reset` run `./scripts/local-bootstrap.sh` — it recreates the auth users and re-stamps the persona links that the reset wipes. Then sign in with any of:
 
-| Email | Password | Role |
-|---|---|---|
-| `test-admin@oicshepherd.test` | `12312HSDHo` | admin |
-| `test-shepherd@oicshepherd.test` | `qazpy5-zodwEc-vywkiv` | shepherd |
-| `test-welcome@oicshepherd.test` | `vunGan-6xupdo-tyqcef` | welcome-team |
+| Email                            | Password               | Role         |
+| -------------------------------- | ---------------------- | ------------ |
+| `test-admin@oicshepherd.test`    | `12312HSDHo`           | admin        |
+| `test-shepherd@oicshepherd.test` | `qazpy5-zodwEc-vywkiv` | shepherd     |
+| `test-welcome@oicshepherd.test`  | `vunGan-6xupdo-tyqcef` | welcome-team |
 
 The `.test` TLD is RFC 2606 — non-routable, no real email delivery. These passwords are local-only and have no security implication; rotate via `scripts/local-bootstrap.sh` if you want different ones.
 

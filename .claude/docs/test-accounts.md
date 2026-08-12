@@ -4,8 +4,8 @@ Three permanently-hidden test identities — one per role — let you preview th
 
 ## The accounts
 
-| Email | Role | Linked person |
-|---|---|---|
+| Email                            | Role           | Linked person          |
+| -------------------------------- | -------------- | ---------------------- |
 | `test-admin@oicshepherd.test`    | `admin`        | `test-person-admin`    |
 | `test-shepherd@oicshepherd.test` | `shepherd`     | `test-person-shepherd` |
 | `test-welcome@oicshepherd.test`  | `welcome-team` | `test-person-welcome`  |

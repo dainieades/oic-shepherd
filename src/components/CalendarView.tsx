@@ -63,16 +63,17 @@ export function CalendarView({
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-15 font-semibold text-text-primary">
-          <span className="text-text-primary">{format(new Date(calYear, calMonth, 1), 'MMMM')}</span>
-          {' '}
+      <div className="mb-3 flex items-center justify-between">
+        <span className="text-15 text-text-primary font-semibold">
+          <span className="text-text-primary">
+            {format(new Date(calYear, calMonth, 1), 'MMMM')}
+          </span>{' '}
           <span className="text-text-muted font-normal">{calYear}</span>
         </span>
-        <div className="flex gap-1 items-center">
+        <div className="flex items-center gap-1">
           <button
             onClick={prevMonth}
-            className="w-8 h-8 rounded-xs border border-border bg-transparent text-text-secondary cursor-pointer flex items-center justify-center"
+            className="border-border text-text-secondary flex h-8 w-8 cursor-pointer items-center justify-center rounded-xs border bg-transparent"
           >
             <CaretLeft size={14} />
           </button>
@@ -82,24 +83,24 @@ export function CalendarView({
               setCalYear(today.getFullYear());
               setSelectedDate(null);
             }}
-            className="h-8 px-3 rounded-xs border border-border bg-transparent text-text-secondary text-13 font-medium cursor-pointer"
+            className="border-border text-text-secondary text-13 h-8 cursor-pointer rounded-xs border bg-transparent px-3 font-medium"
           >
             Today
           </button>
           <button
             onClick={nextMonth}
-            className="w-8 h-8 rounded-xs border border-border bg-transparent text-text-secondary cursor-pointer flex items-center justify-center"
+            className="border-border text-text-secondary flex h-8 w-8 cursor-pointer items-center justify-center rounded-xs border bg-transparent"
           >
             <CaretRight size={14} />
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-7 mb-1">
+      <div className="mb-1 grid grid-cols-7">
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => (
           <div
             key={d}
-            className="text-center text-10 font-semibold text-text-muted uppercase tracking-wide-4 pb-1"
+            className="text-10 text-text-muted tracking-wide-4 pb-1 text-center font-semibold uppercase"
           >
             {d}
           </div>
@@ -153,7 +154,7 @@ export function CalendarView({
                   {dayTodos.slice(0, 3).map((_, di) => (
                     <span
                       key={di}
-                      className="w-1 h-1 rounded-full shrink-0"
+                      className="h-1 w-1 shrink-0 rounded-full"
                       style={{
                         background: isSelected
                           ? 'rgba(255,255,255,0.8)'
@@ -167,7 +168,7 @@ export function CalendarView({
                   ))}
                   {dayTodos.length > 3 && (
                     <span
-                      className="w-1 h-1 rounded-full shrink-0"
+                      className="h-1 w-1 shrink-0 rounded-full"
                       style={{
                         background: isSelected ? 'rgba(255,255,255,0.6)' : 'var(--border)',
                       }}
@@ -181,8 +182,19 @@ export function CalendarView({
                     <li
                       key={t.id}
                       className={`calendar-todo-item ${t.completed ? 'calendar-todo-item--done' : 'calendar-todo-item--pending'}`}
-                      style={isSelected ? { background: 'rgba(255,255,255,0.2)', color: 'var(--on-sage)', textDecoration: t.completed ? 'line-through' : 'none' } : {}}
-                      onClick={(e) => { e.stopPropagation(); onEdit(t); }}
+                      style={
+                        isSelected
+                          ? {
+                              background: 'rgba(255,255,255,0.2)',
+                              color: 'var(--on-sage)',
+                              textDecoration: t.completed ? 'line-through' : 'none',
+                            }
+                          : {}
+                      }
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEdit(t);
+                      }}
                     >
                       {t.title}
                     </li>
@@ -204,13 +216,13 @@ export function CalendarView({
 
       {selectedDate && (
         <div className="mt-4">
-          <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 mb-2">
+          <p className="text-10 text-text-muted tracking-wide-6 mb-2 font-semibold uppercase">
             {format(parseISO(`${selectedDate}T00:00:00`), 'EEEE, MMMM d')} · {selectedTodos.length}
           </p>
           {selectedTodos.length === 0 ? (
             <p className="text-13 text-text-muted py-3">No to-dos on this day.</p>
           ) : (
-            <div className="no-last-border bg-surface rounded overflow-hidden">
+            <div className="no-last-border bg-surface overflow-hidden rounded">
               {selectedTodos.map((t) => {
                 const person = t.personId ? data.people.find((p) => p.id === t.personId) : null;
                 const family = t.familyId ? data.families.find((f) => f.id === t.familyId) : null;
@@ -220,12 +232,12 @@ export function CalendarView({
                 return (
                   <div
                     key={t.id}
-                    className="row-card-hover flex items-start gap-2.5 pt-2.5 pb-2.5 border-b border-border-light"
+                    className="row-card-hover border-border-light flex items-start gap-2.5 border-b pt-2.5 pb-2.5"
                   >
                     <button
                       aria-label={t.completed ? 'Mark as incomplete' : 'Mark as complete'}
                       onClick={() => onToggle(t.id)}
-                      className="w-5 h-5 rounded-full shrink-0 mt-0.5 flex items-center justify-center cursor-pointer"
+                      className="mt-0.5 flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-full"
                       style={{
                         border: t.completed ? 'none' : '0.125rem solid var(--border)',
                         background: t.completed ? 'var(--sage)' : 'transparent',
@@ -235,7 +247,7 @@ export function CalendarView({
                     </button>
                     <button
                       onClick={() => onEdit(t)}
-                      className="flex-1 min-w-0 bg-transparent border-none text-left cursor-pointer p-0"
+                      className="min-w-0 flex-1 cursor-pointer border-none bg-transparent p-0 text-left"
                     >
                       <p
                         className="text-14 leading-comfortable mb-1"
@@ -247,7 +259,7 @@ export function CalendarView({
                         {t.title}
                       </p>
                       {targetChips.length > 0 && (
-                        <span className="text-10 text-blue rounded-pill bg-blue-light font-medium py-[0.0625rem] px-1.5">
+                        <span className="text-10 text-blue rounded-pill bg-blue-light px-1.5 py-[0.0625rem] font-medium">
                           {targetChips[0]}
                         </span>
                       )}

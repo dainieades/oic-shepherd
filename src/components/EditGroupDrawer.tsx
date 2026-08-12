@@ -3,14 +3,7 @@
 import React from 'react';
 import { BottomSheet, ModalHeader } from '@/components/BottomSheet';
 import { DrawerSection } from '@/components/form/DrawerSection';
-import {
-  TextT,
-  AlignLeft,
-  UserList,
-  CaretRight,
-  Crown,
-  Check,
-} from '@phosphor-icons/react';
+import { TextT, AlignLeft, UserList, CaretRight, Crown, Check } from '@phosphor-icons/react';
 import { Z_SHEET } from '@/lib/constants';
 import { useApp } from '@/lib/context';
 import { fullName } from '@/lib/utils';
@@ -59,13 +52,13 @@ export default function EditGroupDrawer({ group, onClose, onSave }: Props) {
           actionLabel="Save"
         />
 
-        <div className="flex-1 overflow-y-auto px-5 pt-5 pb-12 bg-bg">
+        <div className="bg-bg flex-1 overflow-y-auto px-5 pt-5 pb-12">
           <DrawerSection label="Details">
             <div
-              className="field-row-hover flex items-center gap-2.5 py-3 border-b border-border-light cursor-text"
+              className="field-row-hover border-border-light flex cursor-text items-center gap-2.5 border-b py-3"
               onClick={() => nameRef.current?.focus()}
             >
-              <span className="w-[10px] text-14 text-red shrink-0 leading-none">*</span>
+              <span className="text-14 text-red w-[10px] shrink-0 leading-none">*</span>
               <TextT size={16} color="var(--text-muted)" />
               <span className="text-12 text-text-muted w-[60px] shrink-0">Name</span>
               <input
@@ -73,11 +66,11 @@ export default function EditGroupDrawer({ group, onClose, onSave }: Props) {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Group name"
-                className="flex-1 bg-transparent border-0 outline-none text-14 text-text-primary"
+                className="text-14 text-text-primary flex-1 border-0 bg-transparent outline-none"
               />
             </div>
             <div
-              className="field-row-hover flex items-start gap-2.5 py-3 border-b border-border-light cursor-text"
+              className="field-row-hover border-border-light flex cursor-text items-start gap-2.5 border-b py-3"
               onClick={() => descRef.current?.focus()}
             >
               <span className="w-[10px] shrink-0" />
@@ -91,22 +84,24 @@ export default function EditGroupDrawer({ group, onClose, onSave }: Props) {
                 onChange={(e) => setDesc(e.target.value)}
                 placeholder="Description…"
                 rows={3}
-                className="flex-1 bg-transparent border-0 outline-none text-14 text-text-primary leading-normal resize-none"
+                className="text-14 text-text-primary flex-1 resize-none border-0 bg-transparent leading-normal outline-none"
               />
             </div>
           </DrawerSection>
 
           <DrawerSection label="Leaders">
             <button
-              className="field-row-hover flex items-center gap-2.5 py-3 border-b border-border-light border-x-0 border-t-0 bg-transparent cursor-pointer text-left w-full"
+              className="field-row-hover border-border-light flex w-full cursor-pointer items-center gap-2.5 border-x-0 border-t-0 border-b bg-transparent py-3 text-left"
               onClick={() => setShowLeaderPicker(true)}
             >
               <span className="w-[10px] shrink-0" />
               <Crown size={16} color="var(--blue)" />
               <span className="text-12 text-text-muted w-[60px] shrink-0">Leaders</span>
               <span
-                className="flex-1 text-14 text-left"
-                style={{ color: selectedLeaders.length ? 'var(--text-primary)' : 'var(--text-muted)' }}
+                className="text-14 flex-1 text-left"
+                style={{
+                  color: selectedLeaders.length ? 'var(--text-primary)' : 'var(--text-muted)',
+                }}
               >
                 {selectedLeaders.length === 0
                   ? 'None'
@@ -118,13 +113,13 @@ export default function EditGroupDrawer({ group, onClose, onSave }: Props) {
 
           <DrawerSection label="Members">
             <button
-              className="field-row-hover flex items-center gap-2.5 py-3 border-b border-border-light border-x-0 border-t-0 bg-transparent cursor-pointer text-left w-full"
+              className="field-row-hover border-border-light flex w-full cursor-pointer items-center gap-2.5 border-x-0 border-t-0 border-b bg-transparent py-3 text-left"
               onClick={() => setShowMemberPicker(true)}
             >
               <span className="w-[10px] shrink-0" />
               <UserList size={16} color="var(--text-muted)" />
               <span className="text-12 text-text-muted w-[60px] shrink-0">Members</span>
-              <span className="flex-1 text-14 text-text-primary text-left">
+              <span className="text-14 text-text-primary flex-1 text-left">
                 {memberIds.length} {memberIds.length === 1 ? 'person' : 'people'}
               </span>
               <CaretRight size={14} color="var(--text-muted)" />
@@ -198,13 +193,13 @@ function PeoplePickerSheet({
         actionVariant="pill"
       />
 
-      <div className="py-2.5 px-4 border-b border-border-light shrink-0">
+      <div className="border-border-light shrink-0 border-b px-4 py-2.5">
         <input
           autoFocus
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search…"
-          className="w-full py-2 px-3 rounded-xs border border-border text-14 bg-bg text-text-primary outline-none box-border"
+          className="border-border text-14 bg-bg text-text-primary box-border w-full rounded-xs border px-3 py-2 outline-none"
         />
       </div>
 
@@ -221,11 +216,11 @@ function PeoplePickerSheet({
             <button
               key={p.id}
               onClick={() => toggle(p.id)}
-              className="w-full flex items-center gap-3 py-2.5 px-5 border-b border-border-light border-x-0 border-t-0 cursor-pointer text-left"
+              className="border-border-light flex w-full cursor-pointer items-center gap-3 border-x-0 border-t-0 border-b px-5 py-2.5 text-left"
               style={{ background: isSel ? 'var(--sage-light)' : 'transparent' }}
             >
               <div
-                className="w-9 h-9 rounded-full flex items-center justify-center text-12 font-bold shrink-0"
+                className="text-12 flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-bold"
                 style={{
                   background: isSel ? 'var(--sage)' : 'var(--sage-light)',
                   color: isSel ? 'var(--on-sage)' : 'var(--sage)',
@@ -233,7 +228,7 @@ function PeoplePickerSheet({
               >
                 {initials}
               </div>
-              <div className="flex-1 min-w-0">
+              <div className="min-w-0 flex-1">
                 <span
                   className="text-14"
                   style={{
@@ -244,13 +239,11 @@ function PeoplePickerSheet({
                   {fullName(p)}
                 </span>
                 {p.alternativeName && (
-                  <span className="text-12 text-text-muted ml-1.5">
-                    {p.alternativeName}
-                  </span>
+                  <span className="text-12 text-text-muted ml-1.5">{p.alternativeName}</span>
                 )}
               </div>
               <div
-                className="w-5 h-5 rounded-[5px] shrink-0 flex items-center justify-center transition-[background] duration-150"
+                className="flex h-5 w-5 shrink-0 items-center justify-center rounded-[5px] transition-[background] duration-150"
                 style={{
                   border: isSel ? 'none' : '0.09375rem solid var(--border)',
                   background: isSel ? 'var(--sage)' : 'transparent',
@@ -265,4 +258,3 @@ function PeoplePickerSheet({
     </BottomSheet>
   );
 }
-

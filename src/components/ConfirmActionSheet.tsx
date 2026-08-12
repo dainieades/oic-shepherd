@@ -28,29 +28,32 @@ export default function ConfirmActionSheet({
   const isDanger = tone === 'danger';
   return (
     <BottomSheet onClose={onCancel} compact zIndex={Z_SHEET} variant="confirm">
-      <div className="pt-8" style={{ paddingLeft: '1.75rem', paddingRight: '1.75rem', paddingBottom: '1.75rem' }}>
+      <div
+        className="pt-8"
+        style={{ paddingLeft: '1.75rem', paddingRight: '1.75rem', paddingBottom: '1.75rem' }}
+      >
         <p
-          className={`text-20 font-bold text-center mt-0 ${isDanger ? 'text-red' : 'text-text-primary'}`}
+          className={`text-20 mt-0 text-center font-bold ${isDanger ? 'text-red' : 'text-text-primary'}`}
           style={{ marginBottom: '0.625rem' }}
         >
           {title}
         </p>
         <p
-          className="text-14 text-text-muted text-center leading-open mt-0"
+          className="text-14 text-text-muted leading-open mt-0 text-center"
           style={{ marginBottom: '1.75rem' }}
         >
           {description}
         </p>
         <button
           onClick={onConfirm}
-          className={`w-full rounded text-15 font-semibold border-0 cursor-pointer mb-2 ${isDanger ? 'text-on-red bg-red' : 'text-on-sage bg-sage'}`}
+          className={`text-15 mb-2 w-full cursor-pointer rounded border-0 font-semibold ${isDanger ? 'text-on-red bg-red' : 'text-on-sage bg-sage'}`}
           style={{ height: '2.625rem' }}
         >
           {confirmLabel}
         </button>
         <button
           onClick={onCancel}
-          className="w-full rounded text-15 font-medium text-text-secondary bg-transparent border-0 cursor-pointer"
+          className="text-15 text-text-secondary w-full cursor-pointer rounded border-0 bg-transparent font-medium"
           style={{ height: '2.375rem' }}
         >
           {cancelLabel}

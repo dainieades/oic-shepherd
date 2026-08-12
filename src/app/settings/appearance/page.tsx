@@ -39,25 +39,31 @@ export default function AppearancePage() {
   return (
     <div className="pb-12">
       {/* Nav bar */}
-      <div className="settings-subpage-navbar sticky top-0 -mx-4 px-4 border-b border-border-light bg-bg flex items-center justify-between z-page" style={{ height: 54 }}>
-        <button onClick={() => router.push('/settings')} className="inline-flex items-center gap-1 text-13 text-sage cursor-pointer p-0" style={{ background: 'none', border: 'none' }}>
+      <div
+        className="settings-subpage-navbar border-border-light bg-bg z-page sticky top-0 -mx-4 flex items-center justify-between border-b px-4"
+        style={{ height: 54 }}
+      >
+        <button
+          onClick={() => router.push('/settings')}
+          className="text-13 text-sage inline-flex cursor-pointer items-center gap-1 p-0"
+          style={{ background: 'none', border: 'none' }}
+        >
           <CaretLeft size={16} weight="bold" />
           Settings
         </button>
-        <span className="text-15 font-semibold text-text-primary">Theme</span>
+        <span className="text-15 text-text-primary font-semibold">Theme</span>
         <span className="w-[4.5rem]" />
       </div>
 
       <div className="mt-6">
-        <div className="bg-surface rounded border border-border-light overflow-hidden">
-
+        <div className="bg-surface border-border-light overflow-hidden rounded border">
           {OPTIONS.map(({ value, icon, label, description }, i) => {
             const active = themePreference === value;
             return (
               <button
                 key={value}
                 onClick={() => setThemePreference(value)}
-                className="w-full flex items-center gap-3.5 p-4 cursor-pointer text-left"
+                className="flex w-full cursor-pointer items-center gap-3.5 p-4 text-left"
                 style={{
                   background: active ? 'color-mix(in srgb, var(--sage) 10%, transparent)' : 'none',
                   border: 'none',
@@ -65,7 +71,7 @@ export default function AppearancePage() {
                 }}
               >
                 <span
-                  className="shrink-0 flex items-center justify-center rounded-sm"
+                  className="flex shrink-0 items-center justify-center rounded-sm"
                   style={{
                     color: active ? 'var(--sage)' : 'var(--text-muted)',
                     width: 36,
@@ -79,7 +85,7 @@ export default function AppearancePage() {
                 </span>
                 <span className="flex-1">
                   <span
-                    className="block text-15 tracking-tight-1"
+                    className="text-15 tracking-tight-1 block"
                     style={{
                       fontWeight: active ? 'var(--font-semibold)' : 'var(--font-medium)',
                       color: active ? 'var(--sage)' : 'var(--text-primary)',
@@ -87,11 +93,12 @@ export default function AppearancePage() {
                   >
                     {label}
                   </span>
-                  <span className="block text-13 text-text-muted mt-0.5">
-                    {description}
-                  </span>
+                  <span className="text-13 text-text-muted mt-0.5 block">{description}</span>
                 </span>
-                <span className="flex items-center justify-center shrink-0" style={{ width: 22, height: 22 }}>
+                <span
+                  className="flex shrink-0 items-center justify-center"
+                  style={{ width: 22, height: 22 }}
+                >
                   {active && <Check size={20} color="var(--sage)" weight="bold" />}
                 </span>
               </button>
@@ -102,4 +109,3 @@ export default function AppearancePage() {
     </div>
   );
 }
-

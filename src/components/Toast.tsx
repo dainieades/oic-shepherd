@@ -40,13 +40,13 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     <ToastContext.Provider value={{ showToast }}>
       {children}
       <div
-        className="fixed left-0 right-0 flex flex-col items-center gap-2 pointer-events-none z-toast"
+        className="z-toast pointer-events-none fixed right-0 left-0 flex flex-col items-center gap-2"
         style={{ bottom: 84 }}
       >
         {toasts.map((toast) => (
           <div
             key={toast.id}
-            className={`${toast.exiting ? 'toast-exit' : 'toast-enter'} flex items-center gap-2 text-white text-14 font-medium rounded-pill whitespace-nowrap shadow-elevated`}
+            className={`${toast.exiting ? 'toast-exit' : 'toast-enter'} text-14 rounded-pill shadow-elevated flex items-center gap-2 font-medium whitespace-nowrap text-white`}
             style={{
               background:
                 toast.type === 'error' ? 'rgba(180, 40, 40, 0.92)' : 'rgba(31, 37, 51, 0.92)',

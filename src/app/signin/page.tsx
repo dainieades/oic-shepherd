@@ -184,17 +184,11 @@ export default function SignInPage() {
     const isResending = resendStatus.type === 'sending';
     const wasResent = resendStatus.type === 'sent';
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-bg py-6 px-4 z-10 overflow-y-auto">
-        <div className="w-full max-w-[390px] bg-surface rounded-xl border border-border shadow-[var(--shadow-elevated)] pt-9 px-7 pb-8">
+      <div className="bg-bg fixed inset-0 z-10 flex items-center justify-center overflow-y-auto px-4 py-6">
+        <div className="bg-surface border-border w-full max-w-[390px] rounded-xl border px-7 pt-9 pb-8 shadow-[var(--shadow-elevated)]">
           <div className="text-center">
-            <h2
-              className="font-display text-22 font-bold mb-2.5"
-            >
-              Check your inbox
-            </h2>
-            <p
-              className="text-15 text-text-secondary leading-loose mb-5"
-            >
+            <h2 className="font-display text-22 mb-2.5 font-bold">Check your inbox</h2>
+            <p className="text-15 text-text-secondary mb-5 leading-loose">
               We sent a confirmation link to <strong>{step.email}</strong>.
               <br />
               Click the link to finish creating your account.
@@ -202,9 +196,7 @@ export default function SignInPage() {
 
             {resendStatus.type === 'error' && <ErrorBanner message={resendStatus.message} />}
             {wasResent && (
-              <p
-                className="text-13 text-sage font-medium mb-4"
-              >
+              <p className="text-13 text-sage mb-4 font-medium">
                 Confirmation email resent. Check your inbox.
               </p>
             )}
@@ -212,15 +204,14 @@ export default function SignInPage() {
             <button
               onClick={handleResendConfirmation}
               disabled={isResending || wasResent}
-              className="block w-full bg-transparent border-none text-sage text-14 text-center mb-1 py-1 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="text-sage text-14 mb-1 block w-full cursor-pointer border-none bg-transparent py-1 text-center disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {isResending
-                ? 'Sending…'
-                : wasResent
-                  ? 'Sent'
-                  : "Didn't get it? Resend email"}
+              {isResending ? 'Sending…' : wasResent ? 'Sent' : "Didn't get it? Resend email"}
             </button>
-            <button onClick={resetToEmail} className="block w-full bg-transparent border-none text-sage text-14 cursor-pointer text-center py-1">
+            <button
+              onClick={resetToEmail}
+              className="text-sage text-14 block w-full cursor-pointer border-none bg-transparent py-1 text-center"
+            >
               Use a different email
             </button>
           </div>
@@ -232,10 +223,10 @@ export default function SignInPage() {
   // ── Create password screen ──────────────────────────────────────────────
   if (step.type === 'create-password') {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-bg py-6 px-4 z-10 overflow-y-auto">
-        <div className="w-full max-w-[390px] bg-surface rounded-xl border border-border shadow-[var(--shadow-elevated)] pt-9 px-7 pb-8">
-          <div className="text-center mb-6">
-            <h1 className="font-display text-30 font-bold text-text-primary mb-1.5">
+      <div className="bg-bg fixed inset-0 z-10 flex items-center justify-center overflow-y-auto px-4 py-6">
+        <div className="bg-surface border-border w-full max-w-[390px] rounded-xl border px-7 pt-9 pb-8 shadow-[var(--shadow-elevated)]">
+          <div className="mb-6 text-center">
+            <h1 className="font-display text-30 text-text-primary mb-1.5 font-bold">
               Create your password
             </h1>
             <p className="text-15 text-text-secondary">{step.email}</p>
@@ -261,7 +252,9 @@ export default function SignInPage() {
             />
 
             <div className="mb-3">
-              <label className="block text-13 font-semibold text-text-primary mb-1.5">Password</label>
+              <label className="text-13 text-text-primary mb-1.5 block font-semibold">
+                Password
+              </label>
               <input
                 type="password"
                 name="password"
@@ -271,12 +264,14 @@ export default function SignInPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isLoading}
                 autoFocus
-                className="w-full rounded-md border border-border text-15 text-text-primary bg-surface outline-none py-3 px-3.5"
+                className="border-border text-15 text-text-primary bg-surface w-full rounded-md border px-3.5 py-3 outline-none"
               />
             </div>
 
             <div className="mb-5">
-              <label className="block text-13 font-semibold text-text-primary mb-1.5">Confirm password</label>
+              <label className="text-13 text-text-primary mb-1.5 block font-semibold">
+                Confirm password
+              </label>
               <input
                 type="password"
                 name="confirm-password"
@@ -285,20 +280,23 @@ export default function SignInPage() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 disabled={isLoading}
-                className="w-full rounded-md border border-border text-15 text-text-primary bg-surface outline-none py-3 px-3.5"
+                className="border-border text-15 text-text-primary bg-surface w-full rounded-md border px-3.5 py-3 outline-none"
               />
             </div>
 
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full rounded-md border-none bg-sage text-15 font-semibold text-on-sage mb-3 py-[0.8125rem] px-5 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+              className="bg-sage text-15 text-on-sage mb-3 w-full cursor-pointer rounded-md border-none px-5 py-[0.8125rem] font-semibold disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isLoading ? 'Creating account…' : 'Create account'}
             </button>
           </form>
 
-          <button onClick={resetToEmail} className="block w-full bg-transparent border-none text-sage text-14 cursor-pointer text-center py-1">
+          <button
+            onClick={resetToEmail}
+            className="text-sage text-14 block w-full cursor-pointer border-none bg-transparent py-1 text-center"
+          >
             Back
           </button>
         </div>
@@ -309,10 +307,10 @@ export default function SignInPage() {
   // ── Sign in with password screen ────────────────────────────────────────
   if (step.type === 'sign-in') {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-bg py-6 px-4 z-10 overflow-y-auto">
-        <div className="w-full max-w-[390px] bg-surface rounded-xl border border-border shadow-[var(--shadow-elevated)] pt-9 px-7 pb-8">
-          <div className="text-center mb-6">
-            <h1 className="font-display text-30 font-bold text-text-primary mb-1.5">
+      <div className="bg-bg fixed inset-0 z-10 flex items-center justify-center overflow-y-auto px-4 py-6">
+        <div className="bg-surface border-border w-full max-w-[390px] rounded-xl border px-7 pt-9 pb-8 shadow-[var(--shadow-elevated)]">
+          <div className="mb-6 text-center">
+            <h1 className="font-display text-30 text-text-primary mb-1.5 font-bold">
               Welcome back
             </h1>
             <p className="text-15 text-text-secondary">{step.email}</p>
@@ -338,7 +336,9 @@ export default function SignInPage() {
             />
 
             <div className="mb-5">
-              <label className="block text-13 font-semibold text-text-primary mb-1.5">Password</label>
+              <label className="text-13 text-text-primary mb-1.5 block font-semibold">
+                Password
+              </label>
               <input
                 type="password"
                 name="password"
@@ -348,14 +348,14 @@ export default function SignInPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isLoading}
                 autoFocus
-                className="w-full rounded-md border border-border text-15 text-text-primary bg-surface outline-none py-3 px-3.5"
+                className="border-border text-15 text-text-primary bg-surface w-full rounded-md border px-3.5 py-3 outline-none"
               />
             </div>
 
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full rounded-md border-none bg-sage text-15 font-semibold text-on-sage mb-3 py-[0.8125rem] px-5 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+              className="bg-sage text-15 text-on-sage mb-3 w-full cursor-pointer rounded-md border-none px-5 py-[0.8125rem] font-semibold disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isLoading ? 'Signing in…' : 'Sign in'}
             </button>
@@ -364,12 +364,15 @@ export default function SignInPage() {
           <button
             onClick={handleForgotPassword}
             disabled={isLoading}
-            className="block w-full bg-transparent border-none text-sage text-14 cursor-pointer text-center py-1 mb-1"
+            className="text-sage text-14 mb-1 block w-full cursor-pointer border-none bg-transparent py-1 text-center"
           >
             Forgot password?
           </button>
 
-          <button onClick={resetToEmail} className="block w-full bg-transparent border-none text-sage text-14 cursor-pointer text-center py-1">
+          <button
+            onClick={resetToEmail}
+            className="text-sage text-14 block w-full cursor-pointer border-none bg-transparent py-1 text-center"
+          >
             Back
           </button>
         </div>
@@ -380,22 +383,19 @@ export default function SignInPage() {
   // ── Reset password sent screen ─────────────────────────────────────────
   if (step.type === 'reset-sent') {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-bg py-6 px-4 z-10 overflow-y-auto">
-        <div className="w-full max-w-[390px] bg-surface rounded-xl border border-border shadow-[var(--shadow-elevated)] pt-9 px-7 pb-8">
+      <div className="bg-bg fixed inset-0 z-10 flex items-center justify-center overflow-y-auto px-4 py-6">
+        <div className="bg-surface border-border w-full max-w-[390px] rounded-xl border px-7 pt-9 pb-8 shadow-[var(--shadow-elevated)]">
           <div className="text-center">
-            <h2
-              className="font-display text-22 font-bold mb-2.5"
-            >
-              Check your inbox
-            </h2>
-            <p
-              className="text-15 text-text-secondary leading-loose mb-6"
-            >
+            <h2 className="font-display text-22 mb-2.5 font-bold">Check your inbox</h2>
+            <p className="text-15 text-text-secondary mb-6 leading-loose">
               We sent a password reset link to <strong>{step.email}</strong>.
               <br />
               Click the link in the email to set a new password.
             </p>
-            <button onClick={resetToEmail} className="block w-full bg-transparent border-none text-sage text-14 cursor-pointer text-center py-1">
+            <button
+              onClick={resetToEmail}
+              className="text-sage text-14 block w-full cursor-pointer border-none bg-transparent py-1 text-center"
+            >
               Back to sign in
             </button>
           </div>
@@ -406,12 +406,12 @@ export default function SignInPage() {
 
   // ── Main email entry screen ─────────────────────────────────────────────
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-bg py-6 px-4 z-10 overflow-y-auto">
-      <div className="w-full max-w-[390px] bg-surface rounded-xl border border-border shadow-[var(--shadow-elevated)] pt-9 px-7 pb-8">
+    <div className="bg-bg fixed inset-0 z-10 flex items-center justify-center overflow-y-auto px-4 py-6">
+      <div className="bg-surface border-border w-full max-w-[390px] rounded-xl border px-7 pt-9 pb-8 shadow-[var(--shadow-elevated)]">
         {/* Header */}
-        <div className="text-center mb-7">
+        <div className="mb-7 text-center">
           <Logo height={88} style={{ margin: '0 auto var(--spacing-lg)' }} />
-          <h1 className="font-display text-24 font-bold text-text-primary mb-1.5">
+          <h1 className="font-display text-24 text-text-primary mb-1.5 font-bold">
             Welcome to Shepherd App.
           </h1>
         </div>
@@ -421,15 +421,13 @@ export default function SignInPage() {
 
         {/* Google button */}
         <div className="relative inline-block w-full">
-          <span
-            className="absolute bg-sage text-on-sage text-11 font-bold tracking-wide-3 rounded-xl pointer-events-none z-[1] -top-2.5 left-1/2 -translate-x-1/2 py-0.5 px-2"
-          >
+          <span className="bg-sage text-on-sage text-11 tracking-wide-3 pointer-events-none absolute -top-2.5 left-1/2 z-[1] -translate-x-1/2 rounded-xl px-2 py-0.5 font-bold">
             Recommended
           </span>
           <button
             onClick={handleGoogle}
             disabled={isLoading}
-            className="w-full flex items-center justify-center gap-2.5 rounded-md bg-surface text-15 font-semibold text-text-primary py-[0.8125rem] px-5 border border-sage cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+            className="bg-surface text-15 text-text-primary border-sage flex w-full cursor-pointer items-center justify-center gap-2.5 rounded-md border px-5 py-[0.8125rem] font-semibold disabled:cursor-not-allowed disabled:opacity-60"
           >
             <svg width="20" height="20" viewBox="0 0 48 48" fill="none">
               <path
@@ -454,10 +452,10 @@ export default function SignInPage() {
         </div>
 
         {/* Divider */}
-        <div className="flex items-center gap-3 my-5">
-          <div className="flex-1 bg-border-light h-px" />
+        <div className="my-5 flex items-center gap-3">
+          <div className="bg-border-light h-px flex-1" />
           <span className="text-13 text-text-muted">or</span>
-          <div className="flex-1 bg-border-light h-px" />
+          <div className="bg-border-light h-px flex-1" />
         </div>
 
         {/* Email field */}
@@ -469,7 +467,9 @@ export default function SignInPage() {
           className="contents"
         >
           <div className="mb-3">
-            <label className="block text-13 font-semibold text-text-primary mb-1.5">Email address</label>
+            <label className="text-13 text-text-primary mb-1.5 block font-semibold">
+              Email address
+            </label>
             <input
               type="email"
               name="username"
@@ -478,7 +478,7 @@ export default function SignInPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
-              className="w-full rounded-md border border-border text-15 text-text-primary bg-surface outline-none py-3 px-3.5"
+              className="border-border text-15 text-text-primary bg-surface w-full rounded-md border px-3.5 py-3 outline-none"
             />
           </div>
 
@@ -486,16 +486,14 @@ export default function SignInPage() {
           <button
             type="submit"
             disabled={isLoading || !isValidEmail(email)}
-            className="w-full rounded-md border-none bg-sage text-15 font-semibold text-on-sage py-[0.8125rem] px-5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+            className="bg-sage text-15 text-on-sage w-full cursor-pointer rounded-md border-none px-5 py-[0.8125rem] font-semibold disabled:cursor-not-allowed disabled:opacity-40"
           >
             {isLoading ? 'Checking…' : 'Continue'}
           </button>
         </form>
 
         {/* Footer */}
-        <div
-          className="border-t border-border-light text-center mt-6 pt-5"
-        >
+        <div className="border-border-light mt-6 border-t pt-5 text-center">
           <p className="text-13 text-text-muted leading-normal">
             Access is by invitation only.
             <br />
@@ -513,9 +511,7 @@ function isValidEmail(value: string): boolean {
 
 function ErrorBanner({ message }: { message: string }) {
   return (
-    <div
-      className="bg-red-light border border-red-border rounded-sm text-13 text-red mb-4 py-2.5 px-3.5"
-    >
+    <div className="bg-red-light border-red-border text-13 text-red mb-4 rounded-sm border px-3.5 py-2.5">
       {message}
     </div>
   );

@@ -42,9 +42,7 @@ export function VisitorCardPanel({ person }: { person: Person }) {
   if (!submission) return null;
 
   const hasCardContent =
-    !!submission.referralSource ||
-    submission.interests.length > 0 ||
-    !!submission.prayerRequest;
+    !!submission.referralSource || submission.interests.length > 0 || !!submission.prayerRequest;
   if (!hasCardContent) return null;
 
   const referralLabel = submission.referralSource
@@ -63,16 +61,16 @@ export function VisitorCardPanel({ person }: { person: Person }) {
 
     return (
       <div>
-        <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 mb-2">Newcomer card</p>
+        <p className="text-10 text-text-muted tracking-wide-6 mb-2 font-semibold uppercase">
+          Newcomer card
+        </p>
         <button
           type="button"
           onClick={() => setExpanded(true)}
-          className="field-row-hover w-full bg-surface rounded px-4 py-3 flex items-center gap-2 border-0 cursor-pointer text-left"
+          className="field-row-hover bg-surface flex w-full cursor-pointer items-center gap-2 rounded border-0 px-4 py-3 text-left"
         >
           <Sparkle size={14} color="var(--text-muted)" />
-          <span className="flex-1 text-13 text-text-muted">
-            {summaryParts.join(' · ')}
-          </span>
+          <span className="text-13 text-text-muted flex-1">{summaryParts.join(' · ')}</span>
           <CaretRight size={14} color="var(--text-muted)" />
         </button>
       </div>
@@ -81,20 +79,22 @@ export function VisitorCardPanel({ person }: { person: Person }) {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-2">
-        <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 mb-0">Newcomer card</p>
+      <div className="mb-2 flex items-center justify-between">
+        <p className="text-10 text-text-muted tracking-wide-6 mb-0 font-semibold uppercase">
+          Newcomer card
+        </p>
         {!isActiveVisitor && (
           <button
             type="button"
             onClick={() => setExpanded(false)}
-            className="bg-transparent border-0 cursor-pointer flex items-center gap-1 text-11 text-text-muted p-0"
+            className="text-11 text-text-muted flex cursor-pointer items-center gap-1 border-0 bg-transparent p-0"
           >
             Collapse
             <CaretDown size={11} />
           </button>
         )}
       </div>
-      <div className="bg-surface rounded px-4 py-[14px] flex flex-col gap-3">
+      <div className="bg-surface flex flex-col gap-3 rounded px-4 py-[14px]">
         {referralLabel && (
           <Row icon={<Megaphone size={15} color="var(--text-muted)" />} label="Heard via">
             {referralLabel}
@@ -107,7 +107,7 @@ export function VisitorCardPanel({ person }: { person: Person }) {
               {submission.interests.map((i) => (
                 <span
                   key={i}
-                  className="text-12 font-semibold py-0.5 px-2 rounded-pill bg-sage-light text-sage-dark"
+                  className="text-12 rounded-pill bg-sage-light text-sage-dark px-2 py-0.5 font-semibold"
                 >
                   {INTEREST_LABELS[i]}
                 </span>
@@ -145,13 +145,11 @@ function Row({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex gap-2.5 items-start">
+    <div className="flex items-start gap-2.5">
       <div className="pt-0.5">{icon}</div>
-      <div className="flex-1 min-w-0">
+      <div className="min-w-0 flex-1">
         <p className="text-11 text-text-muted mb-0.5">{label}</p>
-        <div className="text-14 text-text-primary leading-comfortable">
-          {children}
-        </div>
+        <div className="text-14 text-text-primary leading-comfortable">{children}</div>
       </div>
     </div>
   );

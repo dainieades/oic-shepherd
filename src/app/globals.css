@@ -74,7 +74,7 @@
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
   /* ── Typography — font sizes (rem) ── */
-  --text-9:  0.5625rem;
+  --text-9: 0.5625rem;
   --text-10: 0.625rem;
   --text-11: 0.6875rem;
   --text-12: 0.75rem;
@@ -93,32 +93,32 @@
   --text-32: 2rem;
 
   /* ── Typography — font weights ── */
-  --font-normal:    400;
-  --font-medium:    500;
-  --font-semibold:  600;
-  --font-bold:      700;
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
   --font-extrabold: 800;
 
   /* ── Typography — line heights ── */
-  --leading-none:        1;
-  --leading-tight:       1.15;
-  --leading-snug:        1.25;
+  --leading-none: 1;
+  --leading-tight: 1.15;
+  --leading-snug: 1.25;
   --leading-comfortable: 1.4;
-  --leading-semi:        1.45;
-  --leading-normal:      1.5;
-  --leading-open:        1.55;
-  --leading-loose:       1.6;
+  --leading-semi: 1.45;
+  --leading-normal: 1.5;
+  --leading-open: 1.55;
+  --leading-loose: 1.6;
 
   /* ── Typography — letter spacing ── */
   --tracking-tight-3: -0.03em;
   --tracking-tight-2: -0.02em;
   --tracking-tight-1: -0.01em;
-  --tracking-normal:   0em;
-  --tracking-wide-2:   0.02em;
-  --tracking-wide-3:   0.03em;
-  --tracking-wide-4:   0.04em;
-  --tracking-wide-5:   0.05em;
-  --tracking-wide-6:   0.06em;
+  --tracking-normal: 0em;
+  --tracking-wide-2: 0.02em;
+  --tracking-wide-3: 0.03em;
+  --tracking-wide-4: 0.04em;
+  --tracking-wide-5: 0.05em;
+  --tracking-wide-6: 0.06em;
 
   /* ── Spacing scale ── */
   --spacing-xs: 0.25rem;
@@ -338,7 +338,7 @@
   --color-teal-light: var(--teal-light);
 
   /* Font sizes — must use --text-* naming for Tailwind v4 to generate text-* utilities */
-  --text-9:  0.5625rem;
+  --text-9: 0.5625rem;
   --text-10: 0.625rem;
   --text-11: 0.6875rem;
   --text-12: 0.75rem;

@@ -20,7 +20,15 @@ import {
   type ThemePreference,
   type NotificationPreferences,
 } from './types';
-import { mapPerson, mapFamily, mapPersona, syncGoogleAvatar, mapNote, mapNotice, mapTodo } from './mappers';
+import {
+  mapPerson,
+  mapFamily,
+  mapPersona,
+  syncGoogleAvatar,
+  mapNote,
+  mapNotice,
+  mapTodo,
+} from './mappers';
 import { isStaleAuthUser } from '@/app/auth/actions';
 import { initialData } from './data';
 import { visibleTo, type MapProvider } from './utils';
@@ -54,13 +62,17 @@ interface AppContextType {
   addNote: (note: Omit<Note, 'id' | 'createdBy'> & { createdAt?: string }) => void;
   updateNote: (
     noteId: string,
-    updates: Partial<Pick<Note, 'type' | 'content' | 'familyId' | 'personId' | 'visibility' | 'createdAt'>>
+    updates: Partial<
+      Pick<Note, 'type' | 'content' | 'familyId' | 'personId' | 'visibility' | 'createdAt'>
+    >
   ) => void;
   deleteNote: (noteId: string) => void;
   addTodo: (todo: Omit<Todo, 'id' | 'createdAt' | 'createdBy' | 'completed'>) => void;
   updateTodo: (
     todoId: string,
-    updates: Partial<Pick<Todo, 'title' | 'dueDate' | 'repeat' | 'reminder' | 'familyId' | 'personId'>>
+    updates: Partial<
+      Pick<Todo, 'title' | 'dueDate' | 'repeat' | 'reminder' | 'familyId' | 'personId'>
+    >
   ) => void;
   deleteTodo: (todoId: string) => void;
   toggleTodo: (todoId: string) => void;
@@ -71,13 +83,35 @@ interface AppContextType {
   addFamily: (label: string, memberIds: string[]) => Promise<string>;
   updatePerson: (
     personId: string,
-    updates: Partial<Pick<import('./types').Person,
-      | 'preferredName' | 'lastName' | 'alternativeName' | 'photo' | 'originalPhoto'
-      | 'phone' | 'homePhone' | 'email' | 'homeAddress' | 'membershipStatus'
-      | 'churchAttendance' | 'membershipDate' | 'language' | 'gender' | 'maritalStatus'
-      | 'birthday' | 'baptized' | 'baptismDate' | 'anniversary' | 'isShepherd'
-      | 'isBeingDiscipled' | 'churchPositions' | 'appRole' | 'canTriageVisitors'
-    >>
+    updates: Partial<
+      Pick<
+        import('./types').Person,
+        | 'preferredName'
+        | 'lastName'
+        | 'alternativeName'
+        | 'photo'
+        | 'originalPhoto'
+        | 'phone'
+        | 'homePhone'
+        | 'email'
+        | 'homeAddress'
+        | 'membershipStatus'
+        | 'churchAttendance'
+        | 'membershipDate'
+        | 'language'
+        | 'gender'
+        | 'maritalStatus'
+        | 'birthday'
+        | 'baptized'
+        | 'baptismDate'
+        | 'anniversary'
+        | 'isShepherd'
+        | 'isBeingDiscipled'
+        | 'churchPositions'
+        | 'appRole'
+        | 'canTriageVisitors'
+      >
+    >
   ) => Promise<void>;
   promoteVisitorSubmission: (submissionId: string) => Promise<string>;
   discardVisitorSubmission: (submissionId: string) => Promise<void>;
@@ -93,7 +127,12 @@ interface AppContextType {
   assignShepherds: (personId: string, shepherdIds: string[]) => Promise<void>;
   updateFamily: (
     familyId: string,
-    updates: Partial<Pick<import('./types').Family, 'label' | 'photo' | 'originalPhoto' | 'primaryContactId' | 'childCount'>>
+    updates: Partial<
+      Pick<
+        import('./types').Family,
+        'label' | 'photo' | 'originalPhoto' | 'primaryContactId' | 'childCount'
+      >
+    >
   ) => Promise<void>;
   updateFamilyMembers: (familyId: string, memberIds: string[]) => Promise<void>;
   addGroup: (name: string, description?: string) => void;
@@ -110,7 +149,9 @@ interface AppContextType {
   addNotice: (notice: Omit<Notice, 'id' | 'createdBy' | 'createdAt'>) => void;
   updateNotice: (
     noticeId: string,
-    updates: Partial<Pick<Notice, 'categories' | 'urgency' | 'privacy' | 'content' | 'personId' | 'familyId'>>
+    updates: Partial<
+      Pick<Notice, 'categories' | 'urgency' | 'privacy' | 'content' | 'personId' | 'familyId'>
+    >
   ) => void;
   deleteNotice: (noticeId: string) => void;
   homeFilters: HomeFilters;
@@ -126,7 +167,10 @@ interface AppContextType {
   mapProvider: MapProvider;
   setMapProvider: (provider: MapProvider) => void;
   notificationPrefs: NotificationPreferences;
-  setNotificationPreference: <K extends keyof NotificationPreferences>(key: K, value: boolean) => Promise<void>;
+  setNotificationPreference: <K extends keyof NotificationPreferences>(
+    key: K,
+    value: boolean
+  ) => Promise<void>;
   calendarSyncEnabled: boolean;
   calendarFeedToken: string | null;
   enableCalendarSync: (pregenToken?: string) => Promise<string>;
@@ -421,9 +465,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
             (resolvedPersonRow as { is_test?: boolean } | null)?.is_test
           );
           const resolvedPersonName: string = (() => {
-            const r = resolvedPersonRow as
-              | { preferred_name?: string; last_name?: string | null }
-              | null;
+            const r = resolvedPersonRow as {
+              preferred_name?: string;
+              last_name?: string | null;
+            } | null;
             if (!r?.preferred_name) return name;
             return r.last_name ? `${r.preferred_name} ${r.last_name}` : r.preferred_name;
           })();
@@ -486,7 +531,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
                 .select()
                 .single();
               if (insertError) {
-                console.error('personas insert (link path) failed:', JSON.stringify(insertError, null, 2));
+                console.error(
+                  'personas insert (link path) failed:',
+                  JSON.stringify(insertError, null, 2)
+                );
               }
               if (inserted) {
                 // Shepherd assignments made before this person had a login are stored
@@ -501,19 +549,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
                   (r: { person_id: string }) => r.person_id
                 );
                 if (staleSheepIds.length > 0) {
+                  await supabase.from('person_shepherds').upsert(
+                    staleSheepIds.map((sid) => ({ person_id: sid, shepherd_id: userId })),
+                    { onConflict: 'person_id,shepherd_id', ignoreDuplicates: true }
+                  );
                   await supabase
                     .from('person_shepherds')
-                    .upsert(
-                      staleSheepIds.map((sid) => ({ person_id: sid, shepherd_id: userId })),
-                      { onConflict: 'person_id,shepherd_id', ignoreDuplicates: true }
-                    );
-                  await supabase.from('person_shepherds').delete().eq('shepherd_id', resolvedPersonId);
-                  await supabase
-                    .from('persona_people')
-                    .upsert(
-                      staleSheepIds.map((sid) => ({ persona_id: userId, person_id: sid })),
-                      { onConflict: 'persona_id,person_id', ignoreDuplicates: true }
-                    );
+                    .delete()
+                    .eq('shepherd_id', resolvedPersonId);
+                  await supabase.from('persona_people').upsert(
+                    staleSheepIds.map((sid) => ({ persona_id: userId, person_id: sid })),
+                    { onConflict: 'persona_id,person_id', ignoreDuplicates: true }
+                  );
                 }
                 const persona = mapPersona(inserted as Record<string, unknown>, staleSheepIds);
                 setCurrentPersona(persona);
@@ -552,7 +599,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
           .select()
           .single();
         if (insertError) {
-          console.error('personas insert (fresh path) failed:', JSON.stringify(insertError, null, 2));
+          console.error(
+            'personas insert (fresh path) failed:',
+            JSON.stringify(insertError, null, 2)
+          );
         }
         if (inserted) {
           const persona = mapPersona(inserted as Record<string, unknown>, []);
@@ -679,7 +729,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   if (!loaded) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-bg">
+      <div className="bg-bg flex min-h-screen items-center justify-center">
         <div className="text-text-muted">Loading...</div>
       </div>
     );

@@ -168,7 +168,7 @@ export default function LogsFilterPanel({
                   type="date"
                   value={draft.dateFrom}
                   onChange={(e) => setDraft((d) => ({ ...d, dateFrom: e.target.value }))}
-                  className="w-full py-[0.4375rem] px-2.5 bg-bg border border-border rounded-xs text-13 text-text-primary outline-none box-border"
+                  className="bg-bg border-border text-13 text-text-primary box-border w-full rounded-xs border px-2.5 py-[0.4375rem] outline-none"
                 />
               </div>
               <div>
@@ -177,7 +177,7 @@ export default function LogsFilterPanel({
                   type="date"
                   value={draft.dateTo}
                   onChange={(e) => setDraft((d) => ({ ...d, dateTo: e.target.value }))}
-                  className="w-full py-[0.4375rem] px-2.5 bg-bg border border-border rounded-xs text-13 text-text-primary outline-none box-border"
+                  className="bg-bg border-border text-13 text-text-primary box-border w-full rounded-xs border px-2.5 py-[0.4375rem] outline-none"
                 />
               </div>
             </div>
@@ -192,14 +192,14 @@ export default function LogsFilterPanel({
             <MagnifyingGlass
               size={13}
               color="var(--text-muted)"
-              className="absolute left-[9px] top-1/2 -translate-y-1/2 pointer-events-none"
+              className="pointer-events-none absolute top-1/2 left-[9px] -translate-y-1/2"
             />
             <input
               type="text"
               value={shepherdSearch}
               onChange={(e) => setShepherdSearch(e.target.value)}
               placeholder="Search…"
-              className="w-full pl-7 pr-2.5 py-[7px] bg-bg border border-border rounded-xs text-13 text-text-primary outline-none box-border"
+              className="bg-bg border-border text-13 text-text-primary box-border w-full rounded-xs border py-[7px] pr-2.5 pl-7 outline-none"
             />
           </div>
           {('my sheep'.includes(shepherdSearch.toLowerCase()) ||
@@ -221,8 +221,7 @@ export default function LogsFilterPanel({
           {shepherdEntries
             .filter(
               (e) =>
-                shepherdSearch === '' ||
-                e.name.toLowerCase().includes(shepherdSearch.toLowerCase())
+                shepherdSearch === '' || e.name.toLowerCase().includes(shepherdSearch.toLowerCase())
             )
             .map((e) => (
               <CheckRow

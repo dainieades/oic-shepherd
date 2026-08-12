@@ -110,15 +110,15 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
           />
 
           {/* Search */}
-          <div className="py-3 px-4 pb-2 shrink-0">
-            <div className="flex items-center gap-2 bg-bg rounded-sm py-2 px-3">
+          <div className="shrink-0 px-4 py-3 pb-2">
+            <div className="bg-bg flex items-center gap-2 rounded-sm px-3 py-2">
               <MagnifyingGlass size={16} color="var(--text-muted)" />
               <input
                 ref={searchRef}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search people…"
-                className="flex-1 bg-transparent border-none outline-none text-14 text-text-primary"
+                className="text-14 text-text-primary flex-1 border-none bg-transparent outline-none"
               />
             </div>
           </div>
@@ -126,7 +126,7 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
           {/* List */}
           <div className="flex-1 overflow-y-auto px-4 pb-8">
             {sorted.length === 0 && (
-              <p className="text-13 text-text-muted text-center pt-8 italic">
+              <p className="text-13 text-text-muted pt-8 text-center italic">
                 {q ? 'No people match your search.' : 'All individuals are already in families.'}
               </p>
             )}
@@ -144,7 +144,7 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
                 <button
                   key={p.id}
                   onClick={() => toggle(p.id)}
-                  className="w-full flex items-center gap-3 border-none border-b border-border-light cursor-pointer text-left rounded-none m-0"
+                  className="border-border-light m-0 flex w-full cursor-pointer items-center gap-3 rounded-none border-b border-none text-left"
                   style={{
                     padding: '0.625rem 0',
                     background: isSelected ? 'var(--sage-light)' : 'none',
@@ -152,7 +152,7 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
                   }}
                 >
                   <div
-                    className="shrink-0 rounded-full flex items-center justify-center text-12 font-bold"
+                    className="text-12 flex shrink-0 items-center justify-center rounded-full font-bold"
                     style={{
                       width: 36,
                       height: 36,
@@ -162,9 +162,9 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
                   >
                     {initials}
                   </div>
-                  <div className="flex-1 min-w-0">
+                  <div className="min-w-0 flex-1">
                     <p
-                      className="m-0 text-14"
+                      className="text-14 m-0"
                       style={{
                         fontWeight: isSelected ? 'var(--font-semibold)' : 'var(--font-medium)',
                         color: isSelected ? 'var(--sage)' : 'var(--text-primary)',
@@ -177,7 +177,7 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
                     )}
                   </div>
                   <div
-                    className="shrink-0 flex items-center justify-center transition-[background] duration-150"
+                    className="flex shrink-0 items-center justify-center transition-[background] duration-150"
                     style={{
                       width: 20,
                       height: 20,
@@ -208,10 +208,10 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
             actionDisabled={!familyName.trim()}
           />
 
-          <div className="flex-1 overflow-y-auto bg-bg" style={{ padding: '1.5rem 1.25rem 3rem' }}>
+          <div className="bg-bg flex-1 overflow-y-auto" style={{ padding: '1.5rem 1.25rem 3rem' }}>
             {/* Members preview */}
             <div className="mb-6">
-              <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 mb-2">
+              <p className="text-10 text-text-muted tracking-wide-6 mb-2 font-semibold uppercase">
                 Members ({selectedPeople.length})
               </p>
               <div className="flex flex-wrap gap-2">
@@ -229,11 +229,11 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
                   return (
                     <div
                       key={p.id}
-                      className="flex items-center gap-1.5 bg-surface rounded-xl border border-border-light"
+                      className="bg-surface border-border-light flex items-center gap-1.5 rounded-xl border"
                       style={{ padding: '0.25rem 0.625rem 0.25rem 0.25rem' }}
                     >
                       <div
-                        className="rounded-full flex items-center justify-center text-10 font-bold shrink-0"
+                        className="text-10 flex shrink-0 items-center justify-center rounded-full font-bold"
                         style={{
                           width: 24,
                           height: 24,
@@ -254,17 +254,17 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
 
             {/* Family name input */}
             <div className="mb-6">
-              <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 mb-1">
+              <p className="text-10 text-text-muted tracking-wide-6 mb-1 font-semibold uppercase">
                 Last name
               </p>
-              <div className="bg-surface rounded border border-border-light px-4 flex items-center gap-1">
+              <div className="bg-surface border-border-light flex items-center gap-1 rounded border px-4">
                 <input
                   ref={nameRef}
                   value={familyName}
                   onChange={(e) => setFamilyName(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
                   placeholder="e.g. Smith"
-                  className="flex-1 bg-transparent border-none outline-none text-16 text-text-primary"
+                  className="text-16 text-text-primary flex-1 border-none bg-transparent outline-none"
                   style={{ padding: '0.875rem 0' }}
                 />
                 <span className="text-16 text-text-muted whitespace-nowrap">Family</span>
@@ -276,14 +276,14 @@ export default function AddFamilyModal({ onClose }: AddFamilyModalProps) {
 
       {/* ── Success state ── */}
       {submitted && (
-        <div className="flex-1 flex flex-col items-center justify-center gap-3">
+        <div className="flex flex-1 flex-col items-center justify-center gap-3">
           <div
-            className="rounded-full bg-sage-light flex items-center justify-center"
+            className="bg-sage-light flex items-center justify-center rounded-full"
             style={{ width: 56, height: 56 }}
           >
             <Check size={24} color="var(--sage)" weight="bold" />
           </div>
-          <p className="text-16 font-semibold text-text-primary">Family created</p>
+          <p className="text-16 text-text-primary font-semibold">Family created</p>
           <p className="text-13 text-text-muted">{familyName} Family has been added.</p>
         </div>
       )}

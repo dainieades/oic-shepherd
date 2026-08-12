@@ -12,13 +12,11 @@ interface InfoRowProps {
 export function InfoRow({ icon, label, value, muted }: InfoRowProps) {
   return (
     <div
-      className="flex items-start justify-between gap-3 border-b border-border-light"
+      className="border-border-light flex items-start justify-between gap-3 border-b"
       style={{ padding: '0.6875rem 1rem' }}
     >
-      <div className="flex items-center gap-2 shrink-0" style={{ paddingTop: 1 }}>
-        {icon && (
-          <span className="text-text-muted flex shrink-0">{icon}</span>
-        )}
+      <div className="flex shrink-0 items-center gap-2" style={{ paddingTop: 1 }}>
+        {icon && <span className="text-text-muted flex shrink-0">{icon}</span>}
         <span className="text-13 text-text-muted">{label}</span>
       </div>
       <span

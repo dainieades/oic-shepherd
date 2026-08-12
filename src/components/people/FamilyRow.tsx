@@ -26,10 +26,7 @@ const FamilyRow = React.memo(function FamilyRow({
     lastNoteTs !== null ? differenceInCalendarDays(new Date(), new Date(lastNoteTs)) : null;
 
   return (
-    <Link
-      href={`/family/${family.id}`}
-      className="row-hover border-b border-border-light"
-    >
+    <Link href={`/family/${family.id}`} className="row-hover border-border-light border-b">
       <div className="flex items-center gap-3 py-2.5">
         <AvatarBadge
           name={family.label}
@@ -40,17 +37,17 @@ const FamilyRow = React.memo(function FamilyRow({
           icon={<House size={22} color="var(--sage-light)" />}
         />
 
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-1.5 mb-[3px]">
-            <div className="flex items-center gap-[5px] min-w-0 overflow-hidden">
-              <span className="text-15 font-semibold text-text-primary truncate shrink">
+        <div className="min-w-0 flex-1">
+          <div className="mb-[3px] flex items-center justify-between gap-1.5">
+            <div className="flex min-w-0 items-center gap-[5px] overflow-hidden">
+              <span className="text-15 text-text-primary shrink truncate font-semibold">
                 {family.label}
               </span>
             </div>
             <LogStatusTag daysSince={daysSinceNote} lastNoteTs={lastNoteTs} />
           </div>
 
-          <div className="flex items-center gap-1 flex-wrap">
+          <div className="flex flex-wrap items-center gap-1">
             <span className="inline-flex items-center gap-1">
               {members.every((m) => m.assignedShepherdIds.length === 0) && (
                 <>
@@ -67,12 +64,10 @@ const FamilyRow = React.memo(function FamilyRow({
             {members.map((m, i) => (
               <span
                 key={m.id}
-                className="inline-flex items-center gap-[3px] text-12 text-text-muted"
+                className="text-12 text-text-muted inline-flex items-center gap-[3px]"
               >
                 {i > 0 && <span>,&nbsp;</span>}
-                {m.isShepherd && (
-                  <HandHeart size={11} color="var(--sage)" className="shrink-0" />
-                )}
+                {m.isShepherd && <HandHeart size={11} color="var(--sage)" className="shrink-0" />}
                 {m.preferredName}
               </span>
             ))}
@@ -88,11 +83,11 @@ const FamilyRow = React.memo(function FamilyRow({
                 return (
                   <>
                     <span className="text-12 text-text-muted">·</span>
-                    <span className="text-10 py-0.5 px-[7px] rounded-pill bg-blue-light text-blue font-semibold shrink-0">
+                    <span className="text-10 rounded-pill bg-blue-light text-blue shrink-0 px-[7px] py-0.5 font-semibold">
                       {group.name}
                     </span>
                     {extra > 0 && (
-                      <span className="text-10 py-0.5 px-1.5 rounded-pill bg-blue-light text-blue font-semibold shrink-0">
+                      <span className="text-10 rounded-pill bg-blue-light text-blue shrink-0 px-1.5 py-0.5 font-semibold">
                         +{extra}
                       </span>
                     )}

@@ -28,13 +28,13 @@ export function LogItem({
 }) {
   return (
     <button
-      className="row-card-hover text-left cursor-pointer border-none py-2.5 border-b border-border-light"
+      className="row-card-hover border-border-light cursor-pointer border-b border-none py-2.5 text-left"
       onClick={onClick}
     >
-      <div className="flex items-center justify-between mb-1">
-        <div className="flex items-center gap-1.5 flex-nowrap flex-1 min-w-0 overflow-hidden">
+      <div className="mb-1 flex items-center justify-between">
+        <div className="flex min-w-0 flex-1 flex-nowrap items-center gap-1.5 overflow-hidden">
           <span
-            className="text-10 font-semibold rounded-pill bg-sage-light text-sage shrink-0 inline-flex items-center gap-1"
+            className="text-10 rounded-pill bg-sage-light text-sage inline-flex shrink-0 items-center gap-1 font-semibold"
             style={{ padding: '0.125rem 0.4375rem' }}
           >
             {note.type === 'check-in' && <CheckCircle size={11} weight="bold" />}
@@ -45,7 +45,7 @@ export function LogItem({
           </span>
           {targetChips && targetChips.length > 0 && (
             <span
-              className="text-10 text-blue font-medium rounded-pill bg-blue-light shrink-0 inline-flex items-center gap-[0.1875rem]"
+              className="text-10 text-blue rounded-pill bg-blue-light inline-flex shrink-0 items-center gap-[0.1875rem] font-medium"
               style={{ padding: '0.0625rem 0.375rem' }}
             >
               {targetChips[0].isFamily ? (
@@ -58,20 +58,18 @@ export function LogItem({
           )}
           {targetChips && targetChips.length > 1 && (
             <span
-              className="text-10 text-blue font-medium rounded-pill bg-blue-light shrink-0"
+              className="text-10 text-blue rounded-pill bg-blue-light shrink-0 font-medium"
               style={{ padding: '0.0625rem 0.375rem' }}
             >
               +{targetChips.length - 1}
             </span>
           )}
         </div>
-        <span className="text-11 text-text-muted shrink-0 ml-2">
-          {getTimeAgo(note.createdAt)}
-        </span>
+        <span className="text-11 text-text-muted ml-2 shrink-0">{getTimeAgo(note.createdAt)}</span>
       </div>
       {note.content && (
         <p
-          className="text-13 text-text-primary leading-normal mb-1 overflow-hidden text-ellipsis"
+          className="text-13 text-text-primary mb-1 overflow-hidden leading-normal text-ellipsis"
           style={{
             display: '-webkit-box',
             WebkitLineClamp: 2,
@@ -82,7 +80,7 @@ export function LogItem({
         </p>
       )}
       {linkedTodoTitle && (
-        <p className="text-11 text-text-muted inline-flex items-center gap-1 mb-0.5 max-w-full overflow-hidden">
+        <p className="text-11 text-text-muted mb-0.5 inline-flex max-w-full items-center gap-1 overflow-hidden">
           <ListChecks size={11} weight="bold" />
           <span className="overflow-hidden text-ellipsis whitespace-nowrap">
             From to-do: {linkedTodoTitle}

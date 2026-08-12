@@ -180,21 +180,18 @@ const VisitorIntakeForm = React.forwardRef<VisitorIntakeFormHandle, Props>(
             type="email"
             autoComplete="email"
           />
-          <p className="text-11 text-text-muted py-2 pb-3 pl-8 m-0 leading-comfortable">
-            By sharing contact info, you consent to being reached out to by a member or group leader.
+          <p className="text-11 text-text-muted leading-comfortable m-0 py-2 pb-3 pl-8">
+            By sharing contact info, you consent to being reached out to by a member or group
+            leader.
           </p>
         </Section>
 
         <Section label="About">
-          <div className="pt-3 pb-[0.625rem] border-b border-border-light">
-            <div className="flex items-center gap-1.5 mb-2">
+          <div className="border-border-light border-b pt-3 pb-[0.625rem]">
+            <div className="mb-2 flex items-center gap-1.5">
               <Users size={16} color="var(--text-muted)" />
-              <span className="text-13 font-medium text-text-secondary">
-                Life stage
-              </span>
-              <span className="text-11 text-text-muted ml-1">
-                Select all that apply
-              </span>
+              <span className="text-13 text-text-secondary font-medium">Life stage</span>
+              <span className="text-11 text-text-muted ml-1">Select all that apply</span>
             </div>
             <div className="flex flex-wrap gap-2">
               {LIFE_STAGE_OPTIONS.map((option) => {
@@ -227,7 +224,7 @@ const VisitorIntakeForm = React.forwardRef<VisitorIntakeFormHandle, Props>(
             <Globe size={16} color="var(--text-muted)" />
             <span style={labelStyle}>Language</span>
             <span
-              className="flex-1 text-14 text-left"
+              className="text-14 flex-1 text-left"
               style={{
                 color: languages.length > 0 ? 'var(--text-primary)' : 'var(--text-muted)',
               }}
@@ -298,7 +295,7 @@ const VisitorIntakeForm = React.forwardRef<VisitorIntakeFormHandle, Props>(
                   {INTEREST_LABELS[interest]}
                 </span>
                 {selected && (
-                  <span className="text-11 font-bold py-0.5 px-2 rounded-pill bg-sage text-on-sage">
+                  <span className="text-11 rounded-pill bg-sage text-on-sage px-2 py-0.5 font-bold">
                     Selected
                   </span>
                 )}
@@ -342,12 +339,10 @@ export default VisitorIntakeForm;
 function Section({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="mb-6">
-      <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 mb-1.5">
+      <p className="text-10 text-text-muted tracking-wide-6 mb-1.5 font-semibold uppercase">
         {label}
       </p>
-      <div
-        className="no-last-border bg-surface rounded border border-border-light overflow-hidden px-5"
-      >
+      <div className="no-last-border bg-surface border-border-light overflow-hidden rounded border px-5">
         {children}
       </div>
     </div>

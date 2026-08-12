@@ -20,7 +20,8 @@ const NOTIFICATION_OPTIONS: NotifOption[] = [
   {
     key: 'personAdded',
     label: 'New person added',
-    description: "When a person is added to the people's list or a newcomer is accepted into the directory",
+    description:
+      "When a person is added to the people's list or a newcomer is accepted into the directory",
     roles: ['admin', 'shepherd'],
   },
   {
@@ -56,12 +57,19 @@ export default function NotificationsPage() {
 
   return (
     <div className="pb-12">
-      <div className="settings-subpage-navbar sticky top-0 -mx-4 px-4 border-b border-border-light bg-bg flex items-center justify-between z-page" style={{ height: 54 }}>
-        <button onClick={() => router.push('/settings')} className="inline-flex items-center gap-1 text-13 text-sage cursor-pointer p-0" style={{ background: 'none', border: 'none' }}>
+      <div
+        className="settings-subpage-navbar border-border-light bg-bg z-page sticky top-0 -mx-4 flex items-center justify-between border-b px-4"
+        style={{ height: 54 }}
+      >
+        <button
+          onClick={() => router.push('/settings')}
+          className="text-13 text-sage inline-flex cursor-pointer items-center gap-1 p-0"
+          style={{ background: 'none', border: 'none' }}
+        >
           <CaretLeft size={16} weight="bold" />
           Settings
         </button>
-        <span className="text-15 font-semibold text-text-primary">Notifications</span>
+        <span className="text-15 text-text-primary font-semibold">Notifications</span>
         <span className="w-[4.5rem]" />
       </div>
 
@@ -69,7 +77,7 @@ export default function NotificationsPage() {
         Choose which email notifications you receive.
       </p>
 
-      <div className="bg-surface rounded border border-border-light overflow-hidden">
+      <div className="bg-surface border-border-light overflow-hidden rounded border">
         {visibleOptions.map(({ key, label, description }, i) => (
           <div
             key={key}
@@ -80,13 +88,11 @@ export default function NotificationsPage() {
                 i < visibleOptions.length - 1 ? '1px solid var(--border-light)' : 'none',
             }}
           >
-            <span className="flex-1 min-w-0">
-              <span className="block text-15 font-medium text-text-primary tracking-tight-1">
+            <span className="min-w-0 flex-1">
+              <span className="text-15 text-text-primary tracking-tight-1 block font-medium">
                 {label}
               </span>
-              <span className="block text-13 text-text-muted mt-0.5">
-                {description}
-              </span>
+              <span className="text-13 text-text-muted mt-0.5 block">{description}</span>
             </span>
             <ToggleSwitch
               checked={notificationPrefs[key]}
@@ -103,4 +109,3 @@ export default function NotificationsPage() {
     </div>
   );
 }
-

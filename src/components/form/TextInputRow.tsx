@@ -26,13 +26,11 @@ export function TextInputRow({
 }) {
   return (
     <div
-      className="field-row-hover flex items-center gap-2 pt-3 pb-3 pr-4 border-b border-border-light cursor-text"
+      className="field-row-hover border-border-light flex cursor-text items-center gap-2 border-b pt-3 pr-4 pb-3"
       tabIndex={-1}
       onClick={() => inputRef.current?.focus()}
     >
-      <span className="w-2 text-14 text-red shrink-0 leading-none">
-        {required ? '*' : ''}
-      </span>
+      <span className="text-14 text-red w-2 shrink-0 leading-none">{required ? '*' : ''}</span>
       {icon}
       <span style={labelStyle}>{label}</span>
       <input

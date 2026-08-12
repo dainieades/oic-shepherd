@@ -27,7 +27,7 @@ export function TodoSection({
     <div className="mb-4">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 py-1 px-0 bg-transparent border-none cursor-pointer text-10 font-semibold uppercase tracking-wide-6"
+        className="text-10 tracking-wide-6 flex cursor-pointer items-center gap-1.5 border-none bg-transparent px-0 py-1 font-semibold uppercase"
         style={{
           marginBottom: open ? '0.5rem' : 0,
           color: labelColor ?? 'var(--text-muted)',
@@ -43,7 +43,7 @@ export function TodoSection({
         />
       </button>
       {open && (
-        <div className="no-last-border bg-surface rounded overflow-hidden p-0">
+        <div className="no-last-border bg-surface overflow-hidden rounded p-0">
           {todos.map((t) => {
             const person = t.personId ? data.people.find((p) => p.id === t.personId) : null;
             const family = t.familyId ? data.families.find((f) => f.id === t.familyId) : null;
@@ -54,12 +54,12 @@ export function TodoSection({
             return (
               <div
                 key={t.id}
-                className="row-card-hover flex items-start gap-2.5 pt-2.5 pb-2.5 border-b border-border-light"
+                className="row-card-hover border-border-light flex items-start gap-2.5 border-b pt-2.5 pb-2.5"
               >
                 <button
                   aria-label={t.completed ? 'Mark as incomplete' : 'Mark as complete'}
                   onClick={() => onToggle(t.id)}
-                  className="w-5 h-5 rounded-full shrink-0 mt-0.5 flex items-center justify-center cursor-pointer"
+                  className="mt-0.5 flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-full"
                   style={{
                     border: t.completed ? 'none' : '0.125rem solid var(--border)',
                     background: t.completed ? 'var(--sage)' : 'transparent',
@@ -69,7 +69,7 @@ export function TodoSection({
                 </button>
                 <button
                   onClick={() => onEdit(t)}
-                  className="flex-1 min-w-0 bg-transparent border-none text-left cursor-pointer p-0"
+                  className="min-w-0 flex-1 cursor-pointer border-none bg-transparent p-0 text-left"
                 >
                   <p
                     className="text-14 leading-comfortable mb-1"
@@ -80,21 +80,21 @@ export function TodoSection({
                   >
                     {t.title}
                   </p>
-                  <div className="flex items-center gap-2.5 flex-nowrap overflow-hidden">
+                  <div className="flex flex-nowrap items-center gap-2.5 overflow-hidden">
                     {t.dueDate && (
-                      <div className="flex items-center gap-1 text-text-muted">
+                      <div className="text-text-muted flex items-center gap-1">
                         <Clock size={12} />
                         <span className="text-11 text-text-muted">{fmtDue(t.dueDate)}</span>
                       </div>
                     )}
                     {hasRepeat && <ArrowsClockwise size={12} color="var(--text-muted)" />}
                     {targetChips.length > 0 && (
-                      <span className="text-10 text-blue rounded-pill bg-blue-light font-medium shrink-0 py-[0.0625rem] px-1.5">
+                      <span className="text-10 text-blue rounded-pill bg-blue-light shrink-0 px-1.5 py-[0.0625rem] font-medium">
                         {targetChips[0]}
                       </span>
                     )}
                     {targetChips.length > 1 && (
-                      <span className="text-10 text-blue rounded-pill bg-blue-light font-medium shrink-0 py-[0.0625rem] px-1.5">
+                      <span className="text-10 text-blue rounded-pill bg-blue-light shrink-0 px-1.5 py-[0.0625rem] font-medium">
                         +{targetChips.length - 1}
                       </span>
                     )}

@@ -24,7 +24,7 @@ export default function SortControls(): React.ReactNode {
     <div ref={sortRef} className="relative">
       <button
         onClick={() => setShowSort(!showSort)}
-        className="flex items-center gap-1 py-1 px-2 bg-transparent border-0 text-12 text-text-muted cursor-pointer font-medium"
+        className="text-12 text-text-muted flex cursor-pointer items-center gap-1 border-0 bg-transparent px-2 py-1 font-medium"
       >
         <ArrowsDownUp size={11} />
         {currentSort.label}
@@ -32,7 +32,7 @@ export default function SortControls(): React.ReactNode {
 
       {showSort && (
         <div
-          className="animate-pop-in absolute right-0 bg-surface border border-border rounded-sm py-1 z-page shadow-elevated"
+          className="animate-pop-in bg-surface border-border z-page shadow-elevated absolute right-0 rounded-sm border py-1"
           style={{
             top: 'calc(100% + 0.25rem)',
             minWidth: '10rem',
@@ -45,7 +45,7 @@ export default function SortControls(): React.ReactNode {
                 setSortKey(opt.key);
                 setShowSort(false);
               }}
-              className={`w-full text-left text-13 bg-transparent border-0 cursor-pointer ${sortKey === opt.key ? 'font-semibold text-sage' : 'font-normal text-text-primary'}`}
+              className={`text-13 w-full cursor-pointer border-0 bg-transparent text-left ${sortKey === opt.key ? 'text-sage font-semibold' : 'text-text-primary font-normal'}`}
               style={{ padding: '0.5rem 0.875rem' }}
             >
               {opt.label}

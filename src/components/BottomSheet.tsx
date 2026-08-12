@@ -72,7 +72,7 @@ export function BottomSheet({
 
   const overlay = (
     <div
-      className={`sheet-outer ${OUTER_VARIANT_CLASS[variant]} fixed inset-0 flex bg-backdrop`}
+      className={`sheet-outer ${OUTER_VARIANT_CLASS[variant]} bg-backdrop fixed inset-0 flex`}
       style={{ zIndex }}
       onClick={(e) => {
         if (allowBackdropClose && e.target === e.currentTarget) onClose();
@@ -85,7 +85,10 @@ export function BottomSheet({
         className={`sheet-panel ${PANEL_VARIANT_CLASS[variant]} bg-surface relative`}
         style={{
           ...(compact
-            ? { paddingBottom: variant === 'sheet' ? 'env(safe-area-inset-bottom, 1.5rem)' : undefined }
+            ? {
+                paddingBottom:
+                  variant === 'sheet' ? 'env(safe-area-inset-bottom, 1.5rem)' : undefined,
+              }
             : {
                 height: 'calc(100dvh - 3rem)',
                 display: 'flex',
@@ -122,13 +125,7 @@ export function MaybeSheet({
   );
 }
 
-export function SubPanel({
-  children,
-  onBack,
-}: {
-  children: React.ReactNode;
-  onBack?: () => void;
-}) {
+export function SubPanel({ children, onBack }: { children: React.ReactNode; onBack?: () => void }) {
   React.useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onBack?.();
@@ -139,12 +136,14 @@ export function SubPanel({
 
   return (
     <div
-      className="absolute inset-0 z-10 bg-surface flex flex-col overflow-hidden"
+      className="bg-surface absolute inset-0 z-10 flex flex-col overflow-hidden"
       style={{ borderRadius: 'inherit' }}
     >
       {React.Children.map(children, (child) => {
         if (React.isValidElement(child) && child.type === ModalHeader) {
-          return React.cloneElement(child as React.ReactElement<ModalHeaderProps>, { onCancel: onBack });
+          return React.cloneElement(child as React.ReactElement<ModalHeaderProps>, {
+            onCancel: onBack,
+          });
         }
         return child;
       })}
@@ -175,13 +174,13 @@ export function ModalHeader({
 }: ModalHeaderProps) {
   return (
     <div
-      className="flex items-center justify-between shrink-0 border-b border-border-light"
+      className="border-border-light flex shrink-0 items-center justify-between border-b"
       style={{ padding: '0.875rem 1.25rem 0.75rem' }}
     >
       <Button variant="ghost" size="sm" onClick={onCancel}>
         {cancelLabel}
       </Button>
-      <span id={titleId} className="text-15 font-semibold text-text-primary">
+      <span id={titleId} className="text-15 text-text-primary font-semibold">
         {title}
       </span>
       <Button

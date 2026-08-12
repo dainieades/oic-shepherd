@@ -96,20 +96,20 @@ export default function LanguagePickerSheet({ currentLanguages, onConfirm, onBac
         actionVariant="pill"
       />
 
-      <div className="py-3 px-5 shrink-0 border-b border-border-light">
-        <div className="flex items-center gap-2 bg-bg border border-border rounded-sm py-[0.5625rem] px-3">
+      <div className="border-border-light shrink-0 border-b px-5 py-3">
+        <div className="bg-bg border-border flex items-center gap-2 rounded-sm border px-3 py-[0.5625rem]">
           <MagnifyingGlass size={14} color="var(--text-muted)" />
           <input
             ref={searchRef}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search languages…"
-            className="flex-1 text-14 text-text-primary bg-transparent border-none outline-none"
+            className="text-14 text-text-primary flex-1 border-none bg-transparent outline-none"
           />
           {search && (
             <button
               onClick={() => setSearch('')}
-              className="bg-transparent border-none cursor-pointer text-text-muted text-18 leading-none p-0"
+              className="text-text-muted text-18 cursor-pointer border-none bg-transparent p-0 leading-none"
             >
               ×
             </button>
@@ -122,7 +122,7 @@ export default function LanguagePickerSheet({ currentLanguages, onConfirm, onBac
         {filteredPriority.length > 0 && (
           <>
             {!q && (
-              <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 py-3 pb-[0.375rem] px-5 m-0">
+              <p className="text-10 text-text-muted tracking-wide-6 m-0 px-5 py-3 pb-[0.375rem] font-semibold uppercase">
                 Suggested
               </p>
             )}
@@ -136,7 +136,7 @@ export default function LanguagePickerSheet({ currentLanguages, onConfirm, onBac
         {filteredOther.length > 0 && (
           <>
             {!q && filteredPriority.length > 0 && (
-              <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 py-3 pb-[0.375rem] px-5 m-0 border-t border-border-light">
+              <p className="text-10 text-text-muted tracking-wide-6 border-border-light m-0 border-t px-5 py-3 pb-[0.375rem] font-semibold uppercase">
                 All Languages
               </p>
             )}
@@ -147,7 +147,7 @@ export default function LanguagePickerSheet({ currentLanguages, onConfirm, onBac
         )}
 
         {filteredPriority.length === 0 && filteredOther.length === 0 && (
-          <p className="py-6 px-5 text-13 text-text-muted text-center italic">
+          <p className="text-13 text-text-muted px-5 py-6 text-center italic">
             No languages found.
           </p>
         )}
@@ -169,11 +169,11 @@ function LanguageRow({
   return (
     <button
       onClick={() => onToggle(lang)}
-      className="w-full flex items-center gap-3 py-3 px-5 border-none border-b border-border-light cursor-pointer text-left"
+      className="border-border-light flex w-full cursor-pointer items-center gap-3 border-b border-none px-5 py-3 text-left"
       style={{ background: isSel ? 'var(--sage-light)' : 'none' }}
     >
       <span
-        className="flex-1 text-14"
+        className="text-14 flex-1"
         style={{
           fontWeight: isSel ? 'var(--font-semibold)' : 'var(--font-normal)',
           color: isSel ? 'var(--sage)' : 'var(--text-primary)',
@@ -182,7 +182,7 @@ function LanguageRow({
         {lang}
       </span>
       <div
-        className="w-5 h-5 shrink-0 flex items-center justify-center transition-[background] duration-150"
+        className="flex h-5 w-5 shrink-0 items-center justify-center transition-[background] duration-150"
         style={{
           borderRadius: 5,
           border: isSel ? 'none' : '0.09375rem solid var(--border)',

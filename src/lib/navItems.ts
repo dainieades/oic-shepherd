@@ -1,12 +1,5 @@
 import type { Icon } from '@phosphor-icons/react';
-import {
-  UserList,
-  Notepad,
-  CheckCircle,
-  UsersFour,
-  Gear,
-  HandWaving,
-} from '@phosphor-icons/react';
+import { UserList, Notepad, CheckCircle, UsersFour, Gear, HandWaving } from '@phosphor-icons/react';
 import type { Persona, Role } from './types';
 
 export interface NavItem {

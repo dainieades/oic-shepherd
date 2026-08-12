@@ -46,22 +46,22 @@ export default function WelcomePage() {
 
   if (done) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center text-center py-8 px-5 gap-4">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 px-5 py-8 text-center">
         <Logo height={88} />
-        <div className="w-[72px] h-[72px] rounded-full bg-sage-light flex items-center justify-center">
+        <div className="bg-sage-light flex h-[72px] w-[72px] items-center justify-center rounded-full">
           <CheckCircle size={36} color="var(--sage)" weight="fill" />
         </div>
-        <h1 className="font-display text-24 font-bold text-text-primary">
+        <h1 className="font-display text-24 text-text-primary font-bold">
           Thank you for visiting!
         </h1>
-        <p className="text-15 text-text-secondary leading-normal max-w-[320px]">
+        <p className="text-15 text-text-secondary max-w-[320px] leading-normal">
           We've received your info. Someone from our Welcome Team will reach out to you soon. We're
           so glad you're here.
         </p>
         <button
           type="button"
           onClick={handleReset}
-          className="mt-2 py-3 px-5 rounded-md border border-border bg-transparent text-text-secondary text-15 font-semibold cursor-pointer"
+          className="border-border text-text-secondary text-15 mt-2 cursor-pointer rounded-md border bg-transparent px-5 py-3 font-semibold"
         >
           Welcome another newcomer
         </button>
@@ -71,11 +71,9 @@ export default function WelcomePage() {
 
   return (
     <div className="pt-6 pb-12">
-      <header className="text-center mb-6">
+      <header className="mb-6 text-center">
         <Logo height={96} style={{ margin: '0 auto var(--spacing-lg)' }} />
-        <h1 className="font-display text-24 font-bold text-text-primary mb-[6px]">
-          Welcome!
-        </h1>
+        <h1 className="font-display text-24 text-text-primary mb-[6px] font-bold">Welcome!</h1>
         <p className="text-14 text-text-muted leading-comfortable">
           We'd love to get to know you. Fill out this card so we can stay in touch.
         </p>
@@ -89,7 +87,7 @@ export default function WelcomePage() {
         tabIndex={-1}
         autoComplete="off"
         aria-hidden="true"
-        className="absolute opacity-0 left-[-9999px] w-px h-px"
+        className="absolute left-[-9999px] h-px w-px opacity-0"
       />
 
       <VisitorIntakeForm
@@ -99,16 +97,12 @@ export default function WelcomePage() {
         onValidityChange={setCanSubmit}
       />
 
-      {error && (
-        <p className="bg-red-light text-red py-3 px-4 rounded text-13 mb-4">
-          {error}
-        </p>
-      )}
+      {error && <p className="bg-red-light text-red text-13 mb-4 rounded px-4 py-3">{error}</p>}
 
       <button
         onClick={() => formRef.current?.save()}
         disabled={!canSubmit || submitting}
-        className="w-full py-[0.875rem] px-5 rounded-md border-none text-16 font-semibold bg-sage text-on-sage cursor-pointer disabled:bg-border disabled:text-text-muted disabled:cursor-not-allowed"
+        className="text-16 bg-sage text-on-sage disabled:bg-border disabled:text-text-muted w-full cursor-pointer rounded-md border-none px-5 py-[0.875rem] font-semibold disabled:cursor-not-allowed"
       >
         {submitting ? 'Submitting…' : 'Submit'}
       </button>

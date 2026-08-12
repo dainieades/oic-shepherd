@@ -3,7 +3,12 @@
 import React from 'react';
 import { Warning } from '@phosphor-icons/react';
 
-export default function Error({ reset }: { error: Error & { digest?: string }; reset: () => void }) {
+export default function Error({
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-4 px-6 text-center">
       <Warning size={40} weight="duotone" className="text-text-tertiary" />
@@ -23,7 +28,7 @@ export default function Error({ reset }: { error: Error & { digest?: string }; r
       </div>
       <button
         onClick={reset}
-        className="rounded-lg bg-accent px-5 py-2 text-white"
+        className="bg-accent rounded-lg px-5 py-2 text-white"
         style={{ fontSize: 'var(--text-14)', fontWeight: 'var(--font-medium)' }}
       >
         Try again

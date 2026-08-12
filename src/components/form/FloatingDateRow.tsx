@@ -120,13 +120,9 @@ function FloatingCalendar({
 
   return createPortal(
     <>
+      <div role="presentation" className="z-float fixed inset-0" onClick={onClose} />
       <div
-        role="presentation"
-        className="fixed inset-0 z-float"
-        onClick={onClose}
-      />
-      <div
-        className="fixed overflow-hidden bg-surface rounded-[16px] border border-border shadow-elevated"
+        className="bg-surface border-border shadow-elevated fixed overflow-hidden rounded-[16px] border"
         style={{
           top,
           left,
@@ -134,16 +130,16 @@ function FloatingCalendar({
           zIndex: Z_FLOAT + 1,
         }}
       >
-        <div className="flex items-center justify-between px-4 pt-3 pb-2.5 border-b border-border-light">
+        <div className="border-border-light flex items-center justify-between border-b px-4 pt-3 pb-2.5">
           <button
             onClick={onClose}
-            className="text-14 text-text-secondary bg-transparent border-0 cursor-pointer p-0"
+            className="text-14 text-text-secondary cursor-pointer border-0 bg-transparent p-0"
           >
             Cancel
           </button>
           <button
             onClick={() => onSelect(selectedDate)}
-            className="h-7 px-3 rounded-xs bg-sage text-on-sage text-14 font-semibold border-0 cursor-pointer"
+            className="bg-sage text-on-sage text-14 h-7 cursor-pointer rounded-xs border-0 px-3 font-semibold"
           >
             Done
           </button>
@@ -156,25 +152,25 @@ function FloatingCalendar({
             defaultValue={selectedDate ? fmtDisplay(selectedDate) : ''}
             onBlur={handleDateInputBlur}
             placeholder="Apr 17, 2026"
-            className="w-full box-border rounded-sm border-2 border-sage bg-bg outline-none text-15 font-medium text-text-primary"
+            className="border-sage bg-bg text-15 text-text-primary box-border w-full rounded-sm border-2 font-medium outline-none"
             style={{ padding: '0.5625rem 0.75rem' }}
           />
         </div>
 
         <div className="flex items-center justify-between px-[14px] py-1">
-          <span className="text-15 font-bold text-text-primary">
+          <span className="text-15 text-text-primary font-bold">
             {MONTH_NAMES[viewMonth]} {viewYear}
           </span>
           <div className="flex gap-1.5">
             <button
-              className="w-[30px] h-[30px] rounded-xs bg-bg border border-border-light text-text-secondary cursor-pointer flex items-center justify-center shrink-0"
+              className="bg-bg border-border-light text-text-secondary flex h-[30px] w-[30px] shrink-0 cursor-pointer items-center justify-center rounded-xs border"
               aria-label="Previous month"
               onClick={prevMonth}
             >
               <CaretLeft size={12} weight="bold" />
             </button>
             <button
-              className="w-[30px] h-[30px] rounded-xs bg-bg border border-border-light text-text-secondary cursor-pointer flex items-center justify-center shrink-0"
+              className="bg-bg border-border-light text-text-secondary flex h-[30px] w-[30px] shrink-0 cursor-pointer items-center justify-center rounded-xs border"
               aria-label="Next month"
               onClick={nextMonth}
             >
@@ -185,19 +181,13 @@ function FloatingCalendar({
 
         <div className="grid grid-cols-7 px-2">
           {DAY_HEADERS.map((h) => (
-            <div
-              key={h}
-              className="text-center text-11 font-semibold text-text-muted py-0.5"
-            >
+            <div key={h} className="text-11 text-text-muted py-0.5 text-center font-semibold">
               {h}
             </div>
           ))}
         </div>
 
-        <div
-          className="grid grid-cols-7 px-2 pb-2.5"
-          style={{ gap: '0.0625rem 0' }}
-        >
+        <div className="grid grid-cols-7 px-2 pb-2.5" style={{ gap: '0.0625rem 0' }}>
           {cells.map((cell, i) => {
             const isSelected = cell.dateStr === selectedDate;
             const isToday = cell.dateStr === todayStr;
@@ -215,7 +205,7 @@ function FloatingCalendar({
                     setViewMonth(parseInt(cell.dateStr.slice(5, 7)) - 1);
                   }
                 }}
-                className="w-9 h-9 mx-auto rounded-full flex items-center justify-center text-13"
+                className="text-13 mx-auto flex h-9 w-9 items-center justify-center rounded-full"
                 style={{
                   border:
                     isToday && !isSelected
@@ -276,7 +266,7 @@ export function FloatingDateRow({
         {icon}
         <span style={labelStyle}>{label}</span>
         <span
-          className="flex-1 text-14 text-left"
+          className="text-14 flex-1 text-left"
           style={{ color: value ? 'var(--text-primary)' : 'var(--text-muted)' }}
         >
           {value ? fmtDate(value) : 'Not set'}

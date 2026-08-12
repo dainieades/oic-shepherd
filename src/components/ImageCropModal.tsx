@@ -158,23 +158,19 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
   const scaledH = naturalSize.h * scale;
 
   return createPortal(
-    <div
-      className="fixed inset-0 bg-[#111] flex flex-col touch-none z-float"
-    >
-      <div className="flex items-center justify-between py-[0.875rem] px-5 text-white shrink-0">
+    <div className="z-float fixed inset-0 flex touch-none flex-col bg-[#111]">
+      <div className="flex shrink-0 items-center justify-between px-5 py-[0.875rem] text-white">
         <button
           onClick={onCancel}
-          className="bg-transparent border-none text-white p-2 cursor-pointer leading-none"
+          className="cursor-pointer border-none bg-transparent p-2 leading-none text-white"
           aria-label="Cancel"
         >
           <X size={24} />
         </button>
-        <span className="text-16 font-semibold tracking-tight-1">
-          Move and Scale
-        </span>
+        <span className="text-16 tracking-tight-1 font-semibold">Move and Scale</span>
         <button
           onClick={handleConfirm}
-          className="bg-transparent border-none text-white p-2 cursor-pointer leading-none"
+          className="cursor-pointer border-none bg-transparent p-2 leading-none text-white"
           aria-label="Confirm crop"
         >
           <Check size={24} weight="bold" />
@@ -182,7 +178,7 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
       </div>
 
       <div
-        className="flex-1 relative overflow-hidden cursor-grab touch-none select-none"
+        className="relative flex-1 cursor-grab touch-none overflow-hidden select-none"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -195,7 +191,7 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
       >
         {naturalSize.w > 0 && (
           <div
-            className="absolute top-1/2 left-1/2 pointer-events-none"
+            className="pointer-events-none absolute top-1/2 left-1/2"
             style={{
               width: scaledW,
               height: scaledH,
@@ -203,18 +199,11 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
             }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={imageSrc}
-              alt=""
-              draggable={false}
-              className="w-full h-full block"
-            />
+            <img src={imageSrc} alt="" draggable={false} className="block h-full w-full" />
           </div>
         )}
 
-        <svg
-          className="absolute inset-0 w-full h-full pointer-events-none"
-        >
+        <svg className="pointer-events-none absolute inset-0 h-full w-full">
           <defs>
             <mask id="imagecrop-overlay-mask">
               <rect width="100%" height="100%" fill="white" />
@@ -240,7 +229,7 @@ export default function ImageCropModal({ imageSrc, onConfirm, onCancel }: Props)
 
       <canvas ref={canvasRef} className="hidden" />
 
-      <div className="pt-4 px-7 pb-6 shrink-0 flex flex-col items-center gap-2.5">
+      <div className="flex shrink-0 flex-col items-center gap-2.5 px-7 pt-4 pb-6">
         <input
           type="range"
           min={0}

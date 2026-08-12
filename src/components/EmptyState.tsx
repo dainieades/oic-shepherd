@@ -18,22 +18,17 @@ export function EmptyState({
   return (
     <div className="text-center" style={{ padding }}>
       {icon && <div className="mb-2">{icon}</div>}
-      <p
-        className={`text-14 font-semibold text-text-secondary ${description ? 'mb-1.5' : 'mb-0'}`}
-      >
+      <p className={`text-14 text-text-secondary font-semibold ${description ? 'mb-1.5' : 'mb-0'}`}>
         {title}
       </p>
       {description && (
-        <p
-          className="text-13 text-text-muted leading-loose mx-auto"
-          style={{ maxWidth: 260 }}
-        >
+        <p className="text-13 text-text-muted mx-auto leading-loose" style={{ maxWidth: 260 }}>
           {description}
         </p>
       )}
       {subtext && (
         <p
-          className="text-12 text-text-muted leading-normal font-semibold mx-auto"
+          className="text-12 text-text-muted mx-auto leading-normal font-semibold"
           style={{ maxWidth: 260, marginTop: '0.625rem' }}
         >
           {subtext}

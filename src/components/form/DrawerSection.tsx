@@ -11,13 +11,11 @@ export function DrawerSection({
 }) {
   return (
     <div className="mb-6">
-      <p
-        className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 mb-2.5"
-      >
+      <p className="text-10 text-text-muted tracking-wide-6 mb-2.5 font-semibold uppercase">
         {label}
       </p>
       <div
-        className="no-last-border bg-surface rounded border border-border-light overflow-hidden"
+        className="no-last-border bg-surface border-border-light overflow-hidden rounded border"
         style={{ padding: cardPadding }}
       >
         {children}

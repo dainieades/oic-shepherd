@@ -14,11 +14,11 @@ export default function SearchBar({ search, setSearch, show, inputRef }: SearchB
   if (!show && !search) return null;
 
   return (
-    <div className="relative mb-2.5 mt-2">
+    <div className="relative mt-2 mb-2.5">
       <MagnifyingGlass
         size={14}
         color="var(--text-muted)"
-        className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none"
+        className="pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2"
       />
       <input
         ref={inputRef}
@@ -27,7 +27,7 @@ export default function SearchBar({ search, setSearch, show, inputRef }: SearchB
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Search by name…"
-        className="w-full pl-8 pr-3 py-2 bg-surface border border-border rounded-sm text-14 text-text-primary outline-none"
+        className="bg-surface border-border text-14 text-text-primary w-full rounded-sm border py-2 pr-3 pl-8 outline-none"
       />
     </div>
   );

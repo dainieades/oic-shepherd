@@ -17,7 +17,7 @@ export function LogSection({
     <div className="mb-4">
       <button
         onClick={() => setOpen(!open)}
-        className={`flex items-center gap-1.5 py-1 px-0 bg-transparent border-none cursor-pointer text-10 font-semibold text-text-muted uppercase tracking-wide-6 ${open ? 'mb-2' : ''}`}
+        className={`text-10 text-text-muted tracking-wide-6 flex cursor-pointer items-center gap-1.5 border-none bg-transparent px-0 py-1 font-semibold uppercase ${open ? 'mb-2' : ''}`}
       >
         {label} · {count}
         <CaretDown

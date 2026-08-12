@@ -2,7 +2,12 @@
 
 import React from 'react';
 import { type Dispatch, type SetStateAction } from 'react';
-import { type AppData, type Persona, type ThemePreference, type NotificationPreferences } from '../types';
+import {
+  type AppData,
+  type Persona,
+  type ThemePreference,
+  type NotificationPreferences,
+} from '../types';
 import { MAP_PROVIDERS_STORAGE_KEY, type MapProvider } from '../utils';
 import { createClient } from '@/utils/supabase/client';
 
@@ -17,7 +22,10 @@ export interface PreferencesHookResult {
   mapProvider: MapProvider;
   setMapProvider: (provider: MapProvider) => void;
   notificationPrefs: NotificationPreferences;
-  setNotificationPreference: <K extends keyof NotificationPreferences>(key: K, value: boolean) => Promise<void>;
+  setNotificationPreference: <K extends keyof NotificationPreferences>(
+    key: K,
+    value: boolean
+  ) => Promise<void>;
   calendarSyncEnabled: boolean;
   calendarFeedToken: string | null;
   enableCalendarSync: (pregenToken?: string) => Promise<string>;
@@ -34,7 +42,10 @@ const NOTIFY_PREF_COLUMNS: Record<keyof NotificationPreferences, string> = {
   todoCreated: 'notify_todo_created',
 };
 
-export function usePreferencesHook({ setData, currentPersonaId }: PreferencesHookDeps): PreferencesHookResult {
+export function usePreferencesHook({
+  setData,
+  currentPersonaId,
+}: PreferencesHookDeps): PreferencesHookResult {
   const [themePreference, setThemePreferenceState] = React.useState<ThemePreference>('system');
   const [mapProvider, setMapProviderState] = React.useState<MapProvider>('google');
   const [notificationPrefs, setNotificationPrefsState] = React.useState<NotificationPreferences>({

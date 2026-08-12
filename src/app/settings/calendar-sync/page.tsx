@@ -10,12 +10,8 @@ import { CalendarSubscribeOptions } from '@/components/CalendarSubscribeOptions'
 
 export default function CalendarSyncPage() {
   const router = useRouter();
-  const {
-    calendarSyncEnabled,
-    calendarFeedToken,
-    enableCalendarSync,
-    disableCalendarSync,
-  } = useApp();
+  const { calendarSyncEnabled, calendarFeedToken, enableCalendarSync, disableCalendarSync } =
+    useApp();
   const { showToast } = useToast();
   const [origin, setOrigin] = React.useState('');
   React.useEffect(() => {
@@ -52,12 +48,15 @@ export default function CalendarSyncPage() {
 
   return (
     <div className="pb-12">
-      <div className="settings-subpage-navbar sticky top-0 bg-bg -mx-4 px-4 border-b border-border-light flex items-center justify-between h-[54px] z-page">
-        <button onClick={() => router.push('/settings')} className="inline-flex items-center gap-1 text-13 text-sage bg-transparent border-none cursor-pointer p-0">
+      <div className="settings-subpage-navbar bg-bg border-border-light z-page sticky top-0 -mx-4 flex h-[54px] items-center justify-between border-b px-4">
+        <button
+          onClick={() => router.push('/settings')}
+          className="text-13 text-sage inline-flex cursor-pointer items-center gap-1 border-none bg-transparent p-0"
+        >
           <CaretLeft size={16} weight="bold" />
           Settings
         </button>
-        <span className="text-15 font-semibold text-text-primary">Calendar Sync</span>
+        <span className="text-15 text-text-primary font-semibold">Calendar Sync</span>
         <span className="w-[72px]" />
       </div>
 
@@ -66,11 +65,13 @@ export default function CalendarSyncPage() {
         Calendar, Outlook, or other apps, copy the feed URL and add it as a subscribed calendar.
       </p>
 
-      <div className="bg-surface rounded border border-border-light overflow-hidden">
-        <div className="flex items-center gap-[14px] py-[0.875rem] px-4">
-          <span className="flex-1 min-w-0">
-            <span className="block text-15 font-medium text-text-primary tracking-tight-1">Calendar sync</span>
-            <span className="block text-13 text-text-muted mt-[0.125rem] leading-normal">
+      <div className="bg-surface border-border-light overflow-hidden rounded border">
+        <div className="flex items-center gap-[14px] px-4 py-[0.875rem]">
+          <span className="min-w-0 flex-1">
+            <span className="text-15 text-text-primary tracking-tight-1 block font-medium">
+              Calendar sync
+            </span>
+            <span className="text-13 text-text-muted mt-[0.125rem] block leading-normal">
               {calendarSyncEnabled
                 ? 'On — feed is active'
                 : 'Off — to-dos will not appear in your calendar'}
@@ -86,16 +87,16 @@ export default function CalendarSyncPage() {
 
       {calendarSyncEnabled && (
         <>
-          <p className="text-12 font-semibold text-text-muted uppercase tracking-wide-4 mt-6 mb-2">Your calendar app</p>
+          <p className="text-12 text-text-muted tracking-wide-4 mt-6 mb-2 font-semibold uppercase">
+            Your calendar app
+          </p>
           <CalendarSubscribeOptions
             feedUrl={feedUrl}
             onSubscribeApple={() => void handleSubscribeApple()}
             onCopy={() => void handleCopy()}
           />
-
         </>
       )}
     </div>
   );
 }
-

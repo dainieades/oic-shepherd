@@ -142,7 +142,7 @@ export default function AddLogModal({
     <>
       <BottomSheet onClose={onClose} variant="dialog" aria-labelledby="add-log-title">
         {showWhoPicker && (
-          <div className="flex-1 overflow-hidden flex flex-col">
+          <div className="flex flex-1 flex-col overflow-hidden">
             <PersonFamilyPicker
               data={data}
               initialFamilyIds={familyIds}
@@ -164,7 +164,7 @@ export default function AddLogModal({
         {isEditing && note && !showWhoPicker && (
           <button
             onClick={() => setShowDeleteConfirm(true)}
-            className="absolute w-11 h-11 rounded-full bg-red-light text-red flex items-center justify-center cursor-pointer shadow-card"
+            className="bg-red-light text-red shadow-card absolute flex h-11 w-11 cursor-pointer items-center justify-center rounded-full"
             style={{
               bottom: 28,
               left: 24,
@@ -188,13 +188,14 @@ export default function AddLogModal({
 
             {/* Scrollable body */}
             <div
-              className="flex-1 min-h-0 overflow-y-auto bg-bg flex flex-col"
+              className="bg-bg flex min-h-0 flex-1 flex-col overflow-y-auto"
               style={{ padding: `1rem 1.25rem ${isEditing ? 80 : 16}px` }}
             >
               {linkedTodo &&
                 (() => {
                   const interactive = !!onOpenTodo;
-                  const chipClass = 'inline-flex items-center self-start gap-1.5 mb-3 bg-sage-light text-sage rounded-pill text-12 font-semibold max-w-full border-none text-left';
+                  const chipClass =
+                    'inline-flex items-center self-start gap-1.5 mb-3 bg-sage-light text-sage rounded-pill text-12 font-semibold max-w-full border-none text-left';
                   const chipStyle: React.CSSProperties = {
                     padding: '0.375rem 0.625rem',
                     cursor: interactive ? 'pointer' : 'default',
@@ -218,17 +219,15 @@ export default function AddLogModal({
                       {contents}
                     </button>
                   ) : (
-                    <div className={chipClass} style={chipStyle}>{contents}</div>
+                    <div className={chipClass} style={chipStyle}>
+                      {contents}
+                    </div>
                   );
                 })()}
 
               {/* Fields */}
-              <div
-                className="bg-surface rounded border border-border-light overflow-hidden px-4 mb-4 shrink-0"
-              >
-                <div
-                  className="no-last-border flex flex-col"
-                >
+              <div className="bg-surface border-border-light mb-4 shrink-0 overflow-hidden rounded border px-4">
+                <div className="no-last-border flex flex-col">
                   {/* Type */}
                   <FieldRow
                     btnRef={typeBtnRef}
@@ -262,20 +261,14 @@ export default function AddLogModal({
                     (() => {
                       const creator = data.personas.find((p) => p.id === note.createdBy);
                       return (
-                        <div
-                          className="flex items-center gap-2.5 py-3"
-                        >
-                          <span
-                            className="w-6 flex justify-center shrink-0 text-text-muted"
-                          >
+                        <div className="flex items-center gap-2.5 py-3">
+                          <span className="text-text-muted flex w-6 shrink-0 justify-center">
                             <UserPlus size={16} />
                           </span>
-                          <span
-                            className="text-12 text-text-muted w-[60px] shrink-0"
-                          >
+                          <span className="text-12 text-text-muted w-[60px] shrink-0">
                             Created by
                           </span>
-                          <span className="flex-1 text-14 text-text-secondary">
+                          <span className="text-14 text-text-secondary flex-1">
                             {creator?.name ?? 'Unknown'}
                           </span>
                         </div>
@@ -289,7 +282,7 @@ export default function AddLogModal({
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="Logs capture past interactions — a conversation, a check-in, a prayer request, or a moment you shared together."
-                className="flex-1 w-full mt-0 p-3 bg-surface border border-border-light rounded-sm text-14 text-text-primary resize-y outline-none leading-normal box-border"
+                className="bg-surface border-border-light text-14 text-text-primary mt-0 box-border w-full flex-1 resize-y rounded-sm border p-3 leading-normal outline-none"
                 style={{ minHeight: 220 }}
               />
             </div>
@@ -355,17 +348,11 @@ function FieldRow({
   return (
     <button
       ref={btnRef}
-      className="field-row-hover flex items-center gap-2.5 py-3 bg-transparent border-none border-b border-border-light cursor-pointer text-left w-full"
+      className="field-row-hover border-border-light flex w-full cursor-pointer items-center gap-2.5 border-b border-none bg-transparent py-3 text-left"
       onClick={onClick}
     >
-      <span
-        className="w-6 flex justify-center shrink-0 text-text-muted"
-      >
-        {icon}
-      </span>
-      <span className="text-12 text-text-muted w-[60px] shrink-0">
-        {label}
-      </span>
+      <span className="text-text-muted flex w-6 shrink-0 justify-center">{icon}</span>
+      <span className="text-12 text-text-muted w-[60px] shrink-0">{label}</span>
       <span
         className="text-14 flex-1 break-words"
         style={{ color: valueColor ?? 'var(--text-primary)' }}
@@ -393,37 +380,29 @@ export function DeleteConfirmDialog({
 
   const overlay = (
     <div
-      className="fixed inset-0 flex items-center justify-center px-8 z-nested bg-backdrop"
+      className="z-nested bg-backdrop fixed inset-0 flex items-center justify-center px-8"
       style={{ zIndex: Z_NESTED }}
       onClick={(e) => {
         if (e.target === e.currentTarget) onCancel();
       }}
     >
-      <div
-        className="bg-surface w-full max-w-xs overflow-hidden"
-        style={{ borderRadius: 16 }}
-      >
+      <div className="bg-surface w-full max-w-xs overflow-hidden" style={{ borderRadius: 16 }}>
         <div className="px-5 pt-6 pb-4 text-center">
-          <p
-            className="text-16 font-semibold text-text-primary"
-            style={{ margin: '0 0 0.5rem' }}
-          >
+          <p className="text-16 text-text-primary font-semibold" style={{ margin: '0 0 0.5rem' }}>
             {label}
           </p>
-          <p className="text-14 text-text-muted m-0">
-            This action cannot be undone.
-          </p>
+          <p className="text-14 text-text-muted m-0">This action cannot be undone.</p>
         </div>
-        <div className="border-t border-border-light flex">
+        <div className="border-border-light flex border-t">
           <button
             onClick={onCancel}
-            className="flex-1 h-[50px] bg-transparent border-none border-r border-border-light text-15 text-text-secondary cursor-pointer font-medium"
+            className="border-border-light text-15 text-text-secondary h-[50px] flex-1 cursor-pointer border-r border-none bg-transparent font-medium"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
-            className="flex-1 h-[50px] bg-transparent border-none text-15 text-red cursor-pointer font-semibold"
+            className="text-15 text-red h-[50px] flex-1 cursor-pointer border-none bg-transparent font-semibold"
           >
             Delete
           </button>

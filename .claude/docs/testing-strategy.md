@@ -57,12 +57,12 @@ fields, bad enum values, wrong types).
 
 ## Priority 4 — Component tests ✅ Done 2026-04-21
 
-| Component            | What to test                                                  |
-| -------------------- | ------------------------------------------------------------- |
-| `AccessGate`         | Renders children when permitted; fallback when denied         |
-| `AddPersonModal`     | Required fields block submission; calls `addPerson` on submit |
-| `AddTodoModal`       | Date picker integration; repeat setting persists              |
-| `Toast`              | Appears on trigger; dismisses after timeout                   |
+| Component        | What to test                                                  |
+| ---------------- | ------------------------------------------------------------- |
+| `AccessGate`     | Renders children when permitted; fallback when denied         |
+| `AddPersonModal` | Required fields block submission; calls `addPerson` on submit |
+| `AddTodoModal`   | Date picker integration; repeat setting persists              |
+| `Toast`          | Appears on trigger; dismisses after timeout                   |
 
 Mock `AppContext` — no real Supabase.
 
@@ -70,12 +70,12 @@ Mock `AppContext` — no real Supabase.
 
 ## Priority 5 — E2E (Playwright, future) ✅ Done 2026-04-21
 
-| Journey                             | Why critical                      |
-| ----------------------------------- | --------------------------------- |
-| Sign in with Google → dashboard     | Auth is a single point of failure |
-| Unapproved email → blocked          | Core access control               |
-| Add person → appears in list        | Primary shepherd workflow         |
-| Mark todo complete → removed        | Core daily usage                  |
+| Journey                         | Why critical                      |
+| ------------------------------- | --------------------------------- |
+| Sign in with Google → dashboard | Auth is a single point of failure |
+| Unapproved email → blocked      | Core access control               |
+| Add person → appears in list    | Primary shepherd workflow         |
+| Mark todo complete → removed    | Core daily usage                  |
 
 ---
 

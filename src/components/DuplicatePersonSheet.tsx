@@ -21,15 +21,18 @@ export default function DuplicatePersonSheet({
 
   return (
     <BottomSheet onClose={onCancel} compact zIndex={Z_SHEET} variant="confirm">
-      <div className="pt-8" style={{ paddingLeft: '1.75rem', paddingRight: '1.75rem', paddingBottom: '1.75rem' }}>
+      <div
+        className="pt-8"
+        style={{ paddingLeft: '1.75rem', paddingRight: '1.75rem', paddingBottom: '1.75rem' }}
+      >
         <p
-          className="text-20 font-bold text-center mt-0 text-text-primary"
+          className="text-20 text-text-primary mt-0 text-center font-bold"
           style={{ marginBottom: '0.625rem' }}
         >
           Possible duplicate
         </p>
         <p
-          className="text-14 text-text-muted text-center leading-open mt-0"
+          className="text-14 text-text-muted leading-open mt-0 text-center"
           style={{ marginBottom: '1.25rem' }}
         >
           {matches.length === 1
@@ -41,24 +44,24 @@ export default function DuplicatePersonSheet({
             <button
               key={m.person.id}
               onClick={() => router.push(`/person/${m.person.id}`)}
-              className="w-full flex items-center justify-between bg-surface border border-border-light rounded cursor-pointer text-left"
+              className="bg-surface border-border-light flex w-full cursor-pointer items-center justify-between rounded border text-left"
               style={{ padding: '0.625rem 0.875rem', marginBottom: '0.5rem' }}
             >
-              <span className="text-14 font-medium text-text-primary">{fullName(m.person)}</span>
+              <span className="text-14 text-text-primary font-medium">{fullName(m.person)}</span>
               <span className="text-12 text-text-muted">View</span>
             </button>
           ))}
         </div>
         <button
           onClick={onAddAnyway}
-          className="w-full rounded text-15 font-semibold border-0 cursor-pointer mb-2 text-on-sage bg-sage"
+          className="text-15 text-on-sage bg-sage mb-2 w-full cursor-pointer rounded border-0 font-semibold"
           style={{ height: '2.625rem' }}
         >
           Add as new person
         </button>
         <button
           onClick={onCancel}
-          className="w-full rounded text-15 font-medium text-text-secondary bg-transparent border-0 cursor-pointer"
+          className="text-15 text-text-secondary w-full cursor-pointer rounded border-0 bg-transparent font-medium"
           style={{ height: '2.375rem' }}
         >
           Cancel

@@ -22,8 +22,6 @@ export default function LogStatusTag({ daysSince, lastNoteTs }: LogStatusTagProp
     );
   }
   return (
-    <span className="text-12 text-text-muted">
-      Logged {format(new Date(lastNoteTs), 'MMM d')}
-    </span>
+    <span className="text-12 text-text-muted">Logged {format(new Date(lastNoteTs), 'MMM d')}</span>
   );
 }

@@ -25,20 +25,17 @@ const IndividualRow = React.memo(function IndividualRow({
     lastNoteTs !== null ? differenceInCalendarDays(new Date(), new Date(lastNoteTs)) : null;
 
   return (
-    <Link
-      href={`/person/${person.id}`}
-      className="row-hover border-b border-border-light"
-    >
+    <Link href={`/person/${person.id}`} className="row-hover border-border-light border-b">
       <div className="flex items-center gap-3 py-2.5">
         <AvatarBadge name={fullName(person)} photo={person.photo} size={44} />
 
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-1.5 mb-[3px]">
-            <div className="flex items-center gap-[5px] min-w-0 overflow-hidden">
+        <div className="min-w-0 flex-1">
+          <div className="mb-[3px] flex items-center justify-between gap-1.5">
+            <div className="flex min-w-0 items-center gap-[5px] overflow-hidden">
               {person.isShepherd && (
                 <HandHeart size={14} color="var(--sage)" className="shrink-0" />
               )}
-              <span className="text-15 font-semibold text-text-primary whitespace-nowrap overflow-hidden text-ellipsis shrink">
+              <span className="text-15 text-text-primary shrink overflow-hidden font-semibold text-ellipsis whitespace-nowrap">
                 {fullName(person)}
               </span>
               {person.alternativeName && (
@@ -73,13 +70,13 @@ const IndividualRow = React.memo(function IndividualRow({
                   <>
                     {' '}
                     <span className="text-12 text-text-muted">·</span>{' '}
-                    <span className="text-10 rounded-pill bg-blue-light text-blue font-semibold inline-block align-middle py-[0.125rem] px-[0.4375rem]">
+                    <span className="text-10 rounded-pill bg-blue-light text-blue inline-block px-[0.4375rem] py-[0.125rem] align-middle font-semibold">
                       {group.name}
                     </span>
                     {extra > 0 && (
                       <>
                         {' '}
-                        <span className="text-10 rounded-pill bg-blue-light text-blue font-semibold inline-block align-middle py-[0.125rem] px-[0.375rem]">
+                        <span className="text-10 rounded-pill bg-blue-light text-blue inline-block px-[0.375rem] py-[0.125rem] align-middle font-semibold">
                           +{extra}
                         </span>
                       </>

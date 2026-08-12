@@ -32,7 +32,8 @@ const InvitePersonPickerSheet = React.lazy(() =>
   import('@/components/PersonPickerSheets').then((m) => ({ default: m.InvitePersonPickerSheet }))
 );
 
-const addMenuItemCn = 'w-full flex items-center gap-2.5 py-2.5 px-3.5 bg-transparent border-0 border-b border-border-light cursor-pointer text-left';
+const addMenuItemCn =
+  'w-full flex items-center gap-2.5 py-2.5 px-3.5 bg-transparent border-0 border-b border-border-light cursor-pointer text-left';
 const addMenuIconCn = 'w-7 h-7 rounded-sm bg-sage-light flex items-center justify-center shrink-0';
 const addMenuLabelCn = 'text-14 font-semibold text-text-primary m-0';
 const addMenuDescCn = 'text-11 text-text-muted mt-px mb-0';
@@ -60,7 +61,9 @@ export default function PeoplePage() {
     whileElementsMounted: autoUpdate,
   });
   const [addMenuMounted, setAddMenuMounted] = React.useState(false);
-  React.useEffect(() => { setAddMenuMounted(true); }, []);
+  React.useEffect(() => {
+    setAddMenuMounted(true);
+  }, []);
   const [showAddPerson, setShowAddPerson] = React.useState(false);
   const [showAddFamily, setShowAddFamily] = React.useState(false);
   const [showInvitePicker, setShowInvitePicker] = React.useState(false);
@@ -217,7 +220,7 @@ export default function PeoplePage() {
   const filterActive = activeFilterCount > 0;
 
   const actionButtons = (
-    <div className="flex gap-2 items-center">
+    <div className="flex items-center gap-2">
       {/* Search button — hidden on desktop when search is expanded */}
       <div className={showSearch ? 'lg:hidden' : undefined}>
         <Button
@@ -283,7 +286,7 @@ export default function PeoplePage() {
         </Button>
         {filterActive && (
           <span
-            className="absolute rounded-full bg-sage text-on-sage text-9 font-bold flex items-center justify-center pointer-events-none"
+            className="bg-sage text-on-sage text-9 pointer-events-none absolute flex items-center justify-center rounded-full font-bold"
             style={{ top: -5, right: -5, width: 15, height: 15 }}
           >
             {activeFilterCount}
@@ -295,83 +298,91 @@ export default function PeoplePage() {
         <Button
           variant="primary"
           onClick={() => setShowAddChoice((v) => !v)}
-          style={{ height: btnSize, padding: btnPad, fontSize: btnFont, transition: 'height 0.25s ease, padding 0.25s ease, font-size 0.25s ease' }}
+          style={{
+            height: btnSize,
+            padding: btnPad,
+            fontSize: btnFont,
+            transition: 'height 0.25s ease, padding 0.25s ease, font-size 0.25s ease',
+          }}
         >
           <Plus size={16} weight="bold" />
           People
         </Button>
-        {showAddChoice && addMenuMounted && createPortal(
-          <div
-            ref={addMenuRefs.setFloating}
-            className="bg-surface rounded-md border border-border-light overflow-hidden z-dropdown shadow-elevated"
-            style={{ ...addMenuStyles, width: '13.75rem' }}
-          >
-            {(() => {
-              const individualBtn = (
-                <button
-                  key="individual"
-                  onClick={() => {
-                    setShowAddChoice(false);
-                    setShowAddPerson(true);
-                  }}
-                  className={addMenuItemCn}
-                >
-                  <div className={addMenuIconCn}>
-                    <Plus size={16} color="var(--sage)" weight="bold" />
-                  </div>
-                  <div>
-                    <p className={addMenuLabelCn}>Individual</p>
-                    <p className={addMenuDescCn}>Add a single person</p>
-                  </div>
-                </button>
-              );
-              const familyBtn = (
-                <button
-                  key="family"
-                  onClick={() => {
-                    setShowAddChoice(false);
-                    setShowAddFamily(true);
-                  }}
-                  className={addMenuItemCn}
-                >
-                  <div className={addMenuIconCn}>
-                    <UsersThree size={16} color="var(--sage)" />
-                  </div>
-                  <div>
-                    <p className={addMenuLabelCn}>Family</p>
-                    <p className={addMenuDescCn}>Group people into a family</p>
-                  </div>
-                </button>
-              );
-              const inviteBtn = (
-                <button
-                  key="invite"
-                  onClick={() => {
-                    setShowAddChoice(false);
-                    setShowInvitePicker(true);
-                  }}
-                  className={addMenuItemCn}
-                >
-                  <div className={addMenuIconCn}>
-                    <PaperPlaneTilt size={16} color="var(--sage)" />
-                  </div>
-                  <div>
-                    <p className={addMenuLabelCn}>Invite to app</p>
-                    <p className={addMenuDescCn}>Give someone access</p>
-                  </div>
-                </button>
-              );
-              const items = [individualBtn, familyBtn, inviteBtn];
-              return items.map((item, i) =>
-                i === items.length - 1
-                  ? React.cloneElement(item, {
-                      className: addMenuItemCn.replace('border-b border-border-light', ''),
-                    })
-                  : item
-              );
-            })()}
-          </div>
-        , document.body)}
+        {showAddChoice &&
+          addMenuMounted &&
+          createPortal(
+            <div
+              ref={addMenuRefs.setFloating}
+              className="bg-surface border-border-light z-dropdown shadow-elevated overflow-hidden rounded-md border"
+              style={{ ...addMenuStyles, width: '13.75rem' }}
+            >
+              {(() => {
+                const individualBtn = (
+                  <button
+                    key="individual"
+                    onClick={() => {
+                      setShowAddChoice(false);
+                      setShowAddPerson(true);
+                    }}
+                    className={addMenuItemCn}
+                  >
+                    <div className={addMenuIconCn}>
+                      <Plus size={16} color="var(--sage)" weight="bold" />
+                    </div>
+                    <div>
+                      <p className={addMenuLabelCn}>Individual</p>
+                      <p className={addMenuDescCn}>Add a single person</p>
+                    </div>
+                  </button>
+                );
+                const familyBtn = (
+                  <button
+                    key="family"
+                    onClick={() => {
+                      setShowAddChoice(false);
+                      setShowAddFamily(true);
+                    }}
+                    className={addMenuItemCn}
+                  >
+                    <div className={addMenuIconCn}>
+                      <UsersThree size={16} color="var(--sage)" />
+                    </div>
+                    <div>
+                      <p className={addMenuLabelCn}>Family</p>
+                      <p className={addMenuDescCn}>Group people into a family</p>
+                    </div>
+                  </button>
+                );
+                const inviteBtn = (
+                  <button
+                    key="invite"
+                    onClick={() => {
+                      setShowAddChoice(false);
+                      setShowInvitePicker(true);
+                    }}
+                    className={addMenuItemCn}
+                  >
+                    <div className={addMenuIconCn}>
+                      <PaperPlaneTilt size={16} color="var(--sage)" />
+                    </div>
+                    <div>
+                      <p className={addMenuLabelCn}>Invite to app</p>
+                      <p className={addMenuDescCn}>Give someone access</p>
+                    </div>
+                  </button>
+                );
+                const items = [individualBtn, familyBtn, inviteBtn];
+                return items.map((item, i) =>
+                  i === items.length - 1
+                    ? React.cloneElement(item, {
+                        className: addMenuItemCn.replace('border-b border-border-light', ''),
+                      })
+                    : item
+                );
+              })()}
+            </div>,
+            document.body
+          )}
       </div>
     </div>
   );
@@ -381,7 +392,7 @@ export default function PeoplePage() {
       <div className="pb-8">
         {/* ── Sticky collapsing header ─────────── */}
         <header
-          className="-mx-4 px-4 lg:mx-0 lg:px-0 sticky top-0 bg-bg z-sticky"
+          className="bg-bg z-sticky sticky top-0 -mx-4 px-4 lg:mx-0 lg:px-0"
           style={{
             borderBottom: scrolled ? '1px solid var(--border-light)' : 'none',
           }}
@@ -411,7 +422,13 @@ export default function PeoplePage() {
         <main>
           {/* ── Search (expandable) ─────────────── */}
           <div className="lg:hidden">
-            <React.Suspense fallback={showSearch ? <div className="relative mb-2.5 mt-2" style={{ height: '2.375rem' }} /> : null}>
+            <React.Suspense
+              fallback={
+                showSearch ? (
+                  <div className="relative mt-2 mb-2.5" style={{ height: '2.375rem' }} />
+                ) : null
+              }
+            >
               <SearchBar
                 search={search}
                 setSearch={setSearch}
@@ -423,15 +440,13 @@ export default function PeoplePage() {
 
           {/* ── Active filter chips ────────────── */}
           {chips.length > 0 && (
-            <div
-              className="no-scrollbar mb-2.5 flex gap-1.5 overflow-x-auto pb-0.5"
-            >
+            <div className="no-scrollbar mb-2.5 flex gap-1.5 overflow-x-auto pb-0.5">
               {chips.map((chip) => (
                 <button
                   key={chip.key}
                   onClick={chip.clear}
                   aria-label={`Remove ${chip.label} filter`}
-                  className="shrink-0 flex items-center gap-1 min-h-7 rounded-pill bg-sage-light border border-sage-mid text-sage-dark text-11 font-medium cursor-pointer"
+                  className="rounded-pill bg-sage-light border-sage-mid text-sage-dark text-11 flex min-h-7 shrink-0 cursor-pointer items-center gap-1 border font-medium"
                   style={{ padding: '0.3125rem 0.625rem' }}
                 >
                   {chip.label}
@@ -442,7 +457,7 @@ export default function PeoplePage() {
           )}
 
           {/* ── Count + Sort ──────────────────── */}
-          <div className="flex items-center mb-2.5">
+          <div className="mb-2.5 flex items-center">
             <span className="text-12 text-text-muted flex-1">
               {familyCount > 0
                 ? `${familyCount} ${familyCount === 1 ? 'family' : 'families'}`
@@ -461,7 +476,7 @@ export default function PeoplePage() {
 
           {/* ── List ──────────────────────────── */}
           <div
-            className="no-last-border lg:hidden bg-surface rounded overflow-hidden"
+            className="no-last-border bg-surface overflow-hidden rounded lg:hidden"
             style={{
               opacity: isSearchPending ? 0.6 : 1,
               transition: 'opacity 0.15s',
@@ -592,7 +607,7 @@ function MobileEmptyState({
     description = 'Try a different name, or clear your search.';
   } else if (isMyShepherdOnly) {
     title = "No one's been assigned to you yet.";
-    description = 'Once sheep are assigned to you, they\'ll appear here.';
+    description = "Once sheep are assigned to you, they'll appear here.";
   } else if (hasExtraFilters) {
     title = 'No one matches these filters.';
     description = 'Try adjusting or clearing your filters.';

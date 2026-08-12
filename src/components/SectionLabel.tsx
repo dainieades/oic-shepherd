@@ -8,7 +8,7 @@ interface SectionLabelProps {
 export function SectionLabel({ children, marginBottom = 10 }: SectionLabelProps) {
   return (
     <p
-      className="text-10 font-semibold text-text-muted uppercase tracking-wide-6"
+      className="text-10 text-text-muted tracking-wide-6 font-semibold uppercase"
       style={{ marginBottom }}
     >
       {children}

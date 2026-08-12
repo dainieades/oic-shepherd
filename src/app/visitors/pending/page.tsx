@@ -144,7 +144,8 @@ function buildMockSubmissions(): VisitorSubmission[] {
       languages: ['English', 'Korean'],
       referralSource: 'flyer',
       interests: ['salvation'],
-      prayerRequest: 'I have been searching for truth for a long time and would love to learn more.',
+      prayerRequest:
+        'I have been searching for truth for a long time and would love to learn more.',
     },
   ];
 }
@@ -178,9 +179,7 @@ export default function PendingVisitorsPage() {
       .select('*')
       .eq('status', 'pending')
       .order('submitted_at', { ascending: false });
-    const rows = (data ?? []).map((row) =>
-      mapVisitorSubmission(row as Record<string, unknown>)
-    );
+    const rows = (data ?? []).map((row) => mapVisitorSubmission(row as Record<string, unknown>));
     if (process.env.NODE_ENV !== 'production' && rows.length === 0) {
       setSubmissions(buildMockSubmissions());
     } else {
@@ -260,7 +259,7 @@ export default function PendingVisitorsPage() {
       href="/welcome"
       target="_blank"
       rel="noopener noreferrer"
-      className="rounded-xs bg-sage text-on-sage font-semibold border-none cursor-pointer inline-flex items-center gap-1 no-underline shrink-0"
+      className="bg-sage text-on-sage inline-flex shrink-0 cursor-pointer items-center gap-1 rounded-xs border-none font-semibold no-underline"
       style={{
         height: btnSize,
         padding: btnPad,
@@ -275,77 +274,75 @@ export default function PendingVisitorsPage() {
 
   return (
     <PageContainer width="3xl">
-    <div className="pb-8">
-      {/* Sticky collapsing header */}
-      <header
-        className="-mx-4 px-4 lg:mx-0 lg:px-0 sticky top-0 bg-bg z-sticky"
-        style={{
-          borderBottom: scrolled ? '1px solid var(--border-light)' : 'none',
-        }}
-      >
-        <div
-          className="flex items-center justify-between"
+      <div className="pb-8">
+        {/* Sticky collapsing header */}
+        <header
+          className="bg-bg z-sticky sticky top-0 -mx-4 px-4 lg:mx-0 lg:px-0"
           style={{
-            height: scrolled ? '2.75rem' : '4.125rem',
-            transition: 'height 0.25s ease',
+            borderBottom: scrolled ? '1px solid var(--border-light)' : 'none',
           }}
         >
-          <span
-            className="text-text-primary leading-none"
+          <div
+            className="flex items-center justify-between"
             style={{
-              fontSize: scrolled ? 'var(--text-17)' : 'var(--text-32)',
-              fontWeight: scrolled ? 'var(--font-semibold)' : 'var(--font-extrabold)',
-              letterSpacing: scrolled ? 'var(--tracking-tight-1)' : 'var(--tracking-tight-3)',
-              transition: 'font-size 0.25s ease, letter-spacing 0.25s ease',
+              height: scrolled ? '2.75rem' : '4.125rem',
+              transition: 'height 0.25s ease',
             }}
           >
-            Newcomers
-          </span>
-          {submissions !== null && submissions.length > 0 && actionButtons}
-        </div>
-      </header>
+            <span
+              className="text-text-primary leading-none"
+              style={{
+                fontSize: scrolled ? 'var(--text-17)' : 'var(--text-32)',
+                fontWeight: scrolled ? 'var(--font-semibold)' : 'var(--font-extrabold)',
+                letterSpacing: scrolled ? 'var(--tracking-tight-1)' : 'var(--tracking-tight-3)',
+                transition: 'font-size 0.25s ease, letter-spacing 0.25s ease',
+              }}
+            >
+              Newcomers
+            </span>
+            {submissions !== null && submissions.length > 0 && actionButtons}
+          </div>
+        </header>
 
-      {submissions !== null && submissions.length > 0 && (
-        <p className="mb-3 text-13 text-text-muted">
-          {submissions.length} card{submissions.length === 1 ? '' : 's'} awaiting review
-        </p>
-      )}
-
-      {submissions === null ? (
-        <p className="text-text-muted text-14">Loading…</p>
-      ) : submissions.length === 0 ? (
-        <div
-          className="bg-surface rounded border border-border-light text-center text-text-muted text-14 py-10 px-5"
-        >
-          <HandWaving size={32} color="var(--text-muted)" className="block mx-auto mb-3" />
-          <p className="mb-1">No newcomer cards pending.</p>
-          <p className="text-12">
-            New self-submissions from <code>/welcome</code> will appear here for review.
+        {submissions !== null && submissions.length > 0 && (
+          <p className="text-13 text-text-muted mb-3">
+            {submissions.length} card{submissions.length === 1 ? '' : 's'} awaiting review
           </p>
-          <a
-            href="/welcome"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-6 inline-flex items-center justify-center gap-2 py-3 px-6 rounded-md bg-sage text-on-sage text-15 font-semibold no-underline"
-          >
-            Open welcome form
-            <ArrowSquareOut size={16} weight="bold" />
-          </a>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-          {submissions.map((sub) => (
-            <SubmissionCard
-              key={sub.id}
-              submission={sub}
-              busy={busyId === sub.id}
-              onPromote={() => handleRequestPromote(sub)}
-              onDiscard={() => setConfirmDiscard(sub)}
-            />
-          ))}
-        </div>
-      )}
-    </div>
+        )}
+
+        {submissions === null ? (
+          <p className="text-text-muted text-14">Loading…</p>
+        ) : submissions.length === 0 ? (
+          <div className="bg-surface border-border-light text-text-muted text-14 rounded border px-5 py-10 text-center">
+            <HandWaving size={32} color="var(--text-muted)" className="mx-auto mb-3 block" />
+            <p className="mb-1">No newcomer cards pending.</p>
+            <p className="text-12">
+              New self-submissions from <code>/welcome</code> will appear here for review.
+            </p>
+            <a
+              href="/welcome"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-sage text-on-sage text-15 mt-6 inline-flex items-center justify-center gap-2 rounded-md px-6 py-3 font-semibold no-underline"
+            >
+              Open welcome form
+              <ArrowSquareOut size={16} weight="bold" />
+            </a>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+            {submissions.map((sub) => (
+              <SubmissionCard
+                key={sub.id}
+                submission={sub}
+                busy={busyId === sub.id}
+                onPromote={() => handleRequestPromote(sub)}
+                onDiscard={() => setConfirmDiscard(sub)}
+              />
+            ))}
+          </div>
+        )}
+      </div>
       {confirmPromote && (
         <ConfirmActionSheet
           title="Add to directory?"
@@ -391,7 +388,6 @@ export default function PendingVisitorsPage() {
       )}
     </PageContainer>
   );
-
 }
 
 function SubmissionCard({
@@ -410,20 +406,18 @@ function SubmissionCard({
 
   return (
     <div
-      className="bg-surface rounded border border-border-light flex flex-col gap-2.5"
+      className="bg-surface border-border-light flex flex-col gap-2.5 rounded border"
       style={{ padding: '1rem 1.125rem' }}
     >
-      <div className="flex justify-between items-baseline">
-        <h2 className="text-17 font-semibold text-text-primary">{name}</h2>
+      <div className="flex items-baseline justify-between">
+        <h2 className="text-17 text-text-primary font-semibold">{name}</h2>
         <span className="text-11 text-text-muted">
           {submittedAt.toLocaleDateString()}{' '}
           {submittedAt.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
         </span>
       </div>
 
-      <div
-        className="flex-1 flex flex-col gap-1.5 text-13 text-text-secondary"
-      >
+      <div className="text-13 text-text-secondary flex flex-1 flex-col gap-1.5">
         {submission.phone && (
           <Row icon={<Phone size={13} color="var(--text-muted)" />}>{submission.phone}</Row>
         )}
@@ -458,11 +452,11 @@ function SubmissionCard({
         )}
       </div>
 
-      <div className="flex gap-2 mt-1">
+      <div className="mt-1 flex gap-2">
         <button
           onClick={onPromote}
           disabled={busy}
-          className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-md border-none bg-sage text-on-sage text-14 font-semibold"
+          className="bg-sage text-on-sage text-14 inline-flex flex-1 items-center justify-center gap-1.5 rounded-md border-none px-3 py-2.5 font-semibold"
           style={{
             cursor: busy ? 'wait' : 'pointer',
             opacity: busy ? 0.6 : 1,
@@ -474,7 +468,7 @@ function SubmissionCard({
         <button
           onClick={onDiscard}
           disabled={busy}
-          className="inline-flex items-center justify-center gap-1.5 py-2.5 px-3.5 border border-border bg-transparent text-text-muted text-14 font-medium rounded-md"
+          className="border-border text-text-muted text-14 inline-flex items-center justify-center gap-1.5 rounded-md border bg-transparent px-3.5 py-2.5 font-medium"
           style={{
             cursor: busy ? 'wait' : 'pointer',
           }}
@@ -491,7 +485,7 @@ function Row({ icon, children }: { icon: React.ReactNode; children: React.ReactN
   return (
     <div className="flex items-start gap-2">
       <div className="pt-0.5">{icon}</div>
-      <div className="flex-1 min-w-0">{children}</div>
+      <div className="min-w-0 flex-1">{children}</div>
     </div>
   );
 }

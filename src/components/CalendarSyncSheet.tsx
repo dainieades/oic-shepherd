@@ -129,7 +129,9 @@ export default function CalendarSyncSheet({ onClose, singleEvent }: Props) {
           <ConnectedBlock onDisable={handleDisable} />
         ) : (
           <>
-            <p className="text-13 font-semibold text-text-muted uppercase tracking-wide-4 mb-1.5">Auto-sync your to-dos</p>
+            <p className="text-13 text-text-muted tracking-wide-4 mb-1.5 font-semibold uppercase">
+              Auto-sync your to-dos
+            </p>
             <p className="text-13 text-text-muted mb-3.5 leading-normal">
               Add OIC to-dos to your calendar app. New items appear automatically; how often updates
               show up depends on your calendar app.
@@ -145,7 +147,9 @@ export default function CalendarSyncSheet({ onClose, singleEvent }: Props) {
         {singleEvent && (
           <>
             <Divider />
-            <p className="text-13 font-semibold text-text-muted uppercase tracking-wide-4 mb-1.5">Add just this to-do</p>
+            <p className="text-13 text-text-muted tracking-wide-4 mb-1.5 font-semibold uppercase">
+              Add just this to-do
+            </p>
             <p className="text-13 text-text-muted mb-3.5 leading-normal">
               Add this single to-do to your calendar without setting up sync.
             </p>
@@ -171,9 +175,9 @@ export default function CalendarSyncSheet({ onClose, singleEvent }: Props) {
 function ConnectedBlock({ onDisable }: { onDisable: () => void }) {
   return (
     <>
-      <div className="flex items-center gap-3 py-3.5 px-4 bg-sage-light border border-sage-mid rounded mb-3">
+      <div className="bg-sage-light border-sage-mid mb-3 flex items-center gap-3 rounded border px-4 py-3.5">
         <Check size={20} weight="bold" color="var(--sage)" />
-        <span className="flex-1 text-15 text-text-primary">
+        <span className="text-15 text-text-primary flex-1">
           Synced to <strong>your calendar</strong>
         </span>
       </div>
@@ -202,7 +206,7 @@ function SmallActionButton({
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-2.5 py-2.5 px-3.5 bg-surface border border-border-light rounded-sm cursor-pointer text-left w-full text-14 text-text-primary"
+      className="bg-surface border-border-light text-14 text-text-primary flex w-full cursor-pointer items-center gap-2.5 rounded-sm border px-3.5 py-2.5 text-left"
     >
       <span className="shrink-0">{icon}</span>
       <span className="flex-1">{label}</span>
@@ -211,5 +215,5 @@ function SmallActionButton({
 }
 
 function Divider() {
-  return <div className="h-px bg-border-light my-5" />;
+  return <div className="bg-border-light my-5 h-px" />;
 }

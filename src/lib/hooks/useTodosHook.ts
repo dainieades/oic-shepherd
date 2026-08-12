@@ -18,13 +18,19 @@ export interface TodosHookResult {
   addTodo: (todo: Omit<Todo, 'id' | 'createdAt' | 'createdBy' | 'completed'>) => Promise<void>;
   updateTodo: (
     todoId: string,
-    updates: Partial<Pick<Todo, 'title' | 'dueDate' | 'endDate' | 'repeat' | 'reminder' | 'familyId' | 'personId'>>
+    updates: Partial<
+      Pick<Todo, 'title' | 'dueDate' | 'endDate' | 'repeat' | 'reminder' | 'familyId' | 'personId'>
+    >
   ) => Promise<void>;
   deleteTodo: (todoId: string) => Promise<void>;
   toggleTodo: (todoId: string) => Promise<void>;
 }
 
-export function useTodosHook({ setData, currentPersonaId, showToast }: TodosHookDeps): TodosHookResult {
+export function useTodosHook({
+  setData,
+  currentPersonaId,
+  showToast,
+}: TodosHookDeps): TodosHookResult {
   const addTodo = React.useCallback(
     async (todoData: Omit<Todo, 'id' | 'createdAt' | 'createdBy' | 'completed'>): Promise<void> => {
       const todo: Todo = {
@@ -66,7 +72,12 @@ export function useTodosHook({ setData, currentPersonaId, showToast }: TodosHook
   const updateTodo = React.useCallback(
     async (
       todoId: string,
-      updates: Partial<Pick<Todo, 'title' | 'dueDate' | 'endDate' | 'repeat' | 'reminder' | 'familyId' | 'personId'>>
+      updates: Partial<
+        Pick<
+          Todo,
+          'title' | 'dueDate' | 'endDate' | 'repeat' | 'reminder' | 'familyId' | 'personId'
+        >
+      >
     ): Promise<void> => {
       let snapshot: AppData | undefined;
       let existingTodo: Todo | undefined;

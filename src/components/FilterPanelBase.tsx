@@ -41,33 +41,33 @@ export function FilterPanelBase<TKey extends string>({
 
   return (
     <BottomSheet onClose={onClose} zIndex={50} allowBackdropClose>
-      <div className="flex items-center justify-between py-[0.875rem] px-5 pb-3 shrink-0 border-b border-border-light">
+      <div className="border-border-light flex shrink-0 items-center justify-between border-b px-5 py-[0.875rem] pb-3">
         <div className="flex items-center gap-2">
-          <h2 className="text-16 font-bold text-text-primary">{title}</h2>
+          <h2 className="text-16 text-text-primary font-bold">{title}</h2>
           {draftTotalCount > 0 && (
-            <span className="text-11 font-bold py-0.5 px-2 rounded-pill bg-sage text-on-sage">
+            <span className="text-11 rounded-pill bg-sage text-on-sage px-2 py-0.5 font-bold">
               {draftTotalCount}
             </span>
           )}
         </div>
         <button
           onClick={onClose}
-          className="w-7 h-7 rounded-full bg-bg border-none cursor-pointer flex items-center justify-center text-text-muted"
+          className="bg-bg text-text-muted flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border-none"
         >
           <X size={12} />
         </button>
       </div>
 
-      <div className="flex-1 flex overflow-hidden">
-        <div className="w-[120px] bg-bg border-r border-border-light overflow-y-auto shrink-0">
+      <div className="flex flex-1 overflow-hidden">
+        <div className="bg-bg border-border-light w-[120px] shrink-0 overflow-y-auto border-r">
           {categories.map(({ key, label, count, icon, hasDividerBefore }) => {
             const isActive = activeCategory === key;
             return (
               <div key={key}>
-                {hasDividerBefore && <div className="h-px bg-[var(--border-light)] mx-3" />}
+                {hasDividerBefore && <div className="mx-3 h-px bg-[var(--border-light)]" />}
                 <button
                   onClick={() => onCategoryChange(key)}
-                  className="w-full py-[0.875rem] px-4 text-left border-none cursor-pointer flex items-center justify-between"
+                  className="flex w-full cursor-pointer items-center justify-between border-none px-4 py-[0.875rem] text-left"
                   style={{
                     background: isActive ? 'var(--surface)' : 'none',
                     borderLeft: isActive
@@ -86,7 +86,7 @@ export function FilterPanelBase<TKey extends string>({
                     {label}
                   </span>
                   {count > 0 && (
-                    <span className="text-10 font-bold min-w-[18px] h-[18px] rounded-pill px-1 bg-sage text-on-sage flex items-center justify-center shrink-0">
+                    <span className="text-10 rounded-pill bg-sage text-on-sage flex h-[18px] min-w-[18px] shrink-0 items-center justify-center px-1 font-bold">
                       {count}
                     </span>
                   )}
@@ -96,19 +96,19 @@ export function FilterPanelBase<TKey extends string>({
           })}
         </div>
 
-        <div className="flex-1 overflow-y-auto py-4 px-5">{children}</div>
+        <div className="flex-1 overflow-y-auto px-5 py-4">{children}</div>
       </div>
 
-      <div className="pt-[0.625rem] px-5 pb-4 shrink-0 border-t border-border-light flex items-center gap-3">
+      <div className="border-border-light flex shrink-0 items-center gap-3 border-t px-5 pt-[0.625rem] pb-4">
         <button
           onClick={onClear}
-          className="flex-1 bg-transparent border-none text-14 font-semibold text-text-secondary cursor-pointer py-3"
+          className="text-14 text-text-secondary flex-1 cursor-pointer border-none bg-transparent py-3 font-semibold"
         >
           Clear filters
         </button>
         <button
           onClick={onApply}
-          className="[flex:2] bg-sage text-on-sage border-none rounded py-3 text-15 font-semibold cursor-pointer"
+          className="bg-sage text-on-sage text-15 [flex:2] cursor-pointer rounded border-none py-3 font-semibold"
         >
           Apply
         </button>

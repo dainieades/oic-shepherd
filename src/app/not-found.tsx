@@ -23,7 +23,7 @@ export default function NotFound() {
       </div>
       <Link
         href="/"
-        className="rounded-lg bg-accent px-5 py-2 text-white"
+        className="bg-accent rounded-lg px-5 py-2 text-white"
         style={{ fontSize: 'var(--text-14)', fontWeight: 'var(--font-medium)' }}
       >
         Go home

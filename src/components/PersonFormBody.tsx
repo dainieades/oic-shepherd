@@ -192,7 +192,9 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
 
   const [showAppRoleDropdown, setShowAppRoleDropdown] = React.useState(false);
   const [appRoleMounted, setAppRoleMounted] = React.useState(false);
-  React.useEffect(() => { setAppRoleMounted(true); }, []);
+  React.useEffect(() => {
+    setAppRoleMounted(true);
+  }, []);
   const { refs: appRoleRefs, floatingStyles: appRoleFloatingStyles } = useFloating({
     placement: 'bottom-end',
     strategy: 'fixed',
@@ -325,11 +327,36 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
       homeAddress !== (person.homeAddress ?? '') ||
       familyId !== person.familyId
     );
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [person, firstName, lastName, chineseName, photo, language, gender, birthday, maritalStatus,
-      anniversary, groupIds, shepherdIds, sheepIds, status, attendance, membershipDate, baptized,
-      baptismDate, isShepherd, isBeingDiscipled, appRole,
-      churchPositions, phone, homePhone, email, homeAddress, familyId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    person,
+    firstName,
+    lastName,
+    chineseName,
+    photo,
+    language,
+    gender,
+    birthday,
+    maritalStatus,
+    anniversary,
+    groupIds,
+    shepherdIds,
+    sheepIds,
+    status,
+    attendance,
+    membershipDate,
+    baptized,
+    baptismDate,
+    isShepherd,
+    isBeingDiscipled,
+    appRole,
+    churchPositions,
+    phone,
+    homePhone,
+    email,
+    homeAddress,
+    familyId,
+  ]);
 
   React.useEffect(() => {
     onValidityChange?.(!!firstName.trim() && isDirty);
@@ -509,8 +536,8 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
             onPhotoChange={(url) => setPhoto(url)}
             onPhotoRemove={() => setPhoto('')}
           />
-          <div className="flex-1 min-w-0">
-            <p className="text-20 font-bold text-text-primary m-0 tracking-tight-2 whitespace-nowrap overflow-hidden text-ellipsis">
+          <div className="min-w-0 flex-1">
+            <p className="text-20 text-text-primary tracking-tight-2 m-0 overflow-hidden font-bold text-ellipsis whitespace-nowrap">
               {fullDisplayName || 'Your Name'}
             </p>
           </div>
@@ -522,61 +549,61 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
           (currentPersona.role === 'admin' ||
             (currentPersona.role === 'shepherd' &&
               (appRole === 'shepherd' || appRole === 'no-access'))) && (
-          <FormSection label="Access">
-            {showInviteRow && appRole === 'no-access' ? (
-              <button
-                className="field-row-hover"
-                onClick={() => setShowInvite(true)}
-                style={rowBtnStyle}
-              >
-                <span style={spacerStyle} />
-                <PaperPlaneTilt size={16} color="var(--text-muted)" />
-                <span style={labelStyle}>Invite</span>
-                <span className="flex-1 text-14 text-sage text-right">
-                  Give app access…
-                </span>
-                <CaretRight size={14} color="var(--text-muted)" />
-              </button>
-            ) : (
-              <>
+            <FormSection label="Access">
+              {showInviteRow && appRole === 'no-access' ? (
                 <button
-                  ref={currentPersona.role === 'admin' ? appRoleRefs.setReference : undefined}
-                  className={currentPersona.role === 'admin' ? 'field-row-hover' : undefined}
-                  onClick={() => currentPersona.role === 'admin' && setShowAppRoleDropdown((v) => !v)}
-                  style={{
-                    ...rowBtnStyle,
-                    cursor: currentPersona.role === 'admin' ? 'pointer' : 'default',
-                  }}
+                  className="field-row-hover"
+                  onClick={() => setShowInvite(true)}
+                  style={rowBtnStyle}
                 >
                   <span style={spacerStyle} />
-                  <IdentificationCard size={16} color="var(--text-muted)" />
-                  <span style={labelStyle}>App Role</span>
-                  <span className="flex-1 text-14 text-text-primary text-right">
-                    {{ admin: 'Admin', shepherd: 'User', 'no-access': 'No Access' }[appRole]}
-                  </span>
-                  {currentPersona.role === 'admin' && (
-                    <CaretRight size={14} color="var(--text-muted)" />
-                  )}
+                  <PaperPlaneTilt size={16} color="var(--text-muted)" />
+                  <span style={labelStyle}>Invite</span>
+                  <span className="text-14 text-sage flex-1 text-right">Give app access…</span>
+                  <CaretRight size={14} color="var(--text-muted)" />
                 </button>
-                {isPendingInvite && (
-                  <div
-                    className="bg-amber-light border-t border-border-light cursor-default"
-                    style={rowBtnStyle}
+              ) : (
+                <>
+                  <button
+                    ref={currentPersona.role === 'admin' ? appRoleRefs.setReference : undefined}
+                    className={currentPersona.role === 'admin' ? 'field-row-hover' : undefined}
+                    onClick={() =>
+                      currentPersona.role === 'admin' && setShowAppRoleDropdown((v) => !v)
+                    }
+                    style={{
+                      ...rowBtnStyle,
+                      cursor: currentPersona.role === 'admin' ? 'pointer' : 'default',
+                    }}
                   >
                     <span style={spacerStyle} />
-                    <PaperPlaneTilt size={16} color="var(--amber, #d97706)" />
-                    <span className="text-12 text-amber whitespace-nowrap shrink-0">
-                      Invite pending
+                    <IdentificationCard size={16} color="var(--text-muted)" />
+                    <span style={labelStyle}>App Role</span>
+                    <span className="text-14 text-text-primary flex-1 text-right">
+                      {{ admin: 'Admin', shepherd: 'User', 'no-access': 'No Access' }[appRole]}
                     </span>
-                    <span className="flex-1 text-13 text-text-muted text-right whitespace-nowrap">
-                      Hasn't signed in yet
-                    </span>
-                  </div>
-                )}
-              </>
-            )}
-          </FormSection>
-        )}
+                    {currentPersona.role === 'admin' && (
+                      <CaretRight size={14} color="var(--text-muted)" />
+                    )}
+                  </button>
+                  {isPendingInvite && (
+                    <div
+                      className="bg-amber-light border-border-light cursor-default border-t"
+                      style={rowBtnStyle}
+                    >
+                      <span style={spacerStyle} />
+                      <PaperPlaneTilt size={16} color="var(--amber, #d97706)" />
+                      <span className="text-12 text-amber shrink-0 whitespace-nowrap">
+                        Invite pending
+                      </span>
+                      <span className="text-13 text-text-muted flex-1 text-right whitespace-nowrap">
+                        Hasn't signed in yet
+                      </span>
+                    </div>
+                  )}
+                </>
+              )}
+            </FormSection>
+          )}
 
         <FormSection label="Basic">
           <TextInputRow
@@ -626,7 +653,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
             <Globe size={16} color="var(--text-muted)" />
             <span style={labelStyle}>Language</span>
             <span
-              className="flex-1 text-14"
+              className="text-14 flex-1"
               style={{ color: language.length > 0 ? 'var(--text-primary)' : 'var(--text-muted)' }}
             >
               {language.length > 0 ? language.join(', ') : 'None'}
@@ -672,7 +699,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
             <span style={spacerStyle} />
             <HandHeart size={16} color="var(--text-muted)" />
             <span style={labelStyle}>Shepherd by</span>
-            <div className="flex-1 flex flex-wrap gap-1">
+            <div className="flex flex-1 flex-wrap gap-1">
               {shepherdIds.length > 0 ? (
                 shepherdEntries
                   .filter((e) => shepherdIds.includes(e.id))
@@ -717,7 +744,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
             <span style={spacerStyle} />
             <UsersFour size={16} color="var(--text-muted)" />
             <span style={labelStyle}>Groups</span>
-            <div className="flex-1 flex flex-wrap gap-1">
+            <div className="flex flex-1 flex-wrap gap-1">
               {selectedGroups.length > 0 ? (
                 selectedGroups.map((g) => (
                   <span key={g.id} className={blueChipClass}>
@@ -749,7 +776,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
               <span style={spacerStyle} />
               <HandHeart size={16} color="var(--text-muted)" />
               <span style={labelStyle}>Sheep</span>
-              <div className="flex-1 flex flex-wrap gap-1">
+              <div className="flex flex-1 flex-wrap gap-1">
                 {sheepIds.length > 0 ? (
                   <>
                     {data.people
@@ -792,8 +819,10 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
             <Buildings size={16} color="var(--text-muted)" />
             <span style={labelStyle}>Position</span>
             <span
-              className="flex-1 text-14 text-right"
-              style={{ color: churchPositions.length > 0 ? 'var(--text-primary)' : 'var(--text-muted)' }}
+              className="text-14 flex-1 text-right"
+              style={{
+                color: churchPositions.length > 0 ? 'var(--text-primary)' : 'var(--text-muted)',
+              }}
             >
               {churchPositions.length > 0 ? churchPositions.join(', ') : 'None'}
             </span>
@@ -826,7 +855,9 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
               icon={<Megaphone size={16} color="var(--text-muted)" />}
               label="Heard via"
               value={referralSource ? REFERRAL_LABELS[referralSource] : 'Not set'}
-              onClick={() => setOpenPicker((v) => (v === 'referralSource' ? null : 'referralSource'))}
+              onClick={() =>
+                setOpenPicker((v) => (v === 'referralSource' ? null : 'referralSource'))
+              }
             />
             {referralSource && (
               <TextInputRow
@@ -842,7 +873,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
               <span style={spacerStyle} />
               <Heart size={16} color="var(--text-muted)" />
               <span style={labelStyle}>Interests</span>
-              <div className="flex-1 flex flex-wrap gap-1.5 py-2">
+              <div className="flex flex-1 flex-wrap gap-1.5 py-2">
                 {INTERESTS.map((i) => {
                   const on = interests.includes(i);
                   return (
@@ -854,7 +885,7 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
                           prev.includes(i) ? prev.filter((x) => x !== i) : [...prev, i]
                         )
                       }
-                      className="text-12 font-semibold rounded-pill cursor-pointer border"
+                      className="text-12 rounded-pill cursor-pointer border font-semibold"
                       style={{
                         padding: '0.25rem 0.625rem',
                         background: on ? 'var(--sage-light)' : 'transparent',
@@ -978,37 +1009,47 @@ const PersonFormBody = React.forwardRef<PersonFormBodyHandle, Props>(function Pe
           onClose={() => setOpenPicker(null)}
         />
       )}
-      {showAppRoleDropdown && appRoleMounted && createPortal(
-        <div
-          ref={appRoleRefs.setFloating}
-          className="bg-surface border border-border rounded-md overflow-hidden shadow-elevated"
-          style={{ ...appRoleFloatingStyles, zIndex: 100, minWidth: '10rem' }}
-        >
-          {([
-            { value: 'admin' as AppRole, label: 'Admin' },
-            { value: 'shepherd' as AppRole, label: 'User' },
-            { value: 'no-access' as AppRole, label: 'No Access' },
-          ] as const).map((opt, i) => (
-            <button
-              key={opt.value}
-              onClick={() => {
-                setAppRole(opt.value);
-                setShowAppRoleDropdown(false);
-              }}
-              className="w-full flex items-center justify-between gap-3 bg-transparent border-none cursor-pointer text-left text-14"
-              style={{
-                padding: '0.8125rem 1rem',
-                borderBottom: i < 2 ? '1px solid var(--border-light)' : 'none',
-                color: opt.value === 'no-access' ? 'var(--red)' : 'var(--text-primary)',
-              }}
-            >
-              {opt.label}
-              {appRole === opt.value && <Check size={13} weight="bold" color={opt.value === 'no-access' ? 'var(--red)' : 'var(--sage)'} />}
-            </button>
-          ))}
-        </div>,
-        document.body
-      )}
+      {showAppRoleDropdown &&
+        appRoleMounted &&
+        createPortal(
+          <div
+            ref={appRoleRefs.setFloating}
+            className="bg-surface border-border shadow-elevated overflow-hidden rounded-md border"
+            style={{ ...appRoleFloatingStyles, zIndex: 100, minWidth: '10rem' }}
+          >
+            {(
+              [
+                { value: 'admin' as AppRole, label: 'Admin' },
+                { value: 'shepherd' as AppRole, label: 'User' },
+                { value: 'no-access' as AppRole, label: 'No Access' },
+              ] as const
+            ).map((opt, i) => (
+              <button
+                key={opt.value}
+                onClick={() => {
+                  setAppRole(opt.value);
+                  setShowAppRoleDropdown(false);
+                }}
+                className="text-14 flex w-full cursor-pointer items-center justify-between gap-3 border-none bg-transparent text-left"
+                style={{
+                  padding: '0.8125rem 1rem',
+                  borderBottom: i < 2 ? '1px solid var(--border-light)' : 'none',
+                  color: opt.value === 'no-access' ? 'var(--red)' : 'var(--text-primary)',
+                }}
+              >
+                {opt.label}
+                {appRole === opt.value && (
+                  <Check
+                    size={13}
+                    weight="bold"
+                    color={opt.value === 'no-access' ? 'var(--red)' : 'var(--sage)'}
+                  />
+                )}
+              </button>
+            ))}
+          </div>,
+          document.body
+        )}
       {showLanguagePicker && (
         <MaybeSheet sheetVariant={sheetVariant} onClose={() => setShowLanguagePicker(false)}>
           <LanguagePickerSheet
@@ -1122,19 +1163,21 @@ const langChipStyle: React.CSSProperties = {
   flexShrink: 0,
 };
 
-const blueChipClass = 'text-11 font-medium rounded-pill bg-blue-light text-blue shrink-0 py-0.5 px-2';
+const blueChipClass =
+  'text-11 font-medium rounded-pill bg-blue-light text-blue shrink-0 py-0.5 px-2';
 
-const sageChipClass = 'text-11 font-medium rounded-pill bg-sage-light text-sage shrink-0 py-0.5 px-2';
+const sageChipClass =
+  'text-11 font-medium rounded-pill bg-sage-light text-sage shrink-0 py-0.5 px-2';
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 
 function FormSection({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="mb-6">
-      <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 mb-1.5">
+      <p className="text-10 text-text-muted tracking-wide-6 mb-1.5 font-semibold uppercase">
         {label}
       </p>
-      <div className="no-last-border bg-surface rounded border border-border-light overflow-hidden px-5">
+      <div className="no-last-border bg-surface border-border-light overflow-hidden rounded border px-5">
         {children}
       </div>
     </div>
@@ -1144,14 +1187,14 @@ function FormSection({ label, children }: { label: string; children: React.React
 function Toggle({ on }: { on: boolean }) {
   return (
     <div
-      className="w-[42px] h-6 rounded-md relative shrink-0"
+      className="relative h-6 w-[42px] shrink-0 rounded-md"
       style={{
         background: on ? 'var(--sage)' : 'var(--switch-off)',
         transition: 'background 0.2s',
       }}
     >
       <div
-        className="absolute top-[3px] w-[18px] h-[18px] rounded-full bg-surface"
+        className="bg-surface absolute top-[3px] h-[18px] w-[18px] rounded-full"
         style={{
           left: on ? 21 : 3,
           transition: 'left 0.2s',

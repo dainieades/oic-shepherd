@@ -16,15 +16,12 @@ export default function BottomNav() {
   const items = NAV_ITEMS.filter((item) => isNavItemVisible(item, currentPersona));
 
   return (
-    <nav
-      className="fixed right-0 bottom-0 left-0 z-40 lg:hidden bg-surface border-t border-border-light"
-    >
+    <nav className="bg-surface border-border-light fixed right-0 bottom-0 left-0 z-40 border-t lg:hidden">
       <div className="mx-auto flex h-14 max-w-[26.875rem] items-end justify-around px-2">
         {items.map((item) => {
           const Icon = item.icon;
           const active = item.matches(pathname);
-          const showBadge =
-            item.href === '/visitors/pending' && pendingVisitorCount > 0;
+          const showBadge = item.href === '/visitors/pending' && pendingVisitorCount > 0;
           return (
             <Link
               key={item.href}
@@ -39,7 +36,7 @@ export default function BottomNav() {
                 {showBadge && (
                   <span
                     aria-label={`${pendingVisitorCount} pending`}
-                    className="absolute text-center bg-sage text-on-sage text-10 font-bold rounded-pill"
+                    className="bg-sage text-on-sage text-10 rounded-pill absolute text-center font-bold"
                     style={{
                       top: -4,
                       right: -8,
@@ -53,7 +50,9 @@ export default function BottomNav() {
                   </span>
                 )}
               </span>
-              <span className={`text-10 ${active ? 'font-semibold' : 'font-normal'}`}>{item.label}</span>
+              <span className={`text-10 ${active ? 'font-semibold' : 'font-normal'}`}>
+                {item.label}
+              </span>
             </Link>
           );
         })}

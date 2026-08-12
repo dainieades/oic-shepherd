@@ -39,10 +39,7 @@ export default function AddPersonModal({ onClose }: AddPersonModalProps) {
         actionLabel="Save"
         actionDisabled={!canSave}
       />
-      <div
-        className="flex-1 overflow-y-auto bg-bg"
-        style={{ padding: '1.25rem 1.25rem 3rem' }}
-      >
+      <div className="bg-bg flex-1 overflow-y-auto" style={{ padding: '1.25rem 1.25rem 3rem' }}>
         <PersonFormBody ref={formRef} onSaved={handleSaved} onValidityChange={setCanSave} />
       </div>
     </BottomSheet>

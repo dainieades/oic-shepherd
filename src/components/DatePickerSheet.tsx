@@ -93,7 +93,7 @@ function TimeButton({
       onFocus={handleFocus}
       onBlur={handleBlur}
       onKeyDown={handleKeyDown}
-      className="flex-1 bg-transparent border-none outline-none text-15 text-text-secondary whitespace-nowrap text-right cursor-text min-w-0 py-2.5 px-3.5"
+      className="text-15 text-text-secondary min-w-0 flex-1 cursor-text border-none bg-transparent px-3.5 py-2.5 text-right whitespace-nowrap outline-none"
     />
   );
 }
@@ -212,7 +212,8 @@ export default function DatePickerSheet({
   const rangeStart = startDate <= endDate ? startDate : endDate;
   const rangeEnd = startDate <= endDate ? endDate : startDate;
 
-  const navBtnClass = 'w-8 h-8 rounded-xs bg-bg border border-border-light text-text-secondary cursor-pointer flex items-center justify-center shrink-0';
+  const navBtnClass =
+    'w-8 h-8 rounded-xs bg-bg border border-border-light text-text-secondary cursor-pointer flex items-center justify-center shrink-0';
 
   function Toggle({ on, onToggle }: { on: boolean; onToggle: () => void }) {
     return (
@@ -228,7 +229,7 @@ export default function DatePickerSheet({
         }}
       >
         <div
-          className="absolute w-5 h-5 rounded-full bg-surface shadow-card"
+          className="bg-surface shadow-card absolute h-5 w-5 rounded-full"
           style={{
             top: 3,
             left: on ? 21 : 3,
@@ -270,7 +271,7 @@ export default function DatePickerSheet({
 
     return (
       <div
-        className="w-full flex items-stretch rounded-sm overflow-hidden bg-bg relative"
+        className="bg-bg relative flex w-full items-stretch overflow-hidden rounded-sm"
         style={{
           border: `0.125rem solid ${isActive ? 'var(--sage)' : 'var(--border-light)'}`,
           transition: 'border-color 0.15s',
@@ -292,13 +293,13 @@ export default function DatePickerSheet({
             }
           }}
           placeholder="Apr 17, 2026"
-          className="flex-1 bg-transparent border-none outline-none text-15 font-medium text-text-primary cursor-text min-w-0 py-2.5 px-3.5"
+          className="text-15 text-text-primary min-w-0 flex-1 cursor-text border-none bg-transparent px-3.5 py-2.5 font-medium outline-none"
         />
 
         {/* Time trigger — right half (only when time enabled) */}
         {showTime && (
           <>
-            <div className="w-px bg-border-light my-2 shrink-0" />
+            <div className="bg-border-light my-2 w-px shrink-0" />
             <TimeButton
               timeVal={timeVal}
               fmtTime={fmtTime}
@@ -318,16 +319,16 @@ export default function DatePickerSheet({
     <BottomSheet onClose={onClose} variant="dialog" zIndex={Z_SHEET}>
       {/* Header */}
       <div
-        className="flex items-center justify-between border-b border-border-light"
+        className="border-border-light flex items-center justify-between border-b"
         style={{ padding: '0.875rem 1.25rem 0.75rem' }}
       >
         <button
           onClick={onClose}
-          className="text-14 text-text-secondary bg-transparent border-none cursor-pointer"
+          className="text-14 text-text-secondary cursor-pointer border-none bg-transparent"
         >
           Cancel
         </button>
-        <span className="text-15 font-semibold text-text-primary">
+        <span className="text-15 text-text-primary font-semibold">
           {showEndDate ? `${fmtDate(startDate)} → ${fmtDate(endDate)}` : fmtDate(startDate)}
         </span>
         <button
@@ -340,19 +341,16 @@ export default function DatePickerSheet({
               showEndDate && showTime ? endTime : undefined
             )
           }
-          className="h-8 py-0 px-3.5 rounded-xs bg-sage text-on-sage text-14 font-semibold border-none cursor-pointer"
+          className="bg-sage text-on-sage text-14 h-8 cursor-pointer rounded-xs border-none px-3.5 py-0 font-semibold"
         >
           Done
         </button>
       </div>
 
       {/* Scrollable body */}
-      <div className="flex-1 min-h-0 overflow-y-auto pb-10">
+      <div className="min-h-0 flex-1 overflow-y-auto pb-10">
         {/* Date pill inputs */}
-        <div
-          className="flex flex-col gap-1.5"
-          style={{ padding: '0.625rem 1rem 0.125rem' }}
-        >
+        <div className="flex flex-col gap-1.5" style={{ padding: '0.625rem 1rem 0.125rem' }}>
           <DatePill field="start" dateVal={startDate} timeVal={startTime} />
           {showEndDate && <DatePill field="end" dateVal={endDate} timeVal={endTime} />}
         </div>
@@ -362,7 +360,7 @@ export default function DatePickerSheet({
           className="flex items-center justify-between"
           style={{ padding: '0.5rem 1rem 0.25rem' }}
         >
-          <span className="text-17 font-bold text-text-primary">
+          <span className="text-17 text-text-primary font-bold">
             {MONTH_NAMES[viewMonth]} {viewYear}
           </span>
           <div className="flex gap-1.5">
@@ -376,24 +374,16 @@ export default function DatePickerSheet({
         </div>
 
         {/* Day headers */}
-        <div
-          className="grid grid-cols-7 px-2.5"
-        >
+        <div className="grid grid-cols-7 px-2.5">
           {DAY_HEADERS.map((h) => (
-            <div
-              key={h}
-              className="text-center text-11 font-semibold text-text-muted py-0.5 px-0"
-            >
+            <div key={h} className="text-11 text-text-muted px-0 py-0.5 text-center font-semibold">
               {h}
             </div>
           ))}
         </div>
 
         {/* Calendar grid */}
-        <div
-          className="grid grid-cols-7 px-2.5"
-          style={{ gap: '0.0625rem 0' }}
-        >
+        <div className="grid grid-cols-7 px-2.5" style={{ gap: '0.0625rem 0' }}>
           {cells.map((cell, i) => {
             const isStart = cell.dateStr === startDate;
             const isEnd = showEndDate && cell.dateStr === endDate;
@@ -414,7 +404,7 @@ export default function DatePickerSheet({
                 key={i}
                 disabled={!isClickable}
                 onClick={() => cell.dateStr && handleDayClick(cell.dateStr, cell.inMonth)}
-                className="mx-auto text-15 w-11 h-11 rounded-full"
+                className="text-15 mx-auto h-11 w-11 rounded-full"
                 style={{
                   border:
                     isToday && !isSelected
@@ -446,13 +436,10 @@ export default function DatePickerSheet({
         </div>
 
         {/* Divider */}
-        <div className="border-t border-border-light mx-4 mt-2" />
+        <div className="border-border-light mx-4 mt-2 border-t" />
 
         {/* End date toggle */}
-        <div
-          className="flex items-center justify-between"
-          style={{ padding: '0.625rem 1rem 0' }}
-        >
+        <div className="flex items-center justify-between" style={{ padding: '0.625rem 1rem 0' }}>
           <span className="text-15 text-text-primary">End date</span>
           <Toggle
             on={showEndDate}
@@ -464,10 +451,7 @@ export default function DatePickerSheet({
         </div>
 
         {/* Include time toggle */}
-        <div
-          className="flex items-center justify-between"
-          style={{ padding: '0.625rem 1rem 0' }}
-        >
+        <div className="flex items-center justify-between" style={{ padding: '0.625rem 1rem 0' }}>
           <span className="text-15 text-text-primary">Include time</span>
           <Toggle on={showTime} onToggle={() => setShowTime((v) => !v)} />
         </div>

@@ -149,7 +149,7 @@ export default function AddTodoModal({
         {isEditing && todo && !showWhoPicker && (
           <button
             onClick={() => setShowDeleteConfirm(true)}
-            className="absolute flex items-center justify-center cursor-pointer bg-red-light border border-red-border text-red rounded-full shadow-card"
+            className="bg-red-light border-red-border text-red shadow-card absolute flex cursor-pointer items-center justify-center rounded-full border"
             style={{
               bottom: 28,
               left: 24,
@@ -164,7 +164,7 @@ export default function AddTodoModal({
         )}
 
         {showWhoPicker && (
-          <div className="flex-1 overflow-hidden flex flex-col">
+          <div className="flex flex-1 flex-col overflow-hidden">
             <PersonFamilyPicker
               data={data}
               initialFamilyIds={familyIds}
@@ -196,16 +196,12 @@ export default function AddTodoModal({
 
             {/* Scrollable body */}
             <div
-              className="flex-1 min-h-0 overflow-y-auto bg-bg flex flex-col"
+              className="bg-bg flex min-h-0 flex-1 flex-col overflow-y-auto"
               style={{ padding: `1rem 1.25rem ${isEditing ? 80 : 16}px` }}
             >
               {/* Field rows */}
-              <div
-                className="bg-surface rounded border border-border-light overflow-hidden px-4 shrink-0"
-              >
-                <div
-                  className="no-last-border flex flex-col"
-                >
+              <div className="bg-surface border-border-light shrink-0 overflow-hidden rounded border px-4">
+                <div className="no-last-border flex flex-col">
                   {/* For */}
                   <FieldRow
                     icon={<User size={16} />}
@@ -270,13 +266,13 @@ export default function AddTodoModal({
                       const creator = data.personas.find((p) => p.id === todo.createdBy);
                       return (
                         <div className="flex items-center gap-2.5 py-3">
-                          <span className="w-6 flex justify-center shrink-0 text-text-muted">
+                          <span className="text-text-muted flex w-6 shrink-0 justify-center">
                             <UserPlus size={16} />
                           </span>
                           <span className="text-12 text-text-muted w-[60px] shrink-0">
                             Created by
                           </span>
-                          <span className="flex-1 text-14 text-text-secondary">
+                          <span className="text-14 text-text-secondary flex-1">
                             {creator?.name ?? 'Unknown'}
                           </span>
                         </div>
@@ -291,7 +287,7 @@ export default function AddTodoModal({
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="To-dos are upcoming things to act on — a call to make, a visit to plan, or anything you want to follow up on."
                 autoFocus
-                className="flex-1 w-full mt-4 p-3 bg-surface border border-border-light rounded-sm text-15 text-text-primary leading-normal outline-none box-border resize-y min-h-[220px]"
+                className="bg-surface border-border-light text-15 text-text-primary mt-4 box-border min-h-[220px] w-full flex-1 resize-y rounded-sm border p-3 leading-normal outline-none"
               />
             </div>
           </>
@@ -390,17 +386,13 @@ function FieldRow({
   return (
     <button
       ref={btnRef}
-      className="field-row-hover flex items-center gap-2.5 py-3 bg-transparent border-0 border-b border-border-light cursor-pointer text-left"
+      className="field-row-hover border-border-light flex cursor-pointer items-center gap-2.5 border-0 border-b bg-transparent py-3 text-left"
       onClick={onClick}
     >
-      <span className="w-6 flex justify-center shrink-0 text-text-muted">
-        {icon}
-      </span>
-      <span className="text-12 text-text-muted w-[60px] shrink-0">
-        {label}
-      </span>
+      <span className="text-text-muted flex w-6 shrink-0 justify-center">{icon}</span>
+      <span className="text-12 text-text-muted w-[60px] shrink-0">{label}</span>
       <span
-        className="flex-1 text-14 break-words"
+        className="text-14 flex-1 break-words"
         style={{ color: valueColor ?? 'var(--text-primary)' }}
       >
         {value}

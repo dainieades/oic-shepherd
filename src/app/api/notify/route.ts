@@ -78,11 +78,7 @@ async function resolveEmailsForUserIds(
   const userIdSet = new Set(userIds);
   return users
     .filter(
-      (u) =>
-        userIdSet.has(u.id) &&
-        u.email &&
-        u.id !== excludeUserId &&
-        u.email !== excludeEmail
+      (u) => userIdSet.has(u.id) && u.email && u.id !== excludeUserId && u.email !== excludeEmail
     )
     .map((u) => u.email as string);
 }

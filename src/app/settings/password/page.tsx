@@ -96,39 +96,38 @@ export default function ChangePasswordPage() {
 
   return (
     <div className="pb-12">
-      <div
-        className="settings-subpage-navbar sticky top-0 -mx-4 px-4 border-b border-border-light flex items-center justify-between h-[54px] bg-bg z-page"
-      >
+      <div className="settings-subpage-navbar border-border-light bg-bg z-page sticky top-0 -mx-4 flex h-[54px] items-center justify-between border-b px-4">
         <button
           onClick={() => router.push('/settings')}
           disabled={!canGoBack}
-          className="inline-flex items-center gap-1 text-13 text-sage bg-transparent border-none cursor-pointer p-0"
+          className="text-13 text-sage inline-flex cursor-pointer items-center gap-1 border-none bg-transparent p-0"
           style={{ opacity: canGoBack ? 1 : 0.5 }}
         >
           <CaretLeft size={16} weight="bold" />
           Settings
         </button>
-        <span className="text-15 font-semibold text-text-primary">Change Password</span>
+        <span className="text-15 text-text-primary font-semibold">Change Password</span>
         <span className="w-16" />
       </div>
 
       {step.type === 'success' && (
         <div className="mt-10 text-center">
-          <p className="text-17 font-semibold text-text-primary mb-2 tracking-tight-1">
+          <p className="text-17 text-text-primary tracking-tight-1 mb-2 font-semibold">
             Password updated
           </p>
-          <p className="text-14 text-text-muted mb-6">
-            Your new password is active.
-          </p>
-          <button onClick={() => router.push('/settings')} className="h-11 px-6 rounded-sm bg-sage text-on-sage border-none text-15 font-semibold cursor-pointer">
+          <p className="text-14 text-text-muted mb-6">Your new password is active.</p>
+          <button
+            onClick={() => router.push('/settings')}
+            className="bg-sage text-on-sage text-15 h-11 cursor-pointer rounded-sm border-none px-6 font-semibold"
+          >
             Done
           </button>
         </div>
       )}
 
       {step.type === 'reset-sent' && (
-        <div className="mt-10 text-center px-2">
-          <p className="text-17 font-semibold text-text-primary mb-2 tracking-tight-1">
+        <div className="mt-10 px-2 text-center">
+          <p className="text-17 text-text-primary tracking-tight-1 mb-2 font-semibold">
             Check your inbox
           </p>
           <p className="text-14 text-text-muted mb-6 leading-normal">
@@ -136,7 +135,10 @@ export default function ChangePasswordPage() {
             <br />
             Click the link in the email to set a new password.
           </p>
-          <button onClick={() => router.push('/settings')} className="h-11 px-6 rounded-sm bg-sage text-on-sage border-none text-15 font-semibold cursor-pointer">
+          <button
+            onClick={() => router.push('/settings')}
+            className="bg-sage text-on-sage text-15 h-11 cursor-pointer rounded-sm border-none px-6 font-semibold"
+          >
             Back to settings
           </button>
         </div>
@@ -161,14 +163,19 @@ export default function ChangePasswordPage() {
           />
 
           {status.type === 'error' && (
-            <div className="bg-red-light border border-red-border rounded-sm mb-4 text-13 text-red" style={{ padding: '0.5625rem 0.8125rem' }}>
+            <div
+              className="bg-red-light border-red-border text-13 text-red mb-4 rounded-sm border"
+              style={{ padding: '0.5625rem 0.8125rem' }}
+            >
               {status.message}
             </div>
           )}
 
-          <div className="bg-surface rounded border border-border-light overflow-hidden">
-            <div className="px-4 py-3.5 border-b border-border-light">
-              <label className="block text-12 font-semibold text-text-muted uppercase tracking-wide-5 mb-1.5">Current password</label>
+          <div className="bg-surface border-border-light overflow-hidden rounded border">
+            <div className="border-border-light border-b px-4 py-3.5">
+              <label className="text-12 text-text-muted tracking-wide-5 mb-1.5 block font-semibold uppercase">
+                Current password
+              </label>
               <input
                 type="password"
                 name="current-password"
@@ -181,7 +188,7 @@ export default function ChangePasswordPage() {
                 }}
                 disabled={isLoading}
                 autoFocus
-                className="w-full rounded-sm text-15 text-text-primary bg-bg outline-none box-border"
+                className="text-15 text-text-primary bg-bg box-border w-full rounded-sm outline-none"
                 style={{
                   padding: '0.6875rem 0.8125rem',
                   border: `0.09375rem solid ${currentPasswordError ? 'var(--red)' : 'var(--border)'}`,
@@ -193,8 +200,10 @@ export default function ChangePasswordPage() {
                 </p>
               )}
             </div>
-            <div className="px-4 py-3.5 border-b border-border-light">
-              <label className="block text-12 font-semibold text-text-muted uppercase tracking-wide-5 mb-1.5">New password</label>
+            <div className="border-border-light border-b px-4 py-3.5">
+              <label className="text-12 text-text-muted tracking-wide-5 mb-1.5 block font-semibold uppercase">
+                New password
+              </label>
               <input
                 type="password"
                 name="new-password"
@@ -203,10 +212,10 @@ export default function ChangePasswordPage() {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 disabled={isLoading}
-                className="w-full rounded-sm border border-border text-15 text-text-primary bg-bg outline-none box-border"
+                className="border-border text-15 text-text-primary bg-bg box-border w-full rounded-sm border outline-none"
                 style={{ padding: '0.6875rem 0.8125rem' }}
               />
-              <div className="mt-2 flex gap-3 flex-wrap">
+              <div className="mt-2 flex flex-wrap gap-3">
                 {[
                   { met: hasMinLength, label: '8+ characters' },
                   { met: hasUppercase, label: '1 uppercase' },
@@ -214,7 +223,7 @@ export default function ChangePasswordPage() {
                 ].map((rule) => (
                   <span
                     key={rule.label}
-                    className="inline-flex items-center gap-1 text-12"
+                    className="text-12 inline-flex items-center gap-1"
                     style={{
                       color: rule.met ? 'var(--sage)' : 'var(--text-muted)',
                       fontWeight: rule.met ? 'var(--font-semibold)' : 'var(--font-normal)',
@@ -228,7 +237,9 @@ export default function ChangePasswordPage() {
               </div>
             </div>
             <div className="px-4 py-3.5">
-              <label className="block text-12 font-semibold text-text-muted uppercase tracking-wide-5 mb-1.5">Confirm new password</label>
+              <label className="text-12 text-text-muted tracking-wide-5 mb-1.5 block font-semibold uppercase">
+                Confirm new password
+              </label>
               <input
                 type="password"
                 name="confirm-new-password"
@@ -237,7 +248,7 @@ export default function ChangePasswordPage() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 disabled={isLoading}
-                className="w-full rounded-sm text-15 text-text-primary bg-bg outline-none box-border"
+                className="text-15 text-text-primary bg-bg box-border w-full rounded-sm outline-none"
                 style={{
                   padding: '0.6875rem 0.8125rem',
                   border: `0.09375rem solid ${confirmMismatch ? 'var(--red)' : 'var(--border)'}`,
@@ -254,7 +265,7 @@ export default function ChangePasswordPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full h-11 px-6 rounded-sm bg-sage text-on-sage border-none text-15 font-semibold mt-5"
+            className="bg-sage text-on-sage text-15 mt-5 h-11 w-full rounded-sm border-none px-6 font-semibold"
             style={{
               opacity: isLoading ? 0.6 : 1,
               cursor: isLoading ? 'not-allowed' : 'pointer',
@@ -267,7 +278,7 @@ export default function ChangePasswordPage() {
             type="button"
             onClick={handleForgot}
             disabled={isLoading || !user?.email}
-            className="block w-full mt-2 py-3 bg-transparent border-none text-sage text-14 font-medium text-center"
+            className="text-sage text-14 mt-2 block w-full border-none bg-transparent py-3 text-center font-medium"
             style={{
               cursor: isLoading || !user?.email ? 'not-allowed' : 'pointer',
               opacity: isLoading || !user?.email ? 0.5 : 1,

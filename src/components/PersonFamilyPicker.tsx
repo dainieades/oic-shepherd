@@ -125,21 +125,19 @@ export default function PersonFamilyPicker({
   };
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 px-5 pt-4">
-      <div className="flex items-center justify-between mb-4 shrink-0">
+    <div className="flex min-h-0 flex-1 flex-col px-5 pt-4">
+      <div className="mb-4 flex shrink-0 items-center justify-between">
         <button
           onClick={onBack}
-          className="bg-transparent border-0 cursor-pointer text-sage flex items-center gap-1 text-14 p-0"
+          className="text-sage text-14 flex cursor-pointer items-center gap-1 border-0 bg-transparent p-0"
         >
           <CaretLeft size={16} />
           Back
         </button>
-        <span className="text-15 font-semibold text-text-primary">
-          Select who
-        </span>
+        <span className="text-15 text-text-primary font-semibold">Select who</span>
         <button
           onClick={() => onConfirm(selectedFamilyIds, selectedPersonIds)}
-          className="bg-transparent border-0 cursor-pointer text-14 font-semibold p-0"
+          className="text-14 cursor-pointer border-0 bg-transparent p-0 font-semibold"
           style={{ color: totalSelected > 0 ? 'var(--sage)' : 'var(--text-muted)' }}
         >
           {totalSelected > 0 ? `Done (${totalSelected})` : 'Done'}
@@ -147,7 +145,7 @@ export default function PersonFamilyPicker({
       </div>
 
       <div
-        className="flex items-center gap-2 bg-bg border border-border rounded-sm mb-2 shrink-0"
+        className="bg-bg border-border mb-2 flex shrink-0 items-center gap-2 rounded-sm border"
         style={{ padding: '0.5625rem 0.75rem' }}
       >
         <MagnifyingGlass size={14} color="var(--text-muted)" />
@@ -156,12 +154,12 @@ export default function PersonFamilyPicker({
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search families or people..."
-          className="flex-1 text-14 text-text-primary bg-transparent border-0 outline-none"
+          className="text-14 text-text-primary flex-1 border-0 bg-transparent outline-none"
         />
         {search && (
           <button
             onClick={() => setSearch('')}
-            className="bg-transparent border-0 cursor-pointer text-text-muted text-18 leading-none p-0"
+            className="text-text-muted text-18 cursor-pointer border-0 bg-transparent p-0 leading-none"
           >
             ×
           </button>
@@ -169,17 +167,17 @@ export default function PersonFamilyPicker({
       </div>
 
       {items.length > 0 && (
-        <div className="flex justify-end mb-1.5 shrink-0">
+        <div className="mb-1.5 flex shrink-0 justify-end">
           <button
             onClick={toggleAll}
-            className="bg-transparent border-0 cursor-pointer text-12 font-semibold text-sage p-0"
+            className="text-12 text-sage cursor-pointer border-0 bg-transparent p-0 font-semibold"
           >
             {allSelected ? 'Deselect all' : 'Select all'}
           </button>
         </div>
       )}
 
-      <div className="flex-1 overflow-y-auto min-h-0">
+      <div className="min-h-0 flex-1 overflow-y-auto">
         {items.map((item) => {
           const palette =
             SHEPHERD_AVATAR_PALETTE[item.paletteIndex % SHEPHERD_AVATAR_PALETTE.length];
@@ -194,7 +192,7 @@ export default function PersonFamilyPicker({
             <button
               key={`${item.kind}-${item.id}`}
               onClick={onToggle}
-              className="w-full flex items-center gap-3 py-2.5 border-b border-border-light cursor-pointer text-left border-x-0 border-t-0"
+              className="border-border-light flex w-full cursor-pointer items-center gap-3 border-x-0 border-t-0 border-b py-2.5 text-left"
               style={{ background: selected ? 'var(--sage-light)' : 'transparent' }}
             >
               <AvatarBadge
@@ -205,9 +203,9 @@ export default function PersonFamilyPicker({
                 color={selected ? 'var(--on-sage)' : palette.color}
                 icon={item.kind === 'family' ? <House size={18} /> : undefined}
               />
-              <div className="flex-1 min-w-0">
+              <div className="min-w-0 flex-1">
                 <p
-                  className="m-0 text-14"
+                  className="text-14 m-0"
                   style={{
                     fontWeight: selected ? 'var(--font-semibold)' : 'var(--font-normal)',
                     color: selected ? 'var(--sage)' : 'var(--text-primary)',
@@ -216,9 +214,7 @@ export default function PersonFamilyPicker({
                   {item.label}
                 </p>
                 {item.subtitle && (
-                  <p className="m-0 text-12 text-text-muted truncate">
-                    {item.subtitle}
-                  </p>
+                  <p className="text-12 text-text-muted m-0 truncate">{item.subtitle}</p>
                 )}
               </div>
               <CheckboxMark checked={selected} />
@@ -227,9 +223,7 @@ export default function PersonFamilyPicker({
         })}
 
         {items.length === 0 && (
-          <p className="text-13 text-text-muted italic pt-4">
-            No results found.
-          </p>
+          <p className="text-13 text-text-muted pt-4 italic">No results found.</p>
         )}
       </div>
     </div>

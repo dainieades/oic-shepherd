@@ -12,7 +12,7 @@ interface StatusBadgeProps {
 export function StatusBadge({ label, bg, color, border }: StatusBadgeProps) {
   return (
     <span
-      className="text-11 font-medium shrink-0 rounded-pill"
+      className="text-11 rounded-pill shrink-0 font-medium"
       style={{
         padding: '0.0625rem 0.4375rem',
         background: bg,

@@ -20,7 +20,6 @@ const ROLE_LABEL: Record<AppRole, string> = {
   'no-access': 'No Access',
 };
 
-
 export default function AccessManagementPage() {
   const { data, currentPersona, updatePerson } = useApp();
   const router = useRouter();
@@ -86,13 +85,16 @@ export default function AccessManagementPage() {
   return (
     <div className="pb-12">
       {/* Nav bar */}
-      <div className="settings-subpage-navbar sticky top-0 bg-bg -mx-4 px-4 border-b border-border-light flex items-center justify-between h-[3.375rem] z-page">
-        <button onClick={() => router.push('/settings')} className="inline-flex items-center gap-1 text-13 text-sage bg-transparent border-0 cursor-pointer p-0">
+      <div className="settings-subpage-navbar bg-bg border-border-light z-page sticky top-0 -mx-4 flex h-[3.375rem] items-center justify-between border-b px-4">
+        <button
+          onClick={() => router.push('/settings')}
+          className="text-13 text-sage inline-flex cursor-pointer items-center gap-1 border-0 bg-transparent p-0"
+        >
           <CaretLeft size={16} weight="bold" />
           Settings
         </button>
         <span
-          className="text-15 font-semibold text-text-primary"
+          className="text-15 text-text-primary font-semibold"
           style={{ opacity: titleVisible ? 0 : 1, transition: 'opacity 0.15s' }}
         >
           Access Management
@@ -103,10 +105,7 @@ export default function AccessManagementPage() {
         </Button>
       </div>
 
-      <h1
-        ref={titleRef}
-        className="text-28 font-bold text-text-primary tracking-tight-2 mt-6 mb-2"
-      >
+      <h1 ref={titleRef} className="text-28 text-text-primary tracking-tight-2 mt-6 mb-2 font-bold">
         Access Management
       </h1>
 
@@ -115,23 +114,21 @@ export default function AccessManagementPage() {
       </p>
 
       {/* Email list */}
-      <p className="text-12 font-semibold text-text-muted uppercase tracking-wide-6 mb-2">
+      <p className="text-12 text-text-muted tracking-wide-6 mb-2 font-semibold uppercase">
         Approved ({emails.length})
       </p>
 
       {loading ? (
-        <p className="text-14 text-text-muted text-center py-6">
-          Loading…
-        </p>
+        <p className="text-14 text-text-muted py-6 text-center">Loading…</p>
       ) : emails.length === 0 ? (
-        <div className="bg-surface rounded border border-border-light">
+        <div className="bg-surface border-border-light rounded border">
           <EmptyState
             title="No approved emails yet."
             icon={<EnvelopeSimple size={28} color="var(--text-muted)" />}
           />
         </div>
       ) : (
-        <div className="no-last-border bg-surface rounded border border-border-light overflow-hidden">
+        <div className="no-last-border bg-surface border-border-light overflow-hidden rounded border">
           {emails.map((e) => {
             const linkedPerson = personByEmail.get(e.email.toLowerCase());
             const role: AppRole =
@@ -142,11 +139,11 @@ export default function AccessManagementPage() {
               <button
                 key={e.email}
                 onClick={() => setRoleEditEmail(e.email)}
-                className="w-full flex items-center gap-3 py-3.5 px-4 bg-transparent border-0 border-b border-border-light cursor-pointer text-left"
+                className="border-border-light flex w-full cursor-pointer items-center gap-3 border-0 border-b bg-transparent px-4 py-3.5 text-left"
               >
                 <EnvelopeSimple size={16} color="var(--text-muted)" className="shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-14 font-medium text-text-primary m-0 overflow-hidden text-ellipsis whitespace-nowrap">
+                <div className="min-w-0 flex-1">
+                  <p className="text-14 text-text-primary m-0 overflow-hidden font-medium text-ellipsis whitespace-nowrap">
                     {e.label ?? e.email}
                   </p>
                   {e.label && (

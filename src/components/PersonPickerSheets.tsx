@@ -43,20 +43,23 @@ export function GroupPickerSheet({
         actionLabel={selectedIds.length > 0 ? `Done (${selectedIds.length})` : 'Done'}
         actionVariant="pill"
       />
-      <div className="py-3 px-5 shrink-0 border-b border-border-light">
-        <div className="flex items-center gap-2 bg-bg border border-border rounded-sm" style={{ padding: '0.5625rem 0.75rem' }}>
+      <div className="border-border-light shrink-0 border-b px-5 py-3">
+        <div
+          className="bg-bg border-border flex items-center gap-2 rounded-sm border"
+          style={{ padding: '0.5625rem 0.75rem' }}
+        >
           <MagnifyingGlass size={14} color="var(--text-muted)" />
           <input
             ref={searchRef}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search groups…"
-            className="flex-1 text-14 text-text-primary bg-transparent border-none outline-none"
+            className="text-14 text-text-primary flex-1 border-none bg-transparent outline-none"
           />
           {search && (
             <button
               onClick={() => setSearch('')}
-              className="bg-transparent border-none cursor-pointer text-text-muted text-18 leading-none p-0"
+              className="text-text-muted text-18 cursor-pointer border-none bg-transparent p-0 leading-none"
             >
               ×
             </button>
@@ -70,10 +73,10 @@ export function GroupPickerSheet({
             <button
               key={g.id}
               onClick={() => toggle(g.id)}
-              className="w-full flex items-center gap-3 py-3 px-5 border-none border-b border-border-light cursor-pointer text-left"
+              className="border-border-light flex w-full cursor-pointer items-center gap-3 border-b border-none px-5 py-3 text-left"
               style={{ background: isSel ? 'var(--blue-light)' : 'none' }}
             >
-              <div className="flex-1 min-w-0">
+              <div className="min-w-0 flex-1">
                 <p
                   className="text-14 m-0"
                   style={{
@@ -89,9 +92,7 @@ export function GroupPickerSheet({
           );
         })}
         {filtered.length === 0 && (
-          <p className="py-6 px-5 text-13 text-text-muted text-center italic">
-            No groups found.
-          </p>
+          <p className="text-13 text-text-muted px-5 py-6 text-center italic">No groups found.</p>
         )}
       </div>
     </SubPanel>
@@ -146,20 +147,23 @@ export function SheepPickerSheet({
         actionLabel={selectedIds.length > 0 ? `Done (${selectedIds.length})` : 'Done'}
         actionVariant="pill"
       />
-      <div className="py-3 px-5 shrink-0 border-b border-border-light">
-        <div className="flex items-center gap-2 bg-bg border border-border rounded-sm" style={{ padding: '0.5625rem 0.75rem' }}>
+      <div className="border-border-light shrink-0 border-b px-5 py-3">
+        <div
+          className="bg-bg border-border flex items-center gap-2 rounded-sm border"
+          style={{ padding: '0.5625rem 0.75rem' }}
+        >
           <MagnifyingGlass size={14} color="var(--text-muted)" />
           <input
             ref={searchRef}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search people…"
-            className="flex-1 text-14 text-text-primary bg-transparent border-none outline-none"
+            className="text-14 text-text-primary flex-1 border-none bg-transparent outline-none"
           />
           {search && (
             <button
               onClick={() => setSearch('')}
-              className="bg-transparent border-none cursor-pointer text-text-muted text-18 leading-none p-0"
+              className="text-text-muted text-18 cursor-pointer border-none bg-transparent p-0 leading-none"
             >
               ×
             </button>
@@ -168,9 +172,7 @@ export function SheepPickerSheet({
       </div>
       <div className="flex-1 overflow-y-auto">
         {sorted.length === 0 && (
-          <p className="text-13 text-text-muted italic pt-6 text-center">
-            No matching people.
-          </p>
+          <p className="text-13 text-text-muted pt-6 text-center italic">No matching people.</p>
         )}
         {sorted.map((p, i) => {
           const isSel = selectedIds.includes(p.id);
@@ -179,7 +181,7 @@ export function SheepPickerSheet({
             <button
               key={p.id}
               onClick={() => toggle(p.id)}
-              className="w-full flex items-center gap-3 py-3 px-5 border-none border-b border-border-light cursor-pointer text-left"
+              className="border-border-light flex w-full cursor-pointer items-center gap-3 border-b border-none px-5 py-3 text-left"
               style={{ background: isSel ? 'var(--sage-light)' : 'none' }}
             >
               <AvatarBadge
@@ -189,7 +191,7 @@ export function SheepPickerSheet({
                 bg={isSel ? 'var(--sage)' : palette.bg}
                 color={isSel ? 'var(--on-sage)' : palette.color}
               />
-              <div className="flex-1 min-w-0">
+              <div className="min-w-0 flex-1">
                 <p
                   className="text-14 m-0"
                   style={{
@@ -200,9 +202,7 @@ export function SheepPickerSheet({
                   {fullName(p)}
                 </p>
                 {p.alternativeName && (
-                  <p className="text-11 text-text-muted m-0">
-                    {p.alternativeName}
-                  </p>
+                  <p className="text-11 text-text-muted m-0">{p.alternativeName}</p>
                 )}
               </div>
               <CheckboxMark checked={isSel} />
@@ -252,23 +252,28 @@ export function ShepherdPickerSheet({
         onCancel={onBack}
         cancelLabel={cancelLabel}
         onAction={() => onConfirm(selectedIds)}
-        actionLabel={selectedIds.length > 0 ? `${confirmLabel} (${selectedIds.length})` : confirmLabel}
+        actionLabel={
+          selectedIds.length > 0 ? `${confirmLabel} (${selectedIds.length})` : confirmLabel
+        }
         actionVariant="pill"
       />
-      <div className="py-3 px-5 shrink-0 border-b border-border-light">
-        <div className="flex items-center gap-2 bg-bg border border-border rounded-sm" style={{ padding: '0.5625rem 0.75rem' }}>
+      <div className="border-border-light shrink-0 border-b px-5 py-3">
+        <div
+          className="bg-bg border-border flex items-center gap-2 rounded-sm border"
+          style={{ padding: '0.5625rem 0.75rem' }}
+        >
           <MagnifyingGlass size={14} color="var(--text-muted)" />
           <input
             ref={searchRef}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search shepherds…"
-            className="flex-1 text-14 text-text-primary bg-transparent border-none outline-none"
+            className="text-14 text-text-primary flex-1 border-none bg-transparent outline-none"
           />
           {search && (
             <button
               onClick={() => setSearch('')}
-              className="bg-transparent border-none cursor-pointer text-text-muted text-18 leading-none p-0"
+              className="text-text-muted text-18 cursor-pointer border-none bg-transparent p-0 leading-none"
             >
               ×
             </button>
@@ -283,7 +288,7 @@ export function ShepherdPickerSheet({
             <button
               key={entry.id}
               onClick={() => toggle(entry.id)}
-              className="w-full flex items-center gap-3 py-3 px-5 border-none border-b border-border-light cursor-pointer text-left"
+              className="border-border-light flex w-full cursor-pointer items-center gap-3 border-b border-none px-5 py-3 text-left"
               style={{ background: isSel ? 'var(--sage-light)' : 'none' }}
             >
               <AvatarBadge
@@ -293,7 +298,7 @@ export function ShepherdPickerSheet({
                 bg={isSel ? 'var(--sage)' : palette.bg}
                 color={isSel ? 'var(--on-sage)' : palette.color}
               />
-              <div className="flex-1 min-w-0">
+              <div className="min-w-0 flex-1">
                 <p
                   className="text-14 m-0"
                   style={{
@@ -303,16 +308,14 @@ export function ShepherdPickerSheet({
                 >
                   {entry.name}
                 </p>
-                <p className="text-11 text-text-muted m-0">
-                  {entry.subtitle}
-                </p>
+                <p className="text-11 text-text-muted m-0">{entry.subtitle}</p>
               </div>
               <CheckboxMark checked={isSel} />
             </button>
           );
         })}
         {filtered.length === 0 && (
-          <p className="py-6 px-5 text-13 text-text-muted text-center italic">
+          <p className="text-13 text-text-muted px-5 py-6 text-center italic">
             No shepherds found.
           </p>
         )}
@@ -355,20 +358,23 @@ export function PositionPickerSheet({
         actionLabel={selectedPositions.length > 0 ? `Done (${selectedPositions.length})` : 'Done'}
         actionVariant="pill"
       />
-      <div className="py-3 px-5 shrink-0 border-b border-border-light">
-        <div className="flex items-center gap-2 bg-bg border border-border rounded-sm" style={{ padding: '0.5625rem 0.75rem' }}>
+      <div className="border-border-light shrink-0 border-b px-5 py-3">
+        <div
+          className="bg-bg border-border flex items-center gap-2 rounded-sm border"
+          style={{ padding: '0.5625rem 0.75rem' }}
+        >
           <MagnifyingGlass size={14} color="var(--text-muted)" />
           <input
             ref={searchRef}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search positions…"
-            className="flex-1 text-14 text-text-primary bg-transparent border-none outline-none"
+            className="text-14 text-text-primary flex-1 border-none bg-transparent outline-none"
           />
           {search && (
             <button
               onClick={() => setSearch('')}
-              className="bg-transparent border-none cursor-pointer text-text-muted text-18 leading-none p-0"
+              className="text-text-muted text-18 cursor-pointer border-none bg-transparent p-0 leading-none"
             >
               ×
             </button>
@@ -382,10 +388,10 @@ export function PositionPickerSheet({
             <button
               key={pos}
               onClick={() => toggle(pos)}
-              className="w-full flex items-center gap-3 py-3 px-5 border-none border-b border-border-light cursor-pointer text-left"
+              className="border-border-light flex w-full cursor-pointer items-center gap-3 border-b border-none px-5 py-3 text-left"
               style={{ background: isSel ? 'var(--sage-light)' : 'none' }}
             >
-              <div className="flex-1 min-w-0">
+              <div className="min-w-0 flex-1">
                 <p
                   className="text-14 m-0"
                   style={{
@@ -401,7 +407,7 @@ export function PositionPickerSheet({
           );
         })}
         {filtered.length === 0 && (
-          <p className="py-6 px-5 text-13 text-text-muted text-center italic">
+          <p className="text-13 text-text-muted px-5 py-6 text-center italic">
             No positions found.
           </p>
         )}
@@ -450,20 +456,23 @@ export function FamilyPickerSheet({
         actionLabel="Done"
         actionVariant="pill"
       />
-      <div className="py-3 px-5 shrink-0 border-b border-border-light">
-        <div className="flex items-center gap-2 bg-bg border border-border rounded-sm" style={{ padding: '0.5625rem 0.75rem' }}>
+      <div className="border-border-light shrink-0 border-b px-5 py-3">
+        <div
+          className="bg-bg border-border flex items-center gap-2 rounded-sm border"
+          style={{ padding: '0.5625rem 0.75rem' }}
+        >
           <MagnifyingGlass size={14} color="var(--text-muted)" />
           <input
             ref={searchRef}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search families…"
-            className="flex-1 text-14 text-text-primary bg-transparent border-none outline-none"
+            className="text-14 text-text-primary flex-1 border-none bg-transparent outline-none"
           />
           {search && (
             <button
               onClick={() => setSearch('')}
-              className="bg-transparent border-none cursor-pointer text-text-muted text-18 leading-none p-0"
+              className="text-text-muted text-18 cursor-pointer border-none bg-transparent p-0 leading-none"
             >
               ×
             </button>
@@ -474,10 +483,10 @@ export function FamilyPickerSheet({
         {!q && (
           <button
             onClick={() => setSelectedId(undefined)}
-            className="w-full flex items-center gap-3 py-3 px-5 border-none border-b border-border-light cursor-pointer text-left"
+            className="border-border-light flex w-full cursor-pointer items-center gap-3 border-b border-none px-5 py-3 text-left"
             style={{ background: !selectedId ? 'var(--sage-light)' : 'none' }}
           >
-            <div className="flex-1 min-w-0">
+            <div className="min-w-0 flex-1">
               <p
                 className="text-14 m-0 italic"
                 style={{
@@ -505,11 +514,11 @@ export function FamilyPickerSheet({
             <button
               key={f.id}
               onClick={() => setSelectedId(f.id)}
-              className="w-full flex items-center gap-3 py-3 px-5 border-none border-b border-border-light cursor-pointer text-left"
+              className="border-border-light flex w-full cursor-pointer items-center gap-3 border-b border-none px-5 py-3 text-left"
               style={{ background: isSel ? 'var(--sage-light)' : 'none' }}
             >
               <div
-                className="shrink-0 flex items-center justify-center text-12 font-bold rounded-full"
+                className="text-12 flex shrink-0 items-center justify-center rounded-full font-bold"
                 style={{
                   width: 36,
                   height: 36,
@@ -519,7 +528,7 @@ export function FamilyPickerSheet({
               >
                 {initials}
               </div>
-              <div className="flex-1 min-w-0">
+              <div className="min-w-0 flex-1">
                 <p
                   className="text-14 m-0"
                   style={{
@@ -540,9 +549,7 @@ export function FamilyPickerSheet({
           );
         })}
         {filtered.length === 0 && (
-          <p className="py-6 px-5 text-13 text-text-muted text-center italic">
-            No families found.
-          </p>
+          <p className="text-13 text-text-muted px-5 py-6 text-center italic">No families found.</p>
         )}
       </div>
     </SubPanel>
@@ -552,7 +559,7 @@ export function FamilyPickerSheet({
 function RadioDot({ selected }: { selected: boolean }) {
   return (
     <div
-      className="shrink-0 flex items-center justify-center rounded-full [transition:background_0.15s]"
+      className="flex shrink-0 items-center justify-center rounded-full [transition:background_0.15s]"
       style={{
         width: 20,
         height: 20,
@@ -598,31 +605,34 @@ export function InvitePersonPickerSheet({
 
   return (
     <BottomSheet onClose={onBack} zIndex={Z_SHEET}>
-      <div className="flex items-center pt-3.5 px-5 pb-3 shrink-0 border-b border-border-light">
+      <div className="border-border-light flex shrink-0 items-center border-b px-5 pt-3.5 pb-3">
         <button
           onClick={onBack}
-          className="bg-transparent border-none cursor-pointer text-14 text-text-secondary p-0 mr-auto"
+          className="text-14 text-text-secondary mr-auto cursor-pointer border-none bg-transparent p-0"
         >
           Cancel
         </button>
-        <span className="absolute left-1/2 -translate-x-1/2 text-15 font-semibold text-text-primary">
+        <span className="text-15 text-text-primary absolute left-1/2 -translate-x-1/2 font-semibold">
           Who are you inviting?
         </span>
       </div>
-      <div className="py-3 px-5 shrink-0 border-b border-border-light">
-        <div className="flex items-center gap-2 bg-bg border border-border rounded-sm" style={{ padding: '0.5625rem 0.75rem' }}>
+      <div className="border-border-light shrink-0 border-b px-5 py-3">
+        <div
+          className="bg-bg border-border flex items-center gap-2 rounded-sm border"
+          style={{ padding: '0.5625rem 0.75rem' }}
+        >
           <MagnifyingGlass size={14} color="var(--text-muted)" />
           <input
             ref={searchRef}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search people…"
-            className="flex-1 text-14 text-text-primary bg-transparent border-none outline-none"
+            className="text-14 text-text-primary flex-1 border-none bg-transparent outline-none"
           />
           {search && (
             <button
               onClick={() => setSearch('')}
-              className="bg-transparent border-none cursor-pointer text-text-muted text-18 leading-none p-0"
+              className="text-text-muted text-18 cursor-pointer border-none bg-transparent p-0 leading-none"
             >
               ×
             </button>
@@ -637,7 +647,7 @@ export function InvitePersonPickerSheet({
             <button
               key={p.id}
               onClick={() => onSelect(p)}
-              className="w-full flex items-center gap-3 py-3 px-5 bg-transparent border-none border-b border-border-light cursor-pointer text-left"
+              className="border-border-light flex w-full cursor-pointer items-center gap-3 border-b border-none bg-transparent px-5 py-3 text-left"
             >
               <AvatarBadge
                 name={fullName(p)}
@@ -646,17 +656,18 @@ export function InvitePersonPickerSheet({
                 bg={palette.bg}
                 color={palette.color}
               />
-              <div className="flex-1 min-w-0">
-                <p className="text-14 font-medium text-text-primary m-0 overflow-hidden text-ellipsis whitespace-nowrap">
+              <div className="min-w-0 flex-1">
+                <p className="text-14 text-text-primary m-0 overflow-hidden font-medium text-ellipsis whitespace-nowrap">
                   {fullName(p)}
                   {p.alternativeName && (
-                    <span className="text-text-muted font-normal ml-1.5">
-                      {p.alternativeName}
-                    </span>
+                    <span className="text-text-muted ml-1.5 font-normal">{p.alternativeName}</span>
                   )}
                 </p>
                 {hasAccess && (
-                  <p className="text-12 text-text-muted flex items-center gap-1" style={{ margin: '0.125rem 0 0' }}>
+                  <p
+                    className="text-12 text-text-muted flex items-center gap-1"
+                    style={{ margin: '0.125rem 0 0' }}
+                  >
                     <IdentificationCard size={12} />
                     Already has access
                   </p>
@@ -666,9 +677,7 @@ export function InvitePersonPickerSheet({
           );
         })}
         {filtered.length === 0 && (
-          <p className="text-14 text-text-muted text-center py-8 px-5">
-            No people found
-          </p>
+          <p className="text-14 text-text-muted px-5 py-8 text-center">No people found</p>
         )}
       </div>
     </BottomSheet>

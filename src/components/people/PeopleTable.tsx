@@ -46,14 +46,13 @@ interface Counts {
 function useRowNavigate() {
   const router = useRouter();
   return React.useCallback(
-    (href: string) =>
-      (e: React.MouseEvent<HTMLTableRowElement>) => {
-        if (e.defaultPrevented) return;
-        if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-        const target = e.target as HTMLElement;
-        if (target.closest('a, button, input, select, textarea, label')) return;
-        router.push(href);
-      },
+    (href: string) => (e: React.MouseEvent<HTMLTableRowElement>) => {
+      if (e.defaultPrevented) return;
+      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const target = e.target as HTMLElement;
+      if (target.closest('a, button, input, select, textarea, label')) return;
+      router.push(href);
+    },
     [router]
   );
 }
@@ -144,7 +143,7 @@ export default function PeopleTable({ entries }: PeopleTableProps) {
   }
 
   return (
-    <div className="bg-surface rounded border border-border-light overflow-hidden">
+    <div className="bg-surface border-border-light overflow-hidden rounded border">
       <table className="w-full border-collapse" style={{ tableLayout: 'auto' }}>
         <thead>
           <tr>
@@ -248,9 +247,7 @@ export default function PeopleTable({ entries }: PeopleTableProps) {
                 shepherdsById={shepherdsById}
                 counts={counts}
                 onRowClick={onRowClick}
-                onAssignShepherd={(shepherdIds) =>
-                  assignShepherds(entry.person.id, shepherdIds)
-                }
+                onAssignShepherd={(shepherdIds) => assignShepherds(entry.person.id, shepherdIds)}
               />
             );
           })}
@@ -276,7 +273,7 @@ function SortableHeader({
       <button
         type="button"
         onClick={onSort}
-        className="inline-flex items-center gap-1 bg-transparent border-none p-0 font-[inherit] tracking-[inherit] uppercase cursor-pointer"
+        className="inline-flex cursor-pointer items-center gap-1 border-none bg-transparent p-0 font-[inherit] tracking-[inherit] uppercase"
         style={{
           letterSpacing: 'inherit',
           textTransform: 'inherit',
@@ -324,7 +321,7 @@ function FamilyTableRow({
       <td className={cellClass} style={cellPadding}>
         <Link
           href={`/family/${family.id}`}
-          className="flex items-center gap-2.5 text-text-primary no-underline"
+          className="text-text-primary flex items-center gap-2.5 no-underline"
         >
           <AvatarBadge
             name={family.label}
@@ -344,7 +341,11 @@ function FamilyTableRow({
         <span className="text-12 text-text-muted">{aggregateMembership(members)}</span>
       </td>
       <td className={cellClass} style={cellPadding}>
-        <ShepherdQuickAssign currentIds={shepherdIds} targetName={family.label} onAssign={onAssignShepherd}>
+        <ShepherdQuickAssign
+          currentIds={shepherdIds}
+          targetName={family.label}
+          onAssign={onAssignShepherd}
+        >
           {shepherdIds.length === 0 ? (
             <StatusBadge
               label="No shepherd"
@@ -417,25 +418,19 @@ function IndividualTableRow({
       <td className={cellClass} style={cellPadding}>
         <Link
           href={`/person/${person.id}`}
-          className="flex items-center gap-2.5 text-text-primary no-underline"
+          className="text-text-primary flex items-center gap-2.5 no-underline"
         >
           <AvatarBadge name={fullName(person)} photo={person.photo} size={32} />
           <div className="min-w-0">
-            <div className="font-semibold flex items-center gap-1 whitespace-nowrap">
+            <div className="flex items-center gap-1 font-semibold whitespace-nowrap">
               {person.isShepherd && (
-                <span
-                  title="Shepherd"
-                  aria-label="Shepherd"
-                  className="inline-flex items-center"
-                >
+                <span title="Shepherd" aria-label="Shepherd" className="inline-flex items-center">
                   <HandHeart size={12} color="var(--sage)" />
                 </span>
               )}
               {fullName(person)}
             </div>
-            {subtitle && (
-              <div className="text-11 text-text-muted">{subtitle}</div>
-            )}
+            {subtitle && <div className="text-11 text-text-muted">{subtitle}</div>}
           </div>
         </Link>
       </td>
@@ -493,9 +488,7 @@ function IndividualTableRow({
 
 function CountCell({ value }: { value: number }) {
   return (
-    <span
-      className={`text-13 ${value === 0 ? 'text-text-muted' : 'text-text-primary'}`}
-    >
+    <span className={`text-13 ${value === 0 ? 'text-text-muted' : 'text-text-primary'}`}>
       {value}
     </span>
   );
@@ -540,10 +533,7 @@ function GroupCells({ groups }: { groups: Group[] }) {
   const hidden = groups.length - visible.length;
 
   return (
-    <div
-      ref={containerRef}
-      className="flex flex-wrap items-center gap-1"
-    >
+    <div ref={containerRef} className="flex flex-wrap items-center gap-1">
       {visible.map((g) => (
         <span key={g.id} className={groupChipClass} style={groupChipPadding}>
           {g.name}

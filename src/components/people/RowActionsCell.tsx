@@ -29,10 +29,12 @@ type ConfirmAction = 'archive' | 'delete' | null;
 const cellClassName = 'border-b border-border-light align-middle text-right w-10';
 const cellStyle: React.CSSProperties = { padding: '0.625rem 0.5rem' };
 
-const triggerClassName = 'inline-flex items-center justify-center bg-transparent border-0 text-text-muted cursor-pointer p-0 rounded-sm';
+const triggerClassName =
+  'inline-flex items-center justify-center bg-transparent border-0 text-text-muted cursor-pointer p-0 rounded-sm';
 const triggerStyle: React.CSSProperties = { width: '1.75rem', height: '1.75rem' };
 
-const menuItemClassName = 'w-full flex items-center gap-2.5 bg-transparent border-0 text-13 text-text-primary cursor-pointer text-left';
+const menuItemClassName =
+  'w-full flex items-center gap-2.5 bg-transparent border-0 text-13 text-text-primary cursor-pointer text-left';
 const menuItemStyle: React.CSSProperties = { padding: '0.5rem 0.75rem' };
 
 export default function RowActionsCell({ target }: { target: Target }) {
@@ -41,11 +43,9 @@ export default function RowActionsCell({ target }: { target: Target }) {
   const [active, setActive] = React.useState<ActiveModal>(null);
   const [confirmAction, setConfirmAction] = React.useState<ConfirmAction>(null);
 
-  const canEdit =
-    currentPersona.role === 'admin' || currentPersona.role === 'shepherd';
+  const canEdit = currentPersona.role === 'admin' || currentPersona.role === 'shepherd';
   const isPerson = target.kind === 'person';
-  const isArchived =
-    isPerson && target.person.churchAttendance === 'archived';
+  const isArchived = isPerson && target.person.churchAttendance === 'archived';
   const personFirstName = isPerson ? target.person.preferredName : '';
 
   const handleArchive = () => {
@@ -123,7 +123,7 @@ export default function RowActionsCell({ target }: { target: Target }) {
         <div
           ref={refs.setFloating}
           role="menu"
-          className="bg-surface rounded-md border border-border-light py-1 shadow-elevated z-dropdown min-w-[11rem]"
+          className="bg-surface border-border-light shadow-elevated z-dropdown min-w-[11rem] rounded-md border py-1"
           style={{ ...floatingStyles }}
           onClick={stop}
         >
@@ -169,7 +169,7 @@ export default function RowActionsCell({ target }: { target: Target }) {
           </button>
           {isPerson && canEdit && (
             <>
-              <div className="h-px bg-border-light my-1" />
+              <div className="bg-border-light my-1 h-px" />
               <button
                 type="button"
                 role="menuitem"

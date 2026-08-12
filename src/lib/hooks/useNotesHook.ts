@@ -20,19 +20,28 @@ export interface NotesHookResult {
   addNote: (note: Omit<Note, 'id' | 'createdBy'> & { createdAt?: string }) => Promise<void>;
   updateNote: (
     noteId: string,
-    updates: Partial<Pick<Note, 'type' | 'content' | 'familyId' | 'personId' | 'visibility' | 'createdAt'>>
+    updates: Partial<
+      Pick<Note, 'type' | 'content' | 'familyId' | 'personId' | 'visibility' | 'createdAt'>
+    >
   ) => Promise<void>;
   deleteNote: (noteId: string) => Promise<void>;
   addNotice: (notice: Omit<Notice, 'id' | 'createdBy' | 'createdAt'>) => Promise<void>;
   updateNotice: (
     noticeId: string,
-    updates: Partial<Pick<Notice, 'categories' | 'urgency' | 'privacy' | 'content' | 'personId' | 'familyId'>>
+    updates: Partial<
+      Pick<Notice, 'categories' | 'urgency' | 'privacy' | 'content' | 'personId' | 'familyId'>
+    >
   ) => Promise<void>;
   deleteNotice: (noticeId: string) => Promise<void>;
   canViewNote: (note: Note) => boolean;
 }
 
-export function useNotesHook({ setData, currentPersona, currentUserEmail, showToast }: NotesHookDeps): NotesHookResult {
+export function useNotesHook({
+  setData,
+  currentPersona,
+  currentUserEmail,
+  showToast,
+}: NotesHookDeps): NotesHookResult {
   const addNote = React.useCallback(
     async (noteData: Omit<Note, 'id' | 'createdBy'> & { createdAt?: string }): Promise<void> => {
       const note: Note = {
@@ -88,7 +97,10 @@ export function useNotesHook({ setData, currentPersona, currentUserEmail, showTo
           .update({ last_contact_date: formatISO(new Date()) })
           .eq('id', note.personId);
         if (contactDateError) {
-          console.error('people last_contact_date update failed:', JSON.stringify(contactDateError, null, 2));
+          console.error(
+            'people last_contact_date update failed:',
+            JSON.stringify(contactDateError, null, 2)
+          );
         }
       }
     },
@@ -98,12 +110,17 @@ export function useNotesHook({ setData, currentPersona, currentUserEmail, showTo
   const updateNote = React.useCallback(
     async (
       noteId: string,
-      updates: Partial<Pick<Note, 'type' | 'content' | 'familyId' | 'personId' | 'visibility' | 'createdAt'>>
+      updates: Partial<
+        Pick<Note, 'type' | 'content' | 'familyId' | 'personId' | 'visibility' | 'createdAt'>
+      >
     ): Promise<void> => {
       let snapshot: AppData | undefined;
       setData((prev) => {
         snapshot = prev;
-        return { ...prev, notes: prev.notes.map((n) => (n.id === noteId ? { ...n, ...updates } : n)) };
+        return {
+          ...prev,
+          notes: prev.notes.map((n) => (n.id === noteId ? { ...n, ...updates } : n)),
+        };
       });
       const supabase = createClient();
       const dbUpdates: Partial<NoteRow> = {};
@@ -194,13 +211,22 @@ export function useNotesHook({ setData, currentPersona, currentUserEmail, showTo
         }),
       });
     },
-    [currentPersona.id, currentPersona.name, currentPersona.userId, currentUserEmail, setData, showToast]
+    [
+      currentPersona.id,
+      currentPersona.name,
+      currentPersona.userId,
+      currentUserEmail,
+      setData,
+      showToast,
+    ]
   );
 
   const updateNotice = React.useCallback(
     async (
       noticeId: string,
-      updates: Partial<Pick<Notice, 'categories' | 'urgency' | 'privacy' | 'content' | 'personId' | 'familyId'>>
+      updates: Partial<
+        Pick<Notice, 'categories' | 'urgency' | 'privacy' | 'content' | 'personId' | 'familyId'>
+      >
     ): Promise<void> => {
       let snapshot: AppData | undefined;
       setData((prev) => {

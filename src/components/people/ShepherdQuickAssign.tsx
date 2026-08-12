@@ -26,7 +26,7 @@ export default function ShepherdQuickAssign({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="w-full bg-transparent border-none p-0 cursor-pointer text-left"
+        className="w-full cursor-pointer border-none bg-transparent p-0 text-left"
       >
         {children}
       </button>

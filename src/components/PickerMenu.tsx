@@ -32,7 +32,9 @@ export default function PickerMenu({
 }: PickerMenuProps) {
   const [search, setSearch] = useState('');
   const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const { refs, floatingStyles } = useFloating({
     placement: 'bottom-start',
@@ -90,7 +92,7 @@ export default function PickerMenu({
   return createPortal(
     <div
       ref={refs.setFloating}
-      className="bg-surface rounded-md border border-border-light overflow-y-auto shadow-elevated z-nested"
+      className="bg-surface border-border-light shadow-elevated z-nested overflow-y-auto rounded-md border"
       style={{
         ...(anchorRef?.current ? floatingStyles : fallbackStyle),
         maxHeight: 300,
@@ -98,7 +100,7 @@ export default function PickerMenu({
     >
       {showSearch && (
         <div
-          className="sticky top-0 border-b border-border-light bg-surface"
+          className="border-border-light bg-surface sticky top-0 border-b"
           style={{ padding: '0.625rem 0.875rem' }}
         >
           <input
@@ -106,7 +108,7 @@ export default function PickerMenu({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search…"
-            className="w-full text-14 text-text-primary outline-none"
+            className="text-14 text-text-primary w-full outline-none"
             style={{ border: 'none', background: 'transparent' }}
           />
         </div>
@@ -122,7 +124,7 @@ export default function PickerMenu({
               onSelect(opt.value);
               if (!multiSelect) onClose();
             }}
-            className="w-full flex items-center gap-2.5 text-14 cursor-pointer text-left"
+            className="text-14 flex w-full cursor-pointer items-center gap-2.5 text-left"
             style={{
               padding: '0.625rem 0.875rem',
               background: isSelected ? 'var(--sage-light)' : 'none',
@@ -132,7 +134,7 @@ export default function PickerMenu({
           >
             {opt.icon && (
               <span
-                className="inline-flex items-center shrink-0"
+                className="inline-flex shrink-0 items-center"
                 style={{ color: isSelected ? 'var(--sage)' : 'var(--text-muted)' }}
               >
                 {opt.icon}
@@ -149,14 +151,14 @@ export default function PickerMenu({
                 {opt.label}
               </span>
               {opt.description && (
-                <span className="block text-12 text-text-muted" style={{ marginTop: 1 }}>
+                <span className="text-12 text-text-muted block" style={{ marginTop: 1 }}>
                   {opt.description}
                 </span>
               )}
             </span>
             {multiSelect ? (
               <span
-                className="inline-flex items-center justify-center shrink-0"
+                className="inline-flex shrink-0 items-center justify-center"
                 style={{
                   width: 16,
                   height: 16,
@@ -174,6 +176,6 @@ export default function PickerMenu({
         );
       })}
     </div>,
-    document.body,
+    document.body
   );
 }

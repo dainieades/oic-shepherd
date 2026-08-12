@@ -269,10 +269,8 @@ export function usePeopleRows(deferredSearch: string): PeopleEntry[] {
     const logCountByPerson = new Map<string, number>();
     const logCountByFamily = new Map<string, number>();
     for (const n of data.notes) {
-      if (n.personId)
-        logCountByPerson.set(n.personId, (logCountByPerson.get(n.personId) ?? 0) + 1);
-      if (n.familyId)
-        logCountByFamily.set(n.familyId, (logCountByFamily.get(n.familyId) ?? 0) + 1);
+      if (n.personId) logCountByPerson.set(n.personId, (logCountByPerson.get(n.personId) ?? 0) + 1);
+      if (n.familyId) logCountByFamily.set(n.familyId, (logCountByFamily.get(n.familyId) ?? 0) + 1);
     }
 
     const todoCount = (e: PeopleEntry): number => {
@@ -320,8 +318,7 @@ export function usePeopleRows(deferredSearch: string): PeopleEntry[] {
       if (e.type === 'family') return 0;
       return membershipRank[e.person.membershipStatus] ?? 99;
     };
-    const groupSortValue = (e: PeopleEntry): string =>
-      e.group ? e.group.name.toLowerCase() : '￿';
+    const groupSortValue = (e: PeopleEntry): string => (e.group ? e.group.name.toLowerCase() : '￿');
 
     entries.sort((a, b) => {
       const aMembers = a.type === 'family' ? a.members : [a.person];

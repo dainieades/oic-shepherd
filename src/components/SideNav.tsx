@@ -22,17 +22,13 @@ export default function SideNav() {
   const items = NAV_ITEMS.filter((item) => isNavItemVisible(item, currentPersona));
 
   return (
-    <aside
-      className="hidden lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col bg-surface border-r border-border-light"
-    >
+    <aside className="bg-surface border-border-light hidden border-r lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col">
       <Link
         href="/"
-        className="flex items-center gap-3 px-5 py-5 no-underline text-[var(--logo-color)]"
+        className="flex items-center gap-3 px-5 py-5 text-[var(--logo-color)] no-underline"
       >
         <Logo height={32} />
-        <span className="font-display text-17 font-semibold tracking-tight-1">
-          Shepherd
-        </span>
+        <span className="font-display text-17 tracking-tight-1 font-semibold">Shepherd</span>
       </Link>
 
       <nav className="flex flex-1 flex-col gap-0.5 px-3 py-2">
@@ -43,21 +39,19 @@ export default function SideNav() {
             <Link
               key={item.href}
               href={item.href}
-              className={`side-nav-item relative flex items-center gap-3 py-2.5 pr-3 no-underline rounded-md text-15 pl-[calc(0.75rem+3px)] ${active ? 'bg-sage-light text-sage-dark font-semibold' : 'bg-transparent text-text-secondary font-medium'}`}
+              className={`side-nav-item text-15 relative flex items-center gap-3 rounded-md py-2.5 pr-3 pl-[calc(0.75rem+3px)] no-underline ${active ? 'bg-sage-light text-sage-dark font-semibold' : 'text-text-secondary bg-transparent font-medium'}`}
               aria-current={active ? 'page' : undefined}
             >
               {active && (
                 <span
                   aria-hidden
-                  className="absolute left-0 top-1.5 bottom-1.5 w-[0.1875rem] rounded-pill bg-sage-dark"
+                  className="rounded-pill bg-sage-dark absolute top-1.5 bottom-1.5 left-0 w-[0.1875rem]"
                 />
               )}
               <Icon size={20} weight={active ? 'fill' : 'regular'} />
               <span>{item.label}</span>
               {item.href === '/visitors/pending' && pendingVisitorCount > 0 && (
-                <span
-                  className="ml-auto text-11 font-bold rounded-pill bg-sage text-on-sage leading-comfortable py-px px-[0.4375rem]"
-                >
+                <span className="text-11 rounded-pill bg-sage text-on-sage leading-comfortable ml-auto px-[0.4375rem] py-px font-bold">
                   {pendingVisitorCount}
                 </span>
               )}
@@ -68,14 +62,12 @@ export default function SideNav() {
 
       <Link
         href="/settings"
-        className="flex items-center gap-3 px-3 py-3 border-t border-border-light no-underline text-text-primary"
+        className="border-border-light text-text-primary flex items-center gap-3 border-t px-3 py-3 no-underline"
       >
         <AvatarBadge size={32} name={currentPersona.name} photo={personaPerson?.photo} />
         <div className="flex min-w-0 flex-col">
-          <span className="text-13 font-semibold leading-snug">
-            {currentPersona.name}
-          </span>
-          <span className="text-11 text-text-muted leading-snug overflow-hidden text-ellipsis whitespace-nowrap">
+          <span className="text-13 leading-snug font-semibold">{currentPersona.name}</span>
+          <span className="text-11 text-text-muted overflow-hidden leading-snug text-ellipsis whitespace-nowrap">
             {currentPersona.role}
           </span>
         </div>

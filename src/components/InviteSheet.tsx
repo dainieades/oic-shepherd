@@ -1,13 +1,7 @@
 'use client';
 
 import React from 'react';
-import {
-  PaperPlaneTilt,
-  CheckCircle,
-  HandHeart,
-  ShieldStar,
-  Check,
-} from '@phosphor-icons/react';
+import { PaperPlaneTilt, CheckCircle, HandHeart, ShieldStar, Check } from '@phosphor-icons/react';
 import { useApp } from '@/lib/context';
 import { X } from '@phosphor-icons/react';
 import { SHEET_MAX_WIDTH } from '@/lib/constants';
@@ -115,32 +109,33 @@ export default function InviteSheet({
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center px-5 z-sheet bg-backdrop"
+      className="z-sheet bg-backdrop fixed inset-0 flex items-center justify-center px-5"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div
-        className="animate-fade-in bg-surface rounded-lg w-full"
+        className="animate-fade-in bg-surface w-full rounded-lg"
         style={{ maxWidth: SHEET_MAX_WIDTH }}
       >
-        <div className="flex items-center justify-between border-b border-border-light"
+        <div
+          className="border-border-light flex items-center justify-between border-b"
           style={{ padding: '0.875rem 1rem 0.75rem' }}
         >
-          <div className="flex-1 min-w-0">
+          <div className="min-w-0 flex-1">
             <p
-              className="text-12 font-semibold text-text-muted uppercase tracking-wide-6 m-0"
+              className="text-12 text-text-muted tracking-wide-6 m-0 font-semibold uppercase"
               style={{ textAlign: personName ? 'left' : 'center' }}
             >
               Invite to App
             </p>
             {personName && (
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <p className="text-15 font-semibold text-text-primary m-0">{personName}</p>
+              <div className="mt-0.5 flex items-center gap-1.5">
+                <p className="text-15 text-text-primary m-0 font-semibold">{personName}</p>
                 {onChangePerson && (
                   <button
                     onClick={onChangePerson}
-                    className="bg-transparent border-none cursor-pointer p-0 text-13 text-sage font-medium"
+                    className="text-13 text-sage cursor-pointer border-none bg-transparent p-0 font-medium"
                   >
                     Change
                   </button>
@@ -151,7 +146,7 @@ export default function InviteSheet({
           <button
             onClick={onClose}
             aria-label="Close"
-            className="bg-transparent border-none cursor-pointer p-1 text-text-muted flex items-center ml-2 shrink-0"
+            className="text-text-muted ml-2 flex shrink-0 cursor-pointer items-center border-none bg-transparent p-1"
           >
             <X size={18} />
           </button>
@@ -166,19 +161,16 @@ export default function InviteSheet({
               weight="fill"
               style={{ display: 'block', margin: '0 auto 1rem' }}
             />
-            <p className="text-17 font-bold text-text-primary" style={{ marginBottom: 6 }}>
+            <p className="text-17 text-text-primary font-bold" style={{ marginBottom: 6 }}>
               Invite sent!
             </p>
-            <p
-              className="text-14 text-text-secondary leading-open"
-              style={{ marginBottom: 24 }}
-            >
+            <p className="text-14 text-text-secondary leading-open" style={{ marginBottom: 24 }}>
               <strong>{email.trim()}</strong> has been approved. They'll receive an email with a
               link to sign in — no password needed.
             </p>
             <button
               onClick={onClose}
-              className="w-full rounded-md border-none bg-sage text-on-sage text-15 font-semibold cursor-pointer"
+              className="bg-sage text-on-sage text-15 w-full cursor-pointer rounded-md border-none font-semibold"
               style={{ padding: '0.8125rem 1.25rem' }}
             >
               Done
@@ -186,13 +178,10 @@ export default function InviteSheet({
           </div>
         ) : (
           /* ── Form ── */
-          <div
-            className="flex flex-col"
-            style={{ padding: '1rem 1rem 0.5rem', gap: 14 }}
-          >
+          <div className="flex flex-col" style={{ padding: '1rem 1rem 0.5rem', gap: 14 }}>
             {/* Email */}
             <div>
-              <label className="block text-12 font-semibold text-text-muted uppercase tracking-wide-6 mb-1.5">
+              <label className="text-12 text-text-muted tracking-wide-6 mb-1.5 block font-semibold uppercase">
                 Email address
               </label>
               <input
@@ -205,61 +194,65 @@ export default function InviteSheet({
                 }}
                 onKeyDown={(e) => e.key === 'Enter' && handleInvite()}
                 autoFocus={!initialEmail}
-                className="w-full rounded-sm text-15 text-text-primary bg-bg outline-none box-border"
+                className="text-15 text-text-primary bg-bg box-border w-full rounded-sm outline-none"
                 style={{
                   padding: '0.6875rem 0.875rem',
                   border: `0.09375rem solid ${errorMsg ? 'var(--red)' : 'var(--border)'}`,
                 }}
               />
               {errorMsg && (
-                <p role="alert" className="text-12 text-red mt-1">{errorMsg}</p>
+                <p role="alert" className="text-12 text-red mt-1">
+                  {errorMsg}
+                </p>
               )}
             </div>
 
-            {availableRoles.length > 1 && <div>
-              <label className="block text-12 font-semibold text-text-muted uppercase tracking-wide-6 mb-1.5">
-                Role
-              </label>
-              <div className="flex flex-col gap-2">
-                {availableRoles.map((r) => (
-                  <button
-                    key={r.value}
-                    onClick={() => setRole(r.value)}
-                    className="flex items-center gap-3 rounded-sm text-left cursor-pointer"
-                    style={{
-                      padding: '0.75rem 0.875rem',
-                      border: `0.09375rem solid ${role === r.value ? 'var(--sage)' : 'var(--border-light)'}`,
-                      background: role === r.value ? 'var(--sage-light)' : 'var(--bg)',
-                    }}
-                  >
-                    <span className="shrink-0">{r.icon}</span>
-                    <div>
-                      <p className="text-14 font-semibold text-text-primary m-0">{r.label}</p>
-                      <p
-                        className="text-12 text-text-muted m-0"
-                        style={{ marginTop: '0.0625rem' }}
-                      >
-                        {r.description}
-                      </p>
-                    </div>
-                    {role === r.value && (
-                      <div
-                        className="ml-auto rounded-full bg-sage flex items-center justify-center shrink-0"
-                        style={{ width: 18, height: 18 }}
-                      >
-                        <Check size={10} color="white" weight="bold" />
+            {availableRoles.length > 1 && (
+              <div>
+                <label className="text-12 text-text-muted tracking-wide-6 mb-1.5 block font-semibold uppercase">
+                  Role
+                </label>
+                <div className="flex flex-col gap-2">
+                  {availableRoles.map((r) => (
+                    <button
+                      key={r.value}
+                      onClick={() => setRole(r.value)}
+                      className="flex cursor-pointer items-center gap-3 rounded-sm text-left"
+                      style={{
+                        padding: '0.75rem 0.875rem',
+                        border: `0.09375rem solid ${role === r.value ? 'var(--sage)' : 'var(--border-light)'}`,
+                        background: role === r.value ? 'var(--sage-light)' : 'var(--bg)',
+                      }}
+                    >
+                      <span className="shrink-0">{r.icon}</span>
+                      <div>
+                        <p className="text-14 text-text-primary m-0 font-semibold">{r.label}</p>
+                        <p
+                          className="text-12 text-text-muted m-0"
+                          style={{ marginTop: '0.0625rem' }}
+                        >
+                          {r.description}
+                        </p>
                       </div>
-                    )}
-                  </button>
-                ))}
+                      {role === r.value && (
+                        <div
+                          className="bg-sage ml-auto flex shrink-0 items-center justify-center rounded-full"
+                          style={{ width: 18, height: 18 }}
+                        >
+                          <Check size={10} color="white" weight="bold" />
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>}
+            )}
 
             {/* Submit */}
             <button
               onClick={handleInvite}
               disabled={status === 'loading'}
-              className="w-full rounded-md border-none bg-sage text-on-sage text-15 font-semibold flex items-center justify-center gap-2 mt-1 mb-2"
+              className="bg-sage text-on-sage text-15 mt-1 mb-2 flex w-full items-center justify-center gap-2 rounded-md border-none font-semibold"
               style={{
                 padding: '0.8125rem 1.25rem',
                 cursor: status === 'loading' ? 'not-allowed' : 'pointer',

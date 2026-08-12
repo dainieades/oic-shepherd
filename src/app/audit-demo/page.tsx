@@ -154,7 +154,7 @@ export default function AuditDemoPage() {
   }, [setFullPageModalOpen]);
 
   return (
-    <div className="min-h-[100dvh] bg-bg pb-20">
+    <div className="bg-bg min-h-[100dvh] pb-20">
       <div style={{ maxWidth: SHEET_MAX_WIDTH, margin: '0 auto' }} className="px-4">
         <div className={navBarStyle}>
           <button onClick={() => router.back()} className={backBtnStyle}>
@@ -165,11 +165,11 @@ export default function AuditDemoPage() {
           <span className="w-16" />
         </div>
 
-        <div className="pt-5 flex flex-col gap-8">
+        <div className="flex flex-col gap-8 pt-5">
           {groups.map((group) => (
             <div key={group.date}>
               <p className={dateLabelStyle}>{group.date}</p>
-              <div className="bg-surface rounded border border-border-light overflow-hidden">
+              <div className="bg-surface border-border-light overflow-hidden rounded border">
                 {group.items.map((log, i) => (
                   <AuditEntry key={log.id} log={log} isLast={i === group.items.length - 1} />
                 ))}
@@ -185,25 +185,19 @@ export default function AuditDemoPage() {
 function AuditEntry({ log, isLast }: { log: AuditLog; isLast: boolean }) {
   const isEmpty = (v: string | null) => v === null || v === '';
   return (
-    <div
-      className={`py-3 px-4${isLast ? '' : ' border-b border-border-light'}`}
-    >
-      <div className="flex justify-between items-start gap-2 mb-1.5">
-        <span className="text-13 font-semibold text-text-primary">
-          {fieldLabel(log.fieldName)}
-        </span>
+    <div className={`py-3 px-4${isLast ? '' : 'border-border-light border-b'}`}>
+      <div className="mb-1.5 flex items-start justify-between gap-2">
+        <span className="text-13 text-text-primary font-semibold">{fieldLabel(log.fieldName)}</span>
         <span className="text-12 text-text-muted whitespace-nowrap">
           {fmtTimestamp(log.createdAt)}
         </span>
       </div>
-      <div className="flex items-center gap-2 flex-wrap">
+      <div className="flex flex-wrap items-center gap-2">
         <ValueChip value={log.oldValue} empty={isEmpty(log.oldValue)} />
         <span className="text-12 text-text-muted">→</span>
         <ValueChip value={log.newValue} empty={isEmpty(log.newValue)} />
       </div>
-      <p className="text-12 text-text-muted mt-1.5">
-        by {log.changedByName}
-      </p>
+      <p className="text-12 text-text-muted mt-1.5">by {log.changedByName}</p>
     </div>
   );
 }
@@ -225,7 +219,9 @@ function ValueChip({ value, empty }: { value: string | null; empty: boolean }) {
   );
 }
 
-const navBarStyle = 'sticky top-0 z-50 bg-bg -mx-4 px-4 border-b border-border-light flex items-center justify-between h-[3.375rem]';
-const backBtnStyle = 'inline-flex items-center gap-1 text-13 text-sage bg-transparent border-none cursor-pointer p-0';
+const navBarStyle =
+  'sticky top-0 z-50 bg-bg -mx-4 px-4 border-b border-border-light flex items-center justify-between h-[3.375rem]';
+const backBtnStyle =
+  'inline-flex items-center gap-1 text-13 text-sage bg-transparent border-none cursor-pointer p-0';
 const navTitleStyle = 'text-15 font-semibold text-text-primary';
 const dateLabelStyle = 'text-11 font-semibold text-text-muted uppercase tracking-wide-6 mb-2';

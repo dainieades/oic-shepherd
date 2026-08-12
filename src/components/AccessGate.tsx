@@ -22,29 +22,25 @@ export default function AccessGate() {
   }
 
   return (
-    <div
-      className="fixed inset-0 bg-bg flex items-center justify-center py-6 px-4 z-toast"
-    >
+    <div className="bg-bg z-toast fixed inset-0 flex items-center justify-center px-4 py-6">
       <div
-        className="w-full bg-surface rounded-xl border border-border text-center shadow-elevated"
+        className="bg-surface border-border shadow-elevated w-full rounded-xl border text-center"
         style={{ maxWidth: '22.5rem', padding: '2.5rem 1.75rem 2rem' }}
       >
-        <div className="w-16 h-16 rounded-full bg-border-light flex items-center justify-center mx-auto mb-5">
+        <div className="bg-border-light mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full">
           <Lock size={28} color="var(--text-muted)" weight="bold" />
         </div>
-        <h2
-          className="font-display text-22 font-bold text-text-primary mb-2.5"
-        >
+        <h2 className="font-display text-22 text-text-primary mb-2.5 font-bold">
           {accessDenied ? 'Access Restricted' : 'Sign-In Failed'}
         </h2>
-        <p className="text-15 text-text-secondary leading-loose mb-7">
+        <p className="text-15 text-text-secondary mb-7 leading-loose">
           {accessDenied
             ? 'This app is for OIC church members only. Contact your pastor to request access.'
-            : "Something went wrong while signing you in. Please try again — if it keeps happening, contact your pastor."}
+            : 'Something went wrong while signing you in. Please try again — if it keeps happening, contact your pastor.'}
         </p>
         <button
           onClick={handleBack}
-          className="w-full rounded-md border-none bg-sage text-on-sage text-15 font-semibold cursor-pointer"
+          className="bg-sage text-on-sage text-15 w-full cursor-pointer rounded-md border-none font-semibold"
           style={{ padding: '0.8125rem 1.25rem' }}
         >
           Back to Sign In

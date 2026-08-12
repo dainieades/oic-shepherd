@@ -107,25 +107,21 @@ export default function PhotoAvatar({
     <>
       <button
         onClick={() => (photo ? setShowPreview(true) : fileInputRef.current?.click())}
-        className="relative w-18 h-18 rounded-full p-0 border-none bg-transparent cursor-pointer shrink-0"
+        className="relative h-18 w-18 shrink-0 cursor-pointer rounded-full border-none bg-transparent p-0"
       >
         {photo ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={photo}
-            alt={name}
-            className="w-18 h-18 rounded-full object-cover block"
-          />
+          <img src={photo} alt={name} className="block h-18 w-18 rounded-full object-cover" />
         ) : (
           <div
-            className="w-18 h-18 rounded-full bg-sage-light flex items-center justify-center text-22 font-bold text-sage"
+            className="bg-sage-light text-22 text-sage flex h-18 w-18 items-center justify-center rounded-full font-bold"
             style={{ border: '0.125rem dashed var(--sage)' }}
           >
             {placeholder ?? initials}
           </div>
         )}
         <div
-          className="absolute bottom-0 right-0 w-[1.375rem] h-[1.375rem] rounded-full bg-sage flex items-center justify-center"
+          className="bg-sage absolute right-0 bottom-0 flex h-[1.375rem] w-[1.375rem] items-center justify-center rounded-full"
           style={{ border: '0.125rem solid var(--bg)' }}
         >
           <Camera size={11} color="var(--on-sage)" weight="fill" />
@@ -158,7 +154,7 @@ export default function PhotoAvatar({
           >
             <button
               onClick={() => !uploading && setShowPreview(false)}
-              className="absolute top-5 right-5 border-none rounded-full w-9 h-9 flex items-center justify-center"
+              className="absolute top-5 right-5 flex h-9 w-9 items-center justify-center rounded-full border-none"
               style={{
                 background: 'rgba(255,255,255,0.15)',
                 cursor: uploading ? 'default' : 'pointer',
@@ -180,16 +176,13 @@ export default function PhotoAvatar({
                 <img
                   src={photo}
                   alt={name}
-                  className="max-w-[90vw] max-h-[65vh] rounded-md object-contain"
+                  className="max-h-[65vh] max-w-[90vw] rounded-md object-contain"
                   onClick={(e) => e.stopPropagation()}
                 />
-                <div
-                  className="flex gap-3 mt-6"
-                  onClick={(e) => e.stopPropagation()}
-                >
+                <div className="mt-6 flex gap-3" onClick={(e) => e.stopPropagation()}>
                   <button
                     onClick={handleEditPhoto}
-                    className="flex items-center gap-2 border-none rounded-[2rem] py-[0.625rem] px-5 cursor-pointer text-15 font-medium"
+                    className="text-15 flex cursor-pointer items-center gap-2 rounded-[2rem] border-none px-5 py-[0.625rem] font-medium"
                     style={{
                       background: 'rgba(255,255,255,0.15)',
                       color: '#fff',
@@ -200,7 +193,7 @@ export default function PhotoAvatar({
                   </button>
                   <button
                     onClick={handleRemove}
-                    className="flex items-center gap-2 border-none rounded-[2rem] py-[0.625rem] px-5 cursor-pointer text-15 font-medium"
+                    className="text-15 flex cursor-pointer items-center gap-2 rounded-[2rem] border-none px-5 py-[0.625rem] font-medium"
                     style={{
                       background: 'rgba(220,53,69,0.25)',
                       color: '#ff6b6b',

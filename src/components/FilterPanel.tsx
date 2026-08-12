@@ -89,8 +89,16 @@ export default function FilterPanel({
       label: 'Status',
       count: draft.memberships.length + draft.attendances.length,
     },
-    { key: 'archive' as FilterCategory, label: 'Archive', count: draft.archiveFilter !== 'include' ? 1 : 0 },
-    { key: 'discipleship' as FilterCategory, label: 'Discipleship', count: draft.discipleship.length },
+    {
+      key: 'archive' as FilterCategory,
+      label: 'Archive',
+      count: draft.archiveFilter !== 'include' ? 1 : 0,
+    },
+    {
+      key: 'discipleship' as FilterCategory,
+      label: 'Discipleship',
+      count: draft.discipleship.length,
+    },
     { key: 'group' as FilterCategory, label: 'Group', count: draft.groups.length },
     { key: 'position' as FilterCategory, label: 'Church Position', count: draft.positions.length },
     { key: 'language' as FilterCategory, label: 'Language', count: draft.languages.length },
@@ -118,7 +126,7 @@ export default function FilterPanel({
     >
       {activeCategory === 'sort' && (
         <>
-          <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 mb-3">
+          <p className="text-10 text-text-muted tracking-wide-6 mb-3 font-semibold uppercase">
             Sort by
           </p>
           {SORT_OPTIONS.map((opt) => (
@@ -135,21 +143,21 @@ export default function FilterPanel({
 
       {activeCategory === 'shepherd' && (
         <>
-          <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 mb-2.5">
+          <p className="text-10 text-text-muted tracking-wide-6 mb-2.5 font-semibold uppercase">
             Shepherd by
           </p>
           <div className="relative mb-2.5">
             <MagnifyingGlass
               size={13}
               color="var(--text-muted)"
-              className="absolute left-[9px] top-1/2 -translate-y-1/2 pointer-events-none"
+              className="pointer-events-none absolute top-1/2 left-[9px] -translate-y-1/2"
             />
             <input
               type="text"
               value={shepherdSearch}
               onChange={(e) => setShepherdSearch(e.target.value)}
               placeholder="Search…"
-              className="w-full pl-7 pr-2.5 py-[7px] bg-bg border border-[var(--border)] rounded-xs text-13 text-text-primary outline-none box-border"
+              className="bg-bg text-13 text-text-primary box-border w-full rounded-xs border border-[var(--border)] py-[7px] pr-2.5 pl-7 outline-none"
             />
           </div>
           {(currentPersona.role === 'admin' || currentPersona.role === 'shepherd') &&
@@ -216,7 +224,7 @@ export default function FilterPanel({
 
       {activeCategory === 'membership' && (
         <>
-          <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 mb-3">
+          <p className="text-10 text-text-muted tracking-wide-6 mb-3 font-semibold uppercase">
             Membership
           </p>
           {(['member', 'non-member', 'membership-track'] as MembershipStatus[]).map((val) => (
@@ -235,8 +243,8 @@ export default function FilterPanel({
               {getMembershipLabel(val)}
             </CheckRow>
           ))}
-          <div className="mt-4 pt-3 border-t border-border-light">
-            <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 mb-3">
+          <div className="border-border-light mt-4 border-t pt-3">
+            <p className="text-10 text-text-muted tracking-wide-6 mb-3 font-semibold uppercase">
               Attendance
             </p>
             {(
@@ -271,7 +279,7 @@ export default function FilterPanel({
 
       {activeCategory === 'archive' && (
         <>
-          <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 mb-3">
+          <p className="text-10 text-text-muted tracking-wide-6 mb-3 font-semibold uppercase">
             Archive
           </p>
           <RadioRow
@@ -297,7 +305,7 @@ export default function FilterPanel({
 
       {activeCategory === 'discipleship' && (
         <>
-          <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 mb-3">
+          <p className="text-10 text-text-muted tracking-wide-6 mb-3 font-semibold uppercase">
             Discipleship
           </p>
           <CheckRow
@@ -331,7 +339,7 @@ export default function FilterPanel({
 
       {activeCategory === 'group' && (
         <>
-          <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 mb-3">
+          <p className="text-10 text-text-muted tracking-wide-6 mb-3 font-semibold uppercase">
             Group
           </p>
           <CheckRow
@@ -368,7 +376,7 @@ export default function FilterPanel({
 
       {activeCategory === 'app-role' && (
         <>
-          <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 mb-3">
+          <p className="text-10 text-text-muted tracking-wide-6 mb-3 font-semibold uppercase">
             App Role
           </p>
           {(['admin', 'shepherd', 'no-access'] as AppRole[]).map((role) => {
@@ -399,7 +407,7 @@ export default function FilterPanel({
 
       {activeCategory === 'position' && (
         <>
-          <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 mb-3">
+          <p className="text-10 text-text-muted tracking-wide-6 mb-3 font-semibold uppercase">
             Church Position
           </p>
           <CheckRow
@@ -436,7 +444,7 @@ export default function FilterPanel({
 
       {activeCategory === 'language' && (
         <>
-          <p className="text-10 font-semibold text-text-muted uppercase tracking-wide-6 mb-3">
+          <p className="text-10 text-text-muted tracking-wide-6 mb-3 font-semibold uppercase">
             Language
           </p>
           {Array.from(new Set(data.people.flatMap((p) => p.language)))
