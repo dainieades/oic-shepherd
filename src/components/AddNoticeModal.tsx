@@ -367,7 +367,7 @@ export default function AddNoticeModal({
                   {/* Urgency */}
                   <button
                     ref={urgencyBtnRef}
-                    className={`border-border-light flex items-center gap-2.5 border-b border-none bg-transparent py-3 text-left${readOnly ? 'cursor-not-allowed' : 'cursor-pointer'}${readOnly ? '' : 'field-row-hover'}`}
+                    className={`border-border-light flex items-center gap-2.5 border-b border-none bg-transparent py-3 text-left ${readOnly ? 'cursor-not-allowed' : 'cursor-pointer'} ${readOnly ? '' : 'field-row-hover'}`}
                     onClick={readOnly ? undefined : () => setShowUrgencyPicker((v) => !v)}
                     disabled={readOnly}
                   >
@@ -551,7 +551,7 @@ function FieldRow({
   return (
     <button
       ref={btnRef}
-      className={`border-border-light flex items-center gap-2.5 border-b border-none bg-transparent py-3 text-left ${cursorClass}${interactive ? 'field-row-hover' : ''}`}
+      className={`border-border-light flex items-center gap-2.5 border-b border-none bg-transparent py-3 text-left ${cursorClass} ${interactive ? 'field-row-hover' : ''}`}
       onClick={onClick}
       disabled={!interactive}
     >

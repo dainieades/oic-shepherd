@@ -185,7 +185,7 @@ export default function AuditDemoPage() {
 function AuditEntry({ log, isLast }: { log: AuditLog; isLast: boolean }) {
   const isEmpty = (v: string | null) => v === null || v === '';
   return (
-    <div className={`py-3 px-4${isLast ? '' : 'border-border-light border-b'}`}>
+    <div className={`px-4 py-3 ${isLast ? '' : 'border-border-light border-b'}`}>
       <div className="mb-1.5 flex items-start justify-between gap-2">
         <span className="text-13 text-text-primary font-semibold">{fieldLabel(log.fieldName)}</span>
         <span className="text-12 text-text-muted whitespace-nowrap">

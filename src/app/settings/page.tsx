@@ -201,7 +201,7 @@ export default function SettingsPage() {
           <button
             onClick={handleLinkGoogle}
             disabled={linkingGoogle}
-            className={`w-full border-none bg-transparent p-0 text-left block${linkingGoogle ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}
+            className={`block w-full border-none bg-transparent p-0 text-left ${linkingGoogle ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}
           >
             <SettingsRow
               icon={<GoogleLogo size={18} color="var(--text-muted)" />}
